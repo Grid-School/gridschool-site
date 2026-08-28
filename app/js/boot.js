@@ -91,7 +91,7 @@ function renderGate() {
       el(
         "div.picker",
         {},
-        el("h1", {}, "Students only past this point"),
+        el("h1", {}, "Student access"),
         el("p.muted", {}, "The platform and its lessons are part of the program. You receive your access key when you enroll."),
         form,
         el("p.picker__foot", {}, "Not a student yet? ", el("a", { href: "../#offer" }, "See what you get"), ".")
