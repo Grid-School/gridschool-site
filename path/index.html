@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<title>Defense Lab Path. GridSchool</title>
+<meta name="description" content="Three tracks: the defense spine, a live game world, and a graph engine you build from scratch. A light turns on when the URL exists.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../landing.css">
+<style>
+  .nodes { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; margin: 28px 0 48px; }
+  .node { border: 1px solid var(--line); background: var(--surface); padding: 16px 16px 18px; border-radius: var(--radius); }
+  .node b { display: block; color: var(--cyan); letter-spacing: .08em; font-size: 12px; margin-bottom: 6px; }
+  .node h3 { font-size: 16px; margin-bottom: 6px; }
+  .node p { color: var(--muted); font-size: 14px; }
+  .node--lit { border-color: var(--ok); }
+  .node--lit b { color: var(--ok); }
+  .node--private { opacity: .75; }
+  .thisweek { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 22px 0 6px; }
+  .thisweek div {
+    border: 1px solid color-mix(in srgb, var(--cyan) 25%, var(--line));
+    background: var(--bg2); padding: 14px 16px; border-radius: var(--radius);
+  }
+  .thisweek b {
+    display: block; font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10.5px; letter-spacing: .18em; color: var(--cyan); margin-bottom: 6px;
+  }
+  .thisweek p { color: var(--muted); font-size: 14px; }
+  @media (max-width: 600px) { .thisweek { grid-template-columns: 1fr; } }
+  .node__ev {
+    display: inline-block; margin-top: 10px; color: var(--ok);
+    font-size: 13px; text-decoration: none;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+  }
+  .node__ev:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="gridbg" aria-hidden="true"></div>
+<header class="nav">
+  <a class="nav__brand" href="../">
+    <svg class="nav__logo" viewBox="0 0 36 36" aria-hidden="true">
+      <g transform="translate(18 18) rotate(45) translate(-12.5 -12.5)">
+        <g class="g-off">
+          <rect x="5.4" y="5.4" width="4.2" height="4.2" rx="1.2"/>
+          <rect x="10.4" y="5.4" width="4.2" height="4.2" rx="1.2"/>
+          <rect x="15.4" y="5.4" width="4.2" height="4.2" rx="1.2"/>
+          <rect x="20.4" y="5.4" width="4.2" height="4.2" rx="1.2"/>
+          <rect x="5.4" y="10.4" width="4.2" height="4.2" rx="1.2"/>
+          <rect x="10.4" y="10.4" width="4.2" height="4.2" rx="1.2"/>
+          <rect x="5.4" y="15.4" width="4.2" height="4.2" rx="1.2"/>
+          <rect x="10.4" y="15.4" width="4.2" height="4.2" rx="1.2"/>
+          <rect x="15.4" y="15.4" width="4.2" height="4.2" rx="1.2"/>
+        </g>
+        <g class="g-on">
+          <rect x="0.4" y="0.4" width="4.2" height="4.2" rx="1.2"/>
+          <rect x="5.4" y="0.4" width="4.2" height="4.2" rx="1.2"/>
+          <rect x="10.4" y="0.4" width="4.2" height="4.2" rx="1.2"/>
+          <rect x="15.4" y="0.4" width="4.2" height="4.2" rx="1.2"/>
+          <rect x="20.4" y="0.4" width="4.2" height="4.2" rx="1.2"/>
+          <rect x="0.4" y="5.4" width="4.2" height="4.2" rx="1.2"/>
+          <rect x="0.4" y="10.4" width="4.2" height="4.2" rx="1.2"/>
+          <rect x="15.4" y="10.4" width="4.2" height="4.2" rx="1.2"/>
+          <rect x="20.4" y="10.4" width="4.2" height="4.2" rx="1.2"/>
+          <rect x="0.4" y="15.4" width="4.2" height="4.2" rx="1.2"/>
+          <rect x="20.4" y="15.4" width="4.2" height="4.2" rx="1.2"/>
+          <rect x="0.4" y="20.4" width="4.2" height="4.2" rx="1.2"/>
+          <rect x="5.4" y="20.4" width="4.2" height="4.2" rx="1.2"/>
+          <rect x="10.4" y="20.4" width="4.2" height="4.2" rx="1.2"/>
+          <rect x="15.4" y="20.4" width="4.2" height="4.2" rx="1.2"/>
+          <rect x="20.4" y="20.4" width="4.2" height="4.2" rx="1.2"/>
+        </g>
+      </g>
+    </svg>
+    <span class="nav__name">GRID<em>SCHOOL</em></span>
+  </a>
+  <div class="nav__actions">
+    <a class="btn btn--solid" href="../#offer">Apply</a>
+  </div>
+</header>
+<main class="wrap" style="padding-top: 48px; padding-bottom: 80px">
+  <div class="chip">Founding template · all nodes unlit</div>
+  <h1 style="font-size: 32px; margin: 12px 0 10px">Your Defense Path</h1>
+  <p class="muted">A light turns on when the link exists. One spine: boot the inherited system, read it, change it, prove it, defend it. One publish step after a receipt. This public page is empty on purpose. You get a personal copy after you pay.</p>
+  <div class="thisweek">
+    <div><b>FOCUS</b><p>Set by Aden every Monday. The one thing to improve this week.</p></div>
+    <div><b>NEXT</b><p>Your next major task. On your copy, this is never empty.</p></div>
+  </div>
+  <div class="nodes">
+    <article class="node"><b>00 · Start</b><h3>How this board works</h3><p>One law: a node lights when a URL exists. Three tracks, and how to work them in parallel.</p></article>
+    <article class="node"><b>01 · Repo</b><h3>It runs</h3><p>You inherit Northline Desk, a ticket router whose dashboards are green while a customer waits in the wrong queue.</p></article>
+    <article class="node"><b>02 · Skills</b><h3>The four skills</h3><p>Say it, understand it, choose it, check it. In your words.</p></article>
+    <article class="node"><b>03 · Skills</b><h3>You can read a system</h3><p>Trace T-1842 from the BA note to the wrong team. Three files a change would break.</p></article>
+    <article class="node"><b>04 · Mission</b><h3>You change messy code</h3><p>One PR on the studio repo. Contract, failure log, agent log.</p></article>
+    <article class="node"><b>05 · Skills</b><h3>You can prove it</h3><p>A check that fails when the ticket is misrouted.</p></article>
+    <article class="node"><b>06 · Mission</b><h3>Someone else marked it up</h3><p>A review from a person who is not you.</p></article>
+    <article class="node"><b>07 · Defense</b><h3>You defend it live</h3><p>Eight minutes. One external engineer answers: would you interview this person.</p></article>
+    <article class="node"><b>08 · Publish</b><h3>A stranger can find the work</h3><p>One trail after the receipt. Not a brand course.</p></article>
+    <article class="node"><b>09 · The world</b><h3>The world runs on your machine</h3><p>A live multiplayer game server, booted and verified locally — the same way production runs it.</p></article>
+    <article class="node"><b>10 · The world</b><h3>Your first world ticket</h3><p>Taken from the live board in sprint planning, shipped as a merged PR with full ceremony.</p></article>
+    <article class="node"><b>11 · The world</b><h3>Staging to live, your hands on the wheel</h3><p>You drive the promote. Your change serving on the real domain.</p></article>
+    <article class="node"><b>12 · The world</b><h3>A feature wearing your mark</h3><p>Visible at play.gridschool.org. Friends and family can walk into it.</p></article>
+    <article class="node"><b>13 · Graph</b><h3>Source code is data</h3><p>nanograph begins: a parser that parses itself, then a call graph of a repo you did not write.</p></article>
+    <article class="node"><b>14 · Graph</b><h3>Who calls what</h3><p>Callers, callees, blast radius with one dial. The interview question, answered in milliseconds.</p></article>
+    <article class="node"><b>15 · Graph</b><h3>Cycles, rank, coupling</h3><p>Architecture measured, not opined. PageRank finds the code everyone leans on.</p></article>
+    <article class="node"><b>16 · Graph</b><h3>Swap the parser, keep the graph</h3><p>tree-sitter behind the same interface — then you map the world server with your own tool.</p></article>
+    <article class="node"><b>17 · Graph</b><h3>Feed the model less, get more</h3><p>Context packing, measured in tokens and answer quality. Tokenomics as engineering.</p></article>
+    <article class="node"><b>18 · Graph</b><h3>Make it yours</h3><p>Your fork, your repo, one analysis nobody asked for. The tool keeps working after the cohort ends.</p></article>
+  </div>
+  <a class="btn btn--cta" href="../#offer">Apply</a>
+</main>
+
+<script type="module">
+/**
+ * Per-student boards. One JSON per student in students/<slug>.json.
+ * Open with ?s=<slug>. No slug = the public empty template.
+ * Aden edits the JSON: light a node by giving it a url, retitle a node,
+ * or append extra nodes. This is the whole platform at founding.
+ */
+const slug = new URLSearchParams(location.search).get("s");
+if (slug && /^[a-z0-9-]+$/.test(slug)) {
+  fetch(`students/${slug}.json`)
+    .then((r) => (r.ok ? r.json() : null))
+    .then((d) => {
+      if (!d) return;
+      document.title = `${d.name} · GridSchool`;
+      document.querySelector("h1").textContent = d.title || `${d.name}’s Defense Path`;
+      const grid = document.querySelector(".nodes");
+      const cards = [...grid.querySelectorAll(".node")];
+      let lit = 0;
+      d.nodes.forEach((n, i) => {
+        let el = cards[i];
+        if (!el) {
+          el = document.createElement("article");
+          el.className = "node" + (n.private ? " node--private" : "");
+          el.innerHTML = `<b>${String(i + 1).padStart(2, "0")}</b><h3></h3><p></p>`;
+          grid.appendChild(el);
+        }
+        if (n.title) el.querySelector("h3").textContent = n.title;
+        if (n.desc) el.querySelector("p").textContent = n.desc;
+        if (n.url) {
+          lit += 1;
+          el.classList.add("node--lit");
+          const a = document.createElement("a");
+          a.className = "node__ev";
+          a.href = n.url;
+          a.target = "_blank";
+          a.rel = "noopener";
+          a.textContent = "evidence ↗";
+          el.appendChild(a);
+        }
+      });
+      document.querySelector(".chip").textContent =
+        `${d.label || `Week ${d.week} of 8`} · ${lit} of ${d.nodes.length} lights on`;
+      const tw = document.querySelectorAll(".thisweek div p");
+      if (d.focus) tw[0].textContent = d.focus;
+      if (d.next) tw[1].textContent = d.next;
+      document.querySelector("main > .muted").textContent =
+        "A light turns on when the link exists. This board is updated after every review.";
+    });
+}
+</script>
+</body>
+</html>

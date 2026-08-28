@@ -1,0 +1,151 @@
+{
+  "version": "2026-08-19",
+  "note": "Written from how the program actually runs. Every claim here has to match BREAK-IN-LOCK.md; if the offer changes, this file changes in the same commit.",
+  "documents": {
+    "terms": {
+      "title": "Terms",
+      "lede": "Plain terms for a program run by one person. If anything here reads as a trick, tell me and I will fix the wording rather than hide behind it.",
+      "sections": [
+        {
+          "heading": "What you are buying",
+          "body": [
+            "GridSchool Break-In is a twelve-week coaching program for people who can already write a working program and cannot get hired. It includes a weekly 45-minute one-to-one, a weekly cohort call, up to three written reviews per week, a board that tracks your evidence, a shared studio repository to work in, and a prompt pack you run in your own AI account.",
+            "It is coaching and review. It is not a bootcamp, not a degree, not accredited, and not a recruiting agency."
+          ]
+        },
+        {
+          "heading": "What I do not promise",
+          "body": [
+            "I do not promise that a company hires you. Nobody honest can. I do not offer a job-or-refund, an income share agreement, or a guaranteed interview.",
+            "I do not give legal, immigration, visa, or tax advice."
+          ]
+        },
+        {
+          "heading": "Who this is for",
+          "body": [
+            "You must already be able to build something that runs end to end. If you cannot yet, the application will say so and turn you down, because taking your money would waste eight weeks of your life and earn a refund request."
+          ]
+        },
+        {
+          "heading": "Price and payment",
+          "body": [
+            "The founding Defense Lab is $500 once, or $100 deposit and $400 after week 1.",
+            "There is no monthly continuity product at founding. A later Break-In expansion may add structured placement. It is not sold on this page.",
+            "Payments are handled by Stripe. I never see or store your card details."
+          ]
+        },
+        {
+          "heading": "The week 2 exit",
+          "body": [
+            "If either of us says this is the wrong room by the end of week 2, unused intensive tuition comes back. No essay required.",
+            "This is the only guarantee I make, and it is deliberate: it covers the risk you cannot judge yet, which is whether we work well together."
+          ]
+        },
+        {
+          "heading": "The quota, and what happens if it stops",
+          "body": [
+            "The founding lab quota is a ship URL every week and the live sessions you booked. Application volume and LinkedIn posting are not founding requirements.",
+            "Miss three weeks of ship or three live sessions and the program pauses, then ends."
+          ]
+        },
+        {
+          "heading": "Your side of it",
+          "body": [
+            "Show up to the sessions you booked. Submit real work, not work someone else wrote for you. Be honest about where a model helped you: the point is to be able to defend the code, and I cannot teach that if the trail is fake.",
+            "You are responsible for what you apply to, what you say in interviews, and what you ship."
+          ]
+        },
+        {
+          "heading": "Your work stays yours",
+          "body": [
+            "You own the code you write and the profile you build. Contributions to the shared studio repository are made under that repository's licence.",
+            "I will not publish your work, your reviews, or your name as a case study without asking you first."
+          ]
+        },
+        {
+          "heading": "Materials and the room",
+          "body": [
+            "Recordings, prompt packs, review documents, and the curriculum are for you, for as long as you are in the program. Do not resell them or republish them as your own.",
+            "The Discord room is for people in the program. Harassment, spam, recruiting other members into your own offer, or leaking other people's work in progress ends your access."
+          ]
+        },
+        {
+          "heading": "Ending it",
+          "body": [
+            "You can stop at any time; after week 2 the intensive is non-refundable because the seat is one of five and I cannot resell it mid-cohort. Continuity you can cancel any month.",
+            "I can end the program with a refund of unused tuition if you break the conduct rules above, or if I cannot deliver what I sold."
+          ]
+        },
+        {
+          "heading": "Changes",
+          "body": [
+            "If these terms change, the effective date at the top changes with them and anyone currently enrolled keeps the terms they enrolled under for their cohort."
+          ]
+        }
+      ]
+    },
+    "privacy": {
+      "title": "Privacy",
+      "lede": "A short, honest description of what is collected and who touches it. There is no data business here; the data exists so the program can run.",
+      "sections": [
+        {
+          "heading": "What I collect",
+          "body": [
+            "From the application: your name, email, links to your work and profile, and your written answers about what you have shipped and what you think is blocking you.",
+            "From the program: your board — the URLs you attach as evidence, task state, review requests and the written reviews I return, and your weekly quota numbers.",
+            "That is all. No tracking profile, no data enrichment, nothing bought from a third party."
+          ]
+        },
+        {
+          "heading": "Why",
+          "body": [
+            "To decide whether the program fits you, to run the eight weeks, and to know where you are so a review is useful. Your email is used to talk to you about your own program, not to run a newsletter."
+          ]
+        },
+        {
+          "heading": "Where it lives",
+          "body": [
+            "While the platform is pre-backend, your board lives in your own browser's storage and in a file I keep in the project repository when you or I export it. Nothing about your board is sent to a third-party analytics service.",
+            "Payments go through Stripe, scheduling through Cal.com, the room through Discord, and email through my mail provider. Each of them sees only what it needs: Stripe sees the payment, Cal.com sees the booking, Discord sees what you post there."
+          ]
+        },
+        {
+          "heading": "What I never do",
+          "body": [
+            "I do not sell your data. I do not share your application or your reviews with recruiters, employers, or anyone else without you asking me to.",
+            "I do not use your private work as marketing without your written permission."
+          ]
+        },
+        {
+          "heading": "How long I keep it",
+          "body": [
+            "Applications I turn down are deleted within ninety days. If you enrol, your board and review history are kept while you are in the program and for twelve months after it ends, because a reference request a year later is common and the record is what makes it credible.",
+            "Ask me to delete any of it earlier and I will, except for what I am required to keep for payment records."
+          ]
+        },
+        {
+          "heading": "Your say over it",
+          "body": [
+            "Email me and you can have a copy of everything I hold about you, a correction, or deletion. One person reads that inbox, so you get an answer from a human rather than a ticket."
+          ]
+        },
+        {
+          "heading": "Cookies and measurement",
+          "body": [
+            "The site sets no cookies and runs no analytics. The app uses your browser's local storage to remember which board you are on and any changes you have not exported yet. Clearing site data clears it."
+          ],
+          "whenAdTracking": [
+            "Advertising measurement is active: an ad platform pixel records that you visited and whether you applied, so I can tell which ads bring people who are actually a fit. It does not receive your application answers or your board.",
+            "You can block it with any tracker blocker and the site keeps working."
+          ]
+        },
+        {
+          "heading": "Age",
+          "body": [
+            "This program is for adults. Do not apply if you are under 18."
+          ]
+        }
+      ]
+    }
+  }
+}

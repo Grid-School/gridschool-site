@@ -1,0 +1,24 @@
+{
+  "slug": "demo",
+  "name": "Demo board",
+  "public": true,
+  "cohort": "founding-001",
+  "joined": "2026-08-24",
+  "clock": {
+    "kind": "get-in",
+    "months": 12
+  },
+  "oneone": {
+    "weekday": 3,
+    "time": "19:00"
+  },
+  "focus": "Stop guessing. Trace T-1842 and say what the system actually does.",
+  "next": "Boot studio/ and attach the status output to It runs.",
+  "evidence": {},
+  "tasks": {},
+  "reviews": [],
+  "quotaLog": [],
+  "layout": {},
+  "extraNodes": [],
+  "note": "A walkable example of the real thing. Not anyone else's work; what you change stays in this browser."
+}

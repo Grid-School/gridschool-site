@@ -1,0 +1,85 @@
+{
+  "id": "founding-001",
+  "name": "Founding 001",
+  "start": "2026-08-24",
+  "weeks": 8,
+  "spots": 5,
+  "timezoneLabel": "MT",
+  "recurring": [
+    {
+      "id": "cohort",
+      "kind": "cohort",
+      "title": "Cohort call",
+      "weekday": 1,
+      "time": "18:00",
+      "mins": 75,
+      "where": "Discord · voice",
+      "who": "All five and me",
+      "agenda": "What you shipped. What a reviewer would still not trust. One live review.",
+      "required": true
+    },
+    {
+      "id": "oneone",
+      "kind": "oneone",
+      "title": "Your 1:1",
+      "weekday": 3,
+      "time": "19:00",
+      "mins": 45,
+      "where": "Video call",
+      "who": "You and me",
+      "agenda": "Your code. Your defense. The next evidence URL.",
+      "required": true,
+      "perStudent": true
+    },
+    {
+      "id": "ship",
+      "kind": "due",
+      "title": "Ship URL due",
+      "weekday": 5,
+      "time": "17:00",
+      "mins": 0,
+      "where": "#ship",
+      "who": "You",
+      "agenda": "One URL from the last seven days. I mark it up over the weekend.",
+      "required": true
+    },
+    {
+      "id": "reviews",
+      "kind": "return",
+      "title": "Written reviews returned",
+      "weekday": 0,
+      "time": "20:00",
+      "mins": 0,
+      "where": "#asks and your board",
+      "who": "Me",
+      "agenda": "Up to three written reviews back. FOCUS and NEXT set for Monday.",
+      "required": false
+    }
+  ],
+  "milestones": [
+    {
+      "week": 2,
+      "kind": "gate",
+      "title": "Week-2 fit decision",
+      "detail": "Either of us can say this is the wrong room. Unused tuition comes back."
+    },
+    {
+      "week": 4,
+      "kind": "gate",
+      "title": "Extra 1:1 this week",
+      "detail": "Mid-lab correction. Founding cohort only."
+    },
+    {
+      "week": 6,
+      "kind": "gate",
+      "title": "Mission must be in review",
+      "detail": "PR open. Failure log started. If this is late, we cut scope, not standards."
+    },
+    {
+      "week": 8,
+      "kind": "gate",
+      "title": "Live defense",
+      "detail": "Recorded defense. At least one working engineer who did not help you. Lab ends."
+    }
+  ]
+}

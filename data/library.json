@@ -1,0 +1,100 @@
+{
+  "note": "Watch order. The first two before you send anything. After that, the video on the step you are on. Do not binge the rest.",
+  "watchWhen": "Week 1: watch the first two, then start the work. Later videos sit on the step they belong to. Open that step, watch, then do the steps.",
+  "placeholderYoutube": "jNQXAC9IVRw",
+  "tracks": [
+    {
+      "id": "first",
+      "title": "Watch these two first",
+      "blurb": "Week 1, before you send a profile or a site to anyone. LinkedIn so people can find you. A one-page site so they have somewhere to look.",
+      "items": [
+        {
+          "id": "v.linkedin",
+          "title": "Your LinkedIn, so a stranger can find you",
+          "mins": 11,
+          "status": "planned",
+          "youtube": "jNQXAC9IVRw",
+          "watchWhen": "Watch this before you rewrite your headline or About.",
+          "order": 1
+        },
+        {
+          "id": "v.site",
+          "title": "A one-page site that shows your work",
+          "mins": 12,
+          "status": "planned",
+          "youtube": "jNQXAC9IVRw",
+          "watchWhen": "Watch this before you pick the repo and put a link online.",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "id": "how",
+      "title": "How the work runs",
+      "blurb": "Still week 1, after the first two. How this board works, how you send work and get notes back, and the simple board we use (to do, doing, done — that is Kanban; a short weekly plan is the useful part of Scrum).",
+      "items": [
+        {
+          "id": "v.board",
+          "title": "How this board works",
+          "mins": 8,
+          "status": "planned",
+          "youtube": "jNQXAC9IVRw",
+          "watchWhen": "Watch once, on day one. A step is done when it has a link.",
+          "order": 3
+        },
+        {
+          "id": "v.review",
+          "title": "Send work, get notes, change it",
+          "mins": 10,
+          "status": "planned",
+          "youtube": "jNQXAC9IVRw",
+          "watchWhen": "Watch before you send your first thing for review.",
+          "order": 4
+        },
+        {
+          "id": "v.flow",
+          "title": "To do, doing, done — and a weekly plan",
+          "mins": 9,
+          "status": "planned",
+          "youtube": "jNQXAC9IVRw",
+          "watchWhen": "Watch when you start the studio project. Kanban is the board. Scrum is the weekly plan. We use both, simply.",
+          "order": 5
+        }
+      ]
+    },
+    {
+      "id": "project",
+      "title": "When you start the project",
+      "blurb": "Weeks 3–6. Watch the one that matches the step you are on, then do that step. Graph engineering is reading code you did not write. CCVV is the four skills: say it, understand it, choose it, check it.",
+      "items": [
+        {
+          "id": "v.graph",
+          "title": "Reading code you did not write",
+          "mins": 18,
+          "status": "planned",
+          "youtube": "jNQXAC9IVRw",
+          "watchWhen": "Watch on the messy-code step, before you change anything. This is graph engineering: follow one request, then name what would break.",
+          "order": 6
+        },
+        {
+          "id": "v.ccvv",
+          "title": "Four skills: say it, understand it, choose it, check it",
+          "mins": 14,
+          "status": "planned",
+          "youtube": "jNQXAC9IVRw",
+          "watchWhen": "Watch once in week 3. Communication, Comprehension, Vision, Verification. Every drill and every review uses these.",
+          "order": 7
+        },
+        {
+          "id": "v.build",
+          "title": "Build the change, then ask for a review",
+          "mins": 15,
+          "status": "planned",
+          "youtube": "jNQXAC9IVRw",
+          "watchWhen": "Watch when you start the actual change on the studio repo.",
+          "order": 8
+        }
+      ]
+    }
+  ]
+}

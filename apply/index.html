@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<title>Apply. GridSchool</title>
+<meta name="description" content="Five spots. Eight weeks. One mission you can defend. This takes about four minutes.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../landing.css">
+<link rel="stylesheet" href="../funnel.css">
+</head>
+<body>
+<div class="gridbg" aria-hidden="true"></div>
+
+<header class="nav">
+  <a class="nav__brand" href="../" aria-label="GridSchool home">
+    <span class="nav__name">GRID<em>SCHOOL</em></span>
+  </a>
+  <div class="nav__actions">
+    <a class="btn btn--ghost" href="../#offer">The offer</a>
+  </div>
+</header>
+
+<main class="fwrap">
+  <ol class="fsteps">
+    <li class="is-now">Apply</li>
+    <li>20-minute call</li>
+    <li>Pay</li>
+    <li>Start</li>
+  </ol>
+
+  <div class="fhead">
+    <div class="chip">Founding · 5 spots</div>
+    <h1>Tell me what you have actually shipped.</h1>
+    <p class="muted">Four minutes. I read every application myself. This lab starts from work that already runs — if you have that, you belong here. If you're still getting there, I'll point you at a free next step instead of taking a seat you wouldn't enjoy yet.</p>
+  </div>
+
+  <div id="screen"></div>
+
+  <div class="fcard ready">
+    <span class="feyebrow">What you'll need to do the work</span>
+    <p>You'll run a live production system on your own laptop. A quick check now means week 1 is spent on the work, not on setup.</p>
+    <ul>
+      <li><b>Machine.</b> A 64-bit laptop from around 2019 or newer, 8 GB RAM (16 GB is more comfortable — Docker is the reason), 20 GB free disk. macOS, Windows with WSL2, or Linux. A working mic and camera — reviews are spoken, and the defense is on camera.</li>
+      <li><b>Installs, all free and guided.</b> git, the .NET 8 SDK, and Docker Desktop.</li>
+      <li><b>Skills you already have.</b> One language well enough to build a small program on your own. git: branch, commit, push, open a PR. A command line you can move around in. Reading C-family code is enough — C# looks like Java or JS. Fluency comes later.</li>
+    </ul>
+    <p class="ready__note">Close, but rusty? Touch these up between deposit and day one: <a href="https://learngitbranching.js.org" target="_blank" rel="noopener">learngitbranching</a> for git, MIT's <a href="https://missing.csail.mit.edu" target="_blank" rel="noopener">Missing Semester</a> lecture 1 for the terminal.</p>
+  </div>
+
+  <form class="ff" id="form" novalidate>
+    <div class="fcard">
+      <span class="feyebrow">Who you are</span>
+      <div class="ff__row">
+        <label>
+          <span class="ff__label">Your name <span class="ff__req">*</span></span>
+          <input name="name" autocomplete="name" required>
+        </label>
+        <label>
+          <span class="ff__label">Email <span class="ff__req">*</span></span>
+          <input name="email" type="email" autocomplete="email" required>
+        </label>
+      </div>
+      <div class="ff__row">
+        <label>
+          <span class="ff__label">A link to work that runs <span class="ff__req">*</span></span>
+          <input name="work" type="url" placeholder="https://github.com/you/thing" required>
+          <span class="ff__hint">GitHub, a live demo, anything I can open. This is the first thing I look at.</span>
+        </label>
+        <label>
+          <span class="ff__label">LinkedIn</span>
+          <input name="linkedin" type="url" placeholder="https://linkedin.com/in/you">
+          <span class="ff__hint">Optional. I will not make you a poster in week 1.</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="fcard">
+      <span class="feyebrow">The screen</span>
+      <fieldset>
+        <legend>Can you write a working program today, on your own? <span class="ff__req">*</span></legend>
+        <div class="pick">
+          <label>
+            <input type="radio" name="canCode" value="yes" required>
+            <div><b>Yes</b><span>I have built something that ran, and I could do it again.</span></div>
+          </label>
+          <label>
+            <input type="radio" name="canCode" value="no">
+            <div><b>Not yet</b><span>I am still learning the basics.</span></div>
+          </label>
+        </div>
+      </fieldset>
+
+      <label>
+        <span class="ff__label">Where are you <span class="ff__req">*</span></span>
+        <select name="years" required>
+          <option value="">Pick one</option>
+          <option>CS degree, never held a software job</option>
+          <option>Self-taught, never held a software job</option>
+          <option>Under a year of paid experience</option>
+          <option>One to two years, want back in</option>
+          <option>Two to five years, still not trusted with larger work</option>
+          <option>More than two years, laid off</option>
+        </select>
+      </label>
+
+      <label>
+        <span class="ff__label">What have you shipped that a stranger could run? <span class="ff__req">*</span></span>
+        <textarea name="shipped" rows="4" placeholder="What it does, who it was for, and what broke while you built it." required></textarea>
+        <span class="ff__hint">The thing that broke is the part I care about.</span>
+      </label>
+
+      <div class="ff__row">
+        <label>
+          <span class="ff__label">Applications in the last 30 days <span class="ff__req">*</span></span>
+          <select name="applications" required>
+            <option value="">Pick one</option>
+            <option>None</option>
+            <option>1 to 10</option>
+            <option>11 to 40</option>
+            <option>41 to 100</option>
+            <option>More than 100</option>
+          </select>
+        </label>
+        <label>
+          <span class="ff__label">How did you find me</span>
+          <input name="found" placeholder="A post, a video, a person">
+        </label>
+      </div>
+
+      <label>
+        <span class="ff__label">What do you think is actually blocking you? <span class="ff__req">*</span></span>
+        <textarea name="blocking" rows="3" placeholder="Your honest read, not the polite version." required></textarea>
+      </label>
+    </div>
+
+    <div class="fcard">
+      <span class="feyebrow">Time and money</span>
+      <fieldset>
+        <legend>Money <span class="ff__req">*</span></legend>
+        <div class="pick">
+          <label>
+            <input type="radio" name="plan" value="self" required>
+            <div><b>I can pay founding myself</b><span>Amount is on the call, not on this page.</span></div>
+          </label>
+          <label>
+            <input type="radio" name="plan" value="split">
+            <div><b>I need to split it</b><span>Deposit now, remainder after week 1. Same lab.</span></div>
+          </label>
+          <label>
+            <input type="radio" name="plan" value="family">
+            <div><b>Someone is helping me pay</b><span>Family or a partner. Say so and I will talk to them directly.</span></div>
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>The commitment <span class="ff__req">*</span></legend>
+        <div class="pick">
+          <label>
+            <input type="checkbox" name="commit" required>
+            <div>
+              <b>Eight to ten hours a week, and Mondays are non-optional.</b>
+              <span>Cohort call Monday, your 1:1 midweek, a live defense at the end. Miss three weeks and I stop.</span>
+            </div>
+          </label>
+        </div>
+      </fieldset>
+    </div>
+
+    <div class="fsubmit">
+      <button class="btn btn--cta" type="submit">Send my application</button>
+      <span class="muted" style="font-size: 14px">I answer inside one working day.</span>
+    </div>
+    <p class="ff__err" id="formerr" hidden></p>
+  </form>
+
+  <noscript>
+    <div class="fcard" style="margin-top: 20px">
+      <h3>JavaScript is off</h3>
+      <p>Email me directly at <a href="mailto:support@gridschool.org">support@gridschool.org</a> with a link to work that runs, where you are in your search, and what you think is blocking you.</p>
+    </div>
+  </noscript>
+</main>
+
+<script type="module" src="../js/site-chrome.js"></script>
+<script type="module" src="apply.js"></script>
+</body>
+</html>

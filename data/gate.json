@@ -1,0 +1,10 @@
+{
+  "v": 1,
+  "kdf": "PBKDF2-SHA256",
+  "iterations": 300000,
+  "salt": "Dj609Fk7zWuccl7+UIy+CA==",
+  "canary": {
+    "iv": "zJifP8Z7/q13HmOl",
+    "ct": "OHuG7PyY/qMhTo79LYR3n9Y8iens3UoQVxo3oN0="
+  }
+}

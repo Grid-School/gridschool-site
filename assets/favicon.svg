@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36">
+  <!-- Same G-in-a-diamond as js/brand.js gmark(), frozen for the favicon. -->
+  <rect width="36" height="36" rx="6" fill="#05070c"/>
+  <g transform="translate(18 18) rotate(45) translate(-12.5 -12.5)">
+    <g fill="#0e1a2e">
+      <rect x="5.4" y="5.4" width="4.2" height="4.2" rx="1.2"/>
+      <rect x="10.4" y="5.4" width="4.2" height="4.2" rx="1.2"/>
+      <rect x="15.4" y="5.4" width="4.2" height="4.2" rx="1.2"/>
+      <rect x="20.4" y="5.4" width="4.2" height="4.2" rx="1.2"/>
+      <rect x="5.4" y="10.4" width="4.2" height="4.2" rx="1.2"/>
+      <rect x="10.4" y="10.4" width="4.2" height="4.2" rx="1.2"/>
+      <rect x="5.4" y="15.4" width="4.2" height="4.2" rx="1.2"/>
+      <rect x="10.4" y="15.4" width="4.2" height="4.2" rx="1.2"/>
+      <rect x="15.4" y="15.4" width="4.2" height="4.2" rx="1.2"/>
+    </g>
+    <g fill="#28e1ff">
+      <rect x="0.4" y="0.4" width="4.2" height="4.2" rx="1.2"/>
+      <rect x="5.4" y="0.4" width="4.2" height="4.2" rx="1.2"/>
+      <rect x="10.4" y="0.4" width="4.2" height="4.2" rx="1.2"/>
+      <rect x="15.4" y="0.4" width="4.2" height="4.2" rx="1.2"/>
+      <rect x="20.4" y="0.4" width="4.2" height="4.2" rx="1.2"/>
+      <rect x="0.4" y="5.4" width="4.2" height="4.2" rx="1.2"/>
+      <rect x="0.4" y="10.4" width="4.2" height="4.2" rx="1.2"/>
+      <rect x="15.4" y="10.4" width="4.2" height="4.2" rx="1.2"/>
+      <rect x="20.4" y="10.4" width="4.2" height="4.2" rx="1.2"/>
+      <rect x="0.4" y="15.4" width="4.2" height="4.2" rx="1.2"/>
+      <rect x="20.4" y="15.4" width="4.2" height="4.2" rx="1.2"/>
+      <rect x="0.4" y="20.4" width="4.2" height="4.2" rx="1.2"/>
+      <rect x="5.4" y="20.4" width="4.2" height="4.2" rx="1.2"/>
+      <rect x="10.4" y="20.4" width="4.2" height="4.2" rx="1.2"/>
+      <rect x="15.4" y="20.4" width="4.2" height="4.2" rx="1.2"/>
+      <rect x="20.4" y="20.4" width="4.2" height="4.2" rx="1.2"/>
+    </g>
+  </g>
+</svg>

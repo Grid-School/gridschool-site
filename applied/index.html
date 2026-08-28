@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<title>Application in. GridSchool</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../landing.css">
+<link rel="stylesheet" href="../funnel.css">
+</head>
+<body>
+<div class="gridbg" aria-hidden="true"></div>
+
+<header class="nav">
+  <a class="nav__brand" href="../" aria-label="GridSchool home">
+    <span class="nav__name">GRID<em>SCHOOL</em></span>
+  </a>
+</header>
+
+<main class="fwrap">
+  <ol class="fsteps">
+    <li class="is-done">Apply</li>
+    <li class="is-now">20-minute call</li>
+    <li>Pay</li>
+    <li>Start</li>
+  </ol>
+
+  <div class="fhead">
+    <div class="chip">Application received</div>
+    <h1 id="hello">That is in. Now book the call.</h1>
+    <p class="muted">Twenty minutes, camera optional. I will have already opened your links. If I do not think I can help you, I will say that on the call instead of selling you a spot.</p>
+  </div>
+
+  <div id="wire"></div>
+
+  <div class="fcard fcard--lit">
+    <span class="feyebrow">Step one</span>
+    <h2>Book the 20-minute fit call</h2>
+    <p>Pick any slot. Bring one question about your own work, not about the program.</p>
+    <div id="book"></div>
+  </div>
+
+  <div class="fcard">
+    <span class="feyebrow">What happens on it</span>
+    <ol class="nextlist">
+      <li><b>1</b><div><h3>I open your work in front of you</h3><p>Five minutes on what a hiring manager sees when they land on it, said plainly.</p></div></li>
+      <li><b>2</b><div><h3>You tell me what you have tried</h3><p>Applications, referrals, projects. I am looking for which one of those is actually broken.</p></div></li>
+      <li><b>3</b><div><h3>We both decide</h3><p>If it is a fit, you get the payment link on the call and you start the following Monday. If it is not, I tell you what to do instead and we are done.</p></div></li>
+    </ol>
+  </div>
+
+  <div class="fcard">
+    <span class="feyebrow">Free, before we talk</span>
+    <h3>Trust Gap Diagnostic</h3>
+    <p>Score yourself on four things: inherited-system proof, a check a stranger can run, a live defense, a public trail. Under 12, bring that to the call. I do not charge for it.</p>
+    <p class="muted" style="margin-top:12px"><a class="hero__alt" href="../#diagnostic">The four scores are on the public page.</a></p>
+  </div>
+
+  <div class="fcard" id="receiptcard" hidden>
+    <span class="feyebrow">Your copy</span>
+    <h3>What you sent</h3>
+    <p>Intake is not wired to a form service yet, so your application is saved in this browser. Send it to me directly and I will have it in front of me on the call.</p>
+    <pre class="receipt" id="receipt"></pre>
+    <div class="fsubmit">
+      <a class="btn btn--solid" id="mailto" href="mailto:support@gridschool.org?subject=GridSchool%20application">Email this to Aden</a>
+      <button class="btn btn--ghost" id="copy" type="button">Copy it</button>
+    </div>
+  </div>
+
+  <div class="demonote" style="margin-top: 22px">
+    <b>DEMO PATH</b>
+    <p>Walking this end to end without a real payment? <a href="../enroll/" style="color: var(--cyan)">Skip to checkout</a> to see what a student sees after they pay.</p>
+  </div>
+</main>
+
+<script type="module" src="../js/site-chrome.js"></script>
+<script type="module" src="applied.js"></script>
+</body>
+</html>

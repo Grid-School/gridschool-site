@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<title>Day one. GridSchool</title>
+<meta name="robots" content="noindex">
+<meta name="description" content="You are in. Everything you need is on this page.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../landing.css">
+<link rel="stylesheet" href="../funnel.css">
+</head>
+<body>
+<div class="gridbg" aria-hidden="true"></div>
+
+<header class="nav">
+  <a class="nav__brand" href="../" aria-label="GridSchool home">
+    <span class="nav__name">GRID<em>SCHOOL</em></span>
+  </a>
+  <div class="nav__actions">
+    <a class="btn btn--solid" href="../app/">Open my board</a>
+  </div>
+</header>
+
+<main class="fwrap">
+  <ol class="fsteps">
+    <li class="is-done">Apply</li>
+    <li class="is-done">20-minute call</li>
+    <li class="is-done">Pay</li>
+    <li class="is-now">Start</li>
+  </ol>
+
+  <div class="fhead">
+    <div class="chip">Day one · nothing here is dead air</div>
+    <h1>You’re in.</h1>
+    <p class="muted">Six things, in order. By tonight you will have shipped something with a URL. That is on purpose: the first thing you feel here should be motion, not orientation.</p>
+  </div>
+
+  <div id="demonote"></div>
+
+  <ol class="steps" id="steps"></ol>
+
+  <div class="guarantee">
+    <h3>Week 2, in writing</h3>
+    <p class="muted">If either of us says this is the wrong room by the end of week 2, unused tuition comes back. No essay required. The product is a defense a working engineer can score. I do not promise a company hires you.</p>
+  </div>
+</main>
+
+<script type="module" src="../js/site-chrome.js"></script>
+<script type="module" src="start.js"></script>
+</body>
+</html>

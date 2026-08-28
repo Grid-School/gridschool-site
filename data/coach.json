@@ -1,0 +1,72 @@
+{
+  "note": "The Coach lives on Today. Until the xAI proxy is connected it answers locally from the same packed context. Credits still move.",
+  "axes": [
+    { "id": "communication", "label": "Communication", "blurb": "Say the true thing in the fewest words a stranger can act on." },
+    { "id": "comprehension", "label": "Comprehension", "blurb": "Understand code you did not write before you touch it." },
+    { "id": "vision", "label": "Vision", "blurb": "Choose what is worth building, and say why." },
+    { "id": "verification", "label": "Verification", "blurb": "Prove it works. Especially when a model told you it does." }
+  ],
+  "drills": [
+    {
+      "id": "d.questions",
+      "axis": "comprehension",
+      "title": "The five questions before you code",
+      "mins": 20,
+      "prompt": "Give me a vague feature request the way a real stakeholder would say it. I will ask you questions until I could build it without guessing. Stop me when I start guessing. Then tell me which question I should have asked first, and why.",
+      "done_when": "You reached a buildable spec in under eight questions, and you know which one you missed."
+    },
+    {
+      "id": "d.context",
+      "axis": "comprehension",
+      "title": "Context gathering under a budget",
+      "mins": 25,
+      "prompt": "I am about to change a codebase I do not know. Interview me about how I would find the three files that matter, with a hard budget of ten minutes of reading. Push back when my plan is really just grep-and-hope.",
+      "done_when": "You can name a repeatable method for finding the blast radius, not a lucky search."
+    },
+    {
+      "id": "d.initiative",
+      "axis": "vision",
+      "title": "Taking initiative without going rogue",
+      "mins": 20,
+      "prompt": "Give me a situation where the ticket is wrong. Make me decide: do the ticket, push back, or do something adjacent. Then challenge my reasoning about who I would need to tell, and when.",
+      "done_when": "You made a call and named who you would tell before you did it."
+    },
+    {
+      "id": "d.defend",
+      "axis": "communication",
+      "title": "Defend a change against follow-ups",
+      "mins": 30,
+      "prompt": "I will describe a change I made. Act as a skeptical senior engineer in an interview. Ask me two levels of why on every claim. Call it out when I invent detail rather than saying I do not know.",
+      "done_when": "You survived two levels of why on every claim without inventing anything."
+    },
+    {
+      "id": "d.verify",
+      "axis": "verification",
+      "title": "Catch the model lying",
+      "mins": 25,
+      "prompt": "Write me a confident, plausible, and subtly wrong explanation of how a piece of code works. Do not tell me where the error is. Then grade how I found it, and what check I should have run first.",
+      "done_when": "You found the error with a check, not a hunch, and wrote the check down."
+    },
+    {
+      "id": "d.review",
+      "axis": "communication",
+      "title": "Take a hard review well",
+      "mins": 20,
+      "prompt": "Review a change I describe as a blunt maintainer. Include one comment that is simply wrong. Grade how I respond to all of them, especially the wrong one.",
+      "done_when": "You disagreed with the wrong comment without getting defensive, and changed the rest."
+    },
+    {
+      "id": "d.story",
+      "axis": "communication",
+      "title": "Turn work into a story with receipts",
+      "mins": 30,
+      "prompt": "I will paste a link and a description of something I built. Interrogate me until there is a two-minute story with a real obstacle in it. Reject anything a person who only prompted a model could also claim.",
+      "done_when": "The story survived the 'a vibe-coder could claim this' test."
+    }
+  ],
+  "handoff": {
+    "title": "The FOR ADEN block",
+    "instruction": "End every session by asking the Coach for this, then paste it into #asks. It is how I review your thinking without sitting through the session.",
+    "template": "FOR ADEN\nDrill: <which one>\nWhere I got stuck:\nWhat I would do differently:\nWhat I still cannot defend:\nMy prompts worth reviewing: <paste 1-2>"
+  }
+}

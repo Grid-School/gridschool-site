@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<title>Take your spot. GridSchool</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../landing.css">
+<link rel="stylesheet" href="../funnel.css">
+</head>
+<body>
+<div class="gridbg" aria-hidden="true"></div>
+
+<header class="nav">
+  <a class="nav__brand" href="../" aria-label="GridSchool home">
+    <span class="nav__name">GRID<em>SCHOOL</em></span>
+  </a>
+</header>
+
+<main class="fwrap fwrap--wide">
+  <ol class="fsteps">
+    <li class="is-done">Apply</li>
+    <li class="is-done">20-minute call</li>
+    <li class="is-now">Pay</li>
+    <li>Start</li>
+  </ol>
+
+  <div class="fhead">
+    <div class="chip" id="spots">Founding · 5 spots</div>
+    <h1>Take the spot.</h1>
+    <p class="muted">Same lab either way. Pay founding once, or a deposit now and the rest after week 1. The amount is on the payment link. Week 2 is the out: if either of us says it is the wrong room, unused tuition comes back.</p>
+  </div>
+
+  <div class="demonote">
+    <b>PAYMENT NOT CONNECTED</b>
+    <p>Every button below is a placeholder until the Stripe links are pasted into <code>config.js</code>. Clicking one walks you through what a real student sees after they pay, so the whole path can be tested before money is involved.</p>
+  </div>
+
+  <div class="plans" id="plans"></div>
+
+  <div class="fcard" id="diagnostic" style="margin-top: 20px">
+    <span class="feyebrow">Free, and it stays free</span>
+    <h3>Trust Gap Diagnostic</h3>
+    <p>Four scores, 1 to 5: inherited-system proof, a check a stranger can run, a live defense, a public trail that points at the work. Under 12, this lab is for you. I do not charge for the scorecard.</p>
+    <p class="muted" style="margin-top:12px"><a class="hero__alt" href="../#diagnostic">See the four scores on the public page.</a></p>
+  </div>
+
+  <div class="fcard">
+    <span class="feyebrow">Before you pay</span>
+    <h3>What I will honor, in writing</h3>
+    <ol class="nextlist">
+      <li><b>1</b><div><h3>Week 2 is a real exit</h3><p>Either of us can call it the wrong room. Unused tuition comes back. No essay required.</p></div></li>
+      <li><b>2</b><div><h3>You leave with a defense</h3><p>A recorded defense and at least one working engineer who did not help you. That is the product. Not a job promise.</p></div></li>
+      <li><b>3</b><div><h3>If you vanish, I stop</h3><p>Miss three weeks of ship and reviews and this ends. That is what keeps the room worth being in.</p></div></li>
+    </ol>
+    <p class="muted" style="margin-top:14px">I will not promise that a company hires you. I have no alumni wall yet. That is exactly why founding costs this.</p>
+  </div>
+</main>
+
+<script type="module" src="../js/site-chrome.js"></script>
+<script type="module" src="enroll.js"></script>
+</body>
+</html>

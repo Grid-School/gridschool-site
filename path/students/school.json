@@ -1,0 +1,22 @@
+{
+  "name": "GridSchool",
+  "title": "Building the school, on its own map",
+  "label": "The school runs on the same law",
+  "week": 0,
+  "focus": "Phase 0: rails are on GitHub. Next: AWS staging, then the world is reachable.",
+  "next": "Create the gridschool-deploy AWS key, stand up Lightsail staging, point play.gridschool.org.",
+  "nodes": [
+    { "title": "The name is real", "desc": "The world lives at play.gridschool.org. No second brand until a first student. Internal name: the grid. Lights when the URL resolves." },
+    { "title": "Repos renamed + rails", "desc": "gridschool-world-server and -client, public to read, MIT. CI green, PR ceremony, branch protection on main.", "url": "https://github.com/Grid-School/gridschool-world-server" },
+    { "title": "Missions seeded", "desc": "GF-1 through GF-7 plus two features, each with done_when, live as GitHub Issues.", "url": "https://github.com/Grid-School/gridschool-world-server/issues" },
+    { "title": "Staging is live", "desc": "Merge to main auto-deploys the world to AWS Lightsail. /health 200, websocket 101 verified 2026-08-26.", "url": "https://gridschool-world-staging.2q0rcr0ks5h5e.us-west-2.cs.amazonlightsail.com/health" },
+    { "title": "The world is watchable", "desc": "WebGL client on S3/CloudFront. A friend clicks a link and stands in the Grid." },
+    { "title": "Onboarding survives a stranger", "desc": "Clean machine, 45 minutes or less, followed by someone who is not Aden." },
+    { "title": "Student zero defended", "desc": "Aden runs GF-1 with full ceremony. One external engineer answers the reader form." },
+    { "title": "Episode 1 is live", "desc": "Organic lane. Market, promise vs reality, ownership. Soft CTA only." },
+    { "title": "The funnel is wired", "desc": "VSL on the apply flow. Stripe, Cal.com, Discord connected. Separate lane from YouTube." },
+    { "title": "The ad test runs", "desc": "Small capped Instagram test into the VSL. Only after the world is live." },
+    { "title": "A student is in the world", "desc": "First paid seat. Their week 1 looks like every future student's week 1.", "private": true },
+    { "title": "Five defenses, outside verdicts", "desc": "The gate that raises the price and opens the next cohort.", "private": true }
+  ]
+}

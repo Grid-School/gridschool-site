@@ -1,0 +1,544 @@
+/* GridSchool landing — same design system as the Grid Map. Neon on near-black,
+   thin light, no film trade dress. The page IS the first product experience:
+   calm, directed, one next action per screen. */
+
+:root {
+  --bg: #05070c;
+  --bg2: #080c15;
+  --surface: rgba(10, 16, 28, 0.92);
+  --line: #16233d;
+  --grid: #0e1a2e;
+  --cyan: #28e1ff;
+  --amber: #ffb32b;
+  --ok: #3ddc84;
+  --text: #d7e2f0;
+  --muted: #7f92ab;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --hair: color-mix(in srgb, var(--text) 6%, transparent);
+  --hair-cyan: color-mix(in srgb, var(--cyan) 20%, transparent);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  line-height: 1.65; overflow-x: hidden;
+}
+
+/* The grid floor fades toward the horizon — the same space the Map lives in. */
+.gridbg {
+  position: fixed; inset: 0; z-index: -1;
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 56px 56px; opacity: .32;
+  mask-image: radial-gradient(ellipse at 50% 0%, black 15%, transparent 72%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 0%, black 15%, transparent 72%);
+}
+
+.wrap { max-width: 920px; margin: 0 auto; padding: 0 24px; }
+.wrap--wide { max-width: 1180px; }
+
+/* ---------- buttons: one grammar, three weights ---------- */
+
+.btn {
+  display: inline-block; font: inherit; font-weight: 700; font-size: 14px;
+  padding: 10px 18px; cursor: pointer; text-decoration: none; letter-spacing: .03em;
+  border: 1px solid transparent; border-radius: var(--radius-sm);
+  transition: transform .12s ease, box-shadow .15s, border-color .15s;
+}
+.btn--ghost { background: none; border-color: var(--line); color: var(--text); }
+.btn--ghost:hover { border-color: var(--cyan); color: #fff; }
+.btn--solid { background: #10203a; border-color: #1a4a5c; color: #fff; }
+.btn--solid:hover { border-color: var(--cyan); }
+.btn--cta {
+  background: var(--cyan); color: #03141c; font-size: 16px; font-weight: 800;
+  padding: 15px 32px; box-shadow: 0 0 16px rgba(40, 225, 255, .22);
+}
+.btn--cta:hover { transform: translateY(-2px); }
+
+/* ---------- nav ---------- */
+
+.nav {
+  position: sticky; top: 0; z-index: 5;
+  display: flex; align-items: center; gap: 26px;
+  padding: 14px 26px; background: rgba(5, 7, 12, .82);
+  backdrop-filter: blur(10px);
+}
+.nav::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--line) 16%,
+    color-mix(in srgb, var(--cyan) 32%, var(--line)) 50%,
+    var(--line) 84%,
+    transparent
+  );
+}
+.nav__brand { display: flex; align-items: center; gap: 11px; text-decoration: none; }
+.nav__logo { width: 30px; height: 30px; flex: none; display: block; }
+.nav__logo .g-on rect { fill: var(--cyan); }
+.nav__logo .g-off rect { fill: #14213a; }
+.nav__name { font-weight: 700; letter-spacing: .22em; font-size: 14px; color: #fff; }
+.nav__name em { font-style: normal; color: var(--cyan); }
+.nav__links { display: flex; gap: 20px; margin-left: 10px; }
+.nav__links a {
+  color: var(--muted); text-decoration: none; font-size: 13.5px; letter-spacing: .04em;
+}
+.nav__links a:hover { color: #fff; }
+.nav__actions { margin-left: auto; display: flex; gap: 10px; align-items: center; }
+
+/* ---------- hero ---------- */
+
+.hero {
+  max-width: 920px; margin: 0 auto; padding: 72px 24px 30px;
+}
+.chip {
+  display: inline-block; border: 1px solid color-mix(in srgb, var(--cyan) 45%, var(--line));
+  color: var(--cyan);
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 11px; letter-spacing: .14em; padding: 6px 14px; margin-bottom: 26px;
+  text-transform: uppercase; border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--hair-cyan);
+}
+h1 { font-size: clamp(30px, 4.6vw, 50px); line-height: 1.14; color: #fff; font-weight: 800; }
+h1 em { font-style: normal; color: var(--cyan); text-shadow: 0 0 24px rgba(40, 225, 255, .45); }
+.hero__sub { margin: 24px 0 32px; font-size: 18.5px; color: var(--muted); max-width: 560px; }
+.hero__ctas { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+.hero__alt { color: var(--cyan); text-decoration: none; font-size: 14.5px; }
+.hero__alt:hover { text-decoration: underline; }
+
+/* ---------- shared diagram primitives ---------- */
+
+.jrail {
+  fill: none; stroke: color-mix(in srgb, var(--cyan) 24%, #26395c); stroke-width: 1.5;
+}
+.jrail--signal { stroke: color-mix(in srgb, var(--cyan) 16%, #26395c); }
+.jnode .ring {
+  fill: #070c15; stroke: color-mix(in srgb, var(--text) 22%, #24344f); stroke-width: 1.6;
+}
+.jnode .core { fill: color-mix(in srgb, var(--text) 10%, #16223a); }
+.jlab {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 12px; fill: var(--text); text-anchor: middle;
+}
+.jskill {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 10px; fill: var(--muted); letter-spacing: .08em; text-anchor: middle;
+}
+.jskill--lane { text-anchor: start; }
+.diagram__caption {
+  text-align: center; margin-top: 8px; font-size: 11px;
+  letter-spacing: .3em; text-transform: uppercase; color: var(--muted);
+}
+
+/* ---------- the weekly loop (interactive) ----------
+   Four rotated squares (the G-mark's geometry) on a dashed circle around
+   PROOF. The page's one interactive diagram: a phase lights on hover/focus/
+   tap and one caption line explains it. One light at a time. */
+
+.loop { max-width: 520px; margin: 26px auto 0; padding: 0 24px; }
+.loop svg { width: 100%; height: auto; display: block; }
+.loop__ring {
+  fill: none; stroke: color-mix(in srgb, var(--cyan) 22%, #26395c);
+  stroke-width: 1.4; stroke-dasharray: 3 9;
+}
+.loop__arrow {
+  fill: none; stroke: color-mix(in srgb, var(--cyan) 45%, #26395c);
+  stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round;
+}
+.loop__center rect, .loop__box rect {
+  fill: rgba(7, 12, 21, .72);
+  stroke: color-mix(in srgb, var(--text) 25%, #24344f); stroke-width: 1.6;
+  transition: stroke .25s ease;
+}
+.loop__center rect { stroke: color-mix(in srgb, var(--cyan) 38%, var(--line)); }
+.loop__proof {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 27px; letter-spacing: .18em; fill: var(--cyan); text-anchor: middle;
+}
+.loop__icon {
+  fill: none; stroke: var(--muted); stroke-width: 1.6;
+  stroke-linecap: round; stroke-linejoin: round;
+  transition: stroke .25s ease;
+}
+.loop__fill { fill: var(--muted); stroke: none; transition: fill .25s ease; }
+.loop__word {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 12.5px; letter-spacing: .14em; fill: var(--text); text-anchor: middle;
+}
+.loop__node, .loop__center { cursor: pointer; outline: none; }
+.loop__node:hover .loop__box rect,
+.loop__node:focus-visible .loop__box rect,
+.loop__node.is-active .loop__box rect {
+  stroke: var(--cyan);
+  filter: drop-shadow(0 0 7px rgba(40, 225, 255, .35));
+}
+.loop__node:hover .loop__icon,
+.loop__node:focus-visible .loop__icon,
+.loop__node.is-active .loop__icon { stroke: var(--cyan); }
+.loop__node:hover .loop__fill,
+.loop__node:focus-visible .loop__fill,
+.loop__node.is-active .loop__fill { fill: var(--cyan); }
+.loop__center:hover rect,
+.loop__center:focus-visible rect,
+.loop__center.is-active rect {
+  stroke: var(--cyan);
+  filter: drop-shadow(0 0 9px rgba(40, 225, 255, .3));
+}
+.loop__read {
+  text-align: center; margin-top: 16px; min-height: 48px;
+  font-size: 15px; color: var(--text); max-width: 440px;
+  margin-left: auto; margin-right: auto;
+}
+
+/* ---------- the trust ladder (before price) ----------
+   It runs → Verified → Explained → Proven → Trusted. The Trusted node is
+   the page's one pre-lit light: the goal state. Room + LinkedIn share the
+   lane below because both run the whole time. */
+
+.arc { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.arc svg { width: 100%; min-width: 880px; height: auto; display: block; }
+.arc__arrow {
+  fill: none; stroke: color-mix(in srgb, var(--cyan) 50%, #26395c);
+  stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
+}
+.arc__card {
+  fill: rgba(8, 12, 21, .55);
+  stroke: color-mix(in srgb, var(--cyan) 45%, var(--line)); stroke-width: 1.5;
+}
+.arc__lit .ring { fill: #070c15; stroke: var(--cyan); stroke-width: 1.6; }
+.arc__lit .core { fill: var(--cyan); }
+.arc__lit { filter: drop-shadow(0 0 7px rgba(40, 225, 255, .45)); }
+.arc__halo {
+  fill: none; stroke: color-mix(in srgb, var(--cyan) 55%, transparent);
+  stroke-width: 1.2; stroke-dasharray: 2 5;
+}
+.arc__trusted {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 14px; letter-spacing: .1em; fill: var(--cyan); text-anchor: middle;
+}
+.arc__icon {
+  fill: #070c15; stroke: color-mix(in srgb, var(--text) 25%, #24344f); stroke-width: 1.4;
+}
+.arc__peep { fill: var(--muted); }
+.arc__glyph {
+  fill: none; stroke: var(--muted); stroke-width: 1.6; stroke-linecap: round;
+}
+.arc__spark { fill: color-mix(in srgb, var(--cyan) 75%, transparent); }
+
+/* ---------- stat strip ---------- */
+
+.stats {
+  max-width: 1100px; margin: 26px auto 0; padding: 0 24px;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+}
+.stat {
+  border: 1px solid var(--line); background: rgba(8, 12, 21, .7);
+  padding: 16px 18px; display: grid; gap: 4px; border-radius: var(--radius);
+  box-shadow: inset 0 0 0 1px var(--hair);
+}
+.stat b {
+  color: var(--cyan); font-size: 22px; font-weight: 700;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+}
+.stat span { font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+
+/* ---------- sections ---------- */
+
+section.wrap {
+  position: relative;
+  padding: 64px 24px;
+  margin-top: 56px;
+  scroll-margin-top: 58px;
+}
+section.wrap::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, var(--line) 12%, var(--line) 88%, transparent);
+}
+h2 { font-size: clamp(22px, 3.4vw, 30px); color: #fff; margin-bottom: 22px; }
+.hash { color: var(--cyan); margin-right: 10px; }
+p + p { margin-top: 14px; }
+.muted { color: var(--muted); }
+.muted strong { color: var(--text); }
+.small { font-size: 13px; margin-top: 12px; }
+.section-lede { max-width: 760px; }
+
+ul.gap { list-style: none; margin: 20px 0; }
+ul.gap li { padding: 10px 0 10px 30px; position: relative; color: var(--muted); }
+ul.gap li::before {
+  content: ""; position: absolute; left: 8px; top: 18px;
+  width: 6px; height: 6px; border-radius: 50%;
+  border: 1.5px solid color-mix(in srgb, var(--cyan) 50%, var(--line));
+}
+.stat-inline { color: var(--text); font-weight: 600; }
+
+.rule {
+  border-left: 3px solid var(--amber); padding: 14px 18px; margin: 24px 0;
+  background: rgba(255, 179, 43, .05); color: var(--muted); font-style: italic;
+}
+.rule strong { color: var(--text); }
+
+/* Before / After + Who cards share one edge-light primitive.
+   Track color is the only difference. Do not copy this onto more surfaces. */
+@property --edge-a {
+  syntax: "<angle>"; initial-value: 0deg; inherits: false;
+}
+
+.shift {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 8px;
+}
+.shift__col {
+  --track: var(--muted);
+  position: relative;
+  border: 1px solid var(--line); background: var(--bg2); padding: 22px 24px;
+  border-radius: var(--radius);
+}
+.shift__col b {
+  display: block; font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 10px;
+}
+.shift__col p { color: var(--muted); }
+.shift__col--after { --track: var(--cyan); }
+.shift__col--after b { color: var(--cyan); }
+.shift__col--after p { color: var(--text); }
+.gap a { color: var(--cyan); }
+
+/* ---------- the board: two receipts | figure | trail + stories
+   Not a timeline. Weeks live on the Path. Unlit nodes. No connectors. */
+
+.board {
+  margin-top: 34px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(200px, 280px) minmax(0, 1fr);
+  grid-template-areas: "left art right";
+  gap: 16px 20px;
+  align-items: stretch;
+}
+.board__stack {
+  list-style: none;
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 15px;
+  min-width: 0;
+}
+.board__stack:first-of-type { grid-area: left; }
+.board__stack:last-of-type { grid-area: right; }
+.board__art {
+  grid-area: art;
+  margin: 0;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.board__art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center;
+  mix-blend-mode: lighten;
+}
+.bitem {
+  position: relative;
+  display: grid; grid-template-columns: 34px 1fr; gap: 14px; align-items: start;
+  border: 1px solid var(--line); background: var(--bg2);
+  padding: 18px 20px; border-radius: var(--radius);
+  box-shadow: inset 0 0 0 1px var(--hair);
+}
+.bitem__node {
+  width: 34px; height: 34px; border-radius: 50%; margin-top: 2px;
+  border: 1.6px solid color-mix(in srgb, var(--text) 32%, #24344f); background: #070c15;
+  display: grid; place-items: center;
+}
+.bitem__node::after {
+  content: ""; width: 10px; height: 10px; border-radius: 50%;
+  background: color-mix(in srgb, var(--text) 16%, #16223a);
+}
+.bitem small {
+  display: block; font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 6px;
+}
+.bitem h3 { font-size: 16px; color: #fff; margin-bottom: 6px; }
+.bitem p { color: var(--text); font-size: 14.5px; line-height: 1.5; }
+.bitem__why { color: var(--muted) !important; margin-top: 8px; }
+
+/* ---------- CCVV cards: the map's legend, grown up ---------- */
+
+.ccvv { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 26px; }
+.ccvv__card {
+  position: relative;
+  border: 1px solid var(--line);
+  background: var(--bg2); padding: 22px; border-radius: var(--radius);
+}
+
+.ccvv__card::before,
+.shift__col::before {
+  content: ""; position: absolute; inset: -1px; border-radius: inherit;
+  padding: 1.5px; pointer-events: none;
+  background: conic-gradient(from var(--edge-a),
+    transparent 0deg 264deg,
+    color-mix(in srgb, var(--track) 55%, transparent) 300deg,
+    var(--track) 318deg,
+    color-mix(in srgb, var(--track) 55%, transparent) 336deg,
+    transparent 372deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  animation: edgedrift 26s linear infinite, edgebreathe 9s ease-in-out infinite;
+}
+.ccvv__card:nth-child(2)::before { animation-delay: -7s, -3s; }
+.ccvv__card:nth-child(3)::before { animation-delay: -13s, -5s; }
+.ccvv__card:nth-child(4)::before { animation-delay: -19s, -7s; }
+.shift__col--after::before { animation-delay: -11s, -4s; }
+@keyframes edgedrift { to { --edge-a: 360deg; } }
+@keyframes edgebreathe {
+  0%, 100% { opacity: .55; }
+  50% { opacity: 1; }
+}
+.ccvv__mark {
+  width: 34px; height: 34px; display: grid; place-items: center; margin-bottom: 14px;
+  border: 1.5px solid var(--track); color: var(--track); font-weight: 700; font-size: 12px;
+  font-family: "IBM Plex Mono", ui-monospace, monospace; letter-spacing: .04em;
+  border-radius: 50%;
+}
+.ccvv__card h3 { color: #fff; font-size: 17px; margin-bottom: 8px; }
+.ccvv__card p { color: var(--muted); font-size: 14px; line-height: 1.6; }
+
+/* ---------- the Grid section ---------- */
+
+.gridshot {
+  margin-top: 30px; border: 1px solid var(--line); background: var(--bg2);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, .55), 0 0 44px rgba(40, 225, 255, .05);
+}
+.gridshot img { width: 100%; display: block; }
+.gridshot figcaption {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  padding: 14px 18px; border-top: 1px solid var(--line);
+  font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted);
+}
+
+/* ---------- proof list / tables / guarantee / faq (copy-dense blocks) ---------- */
+
+.proof-list { margin: 18px 0 0 4px; }
+.proof-list li { margin: 12px 0 12px 26px; color: var(--muted); }
+.proof-list li::marker { color: var(--ok); }
+.proof-list strong { color: var(--text); }
+
+.tablewrap { overflow-x: auto; margin: 22px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 15px; }
+th, td { padding: 12px 14px; text-align: left; border: 1px solid var(--line); vertical-align: top; }
+th { color: var(--cyan); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; background: var(--bg2); }
+th.right { text-align: right; }
+td:first-child { color: #fff; font-weight: 600; white-space: nowrap; }
+td.warn { color: var(--amber); font-weight: 600; }
+tr.us td { color: var(--cyan); }
+.price-table td:last-child { text-align: right; color: var(--muted); white-space: nowrap; }
+.price-final td { color: var(--cyan) !important; font-size: 18px; font-weight: 800; }
+
+.guarantee {
+  border: 1px solid color-mix(in srgb, var(--cyan) 38%, var(--line));
+  padding: 26px; margin: 26px 0;
+  background: color-mix(in srgb, var(--cyan) 4%, var(--bg2));
+  border-radius: var(--radius);
+  box-shadow: inset 0 0 0 1px var(--hair-cyan);
+}
+.guarantee h3 { color: var(--cyan); margin-bottom: 10px; font-size: 18px; }
+.guarantee .muted { margin-top: 14px; }
+.cta-sub { margin-top: 14px; font-size: 14px; color: var(--muted); }
+
+.founder { display: flex; gap: 20px; flex-wrap: wrap; }
+.founder p { flex: 1; min-width: 280px; }
+.founder a { color: var(--cyan); text-decoration: none; }
+
+details {
+  border: 1px solid var(--line); margin: 10px 0; background: var(--bg2);
+  border-radius: var(--radius-sm);
+  box-shadow: inset 0 0 0 1px var(--hair);
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+summary { cursor: pointer; padding: 16px 18px; color: #fff; font-weight: 600; list-style: none; }
+summary::before { content: "+ "; color: var(--cyan); }
+details[open] {
+  border-color: color-mix(in srgb, var(--cyan) 28%, var(--line));
+  box-shadow: inset 3px 0 0 0 color-mix(in srgb, var(--cyan) 55%, transparent);
+}
+details[open] summary::before { content: "− "; }
+details p { padding: 0 18px 16px; color: var(--muted); }
+
+/* ---------- final CTA ---------- */
+
+.seats { text-align: center; padding: 72px 24px 88px; }
+.seats__count {
+  font-size: 64px; font-weight: 800; color: var(--cyan);
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  text-shadow: 0 0 20px rgba(40, 225, 255, .28); line-height: 1;
+}
+.seats__label {
+  letter-spacing: .3em; font-size: 13px; color: var(--muted);
+  text-transform: uppercase; margin: 8px 0 30px;
+}
+
+footer { position: relative; padding: 34px 0; font-size: 13px; color: var(--muted); }
+footer::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, var(--line) 12%, var(--line) 88%, transparent);
+}
+footer a { color: var(--cyan); text-decoration: none; }
+footer p { margin-top: 8px; }
+
+/* ---------- reveal on scroll (garnish, never load-bearing) ---------- */
+
+.reveal { opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .6s ease; }
+.reveal.is-in { opacity: 1; transform: none; }
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 900px) {
+  .hero { padding-top: 48px; }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .nav__links { display: none; }
+  /* the bar has room for the mark and the actions, and must never widen the page */
+  .nav { gap: 12px; padding: 12px 16px; flex-wrap: wrap; }
+  .nav__actions { gap: 8px; }
+  .board {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "art art"
+      "left right";
+    gap: 18px 14px;
+  }
+  .board__art { height: min(38vw, 280px); }
+}
+@media (max-width: 600px) {
+  .ccvv { grid-template-columns: 1fr; }
+  .shift { grid-template-columns: 1fr; }
+  .board {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "art"
+      "left"
+      "right";
+    gap: 14px;
+  }
+  .board__art { height: min(58vw, 240px); }
+  .stats { grid-template-columns: 1fr 1fr; }
+  th, td { padding: 9px 8px; font-size: 13.5px; }
+  td:first-child { white-space: normal; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; }
+  .reveal { opacity: 1; transform: none; }
+}

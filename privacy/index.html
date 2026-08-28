@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<title>Privacy. GridSchool</title>
+<meta name="description" content="What GridSchool collects, who touches it, how long it is kept, and how to have it deleted.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../landing.css">
+<link rel="stylesheet" href="../funnel.css">
+</head>
+<body>
+<div class="gridbg" aria-hidden="true"></div>
+
+<header class="nav">
+  <a class="nav__brand" href="../" aria-label="GridSchool home">
+    <span class="nav__name">GRID<em>SCHOOL</em></span>
+  </a>
+  <div class="nav__actions">
+    <a class="btn btn--ghost" href="../terms/">Terms</a>
+    <a class="btn btn--solid" href="../apply/">Apply</a>
+  </div>
+</header>
+
+<main class="fwrap" id="doc"></main>
+
+<script type="module" src="../js/site-chrome.js"></script>
+<script type="module">
+  import { renderLegal } from "../js/legal.js";
+  renderLegal("privacy");
+</script>
+</body>
+</html>
