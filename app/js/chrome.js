@@ -16,6 +16,7 @@ import { el, mount } from "./dom.js";
 import { gmark, wordmark } from "../../js/brand.js";
 import { btn } from "./ui.js";
 import { signOut } from "./session.js";
+import { lock } from "./gate.js";
 import { returnedUnread } from "./tasks.js";
 import { progress } from "./graph/model.js";
 
@@ -133,6 +134,9 @@ export function createChrome({ onNavigate, onReset, onExport }) {
           variant: "quiet",
           onclick: () => {
             signOut();
+            // Signing out also locks the platform: the access key is forgotten
+            // on this device, so the gate asks again on the next visit.
+            lock();
             location.href = "./";
           },
         })
