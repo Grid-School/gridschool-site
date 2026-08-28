@@ -27,7 +27,7 @@ export function packContext({ state, prompt, corpus, userText, files = [] }) {
     "",
     corpus?.trim() ? `TEACHING CORPUS\n${corpus.trim()}` : null,
     "",
-    "BOARD (source of truth — do not invent a different next action)",
+    "BOARD (source of truth; do not invent a different next action)",
     `Student: ${student.name}. Cohort ${cohort.name}, week ${Math.min(week, cohort.weeks)}.`,
     `Next action (${next.kind}): ${next.title}`,
     next.why ? `Why: ${next.why}` : null,

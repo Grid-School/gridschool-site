@@ -389,7 +389,7 @@ export function renderMap(ctx, initialArg) {
     if (node.video?.mins) parts.push(`video ${node.video.mins} min`);
     if (node.reviewState === "in-review") parts.push("review out");
     if (node.reviewState === "returned") parts.push("notes back");
-    return parts.join(" — ");
+    return parts.join(" · ");
   }
 
   function legendKey(status, label) {

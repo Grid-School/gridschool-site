@@ -137,7 +137,7 @@ function groupReviews(reviews) {
 }
 
 function linkBlock(nodes, name) {
-  return [`${name} — work you can click`, "", ...nodes.map((node) => `${node.title}: ${node.proof.url}`)].join("\n");
+  return [`${name}: work you can click`, "", ...nodes.map((node) => `${node.title}: ${node.proof.url}`)].join("\n");
 }
 
 function studioBlock() {
