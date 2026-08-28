@@ -16,7 +16,7 @@
     { "title": "Episode 1 is live", "desc": "Organic lane. Market, promise vs reality, ownership. Soft CTA only." },
     { "title": "The funnel is wired", "desc": "VSL on the apply flow. Stripe, Cal.com, Discord connected. Separate lane from YouTube." },
     { "title": "The ad test runs", "desc": "Small capped Instagram test into the VSL. Only after the world is live." },
-    { "title": "A student is in the world", "desc": "First paid seat. Their week 1 looks like every future student's week 1.", "private": true },
+    { "title": "A student is in the world", "desc": "First paid spot. Their week 1 looks like every future student's week 1.", "private": true },
     { "title": "Five defenses, outside verdicts", "desc": "The gate that raises the price and opens the next cohort.", "private": true }
   ]
 }

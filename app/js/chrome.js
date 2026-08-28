@@ -22,7 +22,7 @@ import { progress } from "./graph/model.js";
 
 const DOORS = [
   { id: "today", label: "Today", hint: "Talk. One next thing." },
-  { id: "map", label: "Grid", hint: "The whole path" },
+  { id: "map", label: "Map", hint: "The whole path" },
 ];
 
 const TOOLS = [
@@ -144,19 +144,37 @@ export function createChrome({ onNavigate, onReset, onExport }) {
     );
   }
 
+  /**
+   * The demo board announces itself; a real student's board does not wear a
+   * "demo" label. A real board only speaks up when there are local edits that
+   * would be lost, which is a fact the student needs, not a disclaimer.
+   */
   function setBanner(state) {
-    banner.hidden = false;
-    mount(
-      banner,
-      el("b", {}, "Demo board."),
-      el(
-        "span",
-        {},
-        state.hasLocalEdits
-          ? "Your changes are saved in this browser only. Export the board to keep them."
-          : "Nothing is connected to a real payment or account yet. Everything you click here works."
-      )
-    );
+    if (state.slug === "demo") {
+      banner.hidden = false;
+      mount(
+        banner,
+        el("b", {}, "Demo board."),
+        el(
+          "span",
+          {},
+          state.lessonsLocked
+            ? "Walk everything. The full lesson text unlocks with the access key you receive at enrollment."
+            : "Nothing here is connected to a real payment or account. Everything you click works."
+        )
+      );
+      return;
+    }
+    if (state.hasLocalEdits) {
+      banner.hidden = false;
+      mount(
+        banner,
+        el("b", {}, "Unsaved to the record."),
+        el("span", {}, "Your changes live in this browser until they are exported to your board file.")
+      );
+      return;
+    }
+    banner.hidden = true;
   }
 
   return { root, outlet, shellMain, setActive, setSignals, setIdentity, setBanner };

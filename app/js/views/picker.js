@@ -20,7 +20,7 @@ export function renderPicker(mountPoint) {
     el(
       "p.muted",
       {},
-      "The student platform, open to walk. Real sign-in lands with the first paid seat; nothing listed here is another person's work."
+      "The student platform, open to walk. Real sign-in lands with the first paid spot; nothing listed here is another person's work."
     ),
     list,
     el(

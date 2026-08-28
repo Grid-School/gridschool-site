@@ -73,6 +73,7 @@
 }
 .ff__hint { display: block; font-size: 13px; color: var(--muted); margin-top: 5px; }
 .ff__err { display: block; font-size: 13px; color: #ff9d9d; margin-top: 5px; }
+.ff__err[hidden] { display: none; }
 .ff fieldset { border: 0; }
 .ff legend { font-size: 14px; color: var(--text); margin-bottom: 8px; }
 

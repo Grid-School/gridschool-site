@@ -49,7 +49,7 @@ const LABELS = {
   applications: "Applications, last 30 days",
   blocking: "What they think is blocking them",
   plan: "Money",
-  commit: "Can commit 12 to 15 hours and Mondays",
+  commit: "Can commit 10 to 15 hours a week and Mondays",
   found: "How they found me",
 };
 

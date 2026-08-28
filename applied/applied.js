@@ -9,10 +9,31 @@ import { LINKS, link } from "../config.js";
 const application = getApplication();
 
 if (application?.name) {
-  document.getElementById("hello").textContent = `${application.name.split(" ")[0]}, that is in. Now book the call.`;
+  document.getElementById("hello").textContent = `${application.name.split(" ")[0]}, that is in. Two steps before we talk.`;
 }
 
-/* ---------- booking ---------- */
+/* The walkthrough shortcut is for testing the funnel, not for applicants. */
+if (new URLSearchParams(location.search).get("demo") === "1") {
+  document.getElementById("demonote").hidden = false;
+}
+
+/* ---------- step one: the boot screen ---------- */
+
+const bootMount = document.getElementById("bootscreen");
+const studioRepo = link("studioRepo");
+
+if (studioRepo) {
+  bootMount.innerHTML = `
+    <div class="fsubmit">
+      <a class="btn btn--solid" href="${studioRepo}" target="_blank" rel="noopener">Open the studio repo</a>
+      <a class="btn btn--ghost" href="mailto:${LINKS.email}?subject=${encodeURIComponent("Boot screen output")}">Send the output</a>
+    </div>`;
+} else {
+  bootMount.innerHTML = `
+    <p class="muted" style="font-size:14px">The repo link arrives in your inbox within one working day, with the two commands. Nothing to do until it lands.</p>`;
+}
+
+/* ---------- step two: booking ---------- */
 
 const bookMount = document.getElementById("book");
 const fitCall = link("fitCall");

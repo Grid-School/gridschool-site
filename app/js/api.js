@@ -18,14 +18,22 @@ async function getJson(path) {
 
 import { loadPrivateJson } from "./gate.js";
 
-/** Plaintext in local development; decrypted through the gate on the live site. */
-export const loadCurriculum = () => {
-  if (cache.has("curriculum.json")) return cache.get("curriculum.json");
+/**
+ * Plaintext in local development; decrypted through the gate on the live site.
+ * The demo tour reads the public copy instead: the same map with the lesson
+ * text stripped, so a visitor can walk the whole platform without the key.
+ */
+export const loadCurriculum = ({ tour = false } = {}) => {
+  // Distinct from the getJson key for the public file, or the tour promise
+  // would find itself in the cache and wait on itself forever.
+  const cacheKey = tour ? "curriculum:tour" : "curriculum.json";
+  if (cache.has(cacheKey)) return cache.get(cacheKey);
   const promise = fetch(BASE + "curriculum.json", { cache: "no-store" }).then((res) => {
     if (res.ok) return res.json();
+    if (tour) return getJson("curriculum.public.json");
     return loadPrivateJson(BASE + "curriculum.enc.json");
   });
-  cache.set("curriculum.json", promise);
+  cache.set(cacheKey, promise);
   return promise;
 };
 export const loadCohort = () => getJson("cohort.json");
@@ -50,9 +58,9 @@ export function isValidSlug(slug) {
 }
 
 /** Load everything one board needs, in parallel. */
-export async function loadBoard(slug) {
+export async function loadBoard(slug, { tour = false } = {}) {
   const [curriculum, cohort, student] = await Promise.all([
-    loadCurriculum(),
+    loadCurriculum({ tour }),
     loadCohort(),
     loadStudent(slug),
   ]);

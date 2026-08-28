@@ -46,7 +46,7 @@ export function renderMap(ctx, initialArg) {
   const svg = el("svg.map", {
     id: "gridmap",
     role: "application",
-    "aria-label": "Your Break-In path",
+    "aria-label": "Your Defense Path",
   });
   const hudTop = el("div.hud.hud--top");
   const hudSide = el("div.hud.hud--side");
@@ -194,7 +194,7 @@ export function renderMap(ctx, initialArg) {
       {},
       el("b.eyebrow", {}, "What a stranger can click"),
       el("h1", {}, "Your work"),
-      el("p.muted", {}, "The same nodes as the Grid, as the list you paste into a message."),
+      el("p.muted", {}, "The same nodes as the map, as the list you paste into a message."),
       el("div.view__nav", {}, modeToggle())
     );
   }
@@ -203,7 +203,7 @@ export function renderMap(ctx, initialArg) {
   function modeToggle() {
     return el(
       "div.seg",
-      { role: "group", "aria-label": "How to see the Grid" },
+      { role: "group", "aria-label": "How to see the map" },
       el(
         "button.seg__b",
         {
@@ -212,7 +212,7 @@ export function renderMap(ctx, initialArg) {
           "aria-pressed": String(!isList()),
           onclick: () => ui.setView(VIEW.GRID),
         },
-        "Grid"
+        "Map"
       ),
       el(
         "button.seg__b",
@@ -468,7 +468,8 @@ export function renderMap(ctx, initialArg) {
         node.reading && el("p.room__reading", {}, node.reading)
       ),
       /* The lesson: the node's teaching, complete enough that the video is a
-         luxury rather than a requirement. Authored in curriculum.json. */
+         luxury rather than a requirement. Authored in curriculum.json. On the
+         public tour the text is stripped, and this says so instead of hiding it. */
       node.lesson?.length
         ? el(
             "div.room__lesson.room__copy",
@@ -483,7 +484,18 @@ export function renderMap(ctx, initialArg) {
               )
             )
           )
-        : null,
+        : node.lessonLocked
+          ? el(
+              "div.room__lesson.room__copy",
+              {},
+              el("b.eyebrow", {}, "Understand this"),
+              el(
+                "p.room__hint",
+                {},
+                "The full lesson text lives here. It is part of the program and unlocks with the access key you receive at enrollment. The tasks and the done-when below are real; only the teaching is held back."
+              )
+            )
+          : null,
       node.kind === "future"
         ? el("div.room__copy", {}, placeholder({
             title: "Not open yet",

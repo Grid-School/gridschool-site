@@ -94,7 +94,15 @@ function renderGate() {
         el("h1", {}, "Student access"),
         el("p.muted", {}, "The platform and its lessons are part of the program. You receive your access key when you enroll."),
         form,
-        el("p.picker__foot", {}, "Not a student yet? ", el("a", { href: "../#offer" }, "See what you get"), ".")
+        el(
+          "p.picker__foot",
+          {},
+          "Not a student yet? ",
+          el("a", { href: "./?s=demo" }, "Walk the demo board"),
+          " or ",
+          el("a", { href: "../#offer" }, "see what you get"),
+          "."
+        )
       )
     )
   );
@@ -157,14 +165,19 @@ function cap(text) {
 }
 
 async function start() {
-  /* On the live site the curriculum ships encrypted; nothing renders before
-     the access key. Local development has the plaintext and skips this. */
-  if (!(await tryStoredKey())) {
+  /* On the live site the curriculum ships encrypted; the lessons render only
+     after the access key. The demo board is the one exception: it walks the
+     whole platform on the public tour copy (no lesson text), because the
+     walkable platform is the proof the school is real. Local development has
+     the plaintext and skips all of this. */
+  const unlocked = await tryStoredKey();
+  const slug = resolveSlug();
+
+  if (!unlocked && slug !== "demo") {
     renderGate();
     return;
   }
 
-  const slug = resolveSlug();
   if (!slug) {
     renderPicker(app);
     return;
@@ -177,7 +190,7 @@ async function start() {
   if (role === "admin" && !(await adminSurfaceExists())) role = "student";
 
   try {
-    await store.init(slug);
+    await store.init(slug, { tour: !unlocked });
   } catch {
     /* A stored session can outlive its board: signed in on a machine that has
        the private boards, then opened on a host that publishes only the tour.

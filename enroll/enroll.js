@@ -12,8 +12,8 @@ const PLANS = [
     id: "founding",
     tag: "Most take this",
     best: true,
-    price: "Founding",
-    sub: "once, for the eight weeks. Amount on the payment link.",
+    price: `$${PRICING.founding}`,
+    sub: "once, for the eight weeks. Founding rate: the first five carry the proof.",
     linkKey: "foundingCheckout",
     cta: "Take the spot",
     includes: [
@@ -21,15 +21,15 @@ const PLANS = [
       "Monday cohort call with the other four",
       "Up to three written reviews a week on real work",
       "One brownfield mission, failure log, live defense",
-      "Your board: eight nodes, a queue, and a calendar",
+      "Your board: the map, a queue, and a calendar",
       "The studio repo, and the prompt and harness pack",
     ],
   },
   {
     id: "deposit",
     tag: "Same lab",
-    price: "Split",
-    sub: "deposit now, remainder after week 1. Amount on the payment link.",
+    price: `$${PRICING.deposit} + $${PRICING.balance}`,
+    sub: "deposit now, the rest after week 1, once you know exactly what you are paying for.",
     linkKey: "depositCheckout",
     cta: "Pay the deposit",
     includes: [
@@ -43,6 +43,10 @@ const PLANS = [
 const plans = document.getElementById("plans");
 
 document.getElementById("spots").textContent = `Founding · ${PRICING.spots} spots · ${PRICING.weeks} weeks`;
+
+/* The placeholder warning shows only while checkout is actually a placeholder. */
+const anyPlaceholder = PLANS.some((plan) => !link(plan.linkKey));
+document.getElementById("paynote").hidden = !anyPlaceholder;
 
 for (const plan of PLANS) {
   plans.append(planCard(plan));

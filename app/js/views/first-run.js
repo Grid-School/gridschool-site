@@ -12,7 +12,7 @@
  * because at that point the student has already done the only thing that matters.
  */
 
-import { el } from "../dom.js";
+import { el, mount } from "../dom.js";
 import { btn } from "../ui.js";
 import { STATUS } from "../graph/model.js";
 import { link } from "../../../config.js";
@@ -77,13 +77,13 @@ export function renderFirstRun(ctx) {
       step({
         n: 1,
         title: "See the whole path",
-        body: "Three tracks, in parallel: LinkedIn, skills, and the portfolio. They meet in a capstone. A step is done when it has a link.",
-        action: btn({ label: "Open the Grid", variant: "solid", onclick: () => leave("map") }),
+        body: "Three tracks. The defense spine is the mission: inherit a system, read it, change it, prove it, defend it. The world and the graph are depth: real tickets on a live game, and a tool you build that reads code as data. The spine is required. Depth is worked as far as the eight weeks allow.",
+        action: btn({ label: "Open the map", variant: "solid", onclick: () => leave("map") }),
       }),
       step({
         n: 2,
-        title: "Watch the first two videos",
-        body: "LinkedIn, then the one-page site. They are in the Library. Watch those two, then come back and do the work. Do not binge the rest.",
+        title: "Boot the system tonight",
+        body: "Your first two nodes are already open: how this board works, and making the inherited repo run on your machine. The videos for both are in the Library. Watch those, do the work, and do not binge the rest.",
         action: btn({ label: "Open the Library", variant: "solid", onclick: () => leave("library") }),
       }),
       step({
@@ -107,7 +107,7 @@ export function renderFirstRun(ctx) {
         "div.doors__pair",
         {},
         door("Today", "The next action, and the Coach. Talk from here.", () => leave("today")),
-        door("The Grid", "The whole path, and every link you have shipped.", () => leave("map"))
+        door("The map", "The whole path, and every link you have shipped.", () => leave("map"))
       ),
       el(
         "p.doors__note",

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<title>Trust Gap Diagnostic. GridSchool</title>
+<meta name="description" content="Four scores, two minutes. The four things hiring actually checks, and your number on each. Free, no email required.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../landing.css">
+<link rel="stylesheet" href="../funnel.css">
+<style>
+  .diag__q { margin-bottom: 22px; }
+  .diag__q h3 { font-size: 16px; margin-bottom: 4px; }
+  .diag__q p { color: var(--muted); font-size: 14px; margin-bottom: 10px; }
+  .diag__scale { display: flex; gap: 8px; flex-wrap: wrap; }
+  .diag__scale label {
+    flex: 1 1 0; min-width: 52px; text-align: center; cursor: pointer;
+    border: 1px solid var(--line); border-radius: var(--radius-sm);
+    background: var(--bg2); padding: 10px 4px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 14px;
+    color: var(--muted); transition: border-color .15s ease, color .15s ease;
+  }
+  .diag__scale input { position: absolute; opacity: 0; pointer-events: none; }
+  .diag__scale label:has(input:checked) {
+    border-color: var(--cyan); color: var(--cyan);
+    box-shadow: inset 0 0 0 1px var(--hair-cyan);
+  }
+  .diag__ends { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .scorecard {
+    border: 1px solid color-mix(in srgb, var(--cyan) 38%, var(--line));
+    background: color-mix(in srgb, var(--cyan) 4%, var(--bg2));
+    border-radius: var(--radius); box-shadow: inset 0 0 0 1px var(--hair-cyan);
+    padding: 26px; margin-top: 8px;
+  }
+  .scorecard__head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .scorecard__name { font-weight: 700; font-size: 18px; }
+  .scorecard__total {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 34px; font-weight: 600; color: var(--cyan);
+  }
+  .scorecard__total small { font-size: 15px; color: var(--muted); }
+  .scorecard__bars { display: grid; gap: 10px; margin: 18px 0; }
+  .scorebar { display: grid; grid-template-columns: minmax(150px, 220px) 1fr 28px; gap: 12px; align-items: center; font-size: 13px; }
+  .scorebar__label { color: var(--text); }
+  .scorebar__track { display: block; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+  .scorebar__fill { display: block; height: 100%; background: var(--cyan); border-radius: 3px; }
+  .scorebar__n { font-family: "IBM Plex Mono", ui-monospace, monospace; color: var(--muted); text-align: right; }
+  .scorecard__verdict { font-size: 15px; line-height: 1.65; }
+  .scorecard__date { color: var(--muted); font-size: 12px; margin-top: 12px; font-family: "IBM Plex Mono", ui-monospace, monospace; }
+</style>
+</head>
+<body>
+<div class="gridbg" aria-hidden="true"></div>
+
+<header class="nav">
+  <a class="nav__brand" href="../" aria-label="GridSchool home">
+    <span class="nav__name">GRID<em>SCHOOL</em></span>
+  </a>
+  <div class="nav__actions">
+    <a class="btn btn--solid" href="../apply/">Apply for a spot</a>
+  </div>
+</header>
+
+<main class="fwrap">
+  <div class="fhead">
+    <div class="chip">Free · no email required</div>
+    <h1>Score your trust gap.</h1>
+    <p class="muted">Hiring stopped checking whether you can write code. It checks whether anyone can verify you. Rate yourself 1 to 5 on the four things a hiring manager actually looks for. Two minutes, and the number is yours to keep.</p>
+  </div>
+
+  <form class="ff" id="diag" novalidate>
+    <div class="fcard">
+      <span class="feyebrow">The four checks</span>
+
+      <div class="diag__q">
+        <h3>1. Work on a system you did not write</h3>
+        <p>Not a tutorial, not your own greenfield repo. Code that existed before you touched it, with your change visible in it.</p>
+        <div class="diag__scale" data-q="inherited" role="radiogroup" aria-label="Inherited-system proof, 1 to 5"></div>
+        <div class="diag__ends"><span>1 · none exists</span><span>5 · a stranger can open it today</span></div>
+      </div>
+
+      <div class="diag__q">
+        <h3>2. A check a stranger can run</h3>
+        <p>A test, an eval, or a written checklist that would catch your change being wrong, runnable by someone who never met you.</p>
+        <div class="diag__scale" data-q="check" role="radiogroup" aria-label="Verification, 1 to 5"></div>
+        <div class="diag__ends"><span>1 · "trust me, it works"</span><span>5 · run this command, see for yourself</span></div>
+      </div>
+
+      <div class="diag__q">
+        <h3>3. A defense, out loud</h3>
+        <p>You have explained a real change to another person, answered why it is safe, and survived the follow-up questions.</p>
+        <div class="diag__scale" data-q="defense" role="radiogroup" aria-label="Live defense, 1 to 5"></div>
+        <div class="diag__ends"><span>1 · never</span><span>5 · recorded, with hostile questions</span></div>
+      </div>
+
+      <div class="diag__q">
+        <h3>4. A public trail</h3>
+        <p>A stranger who searches you finds the work above in under a minute: a profile line, a post, a PR with your name on it.</p>
+        <div class="diag__scale" data-q="trail" role="radiogroup" aria-label="Public trail, 1 to 5"></div>
+        <div class="diag__ends"><span>1 · nothing points at real work</span><span>5 · one click from my name</span></div>
+      </div>
+
+      <label style="max-width: 340px">
+        <span class="ff__label">Your name, for the card</span>
+        <input name="name" autocomplete="name" placeholder="Optional">
+      </label>
+    </div>
+
+    <div class="fsubmit">
+      <button class="btn btn--cta" type="submit">Show my score</button>
+      <span class="muted" style="font-size: 14px">Scored in your browser. Nothing is sent anywhere.</span>
+    </div>
+    <p class="ff__err" id="diagerr" hidden>All four need a number. An honest 1 beats a hopeful blank.</p>
+  </form>
+
+  <div id="result" hidden>
+    <div class="scorecard" id="card"></div>
+    <div class="fsubmit" style="margin-top: 18px">
+      <a class="btn btn--cta" id="act" href="../apply/">Apply for a spot</a>
+      <button class="btn btn--solid" id="copycard" type="button">Copy the card</button>
+      <a class="btn btn--ghost" id="mailcard" href="#">Email it to Aden</a>
+    </div>
+    <p class="muted" style="margin-top: 14px; font-size: 14px" id="resultnote"></p>
+  </div>
+</main>
+
+<script type="module" src="../js/site-chrome.js"></script>
+<script type="module" src="diagnostic.js"></script>
+</body>
+</html>

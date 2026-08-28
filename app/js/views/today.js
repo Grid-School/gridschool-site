@@ -55,7 +55,7 @@ export function renderToday(ctx) {
       "div.composer__bar",
       {},
       attachBtn,
-      el("span.composer__hint", {}, coachIsLive() ? COACH.model : "Demo reply. Same context, no Grok key yet."),
+      el("span.composer__hint", {}, coachIsLive() ? COACH.model : "Practice mode. A scripted reply, not a model, until the key is connected."),
       creditsEl,
       sendBtn
     ),
@@ -87,7 +87,7 @@ export function renderToday(ctx) {
                 variant: "solid",
                 onclick: () => navigate("map", next.node.id),
               })
-            : btn({ label: "Open the Grid", variant: "solid", onclick: () => navigate("map") })
+            : btn({ label: "Open the map", variant: "solid", onclick: () => navigate("map") })
       )
     );
   }

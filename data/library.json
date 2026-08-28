@@ -31,7 +31,7 @@
     {
       "id": "how",
       "title": "How the work runs",
-      "blurb": "Still week 1, after the first two. How this board works, how you send work and get notes back, and the simple board we use (to do, doing, done — that is Kanban; a short weekly plan is the useful part of Scrum).",
+      "blurb": "Still week 1, after the first two. How this board works, how you send work and get notes back, and the simple board we use (to do, doing, done: that is Kanban; a short weekly plan is the useful part of Scrum).",
       "items": [
         {
           "id": "v.board",
@@ -53,7 +53,7 @@
         },
         {
           "id": "v.flow",
-          "title": "To do, doing, done — and a weekly plan",
+          "title": "To do, doing, done, and a weekly plan",
           "mins": 9,
           "status": "planned",
           "youtube": "jNQXAC9IVRw",

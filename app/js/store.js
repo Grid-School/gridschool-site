@@ -17,9 +17,9 @@ let overlay = {};
 let slug = null;
 const listeners = new Set();
 
-export async function init(nextSlug) {
+export async function init(nextSlug, { tour = false } = {}) {
   slug = nextSlug;
-  base = await loadBoard(nextSlug);
+  base = await loadBoard(nextSlug, { tour });
   overlay = readOverlay(nextSlug);
   return state();
 }
@@ -39,7 +39,15 @@ export function state() {
     Math.max(1, weekNumber(base.cohort.start)),
     base.cohort.weeks + 1
   );
-  return { ...base, student, graph, week, slug, hasLocalEdits: Object.keys(overlay).length > 0 };
+  return {
+    ...base,
+    student,
+    graph,
+    week,
+    slug,
+    hasLocalEdits: Object.keys(overlay).length > 0,
+    lessonsLocked: base.curriculum.lessonsLocked === true,
+  };
 }
 
 export function subscribe(listener) {
