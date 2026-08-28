@@ -27,7 +27,7 @@ export function renderPicker(mountPoint) {
       "p.picker__foot",
       {},
       "Not a student yet? ",
-      el("a", { href: "../#offer" }, "See the offer"),
+      el("a", { href: "../#offer" }, "See what you get"),
       "."
     )
   );
