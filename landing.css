@@ -457,8 +457,9 @@ tr.us td { color: var(--cyan); }
 .guarantee .muted { margin-top: 14px; }
 .cta-sub { margin-top: 14px; font-size: 14px; color: var(--muted); }
 
-.founder { display: flex; gap: 20px; flex-wrap: wrap; }
-.founder p { flex: 1; min-width: 280px; }
+#founder { text-align: center; }
+.founder { max-width: 62ch; margin: 0 auto; }
+.founder p { font-size: 16px; line-height: 1.75; }
 .founder a { color: var(--cyan); text-decoration: none; }
 
 details {
