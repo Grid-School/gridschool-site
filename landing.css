@@ -309,6 +309,27 @@ ul.gap li::before {
 .shift__col--after p { color: var(--text); }
 .gap a { color: var(--cyan); }
 
+/* ---------- the mission timeline (#how): time, not a feature list.
+   The offer table is the only enumerated stack on the page; this section
+   answers "what are the eight weeks" so the stack below reads as a reveal. */
+
+ol.mission { list-style: none; margin: 26px 0 0; padding: 0; }
+ol.mission li {
+  display: grid; grid-template-columns: 108px 1fr; gap: 18px;
+  padding: 16px 0; border-top: 1px solid var(--line);
+}
+ol.mission li:first-child { border-top: 0; }
+.mission__wk {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 13px;
+  color: var(--cyan); letter-spacing: .06em; padding-top: 4px; white-space: nowrap;
+}
+.mission__body b { color: var(--text); display: block; margin-bottom: 3px; }
+.mission__body p { color: var(--muted); margin: 0; }
+.mission__cadence { color: var(--muted); margin-top: 22px; font-size: 15px; }
+@media (max-width: 560px) {
+  ol.mission li { grid-template-columns: 1fr; gap: 4px; }
+}
+
 /* ---------- the board: two receipts | figure | trail + stories
    Not a timeline. Weeks live on the Path. Unlit nodes. No connectors. */
 
