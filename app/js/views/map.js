@@ -458,7 +458,6 @@ export function renderMap(ctx, initialArg) {
           path: video.path,
           watchWhen: video.watchWhen ?? "Watch this, then do the steps.",
           startOpen: true,
-          startWide: true,
         })?.node
       ),
       el(

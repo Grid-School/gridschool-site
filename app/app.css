@@ -623,7 +623,6 @@ body[data-view="today"] .outlet { display: flex; flex-direction: column; }
 }
 .room__close:hover { border-color: var(--cyan); color: #fff; }
 .room__video { padding-bottom: 4px; }
-.room__video .vid__frame { max-width: none; }
 .room__lesson { max-width: 72ch; }
 .room__lesson .lesson__sec + .lesson__sec { margin-top: 18px; }
 .room__lesson h3 { font-size: 15px; color: #fff; margin: 0 0 4px; }
@@ -647,23 +646,53 @@ body[data-view="today"] .outlet { display: flex; flex-direction: column; }
 .room__vidtitle { font-size: 14px; color: var(--text); margin: 6px 0 10px; }
 .room__chips { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 9px; }
 
-.vid { margin-top: 8px; }
-.vid__frame {
-  position: relative; width: 100%; max-width: 640px;
-  aspect-ratio: 16 / 9; background: #05070c; border: 1px solid var(--line);
-  border-radius: var(--radius-sm); overflow: hidden;
+/* Compact poster in-flow. Playback only in .vid-theater. */
+.vid { margin-top: 8px; max-width: 360px; }
+.room__video .vid { max-width: 320px; }
+.vid__poster {
+  position: relative; display: block; width: 100%; aspect-ratio: 16 / 9;
+  margin: 0; padding: 0; border: 1px solid var(--line); border-radius: var(--radius-sm);
+  background:
+    radial-gradient(ellipse at 30% 40%, color-mix(in srgb, var(--cyan) 18%, transparent), transparent 55%),
+    #05070c;
+  cursor: pointer; overflow: hidden; text-align: left; color: var(--text);
+  font: inherit;
 }
-.vid.is-wide .vid__frame { max-width: none; }
-.vid__frame iframe,
-.vid__frame .vid__player {
-  position: absolute; inset: 0; width: 100%; height: 100%; border: 0;
-  background: #05070c;
+.vid__poster:hover { border-color: color-mix(in srgb, var(--cyan) 50%, var(--line)); }
+.vid__poster:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+.vid__poster-play {
+  position: absolute; left: 50%; top: 50%; width: 44px; height: 44px;
+  margin: -22px 0 0 -22px; border-radius: 50%;
+  background: color-mix(in srgb, var(--cyan) 22%, #05070c);
+  border: 1.5px solid color-mix(in srgb, var(--cyan) 70%, var(--line));
+  box-shadow: 0 0 24px color-mix(in srgb, var(--cyan) 25%, transparent);
 }
-.vid__player { object-fit: contain; }
+.vid__poster-play::after {
+  content: ""; position: absolute; left: 17px; top: 13px;
+  border-style: solid; border-width: 9px 0 9px 14px;
+  border-color: transparent transparent transparent var(--cyan);
+}
+.vid__poster:hover .vid__poster-play {
+  background: color-mix(in srgb, var(--cyan) 32%, #05070c);
+}
+.vid__poster-meta {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+  padding: 28px 12px 10px;
+  background: linear-gradient(transparent, rgba(5, 7, 12, .92));
+  font-size: 12.5px;
+}
+.vid__poster-title {
+  font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.vid__poster-mins {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  color: var(--muted); flex-shrink: 0;
+}
 .vid__bar {
   display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-top: 8px;
 }
-.vid__when { font-size: 13px; color: var(--muted); flex: 1 1 220px; }
+.vid__when { font-size: 13px; color: var(--muted); flex: 1 1 180px; }
 .vid__meta, .vid__status { font-size: 12px; color: var(--muted); }
 .vid__quality {
   font: inherit; font-size: 12.5px; color: var(--cyan); background: var(--bg2);
@@ -671,11 +700,53 @@ body[data-view="today"] .outlet { display: flex; flex-direction: column; }
   cursor: pointer;
 }
 .vid__quality:focus { outline: 1px solid var(--cyan); }
-.vid__mode, .vid__ext {
-  font: inherit; font-size: 12.5px; color: var(--cyan); background: none;
-  border: 0; cursor: pointer; padding: 0; text-decoration: none;
+
+/* Theater: only place the video plays. Locks page scroll via .vid-lock. */
+html.vid-lock, html.vid-lock body { overflow: hidden; }
+.vid-theater {
+  position: fixed; inset: 0; z-index: 80;
+  display: grid; place-items: center; padding: 24px;
+  opacity: 0; transition: opacity .18s ease;
 }
-.vid__mode:hover, .vid__ext:hover { color: #fff; }
+.vid-theater.is-open { opacity: 1; }
+.vid-theater__scrim {
+  position: absolute; inset: 0;
+  background: rgba(2, 4, 10, .82);
+  backdrop-filter: blur(2px);
+}
+.vid-theater__panel {
+  position: relative; z-index: 1;
+  width: min(1100px, 100%);
+  display: flex; flex-direction: column; gap: 10px;
+  outline: none;
+}
+.vid-theater__close {
+  position: absolute; top: -6px; right: -6px; z-index: 2;
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 1px solid var(--line); background: var(--bg2); color: var(--text);
+  font-size: 22px; line-height: 1; cursor: pointer;
+  display: grid; place-items: center;
+}
+.vid-theater__close:hover { border-color: var(--cyan); color: var(--cyan); }
+.vid-theater__stage {
+  position: relative; width: 100%; aspect-ratio: 16 / 9;
+  background: #05070c; border: 1px solid var(--line); border-radius: var(--radius);
+  overflow: hidden; box-shadow: 0 24px 80px rgba(0, 0, 0, .55);
+}
+.vid-theater__player {
+  position: absolute; inset: 0; width: 100%; height: 100%; border: 0;
+  background: #05070c; object-fit: contain;
+}
+.vid-theater__bar {
+  display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+  padding: 0 4px;
+}
+.vid-theater__title { font-size: 14px; color: var(--text); flex: 1 1 160px; }
+@media (max-width: 640px) {
+  .vid-theater { padding: 12px; align-items: end; }
+  .vid-theater__close { top: 8px; right: 8px; }
+  .vid, .room__video .vid { max-width: none; }
+}
 .room__lit { border-color: color-mix(in srgb, var(--ok) 24%, var(--line)); }
 .room__link { display: block; color: var(--ok); font-size: 13px; word-break: break-all; margin-top: 6px; }
 .room__note { color: var(--muted); font-size: 13px; margin-top: 6px; }
