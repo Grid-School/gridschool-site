@@ -1,7 +1,7 @@
 {
   "name": "GridSchool",
   "title": "Building the school, on its own map",
-  "label": "The school runs on the same law",
+  "label": "The school runs on the same rule",
   "week": 0,
   "focus": "Phase 0: rails are on GitHub. Next: AWS staging, then the world is reachable.",
   "next": "Create the gridschool-deploy AWS key, stand up Lightsail staging, point play.gridschool.org.",

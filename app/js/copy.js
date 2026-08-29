@@ -8,7 +8,9 @@
 
 import { STATUS } from "./graph/model.js";
 
-export const LAW = "A step is done when it has a link.";
+export const RULE = "A step is done when it has a link.";
+/** @deprecated use RULE — kept so old imports do not break mid-edit */
+export const LAW = RULE;
 
 export function statusLabel(status) {
   return {
@@ -20,7 +22,7 @@ export function statusLabel(status) {
 }
 
 export function trackLabel(track) {
-  return track === "depth" ? "Depth" : "Required";
+  return track === "depth" ? "Depth · optional" : "Required";
 }
 
 const CCVV_LABEL = {

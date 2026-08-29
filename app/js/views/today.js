@@ -12,6 +12,7 @@ import { el, mount } from "../dom.js";
 import { btn, toast } from "../ui.js";
 import { COACH } from "../../../config.js";
 import { nextAction } from "../coach/next.js";
+import { nextUp } from "../graph/model.js";
 import { credits, formatUsd, attachmentBudget } from "../coach/credits.js";
 import { rememberIntent } from "../coach/memory.js";
 import { sendTurn, coachIsLive } from "../coach/client.js";
@@ -67,12 +68,22 @@ export function renderToday(ctx) {
   function paintNext() {
     const next = nextAction(current.state);
     const { store, navigate } = current;
+    const focus = current.state.student.focus;
+    const up = nextUp(current.state.graph);
+    // Focus only when it still points at the same next step; otherwise it fights Today.
+    const showFocus =
+      Boolean(focus) &&
+      Boolean(up) &&
+      (focus.toLowerCase().includes(up.title.toLowerCase().slice(0, 12)) ||
+        (focus.toLowerCase().includes("board") && up.id === "or.start") ||
+        (focus.toLowerCase().includes("boot") && up.id === "pf.runs") ||
+        (focus.toLowerCase().includes("it runs") && up.id === "pf.runs"));
     mount(
       nextbar,
       el("b.eyebrow", {}, next.kind === "review" ? "Read this first" : "Do this next"),
       el("h1.nextbar__title", {}, next.title),
       el("p.nextbar__why", {}, next.why),
-      current.state.student.focus && el("p.nextbar__focus", {}, current.state.student.focus),
+      showFocus && el("p.nextbar__focus", {}, focus),
       el(
         "div.nextbar__acts",
         {},

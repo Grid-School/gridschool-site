@@ -1,7 +1,6 @@
 /**
- * Library. One watch order. The first two before you send anything. After that,
- * the video sits on the step it belongs to. A real player is here so the size
- * and the spacing can be judged before the films exist.
+ * Library. Films in watch order when they exist. Graph textbook modules open
+ * from the step they belong to — not a second school at /read/.
  */
 
 import { el } from "../dom.js";
@@ -12,13 +11,19 @@ import { videoCard } from "./video.js";
 export function renderLibrary(ctx) {
   const root = el("div.view.view--library", {}, el("p.muted", {}, "Loading the library."));
 
-  Promise.all([
-    loadLibrary(),
-    fetch("../read/catalog.json", { cache: "no-store" }).then((res) => (res.ok ? res.json() : null)).catch(() => null),
-  ]).then(([library, catalog]) => {
+  loadLibrary().then((library) => {
     const nodeVideos = ctx.state.graph.nodes
       .filter((node) => node.video)
       .sort((a, b) => a.n - b.n);
+
+    const moduleHosts = [];
+    for (const node of ctx.state.graph.nodes) {
+      for (const module of node.modules ?? []) {
+        const mid = module.id ?? moduleHrefToId(module.href);
+        if (!mid) continue;
+        moduleHosts.push({ node, module, mid });
+      }
+    }
 
     let openId = null;
     const players = new Map();
@@ -121,29 +126,43 @@ export function renderLibrary(ctx) {
             )
           : empty("No step videos yet.")
       ),
-      catalog?.modules?.length
+      moduleHosts.length
         ? panel(
             {
-              eyebrow: "Read, then type",
-              title: "Text modules",
-              note: catalog.note,
+              eyebrow: "Deeper reading",
+              title: "Graph textbook and briefs",
+              note: "These open under the step they belong to. Progress stays on the board — not a separate Reading school.",
             },
             el(
               "div.lib__nodes",
               {},
-              catalog.modules.map((mod) =>
+              moduleHosts.map(({ node, module, mid }) =>
                 el(
-                  "a.libnode",
-                  { href: `../read/?m=${encodeURIComponent(mod.id)}`, target: "_blank", rel: "noopener" },
-                  el("b", {}, mod.title),
-                  el("span", {}, `${mod.series ?? "reading"}${mod.mins ? ` · ${mod.mins} min` : ""}`)
+                  "button.libnode",
+                  {
+                    type: "button",
+                    onclick: () => ctx.navigate("map", node.id, "m", ...mid.split("/")),
+                  },
+                  el("b", {}, module.title),
+                  el("span", {}, `${String(node.n).padStart(2, "0")} · ${node.title}`)
                 )
               )
             )
           )
-        : null
+        : null,
+      el(
+        "p.lib__foot.muted",
+        {},
+        "Public mirror URLs under /read/ still work for sharing. You never need to browse that index to finish a step."
+      )
     );
   });
 
   return root;
+}
+
+function moduleHrefToId(href) {
+  if (!href) return null;
+  const m = String(href).match(/[?&]m=([^&]+)/);
+  return m ? decodeURIComponent(m[1]) : null;
 }

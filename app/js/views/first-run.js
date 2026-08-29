@@ -4,7 +4,7 @@
  * A first-time board should not open on a dashboard. Nobody's first question is
  * "which of these five things should I click" — that question only exists
  * because we asked it. So the first visit opens on one screen that teaches the
- * three things the rest of the product assumes you know: the one law, where the
+ * three things the rest of the product assumes you know: the one rule, where the
  * two doors go, and what your first URL is.
  *
  * It is not a tour and it does not follow you around. It appears once, it can be
@@ -75,18 +75,24 @@ export function renderFirstRun(ctx) {
       step({
         n: 1,
         title: "See the whole path",
-        body: "The middle rail is required: inherit a system, read it, change it, prove it, defend it, then one public trail. The world and the graph are depth. You work them as far as the eight weeks allow. Today will not send you there while a required step is open.",
+        body: "The middle rail is required: inherit a system, read it, change it, prove it, defend it, then one public trail. The world and the graph are depth (optional). You work them as far as the eight weeks allow. Today will not send you there while a required step is open.",
         action: btn({ label: "Open the map", variant: "solid", onclick: () => leave("map") }),
       }),
       step({
         n: 2,
-        title: "Boot the system tonight",
-        body: "Your first required steps are already open: how this board works, and making the inherited repo run. Watch those two, do the work, and do not binge the rest. The world and graph nodes you can see are not due this week.",
-        action: btn({ label: "Open the Library", variant: "solid", onclick: () => leave("library") }),
+        title: "Open the first step and do the work",
+        body: "Your first required steps are already open: how this board works, then making the inherited repo run. Read the step on the board, do the tasks, paste a link. Films in the Library appear when they are ready; do not wait on them.",
+        action: first
+          ? btn({
+              label: `Go to ${first.title}`,
+              variant: "solid",
+              onclick: () => leave("map", first.id),
+            })
+          : btn({ label: "Open the map", variant: "solid", onclick: () => leave("map") }),
       }),
       step({
         n: 3,
-        title: first ? `Save your first link: ${first.title}` : "Save your first link",
+        title: first ? `Save your first link on: ${first.title}` : "Save your first link",
         body: first?.evidence ?? "One link, live, that a stranger can open.",
         action: first
           ? btn({
@@ -110,7 +116,7 @@ export function renderFirstRun(ctx) {
       el(
         "p.doors__note",
         {},
-        "Tasks, the calendar, and the library sit below the line. You go get them by name when you need them."
+        "Tasks, the calendar, and the library sit below the line. You go get them by name when you need them. Long graph readings open from graph steps, not from a separate Reading door."
       )
     ),
     el(

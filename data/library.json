@@ -1,11 +1,11 @@
 {
-  "note": "Watch order. Week 1 is the board and the boot. After that, the video sits on the step you are on. Do not binge. Lesson films use path under MEDIA.baseUrl (Lightsail CDN), not YouTube.",
-  "watchWhen": "Week 1: watch how the board works, then make the inherited system run. Later videos sit on the step they belong to. Open that step, watch, then do the work.",
+  "note": "Films sit on the step they belong to. Most are still planned. Until a film is ready, open the step on the map, read it, and do the work. Do not binge. Lesson films use path under MEDIA.baseUrl (Lightsail CDN), not YouTube.",
+  "watchWhen": "Week 1 work is on the board: how this board works, then It runs. Open those steps and do them. Films appear here when ready. Later videos sit on the step they belong to.",
   "tracks": [
     {
       "id": "first",
       "title": "Week 1: board, then boot",
-      "blurb": "Required first. How this board works, then It runs. World and graph can wait. The stream test is only to confirm the player; it is not curriculum.",
+      "blurb": "Required first. How this board works, then It runs. World and graph can wait. Films below are planned until marked ready; the stream test only confirms the player.",
       "items": [
         {
           "id": "v.board",

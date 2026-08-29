@@ -1,46 +1,26 @@
 /**
- * The map. A navigable graph of the whole path, the node room you walk into when
- * you click one, and the same nodes as a list when you want the links rather
- * than the shape. This view is stateful on purpose: the camera must survive a
- * state change so submitting evidence does not throw you back to a fit view.
+ * The map. A navigable graph of the whole path, and the same nodes as a list.
+ * Clicking a node opens the full step page (#/map/<nodeId>) — boot owns that
+ * view. This file is the graph/list only.
  *
- * `#/map` is the graph, `#/map/list` is the list, `#/map/<nodeId>` opens a room.
- * "list" is a reserved argument; node ids come from the curriculum.
- *
- * What is on screen is held in one place — `grid-state.js`. This file never
- * keeps its own copy of "which room is open"; it reads that value, renders it,
- * and sends events back. The URL is written from the same value, which is why
- * arriving at `#/map` can no longer leave a room open with nothing to close it.
+ * `#/map` is the graph, `#/map/list` is the list. "list" is reserved.
  */
 
 import { el, mount } from "../dom.js";
-import { btn, placeholder, toast, field } from "../ui.js";
-import { createModal } from "../modal.js";
+import { btn, toast } from "../ui.js";
 import { createScene, renderScene, paint, syncPositions } from "../graph/scene.js";
 import { createCamera } from "../graph/camera.js";
 import { createEditor } from "../graph/editor.js";
 import { applyLayout, bounds } from "../graph/layout.js";
-import { STATUS, nextUp, progress, blockedBy } from "../graph/model.js";
-import { taskRow, reviewScores } from "./parts.js";
-import { statusLabel, trackLabel, ccvvLabel, LAW } from "../copy.js";
-import { videoCard, resolveMedia } from "./video.js";
+import { STATUS, nextUp, progress } from "../graph/model.js";
+import { statusLabel, trackLabel, RULE } from "../copy.js";
 import { mapList } from "./map-list.js";
-import { handoffDisclosure } from "./handoff.js";
-import { TASK_STATE } from "../tasks.js";
 import { createGridState, hashFor, VIEW } from "./grid-state.js";
 
 /** Right side clears the control column, top clears the legend bar. */
 const INSETS = { top: 76, right: 132, bottom: 72, left: 150 };
 /** Same breakpoint the stylesheet uses to move the controls. */
 const NARROW = 900;
-
-/** Every step shows a player. Extra or unfinished nodes get the CDN test clip until filmed. */
-const FALLBACK_VIDEO = {
-  title: "Stream test · Big Buck Bunny (CC)",
-  mins: 1,
-  path: "test-bbb",
-  watchWhen: "Test clip on our CDN. Play, scrub, and switch quality. Real lesson films replace this.",
-};
 
 export function renderMap(ctx, initialArg) {
   const svg = el("svg.map", {
@@ -51,14 +31,8 @@ export function renderMap(ctx, initialArg) {
   const hudTop = el("div.hud.hud--top");
   const hudSide = el("div.hud.hud--side");
   const status = el("div.hud.hud--status", { role: "status" });
-  const room = createModal({
-    label: "Node detail",
-    size: "fill",
-    // Escape and the scrim ask; the machine decides. One route out, always.
-    onClose: () => ui.close(),
-  });
   // Two projections of one thing, so they live in one view and swap in place.
-  const canvas = el("div.view.view--map", {}, svg, hudTop, hudSide, status, room.layer);
+  const canvas = el("div.view.view--map", {}, svg, hudTop, hudSide, status);
   const list = el("div.view.view--maplist", { hidden: true });
   const root = el("div.mapview", {}, canvas, list);
 
@@ -75,41 +49,20 @@ export function renderMap(ctx, initialArg) {
     hasNode: (id) => current.state.graph.byId.has(id),
     onChange: (next, previous) => {
       syncHash();
-      // A room that opened under the pointer swallowed the pointerup. Leave the
-      // camera idle on the way out or the board reads as stuck mid-drag.
-      if (previous.room && !next.room) camera.release();
       draw({
-        // Coming back to the board from the list re-frames it once it is visible.
         refit: next.view !== previous.view && next.view === VIEW.GRID,
-        reveal: next.room && next.room !== previous.room ? next.room : null,
       });
     },
   });
 
-  const selected = () => ui.state.room;
+  const selected = () => null;
   const isList = () => ui.state.view === VIEW.LIST;
 
-  /**
-   * The hash is written from state, never read back into it mid-flight, and
-   * always with replaceState: opening a panel is not a page you should have to
-   * press Back through, and a queued hashchange is what let the URL and the
-   * board disagree in the first place.
-   */
+  /** Hash matches graph/list only. Step pages own #/map/<nodeId> via the router. */
   function syncHash() {
     const target = hashFor(ui.state);
     if (location.hash === target) return;
     history.replaceState(null, "", `${location.pathname}${location.search}${target}`);
-  }
-
-  /**
-   * A room the student did not click — Next, a blocker, a deep link — may belong
-   * to a node parked off screen. Bring it into view with no glide, because the
-   * panel grows out of where the node actually is right now.
-   */
-  function revealRoom(id) {
-    if (isList()) return;
-    const node = current.state.graph.byId.get(id);
-    if (node && !camera.isVisible(node, 40)) camera.centerOn(node, { animate: false, insets: INSETS });
   }
 
   const scene = createScene(svg);
@@ -172,20 +125,13 @@ export function renderMap(ctx, initialArg) {
           // Opening a node from the list goes back to the graph, because the
           // room is anchored to a node's position on the board. One event does
           // both: the machine cannot land on "list, with a room open".
-          onOpenNode: (id) => ui.open(id),
+          onOpenNode: (id) => current.navigate("map", id),
         })
       );
     }
 
-    // The camera moves before the room is built. The panel grows out of its
-    // node's position on screen, so that position has to be final first — and
-    // the canvas has to be visible, or the fit measures a hidden element and
-    // lands nowhere.
     if (refit && !isList()) frameBoard({ animate: false });
-    if (reveal) revealRoom(reveal);
-
     renderHud();
-    renderRoom();
   }
 
   function listHead() {
@@ -248,12 +194,12 @@ export function renderMap(ctx, initialArg) {
         if (camera.didDrag() || editor.isDragging()) return;
         if (editor.enabled && editor.mode === "connect") return;
         event.stopPropagation();
-        ui.toggle(id);
+        current.navigate("map", id);
       });
       group.addEventListener("keydown", (event) => {
         if (event.key === "Enter" || event.key === " ") {
           event.preventDefault();
-          ui.toggle(id);
+          current.navigate("map", id);
         }
       });
       group.addEventListener("mouseenter", () => {
@@ -285,7 +231,7 @@ export function renderMap(ctx, initialArg) {
   svg.addEventListener("click", (event) => {
     if (event.target.closest(".gnode")) return;
     if (camera.didDrag()) return;
-    ui.close();
+    /* step page owns close */
   });
 
   /* ---------- HUD ---------- */
@@ -303,7 +249,7 @@ export function renderMap(ctx, initialArg) {
         modeToggle(),
         el("b.hud__count", {}, `Required ${prog.spine.lit} of ${prog.spine.total}`),
         el("span.hud__depth", {}, `Depth ${prog.depth.lit} of ${prog.depth.total}`),
-        el("span.hud__law", {}, LAW)
+        el("span.hud__law", {}, RULE)
       ),
       el(
         "div.hud__group",
@@ -323,7 +269,7 @@ export function renderMap(ctx, initialArg) {
         variant: "quiet",
         onclick: () => {
           const target = nextUp(graph);
-          if (target) ui.open(target.id);
+          if (target) current.navigate("map", target.id);
         },
       }),
       btn({ label: "+", variant: "quiet", title: "Zoom in", onclick: () => camera.zoomBy(1.25) }),
@@ -338,7 +284,7 @@ export function renderMap(ctx, initialArg) {
             // Rearranging is a whole-board job. The room would hide the nodes
             // sitting underneath it, so it closes on the way in.
             if (editor.enabled) {
-              ui.close();
+              /* step page owns close */
               camera.release();
             }
             signature = "";
@@ -365,7 +311,7 @@ export function renderMap(ctx, initialArg) {
             if (!title) return;
             const id = editor.addNode({ title });
             signature = "";
-            ui.open(id);
+            current.navigate("map", id);
             draw();
           },
         })
@@ -398,317 +344,11 @@ export function renderMap(ctx, initialArg) {
     return el("span.legend", {}, el("i", { class: `dot dot--${status}` }), label);
   }
 
-  /* ---------- the node room ---------- */
-
-  /**
-   * The room is a projection of one value, not something that gets opened and
-   * closed by whoever is nearby. If the machine holds no room, the panel is
-   * shut — there is no branch in which the two can disagree.
-   */
-  function renderRoom() {
-    const { graph, student } = current.state;
-    const node = selected() ? graph.byId.get(selected()) : null;
-    room.setOpen(Boolean(node), {
-      content: node ? nodeRoom(node, graph, student) : null,
-      origin: node ? camera.toScreen(node) : null,
-    });
-  }
-
-  function roomEyebrow(node, graph) {
-    const family = (graph.families ?? []).find((item) => item.id === node.family);
-    const weeks = Array.isArray(node.weeks) && node.weeks.length
-      ? ` · week ${node.weeks[0] === node.weeks[1] ? node.weeks[0] : `${node.weeks[0]}–${node.weeks[1]}`}`
-      : "";
-    return `${trackLabel(node.track)} · ${family?.label ?? "Step"} · ${String(node.n).padStart(2, "0")} · ${statusLabel(node.status)}${weeks}`;
-  }
-
-  /**
-   * One sequence. Teach first, then do, then turn in. No side column.
-   *   1. Video
-   *   2. Reading + checklist
-   *   3. The link they produce
-   */
-  function nodeRoom(node, graph, student) {
-    const isAdmin = current.role === "admin";
-    const blockers = blockedBy(graph, node.id);
-    const canTurnIn = node.status === STATUS.OPEN || node.status === STATUS.LIT;
-    const video = resolveMedia(node.video) ? node.video : FALLBACK_VIDEO;
-
-    return el(
-      "div.room",
-      {},
-      el(
-        "header.room__head",
-        {},
-        el(
-          "div",
-          {},
-          el("b.eyebrow", {}, roomEyebrow(node, graph)),
-          el("h2.room__title", {}, node.title)
-        ),
-        el("button.room__close", { type: "button", "aria-label": "Close this step", onclick: () => ui.close() }, "×")
-      ),
-      el(
-        "div.room__video",
-        {},
-        el("b.eyebrow", {}, "Watch this first"),
-        el("p.room__vidtitle", {}, `${video.title} · ${video.mins} min`),
-        videoCard({
-          title: video.title,
-          mins: video.mins,
-          youtube: video.youtube,
-          path: video.path,
-          thumb: video.thumb,
-          watchWhen: video.watchWhen ?? "Watch this, then do the steps.",
-          startOpen: true,
-        })?.node
-      ),
-      el(
-        "div.room__read.room__copy",
-        {},
-        el("b.eyebrow", {}, "Read this"),
-        node.why && el("p.room__why", {}, node.why),
-        node.reading && el("p.room__reading", {}, node.reading),
-        node.modules?.length
-          ? el(
-              "div.room__mods",
-              {},
-              node.modules.map((module) =>
-                el("a.room__mod", { href: module.href, target: "_blank", rel: "noopener" }, module.title)
-              )
-            )
-          : null
-      ),
-      /* The lesson: the node's teaching, complete enough that the video is a
-         luxury rather than a requirement. Authored in curriculum.json. On the
-         public tour the text is stripped, and this says so instead of hiding it. */
-      node.lesson?.length
-        ? el(
-            "div.room__lesson.room__copy",
-            {},
-            el("b.eyebrow", {}, "Understand this"),
-            node.lesson.map((section) =>
-              el(
-                "section.lesson__sec",
-                {},
-                section.h && el("h3", {}, section.h),
-                (section.p ?? []).map((paragraph) => el("p", {}, paragraph))
-              )
-            )
-          )
-        : node.lessonLocked
-          ? el(
-              "div.room__lesson.room__copy",
-              {},
-              el("b.eyebrow", {}, "Understand this"),
-              el(
-                "p.room__hint",
-                {},
-                "The full lesson text lives here. It is part of the program and unlocks with the access key you receive at enrollment. The tasks and the done-when below are real; only the teaching is held back."
-              )
-            )
-          : null,
-      node.kind === "future"
-        ? el("div.room__copy", {}, placeholder({
-            title: "Not open yet",
-            note: node.coming,
-            when: "You can still watch. The work opens when this step does.",
-          }))
-        : null,
-      node.tasks?.length
-        ? el(
-            "div.room__tasks.room__copy",
-            {},
-            el("b.eyebrow", {}, "Do this"),
-            el("p.room__hint", {}, "Check a box when you finish it. Open Show steps only if you want the how-to."),
-            el(
-              "div.tasks.tasks--tight",
-              {},
-              node.tasks.map((task) =>
-                taskRow(
-                  { ...task, nodeId: node.id, nodeN: node.n, nodeTitle: node.title, state: student.tasks?.[task.id]?.state ?? TASK_STATE.TODO },
-                  { store: current.store, navigate: current.navigate }
-                )
-              )
-            )
-          )
-        : null,
-      el(
-        "div.room__out.room__copy",
-        {},
-        el("b.eyebrow", {}, "Turn this in"),
-        el("p.room__done", {}, el("b", {}, "Done when "), node.evidence),
-        node.ccvv?.length || node.reviewFor
-          ? el(
-              "div.room__grade",
-              {},
-              node.ccvv?.length
-                ? el("p.room__ccvv", {}, el("b", {}, "Graded on "), node.ccvv.map(ccvvLabel).join(" · "))
-                : null,
-              node.reviewFor ? el("p.room__reviewfor", {}, el("b", {}, "Aden looks for "), node.reviewFor) : null
-            )
-          : null,
-        blockers.length
-          ? el(
-              "div.room__blocked",
-              {},
-              el("p.room__hint", {}, "This step stays locked until the ones below are done. Clicking one opens that step."),
-              el(
-                "div.room__prereqs",
-                {},
-                blockers.map((blocker) =>
-                  el(
-                    "button.room__goto",
-                    { type: "button", onclick: () => ui.open(blocker.id) },
-                    `Go to ${String(blocker.n).padStart(2, "0")} · ${blocker.title}`
-                  )
-                )
-              )
-            )
-          : null,
-        canTurnIn && node.status === STATUS.LIT ? litBlock(node) : null,
-        canTurnIn ? evidenceForm(node) : null,
-        canTurnIn
-          ? el(
-              "div.room__handoff",
-              {},
-              handoffDisclosure({ store: current.store, node, label: "Send for review" }),
-              reviewsFor(node)
-            )
-          : null
-      ),
-      isAdmin ? el("div.room__copy", {}, adminBlock(node, graph)) : null
-    );
-  }
-
-  /** What this node has already been through with me. */
-  function reviewsFor(node) {
-    const reviews = (current.state.student.reviews ?? []).filter((review) => review.nodeId === node.id);
-    if (!reviews.length) return null;
-    return el(
-      "div.room__rvs",
-      {},
-      reviews.map((review) =>
-        el(
-          "div.rv",
-          { class: `rv--${review.state}` },
-          el(
-            "div.rv__head",
-            {},
-            el("b", {}, review.title),
-            el("span.rv__state", {}, review.state === "returned" ? "returned" : "in review")
-          ),
-          review.verdict && el("p.rv__verdict", {}, review.verdict),
-          reviewScores(review)
-        )
-      )
-    );
-  }
-
-  function litBlock(node) {
-    return el(
-      "div.room__lit",
-      {},
-      el("b.eyebrow", {}, "Your link"),
-      el("a.room__link", { href: node.proof?.url ?? "#", target: "_blank", rel: "noopener" }, node.proof?.url ?? "evidence"),
-      node.proof?.note && el("p.room__note", {}, node.proof.note),
-      node.proof?.at && el("span.room__at", {}, `attached ${node.proof.at}`)
-    );
-  }
-
-  function evidenceForm(node) {
-    const url = field({
-      label: "The link",
-      id: `ev-url-${node.id}`,
-      type: "url",
-      value: node.proof?.url ?? "",
-      placeholder: "https://",
-      hint: "Paste the link. That is what marks this step done.",
-    });
-    const note = field({
-      label: "What should I look at",
-      id: `ev-note-${node.id}`,
-      value: node.proof?.note ?? "",
-      placeholder: "What should I look at hardest?",
-      textarea: true,
-    });
-
-    return el(
-      "form.room__form",
-      {
-        onsubmit: (event) => {
-          event.preventDefault();
-          const value = url.input.value.trim();
-          if (!/^https?:\/\/.+/.test(value)) {
-            toast("That needs to be a URL a stranger can open.", "warn");
-            return;
-          }
-          current.store.submitEvidence(node.id, value, note.input.value.trim());
-          toast(`Step ${String(node.n).padStart(2, "0")} saved.`);
-        },
-      },
-      url.node,
-      note.node,
-      el(
-        "div.room__acts",
-        {},
-        btn({ label: node.status === STATUS.LIT ? "Update the link" : "Save the link", variant: "solid", type: "submit" }),
-        node.status === STATUS.LIT &&
-          btn({
-            label: "Remove the link",
-            variant: "quiet",
-            onclick: (event) => {
-              event.preventDefault();
-              current.store.clearEvidence(node.id);
-              toast("Link removed.", "warn");
-            },
-          })
-      )
-    );
-  }
-
-  function adminBlock(node, graph) {
-    return el(
-      "div.room__admin",
-      {},
-      el("b.eyebrow", {}, "Instructor only"),
-      el(
-        "div.room__chips",
-        {},
-        (node.requires ?? []).map((id) => {
-          const req = graph.byId.get(id);
-          return el(
-            "span.chip2",
-            {},
-            req ? `${String(req.n).padStart(2, "0")} ${req.title}` : id,
-            el(
-              "button.chip2__x",
-              { type: "button", "aria-label": `Remove ${id} as a prerequisite`, onclick: () => editor.unlink(node.id, id) },
-              "×"
-            )
-          );
-        }),
-        !(node.requires ?? []).length && el("span.muted", {}, "no prerequisites")
-      ),
-      node.custom &&
-        btn({
-          label: "Delete this node",
-          variant: "danger",
-          onclick: () => {
-            if (!confirm(`Delete "${node.title}" from this board?`)) return;
-            editor.removeNode(node.id);
-            signature = "";
-            ui.close();
-          },
-        })
-    );
-  }
-
   /* ---------- lifecycle ---------- */
 
   requestAnimationFrame(() => {
     syncHash();
-    draw({ refit: true, reveal: ui.state.room });
+    draw({ refit: true });
   });
 
   const onResize = () => {
@@ -725,12 +365,13 @@ export function renderMap(ctx, initialArg) {
      */
     update(nextCtx, arg) {
       current = nextCtx;
+      if (arg && arg !== "list" && current.state.graph.byId.has(arg)) {
+        current.navigate("map", arg);
+        return;
+      }
       const before = ui.state;
       ui.route(arg);
-      if (ui.state !== before) return; // the transition already redrew and rewrote the hash
-      // No transition: either a plain data change, or a URL the machine refused
-      // — a node id that is not on this board. Either way the hash is corrected
-      // back to what is actually on screen.
+      if (ui.state !== before) return;
       syncHash();
       draw();
     },
@@ -738,7 +379,6 @@ export function renderMap(ctx, initialArg) {
       window.removeEventListener("resize", onResize);
       camera.destroy();
       editor.destroy();
-      room.destroy();
     },
   };
 }
