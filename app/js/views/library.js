@@ -54,6 +54,7 @@ export function renderLibrary(ctx) {
                 mins: item.mins,
                 youtube: item.youtube,
                 path: item.path,
+                thumb: item.thumb,
                 watchWhen: item.watchWhen,
               });
               if (player) players.set(item.id, player);

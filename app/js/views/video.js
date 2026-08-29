@@ -21,7 +21,11 @@ const QUALITIES = [
 /** Resolve a lesson media entry into absolute playback URLs. */
 export function resolveMedia(video = {}) {
   if (video.youtube) {
-    return { kind: "youtube", youtube: video.youtube };
+    return {
+      kind: "youtube",
+      youtube: video.youtube,
+      thumb: absoluteUrl(video.thumb) || null,
+    };
   }
   const base = (video.base || MEDIA.baseUrl || "").replace(/\/$/, "");
   const path = (video.path || "").replace(/^\//, "").replace(/\/$/, "");
@@ -33,7 +37,17 @@ export function resolveMedia(video = {}) {
     hls: video.hls === false ? null : `${root}/master.m3u8`,
     qualities: Object.fromEntries(QUALITIES.map((q) => [q.id, `${root}/mp4/${q.id}.mp4`])),
     defaultQuality: video.defaultQuality || MEDIA.defaultQuality || "1080",
+    /* Default convention: lessons/<id>/thumb.jpg. Override with video.thumb. */
+    thumb: absoluteUrl(video.thumb, root) || `${root}/thumb.jpg`,
   };
+}
+
+/** Absolute http(s) as-is; otherwise join under root (or return null). */
+function absoluteUrl(value, root = "") {
+  if (!value || typeof value !== "string") return null;
+  if (/^https?:\/\//i.test(value)) return value;
+  if (!root) return null;
+  return `${root.replace(/\/$/, "")}/${value.replace(/^\//, "")}`;
 }
 
 export function videoCard({
@@ -43,30 +57,53 @@ export function videoCard({
   path,
   base,
   hls,
+  thumb,
   defaultQuality,
   watchWhen,
   startOpen = false,
 } = {}) {
-  const resolved = resolveMedia({ youtube, path, base, hls, defaultQuality });
+  const resolved = resolveMedia({ youtube, path, base, hls, thumb, defaultQuality });
   if (!resolved) return null;
   return buildCard({ title, mins, media: resolved, watchWhen, startOpen });
 }
 
 function buildCard({ title, mins, media, watchWhen, startOpen }) {
-  const poster = el(
-    "button.vid__poster",
-    {
-      type: "button",
-      "aria-label": title ? `Watch ${title}` : "Watch",
-    },
+  const posterKids = [
+    media.thumb
+      ? el("img.vid__poster-img", {
+          src: media.thumb,
+          alt: "",
+          loading: "lazy",
+          decoding: "async",
+        })
+      : null,
     el("span.vid__poster-play", { "aria-hidden": "true" }),
     el(
       "span.vid__poster-meta",
       {},
       el("b.vid__poster-title", {}, title || "Lesson video"),
       mins ? el("span.vid__poster-mins", {}, `${mins} min`) : null
-    )
+    ),
+  ];
+
+  const poster = el(
+    "button.vid__poster",
+    {
+      type: "button",
+      "aria-label": title ? `Watch ${title}` : "Watch",
+      class: media.thumb ? "has-thumb" : null,
+    },
+    ...posterKids
   );
+
+  /* If the thumb 404s, drop it and keep the play mark on the dark field. */
+  const img = poster.querySelector(".vid__poster-img");
+  if (img) {
+    img.addEventListener("error", () => {
+      img.remove();
+      poster.classList.remove("has-thumb");
+    });
+  }
 
   const root = el(
     "div.vid",

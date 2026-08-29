@@ -456,6 +456,7 @@ export function renderMap(ctx, initialArg) {
           mins: video.mins,
           youtube: video.youtube,
           path: video.path,
+          thumb: video.thumb,
           watchWhen: video.watchWhen ?? "Watch this, then do the steps.",
           startOpen: true,
         })?.node

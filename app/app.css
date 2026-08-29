@@ -622,7 +622,16 @@ body[data-view="today"] .outlet { display: flex; flex-direction: column; }
   width: 28px; height: 28px; border-radius: var(--radius-sm); cursor: pointer; font-size: 17px; line-height: 1;
 }
 .room__close:hover { border-color: var(--cyan); color: #fff; }
-.room__video { padding-bottom: 4px; }
+/* Same column as the reading below: top-centered, matching text width. */
+.room__video {
+  max-width: 46rem;
+  margin-inline: auto;
+  padding-bottom: 4px;
+  text-align: center;
+}
+.room__video .eyebrow,
+.room__video .room__vidtitle { text-align: left; }
+.room__video .vid { max-width: none; width: 100%; margin-inline: auto; }
 .room__lesson { max-width: 72ch; }
 .room__lesson .lesson__sec + .lesson__sec { margin-top: 18px; }
 .room__lesson h3 { font-size: 15px; color: #fff; margin: 0 0 4px; }
@@ -647,8 +656,7 @@ body[data-view="today"] .outlet { display: flex; flex-direction: column; }
 .room__chips { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 9px; }
 
 /* Compact poster in-flow. Playback only in .vid-theater. */
-.vid { margin-top: 8px; max-width: 360px; }
-.room__video .vid { max-width: 320px; }
+.vid { margin-top: 8px; width: 100%; max-width: 46rem; }
 .vid__poster {
   position: relative; display: block; width: 100%; aspect-ratio: 16 / 9;
   margin: 0; padding: 0; border: 1px solid var(--line); border-radius: var(--radius-sm);
@@ -660,12 +668,25 @@ body[data-view="today"] .outlet { display: flex; flex-direction: column; }
 }
 .vid__poster:hover { border-color: color-mix(in srgb, var(--cyan) 50%, var(--line)); }
 .vid__poster:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+.vid__poster-img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+.vid__poster.has-thumb .vid__poster-play {
+  background: color-mix(in srgb, #05070c 55%, transparent);
+  border-color: color-mix(in srgb, #fff 55%, var(--cyan));
+  box-shadow: 0 0 28px rgba(0, 0, 0, .45);
+}
+.vid__poster.has-thumb .vid__poster-play::after {
+  border-color: transparent transparent transparent #fff;
+}
 .vid__poster-play {
   position: absolute; left: 50%; top: 50%; width: 44px; height: 44px;
   margin: -22px 0 0 -22px; border-radius: 50%;
   background: color-mix(in srgb, var(--cyan) 22%, #05070c);
   border: 1.5px solid color-mix(in srgb, var(--cyan) 70%, var(--line));
   box-shadow: 0 0 24px color-mix(in srgb, var(--cyan) 25%, transparent);
+  z-index: 1;
 }
 .vid__poster-play::after {
   content: ""; position: absolute; left: 17px; top: 13px;
@@ -675,8 +696,11 @@ body[data-view="today"] .outlet { display: flex; flex-direction: column; }
 .vid__poster:hover .vid__poster-play {
   background: color-mix(in srgb, var(--cyan) 32%, #05070c);
 }
+.vid__poster.has-thumb:hover .vid__poster-play {
+  background: color-mix(in srgb, #05070c 40%, transparent);
+}
 .vid__poster-meta {
-  position: absolute; left: 0; right: 0; bottom: 0;
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 1;
   display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
   padding: 28px 12px 10px;
   background: linear-gradient(transparent, rgba(5, 7, 12, .92));
@@ -745,7 +769,6 @@ html.vid-lock, html.vid-lock body { overflow: hidden; }
 @media (max-width: 640px) {
   .vid-theater { padding: 12px; align-items: end; }
   .vid-theater__close { top: 8px; right: 8px; }
-  .vid, .room__video .vid { max-width: none; }
 }
 .room__lit { border-color: color-mix(in srgb, var(--ok) 24%, var(--line)); }
 .room__link { display: block; color: var(--ok); font-size: 13px; word-break: break-all; margin-top: 6px; }
