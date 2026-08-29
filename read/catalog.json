@@ -1,0 +1,102 @@
+{
+  "title": "Reading",
+  "note": "These modules are the textbook. The board is the sequence. Type the code. Do not paste it.",
+  "modules": [
+    {
+      "id": "nanograph/00-your-repo-is-a-graph",
+      "title": "00 · Your repo is a graph",
+      "series": "nanograph",
+      "mins": 20
+    },
+    {
+      "id": "nanograph/01-parse-one-file",
+      "title": "01 · Parse one file",
+      "series": "nanograph",
+      "mins": 45
+    },
+    {
+      "id": "nanograph/02-edges-across-files",
+      "title": "02 · Edges across files",
+      "series": "nanograph",
+      "mins": 60
+    },
+    {
+      "id": "nanograph/03-who-calls-x",
+      "title": "03 · Who calls X",
+      "series": "nanograph",
+      "mins": 45
+    },
+    {
+      "id": "nanograph/04-blast-radius",
+      "title": "04 · Blast radius",
+      "series": "nanograph",
+      "mins": 45
+    },
+    {
+      "id": "nanograph/05-cycles",
+      "title": "05 · Cycles",
+      "series": "nanograph",
+      "mins": 45
+    },
+    {
+      "id": "nanograph/06-load-bearing",
+      "title": "06 · Load-bearing code",
+      "series": "nanograph",
+      "mins": 50
+    },
+    {
+      "id": "nanograph/07-module-coupling",
+      "title": "07 · Module coupling",
+      "series": "nanograph",
+      "mins": 40
+    },
+    {
+      "id": "nanograph/08-swap-the-parser",
+      "title": "08 · Swap the parser",
+      "series": "nanograph",
+      "mins": 90
+    },
+    {
+      "id": "nanograph/09-context-packing",
+      "title": "09 · Context packing",
+      "series": "nanograph",
+      "mins": 60
+    },
+    {
+      "id": "nanograph/10-ship-it",
+      "title": "10 · Ship it",
+      "series": "nanograph",
+      "mins": 60
+    },
+    {
+      "id": "nanograph/11-make-it-yours",
+      "title": "11 · Make it yours",
+      "series": "nanograph",
+      "mins": 180
+    },
+    {
+      "id": "student-zero/or-start",
+      "title": "Student zero · Start here",
+      "series": "student-zero",
+      "mins": 10
+    }
+  ],
+  "briefs": [
+    {
+      "id": "briefs/2026-08",
+      "title": "Verification tax",
+      "series": "briefs",
+      "mins": 5,
+      "attachesTo": "cv.check"
+    }
+  ],
+  "readings": [
+    {
+      "id": "readings/humans-around-the-queue",
+      "title": "Humans around the queue",
+      "series": "readings",
+      "mins": 5,
+      "attachesTo": "cap.change"
+    }
+  ]
+}

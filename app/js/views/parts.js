@@ -115,6 +115,21 @@ export function eventRow(event, { now = new Date() } = {}) {
   );
 }
 
+/** CCVV scores + taught move under a returned verdict. */
+export function reviewScores(review) {
+  const c = review.ccvv;
+  if (!c && !review.taughtMove) return null;
+  const line = c
+    ? `C ${c.communication} · C ${c.comprehension} · V ${c.vision} · V ${c.verification}`
+    : null;
+  return el(
+    "div.rv__scores",
+    {},
+    line && el("p.rv__ccvv", {}, line),
+    review.taughtMove && el("p.rv__move", {}, el("b", {}, "Taught move: "), review.taughtMove)
+  );
+}
+
 export function reviewRow(review, { store, isAdmin = false } = {}) {
   const returned = review.state === "returned";
   return el(
@@ -135,6 +150,7 @@ export function reviewRow(review, { store, isAdmin = false } = {}) {
         el("a", { href: review.link, target: "_blank", rel: "noopener" }, "the work ↗")
     ),
     review.verdict && el("p.rv__verdict", {}, review.verdict),
+    reviewScores(review),
     !returned &&
       !isAdmin &&
       el("p.rv__hint", {}, "Notes come back Sunday evening. Do something else while you wait."),

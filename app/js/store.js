@@ -11,6 +11,9 @@ import { loadBoard } from "./api.js";
 import { buildGraph } from "./graph/model.js";
 import { weekNumber } from "./time.js";
 import { readOverlay, writeOverlay, clearOverlay, mergeStudent } from "./overlay.js";
+import { validReviewReturn } from "./review.js";
+
+export { validReviewReturn };
 
 let base = null;
 let overlay = {};
@@ -192,7 +195,7 @@ export function addReview(review) {
   });
 }
 
-export function setReviewState(id, reviewState, verdict) {
+export function setReviewState(id, reviewState, verdict, scores) {
   return commit(() => {
     const reviews = (overlay.reviews ?? base.student.reviews ?? []).map((review) =>
       review.id === id
@@ -200,6 +203,12 @@ export function setReviewState(id, reviewState, verdict) {
             ...review,
             state: reviewState,
             verdict: verdict ?? review.verdict,
+            ...(scores
+              ? {
+                  ccvv: scores.ccvv ?? review.ccvv,
+                  taughtMove: scores.taughtMove ?? review.taughtMove,
+                }
+              : {}),
             returned: reviewState === "returned" ? new Date().toISOString().slice(0, 10) : review.returned,
           }
         : review

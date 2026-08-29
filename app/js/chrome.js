@@ -109,8 +109,8 @@ export function createChrome({ onNavigate, onReset, onExport }) {
     const mapBadge = badges.get("map");
     mapBadge.hidden = false;
     mapBadge.className = "rail__badge rail__badge--count";
-    mapBadge.textContent = `${prog.lit}/${prog.total}`;
-    mapBadge.title = `${prog.lit} of ${prog.total} nodes lit`;
+    mapBadge.textContent = `${prog.spine.lit}/${prog.spine.total}`;
+    mapBadge.title = `Required ${prog.spine.lit} of ${prog.spine.total}. Depth ${prog.depth.lit} of ${prog.depth.total}.`;
   }
 
   function setIdentity(state, role) {

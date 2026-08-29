@@ -21,8 +21,8 @@ import { createCamera } from "../graph/camera.js";
 import { createEditor } from "../graph/editor.js";
 import { applyLayout, bounds } from "../graph/layout.js";
 import { STATUS, nextUp, progress, blockedBy } from "../graph/model.js";
-import { taskRow } from "./parts.js";
-import { statusLabel, LAW } from "../copy.js";
+import { taskRow, reviewScores } from "./parts.js";
+import { statusLabel, trackLabel, ccvvLabel, LAW } from "../copy.js";
 import { videoCard, resolveMedia } from "./video.js";
 import { mapList } from "./map-list.js";
 import { handoffDisclosure } from "./handoff.js";
@@ -301,7 +301,8 @@ export function renderMap(ctx, initialArg) {
         "div.hud__group",
         {},
         modeToggle(),
-        el("b.hud__count", {}, `${prog.lit} of ${prog.total} done`),
+        el("b.hud__count", {}, `Required ${prog.spine.lit} of ${prog.spine.total}`),
+        el("span.hud__depth", {}, `Depth ${prog.depth.lit} of ${prog.depth.total}`),
         el("span.hud__law", {}, LAW)
       ),
       el(
@@ -383,6 +384,7 @@ export function renderMap(ctx, initialArg) {
     const node = current.state.graph.byId.get(id);
     if (!node) return null;
     const parts = [`${String(node.n).padStart(2, "0")} · ${node.title}`];
+    parts.push(trackLabel(node.track));
     if (node.why) parts.push(node.why);
     const { done = 0, total = 0 } = node.taskProgress ?? {};
     if (total) parts.push(`${done}/${total} tasks`);
@@ -417,7 +419,7 @@ export function renderMap(ctx, initialArg) {
     const weeks = Array.isArray(node.weeks) && node.weeks.length
       ? ` · week ${node.weeks[0] === node.weeks[1] ? node.weeks[0] : `${node.weeks[0]}–${node.weeks[1]}`}`
       : "";
-    return `${family?.label ?? "Step"} · ${String(node.n).padStart(2, "0")} · ${statusLabel(node.status)}${weeks}`;
+    return `${trackLabel(node.track)} · ${family?.label ?? "Step"} · ${String(node.n).padStart(2, "0")} · ${statusLabel(node.status)}${weeks}`;
   }
 
   /**
@@ -466,7 +468,16 @@ export function renderMap(ctx, initialArg) {
         {},
         el("b.eyebrow", {}, "Read this"),
         node.why && el("p.room__why", {}, node.why),
-        node.reading && el("p.room__reading", {}, node.reading)
+        node.reading && el("p.room__reading", {}, node.reading),
+        node.modules?.length
+          ? el(
+              "div.room__mods",
+              {},
+              node.modules.map((module) =>
+                el("a.room__mod", { href: module.href, target: "_blank", rel: "noopener" }, module.title)
+              )
+            )
+          : null
       ),
       /* The lesson: the node's teaching, complete enough that the video is a
          luxury rather than a requirement. Authored in curriculum.json. On the
@@ -527,6 +538,16 @@ export function renderMap(ctx, initialArg) {
         {},
         el("b.eyebrow", {}, "Turn this in"),
         el("p.room__done", {}, el("b", {}, "Done when "), node.evidence),
+        node.ccvv?.length || node.reviewFor
+          ? el(
+              "div.room__grade",
+              {},
+              node.ccvv?.length
+                ? el("p.room__ccvv", {}, el("b", {}, "Graded on "), node.ccvv.map(ccvvLabel).join(" · "))
+                : null,
+              node.reviewFor ? el("p.room__reviewfor", {}, el("b", {}, "Aden looks for "), node.reviewFor) : null
+            )
+          : null,
         blockers.length
           ? el(
               "div.room__blocked",
@@ -577,7 +598,8 @@ export function renderMap(ctx, initialArg) {
             el("b", {}, review.title),
             el("span.rv__state", {}, review.state === "returned" ? "returned" : "in review")
           ),
-          review.verdict && el("p.rv__verdict", {}, review.verdict)
+          review.verdict && el("p.rv__verdict", {}, review.verdict),
+          reviewScores(review)
         )
       )
     );

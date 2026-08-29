@@ -5,7 +5,7 @@
  * Task state lives on the student. Everything else here is derived.
  */
 
-import { STATUS, blockedBy } from "./graph/model.js";
+import { STATUS, blockedBy, isSpine } from "./graph/model.js";
 import { weekRange, isoDate } from "./time.js";
 
 export const TASK_STATE = {
@@ -45,9 +45,11 @@ function withState(task, student) {
  * the current node's open tasks first, then this week's recurring work.
  */
 export function buildQueue({ graph, curriculum, student, week }) {
-  const focusNodes = graph.nodes
+  const open = graph.nodes
     .filter((node) => node.status === STATUS.OPEN && node.kind !== "future")
     .sort((a, b) => a.n - b.n);
+  const spineOpen = open.filter(isSpine);
+  const focusNodes = spineOpen.length ? spineOpen : open;
 
   const nodeTasks = focusNodes.flatMap((node) =>
     (node.tasks ?? [])

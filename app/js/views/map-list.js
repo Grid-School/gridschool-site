@@ -13,8 +13,9 @@
 
 import { el } from "../dom.js";
 import { panel, btn, placeholder, copy, dot } from "../ui.js";
-import { STATUS } from "../graph/model.js";
-import { statusLabel } from "./parts.js";
+import { STATUS, isSpine } from "../graph/model.js";
+import { statusLabel, reviewScores } from "./parts.js";
+import { trackLabel } from "../copy.js";
 import { fmtDay } from "../time.js";
 import { link } from "../../../config.js";
 
@@ -22,6 +23,8 @@ export function mapList({ state, onOpenNode }) {
   const { graph, student } = state;
   const ordered = [...graph.nodes].sort((a, b) => a.n - b.n);
   const lit = ordered.filter((node) => node.status === STATUS.LIT);
+  const spine = ordered.filter((node) => node.kind !== "future" && isSpine(node));
+  const spineLit = spine.filter((node) => node.status === STATUS.LIT);
   const reviewsByNode = groupReviews(student.reviews ?? []);
   const loose = (student.reviews ?? []).filter((review) => !review.nodeId);
 
@@ -30,7 +33,7 @@ export function mapList({ state, onOpenNode }) {
     {},
     panel(
       {
-        eyebrow: `${lit.length} of ${ordered.filter((n) => n.kind !== "future").length} done`,
+        eyebrow: `Required ${spineLit.length} of ${spine.length} · ${lit.length} links on the board`,
         title: "Every step, and the link behind it",
         note: "If a link here is dead, the node is a lie. That is the only rule this list has.",
         actions: lit.length
@@ -68,7 +71,10 @@ function familyBlocks(graph, ordered, reviewsByNode, onOpenNode) {
     const nodes = ordered.filter((node) => node.family === family.id);
     if (!nodes.length) continue;
     nodes.forEach((node) => seen.add(node.id));
-    blocks.push(el("b.mlfam", {}, family.label), ...nodes.map((node) => row(node, reviewsByNode.get(node.id) ?? [], onOpenNode)));
+    blocks.push(
+      el("b.mlfam", {}, `${family.label} · ${trackLabel(family.track)}`),
+      ...nodes.map((node) => row(node, reviewsByNode.get(node.id) ?? [], onOpenNode))
+    );
   }
   const rest = ordered.filter((node) => !seen.has(node.id));
   if (rest.length) {
@@ -122,6 +128,7 @@ function reviewLine(review) {
       el("span.rv__state", {}, review.state === "returned" ? "returned" : "in review")
     ),
     review.verdict && el("p.rv__verdict", {}, review.verdict),
+    reviewScores(review),
     review.link && el("a.mlrow__url", { href: review.link, target: "_blank", rel: "noopener" }, "the work ↗")
   );
 }

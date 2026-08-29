@@ -18,3 +18,18 @@ export function statusLabel(status) {
     [STATUS.FUTURE]: "Later",
   }[status] ?? status;
 }
+
+export function trackLabel(track) {
+  return track === "depth" ? "Depth" : "Required";
+}
+
+const CCVV_LABEL = {
+  communication: "Communication",
+  comprehension: "Comprehension",
+  vision: "Vision",
+  verification: "Verification",
+};
+
+export function ccvvLabel(id) {
+  return CCVV_LABEL[id] ?? id;
+}

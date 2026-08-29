@@ -12,7 +12,10 @@ import { videoCard } from "./video.js";
 export function renderLibrary(ctx) {
   const root = el("div.view.view--library", {}, el("p.muted", {}, "Loading the library."));
 
-  loadLibrary().then((library) => {
+  Promise.all([
+    loadLibrary(),
+    fetch("../read/catalog.json", { cache: "no-store" }).then((res) => (res.ok ? res.json() : null)).catch(() => null),
+  ]).then(([library, catalog]) => {
     const nodeVideos = ctx.state.graph.nodes
       .filter((node) => node.video)
       .sort((a, b) => a.n - b.n);
@@ -117,7 +120,28 @@ export function renderLibrary(ctx) {
               )
             )
           : empty("No step videos yet.")
-      )
+      ),
+      catalog?.modules?.length
+        ? panel(
+            {
+              eyebrow: "Read, then type",
+              title: "Text modules",
+              note: catalog.note,
+            },
+            el(
+              "div.lib__nodes",
+              {},
+              catalog.modules.map((mod) =>
+                el(
+                  "a.libnode",
+                  { href: `../read/?m=${encodeURIComponent(mod.id)}`, target: "_blank", rel: "noopener" },
+                  el("b", {}, mod.title),
+                  el("span", {}, `${mod.series ?? "reading"}${mod.mins ? ` · ${mod.mins} min` : ""}`)
+                )
+              )
+            )
+          )
+        : null
     );
   });
 

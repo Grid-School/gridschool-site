@@ -1,0 +1,39 @@
+.read { padding-top: 48px; padding-bottom: 96px; max-width: 44rem; }
+.read h1 { font-size: 32px; margin: 12px 0 10px; }
+.read .lede { margin-bottom: 28px; }
+.read .chip a { color: inherit; text-decoration: none; }
+.mods, .briefs, .readings { display: flex; flex-direction: column; gap: 10px; margin: 8px 0 36px; }
+.mods a, .briefs a, .readings a {
+  display: block; padding: 14px 16px;
+  border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--surface); color: inherit; text-decoration: none;
+}
+.mods a b, .briefs a b, .readings a b { display: block; color: var(--cyan); margin-bottom: 4px; }
+.mods a span, .briefs a span, .readings a span { color: var(--muted); font-size: 14px; }
+.mods a:hover, .briefs a:hover, .readings a:hover { border-color: var(--cyan); }
+.prose { max-width: 72ch; }
+.prose h1, .prose h2, .prose h3 { color: #fff; margin: 1.6em 0 0.4em; line-height: 1.3; }
+.prose h1 { font-size: 28px; }
+.prose h2 { font-size: 20px; }
+.prose h3 { font-size: 16px; }
+.prose p, .prose li { color: var(--text); font-size: 16px; line-height: 1.7; }
+.prose p { margin-top: 0.9em; }
+.prose ul, .prose ol { margin: 0.8em 0 0.8em 1.2em; }
+.prose li + li { margin-top: 0.35em; }
+.prose em { font-style: italic; }
+.prose strong { color: #fff; font-weight: 600; }
+.prose code {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.88em; color: var(--cyan);
+  background: var(--bg2); padding: 0.1em 0.35em; border-radius: 4px;
+}
+.prose pre {
+  margin-top: 1.1em; padding: 14px 16px; overflow-x: auto;
+  border: 1px solid var(--line); border-radius: var(--radius); background: #05070c;
+}
+.prose pre code { background: none; padding: 0; color: var(--text); font-size: 13px; line-height: 1.55; }
+.prose blockquote {
+  margin-top: 1em; padding-left: 14px;
+  border-left: 2px solid var(--cyan); color: var(--muted);
+}
+.prose a { color: var(--cyan); }

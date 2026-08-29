@@ -57,7 +57,7 @@ function signalFor({ prog, quota, waiting, student, week }) {
   if (!student.focus || !student.next) return { tone: "warn", text: "No Focus or Next set" };
   if (waiting.reviews.length) return { tone: "wait", text: `${waiting.reviews.length} waiting on me` };
   if (quota.active && !quota.met) return { tone: "warn", text: "Quota not met this week" };
-  if (week > 2 && prog.lit === 0) return { tone: "bad", text: "Nothing lit past week 2" };
+  if (week > 2 && prog.spine.lit === 0) return { tone: "bad", text: "Nothing required lit past week 2" };
   return { tone: "ok", text: "Moving" };
 }
 

@@ -14,7 +14,7 @@
 
 import { el, mount } from "../dom.js";
 import { btn } from "../ui.js";
-import { STATUS } from "../graph/model.js";
+import { nextUp } from "../graph/model.js";
 import { link } from "../../../config.js";
 
 const KEY = (slug) => `gridschool.firstrun.v1.${slug}`;
@@ -36,9 +36,7 @@ export function shouldOpenFirstRun(slug, state) {
 export function renderFirstRun(ctx) {
   const { state, navigate } = ctx;
   const { graph, student, cohort, slug } = state;
-  const first =
-    graph.nodes.find((node) => node.status === STATUS.OPEN && node.kind !== "future") ??
-    [...graph.nodes].sort((a, b) => a.n - b.n)[0];
+  const first = nextUp(graph) ?? [...graph.nodes].sort((a, b) => a.n - b.n)[0];
   const discord = link("discord");
 
   const leave = (target, ...args) => {
@@ -77,13 +75,13 @@ export function renderFirstRun(ctx) {
       step({
         n: 1,
         title: "See the whole path",
-        body: "Three tracks. The defense spine is the mission: inherit a system, read it, change it, prove it, defend it. The world and the graph are depth: real tickets on a live game, and a tool you build that reads code as data. The spine is required. Depth is worked as far as the eight weeks allow.",
+        body: "The middle rail is required: inherit a system, read it, change it, prove it, defend it, then one public trail. The world and the graph are depth. You work them as far as the eight weeks allow. Today will not send you there while a required step is open.",
         action: btn({ label: "Open the map", variant: "solid", onclick: () => leave("map") }),
       }),
       step({
         n: 2,
         title: "Boot the system tonight",
-        body: "Your first two nodes are already open: how this board works, and making the inherited repo run on your machine. The videos for both are in the Library. Watch those, do the work, and do not binge the rest.",
+        body: "Your first required steps are already open: how this board works, and making the inherited repo run. Watch those two, do the work, and do not binge the rest. The world and graph nodes you can see are not due this week.",
         action: btn({ label: "Open the Library", variant: "solid", onclick: () => leave("library") }),
       }),
       step({

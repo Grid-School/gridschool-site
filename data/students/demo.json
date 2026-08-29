@@ -12,8 +12,8 @@
     "weekday": 3,
     "time": "19:00"
   },
-  "focus": "Stop guessing. Trace T-1842 and say what the system actually does.",
-  "next": "Boot studio/ and attach the status output to It runs.",
+  "focus": "How this board works, then It runs. World and graph wait.",
+  "next": "Write the law in your own words and attach the note to Start here.",
   "evidence": {},
   "tasks": {},
   "reviews": [],

@@ -535,6 +535,7 @@ body[data-view="today"] .outlet { display: flex; flex-direction: column; }
 }
 .hud__group { display: flex; gap: 14px; align-items: center; }
 .hud__count { color: #fff; font-size: 13.5px; }
+.hud__depth { color: var(--muted); font-size: 12.5px; }
 .hud__law { color: var(--muted); font-size: 12px; }
 .legend { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--muted); }
 .hud--side {
@@ -642,6 +643,18 @@ body[data-view="today"] .outlet { display: flex; flex-direction: column; }
 }
 .room__why { color: var(--text); font-size: 15px; margin-top: 6px; max-width: 68ch; }
 .room__reading { color: var(--muted); font-size: 14.5px; margin-top: 10px; max-width: 68ch; line-height: 1.55; }
+.room__mods { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; margin-top: 12px; }
+.room__mod {
+  color: var(--cyan); font-size: 14px; text-decoration: none;
+  border-bottom: 1px solid var(--hair-cyan);
+}
+.room__mod:hover { color: #fff; border-color: var(--cyan); }
+.room__grade { margin-top: 12px; max-width: 68ch; }
+.room__ccvv, .room__reviewfor { color: var(--muted); font-size: 14px; line-height: 1.55; margin-top: 6px; }
+.room__ccvv b, .room__reviewfor b {
+  color: var(--ok); font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+}
 .room__done { font-size: 14.5px; color: var(--text); margin-top: 6px; max-width: 68ch; }
 .room__done b { color: var(--ok); font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
 .room__hint { font-size: 13px; color: var(--muted); margin-top: 6px; max-width: 56ch; }
@@ -908,6 +921,20 @@ button.month__day:hover { border-color: var(--hair-cyan); background: #0b1522; }
 .rv__meta { display: flex; gap: 13px; flex-wrap: wrap; font-size: 12px; color: var(--muted); margin-top: 3px; }
 .rv__meta a { color: var(--cyan); text-decoration: none; }
 .rv__verdict { font-size: 14px; color: var(--text); margin-top: 8px; max-width: 70ch; }
+.rv__scores { margin-top: 8px; display: grid; gap: 4px; }
+.rv__ccvv {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 12px; letter-spacing: .04em; color: var(--cyan);
+}
+.rv__move { font-size: 13.5px; color: var(--text); max-width: 70ch; }
+.rv__move b { color: var(--muted); font-weight: 500; }
+.rv__scoregrid {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px; margin: 10px 0;
+}
+@media (max-width: 560px) {
+  .rv__scoregrid { grid-template-columns: 1fr; }
+}
 .rv__hint { font-size: 12.5px; color: var(--muted); margin-top: 6px; }
 .rv__acts { margin-top: 9px; }
 .rvform { max-width: 560px; }
@@ -927,7 +954,8 @@ button.month__day:hover { border-color: var(--hair-cyan); background: #0b1522; }
 .lib__item.is-planned .lib__body b { color: var(--muted); }
 .lib__nodes { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
 .libnode {
-  text-align: left; background: var(--bg2); border: 1px solid var(--line);
+  display: block; text-align: left; text-decoration: none;
+  background: var(--bg2); border: 1px solid var(--line);
   border-radius: var(--radius-sm); padding: 12px 13px; cursor: pointer; font: inherit; color: var(--text);
 }
 .libnode:hover { border-color: var(--cyan); }

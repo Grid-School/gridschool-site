@@ -13,13 +13,33 @@ export const STATUS = {
   FUTURE: "future",
 };
 
+export const TRACK = {
+  SPINE: "spine",
+  DEPTH: "depth",
+};
+
+const DEPTH_FAMILIES = new Set(["world", "graph"]);
+
+/** Spine is the graded path to the defense. Depth is elective. */
+export function trackOf(node, families = []) {
+  if (node.track === TRACK.SPINE || node.track === TRACK.DEPTH) return node.track;
+  const family = families.find((item) => item.id === node.family);
+  if (family?.track === TRACK.SPINE || family?.track === TRACK.DEPTH) return family.track;
+  return DEPTH_FAMILIES.has(node.family) ? TRACK.DEPTH : TRACK.SPINE;
+}
+
+export function isSpine(node) {
+  return (node.track ?? TRACK.SPINE) === TRACK.SPINE;
+}
+
 export function buildGraph(curriculum, student) {
   const extra = student?.extraNodes ?? [];
   const overrides = student?.nodeOverrides ?? {};
-  const nodes = [...curriculum.nodes, ...extra].map((node) => ({
-    ...node,
-    ...(overrides[node.id] ?? {}),
-  }));
+  const families = curriculum.families ?? [];
+  const nodes = [...curriculum.nodes, ...extra].map((node) => {
+    const merged = { ...node, ...(overrides[node.id] ?? {}) };
+    return { ...merged, track: trackOf(merged, families) };
+  });
   const byId = new Map(nodes.map((node) => [node.id, node]));
 
   const edges = [];
@@ -89,21 +109,40 @@ export function blockedBy(graph, id) {
     .filter((node) => node && node.status !== STATUS.LIT);
 }
 
-/** The node the student should be working. Lowest open core node. */
-export function nextUp(graph) {
-  const open = graph.nodes
+function openCore(graph) {
+  return graph.nodes
     .filter((node) => node.status === STATUS.OPEN && node.kind !== "future")
     .sort((a, b) => a.n - b.n);
-  return open[0] ?? null;
+}
+
+/** The node the student should be working. Spine first; depth only if no spine is open. */
+export function nextUp(graph) {
+  const open = openCore(graph);
+  const spine = open.filter(isSpine);
+  return (spine.length ? spine : open)[0] ?? null;
+}
+
+function countTrack(graph, track) {
+  const nodes = graph.nodes.filter((node) => node.kind !== "future" && (node.track ?? TRACK.SPINE) === track);
+  const lit = nodes.filter((node) => node.status === STATUS.LIT);
+  return {
+    lit: lit.length,
+    total: nodes.length,
+    pct: nodes.length ? Math.round((lit.length / nodes.length) * 100) : 0,
+  };
 }
 
 export function progress(graph) {
+  const spine = countTrack(graph, TRACK.SPINE);
+  const depth = countTrack(graph, TRACK.DEPTH);
   const core = graph.nodes.filter((node) => node.kind !== "future");
   const lit = core.filter((node) => node.status === STATUS.LIT);
   return {
     lit: lit.length,
     total: core.length,
     pct: core.length ? Math.round((lit.length / core.length) * 100) : 0,
+    spine,
+    depth,
   };
 }
 
