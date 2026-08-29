@@ -83,6 +83,10 @@ export function createModal({ label, size = "wide", onClose = () => {} } = {}) {
     // trap has nothing to hold.
     const hadFocus = panel.contains(document.activeElement);
     mount(body, content);
+    /* Every open — same node or a new one — starts at the top. The panel is the
+       scroll container; remounting content alone leaves scrollTop in place. */
+    panel.scrollTop = 0;
+    body.scrollTop = 0;
     if (open && hadFocus && !panel.contains(document.activeElement)) {
       panel.focus({ preventScroll: true });
     }
@@ -99,6 +103,7 @@ export function createModal({ label, size = "wide", onClose = () => {} } = {}) {
     setOrigin(origin);
     requestAnimationFrame(() => {
       layer.classList.add("is-open");
+      panel.scrollTop = 0;
       panel.focus({ preventScroll: true });
     });
   }
@@ -119,6 +124,7 @@ export function createModal({ label, size = "wide", onClose = () => {} } = {}) {
       layer.hidden = true;
       layer.classList.remove("is-closing");
       clear(body);
+      panel.scrollTop = 0;
       closing = null;
     }, OUT_MS);
 
