@@ -23,7 +23,7 @@ import { applyLayout, bounds } from "../graph/layout.js";
 import { STATUS, nextUp, progress, blockedBy } from "../graph/model.js";
 import { taskRow } from "./parts.js";
 import { statusLabel, LAW } from "../copy.js";
-import { videoCard } from "./video.js";
+import { videoCard, resolveMedia } from "./video.js";
 import { mapList } from "./map-list.js";
 import { handoffDisclosure } from "./handoff.js";
 import { TASK_STATE } from "../tasks.js";
@@ -34,12 +34,12 @@ const INSETS = { top: 76, right: 132, bottom: 72, left: 150 };
 /** Same breakpoint the stylesheet uses to move the controls. */
 const NARROW = 900;
 
-/** Every step shows a player. Extra or unfinished nodes get this until they have their own. */
+/** Every step shows a player. Extra or unfinished nodes get the CDN test clip until filmed. */
 const FALLBACK_VIDEO = {
-  title: "Watch this first",
-  mins: 8,
-  youtube: "jNQXAC9IVRw",
-  watchWhen: "Watch this, then do the steps.",
+  title: "Stream test · Big Buck Bunny (CC)",
+  mins: 1,
+  path: "test-bbb",
+  watchWhen: "Test clip on our CDN. Play, scrub, and switch quality. Real lesson films replace this.",
 };
 
 export function renderMap(ctx, initialArg) {
@@ -430,7 +430,7 @@ export function renderMap(ctx, initialArg) {
     const isAdmin = current.role === "admin";
     const blockers = blockedBy(graph, node.id);
     const canTurnIn = node.status === STATUS.OPEN || node.status === STATUS.LIT;
-    const video = node.video?.youtube ? node.video : FALLBACK_VIDEO;
+    const video = resolveMedia(node.video) ? node.video : FALLBACK_VIDEO;
 
     return el(
       "div.room",
@@ -455,6 +455,7 @@ export function renderMap(ctx, initialArg) {
           title: video.title,
           mins: video.mins,
           youtube: video.youtube,
+          path: video.path,
           watchWhen: video.watchWhen ?? "Watch this, then do the steps.",
           startOpen: true,
           startWide: true,

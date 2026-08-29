@@ -48,18 +48,20 @@ export function renderLibrary(ctx) {
             "ol.lib",
             {},
             track.items.map((item, index) => {
+              const ready = Boolean(item.path || item.youtube);
               const player = videoCard({
                 title: item.title,
                 mins: item.mins,
                 youtube: item.youtube,
+                path: item.path,
                 watchWhen: item.watchWhen,
               });
               if (player) players.set(item.id, player);
 
               const watch = btn({
-                label: item.youtube ? "Watch" : "Not filmed yet",
+                label: ready ? "Watch" : "Not filmed yet",
                 variant: "quiet",
-                disabled: !item.youtube,
+                disabled: !ready,
                 onclick: () => {
                   if (!player) return;
                   const open = player.toggle();
@@ -76,7 +78,7 @@ export function renderLibrary(ctx) {
 
               const row = el(
                 "li.lib__item",
-                { "data-id": item.id, class: item.youtube ? "is-ready" : "is-planned" },
+                { "data-id": item.id, class: ready ? "is-ready" : "is-planned" },
                 el("span.lib__n", {}, String(item.order ?? index + 1).padStart(2, "0")),
                 el(
                   "div.lib__body",

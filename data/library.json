@@ -1,7 +1,6 @@
 {
-  "note": "Watch order. The first two before you send anything. After that, the video on the step you are on. Do not binge the rest.",
+  "note": "Watch order. The first two before you send anything. After that, the video on the step you are on. Do not binge the rest. Lesson films use path under MEDIA.baseUrl (Lightsail CDN), not YouTube.",
   "watchWhen": "Week 1: watch the first two, then start the work. Later videos sit on the step they belong to. Open that step, watch, then do the steps.",
-  "placeholderYoutube": "jNQXAC9IVRw",
   "tracks": [
     {
       "id": "first",
@@ -10,11 +9,11 @@
       "items": [
         {
           "id": "v.linkedin",
-          "title": "Your LinkedIn, so a stranger can find you",
-          "mins": 11,
-          "status": "planned",
-          "youtube": "jNQXAC9IVRw",
-          "watchWhen": "Watch this before you rewrite your headline or About.",
+          "title": "Stream test · Big Buck Bunny (CC)",
+          "mins": 1,
+          "status": "ready",
+          "path": "test-bbb",
+          "watchWhen": "CDN test clip. Confirm play, scrub, and 360p–4K. Real LinkedIn film replaces this path.",
           "order": 1
         },
         {
@@ -22,7 +21,6 @@
           "title": "A one-page site that shows your work",
           "mins": 12,
           "status": "planned",
-          "youtube": "jNQXAC9IVRw",
           "watchWhen": "Watch this before you pick the repo and put a link online.",
           "order": 2
         }
@@ -38,7 +36,6 @@
           "title": "How this board works",
           "mins": 8,
           "status": "planned",
-          "youtube": "jNQXAC9IVRw",
           "watchWhen": "Watch once, on day one. A step is done when it has a link.",
           "order": 3
         },
@@ -47,7 +44,6 @@
           "title": "Send work, get notes, change it",
           "mins": 10,
           "status": "planned",
-          "youtube": "jNQXAC9IVRw",
           "watchWhen": "Watch before you send your first thing for review.",
           "order": 4
         },
@@ -56,7 +52,6 @@
           "title": "To do, doing, done, and a weekly plan",
           "mins": 9,
           "status": "planned",
-          "youtube": "jNQXAC9IVRw",
           "watchWhen": "Watch when you start the studio project. Kanban is the board. Scrum is the weekly plan. We use both, simply.",
           "order": 5
         }
@@ -72,7 +67,6 @@
           "title": "Reading code you did not write",
           "mins": 18,
           "status": "planned",
-          "youtube": "jNQXAC9IVRw",
           "watchWhen": "Watch on the messy-code step, before you change anything. This is graph engineering: follow one request, then name what would break.",
           "order": 6
         },
@@ -81,7 +75,6 @@
           "title": "Four skills: say it, understand it, choose it, check it",
           "mins": 14,
           "status": "planned",
-          "youtube": "jNQXAC9IVRw",
           "watchWhen": "Watch once in week 3. Communication, Comprehension, Vision, Verification. Every drill and every review uses these.",
           "order": 7
         },
@@ -90,7 +83,6 @@
           "title": "Build the change, then ask for a review",
           "mins": 15,
           "status": "planned",
-          "youtube": "jNQXAC9IVRw",
           "watchWhen": "Watch when you start the actual change on the studio repo.",
           "order": 8
         }

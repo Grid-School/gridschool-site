@@ -58,10 +58,17 @@ export const COACH = {
   hostedNote: "Paste an xAI key into site/server/coach.py and point endpoint at it.",
 };
 
-/** Video library. Each entry becomes a real URL as Aden films it. */
+/**
+ * Lesson media. Public/funnel videos stay on YouTube; curriculum films live
+ * on Lightsail object storage + CDN (gridschool-lessons → gridschool-media).
+ * Each lesson entry uses `path` under baseUrl (HLS master + mp4/{360,720,1080,2160}.mp4).
+ */
 export const MEDIA = {
-  provider: "youtube-unlisted",
-  playlist: "REPLACE_ME_YOUTUBE_PLAYLIST",
+  provider: "lightsail-cdn",
+  baseUrl: "https://dn1lktb897fdd.cloudfront.net/lessons",
+  defaultQuality: "1080",
+  /** Public YouTube channel for Episode 1 / outreach only — not for lesson embeds. */
+  youtubeChannel: "REPLACE_ME_YOUTUBE_CHANNEL",
 };
 
 export const PRICING = {
