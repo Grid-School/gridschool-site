@@ -521,6 +521,11 @@ body[data-view="step"] .view--step { flex: 1 1 auto; min-height: 0; }
 .gnode.is-selected .gnode__label { fill: #fff; }
 .gnode.is-wiring .gnode__ring { stroke: var(--amber); stroke-width: 2.4; }
 .gnode.is-dimmed { opacity: .3; }
+/* Depth is real but quieter than the required spine so day-one eyes do not treat it as homework. */
+.gnode.is-depth:not(.is-next):not(.is-selected) { opacity: .55; }
+.gnode.is-depth.is-locked:not(.is-next) { opacity: .38; }
+.gnode.is-depth .gnode__label { fill: color-mix(in srgb, var(--muted) 70%, #8a9bb8); }
+.map.lod-far .gnode.is-depth .gnode__num { opacity: .65; }
 .gnode:focus { outline: none; }
 .gnode:focus-visible .gnode__ring { stroke: #fff; stroke-dasharray: 3 3; }
 
@@ -993,6 +998,16 @@ button.month__day:hover { border-color: var(--hair-cyan); background: #0b1522; }
 }
 .law__line { font-size: clamp(17px, 2.2vw, 21px); color: #fff; margin-top: 7px; }
 .law__sub { font-size: 14px; color: var(--muted); margin-top: 9px; max-width: 74ch; }
+.gloss {
+  margin: 18px 0 8px; padding: 14px 16px;
+  border: 1px solid var(--hair); border-radius: var(--radius); background: var(--surface);
+}
+.gloss__list {
+  list-style: none; margin: 10px 0 0; padding: 0;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.gloss__list li { font-size: 14px; color: var(--muted); line-height: 1.45; }
+.gloss__list b { color: var(--cyan); margin-right: 6px; }
 
 .fsteps { list-style: none; display: flex; flex-direction: column; gap: 0; }
 .fstep { display: flex; gap: 16px; padding: 18px 0; border-bottom: 1px solid var(--hair); }

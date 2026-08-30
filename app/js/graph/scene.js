@@ -237,6 +237,8 @@ export function paint(scene, graph, { selectedId = null, nextId = null, tracingI
     group.classList.toggle("is-selected", id === selectedId);
     group.classList.toggle("is-onpath", Boolean(trace?.has(id)));
     group.classList.toggle("is-dimmed", Boolean(trace) && !trace.has(id));
+    group.classList.toggle("is-depth", node.track === "depth");
+    group.classList.toggle("is-spine", node.track !== "depth");
 
     // Content that tracks the student's actual state, not just classes.
     group.querySelector(".gnode__meta").textContent = metaFor(node);

@@ -113,7 +113,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
         el(
           "p.step__lead",
           {},
-          "Everything for this step is on this page. Optional deeper reading appears only if named below."
+          "Leave able to inherit a messy system, change it, prove it, and defend it. Everything for this step is on this page. Optional deeper reading appears only if named below."
         )
       ),
       el(

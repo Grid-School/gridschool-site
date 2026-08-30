@@ -55,7 +55,7 @@ export function renderFirstRun(ctx) {
       el(
         "p.muted",
         {},
-        "Three things and you are running. You can leave this screen whenever you want; it will not come back once you have attached your first link."
+        "Three things and you are running. You leave able to inherit a messy system, change it, prove it, and defend it. You can leave this screen whenever you want; it will not come back once you have attached your first link."
       )
     ),
     el(
@@ -70,18 +70,30 @@ export function renderFirstRun(ctx) {
       )
     ),
     el(
+      "section.gloss",
+      {},
+      el("b.eyebrow", {}, "Three places work lives"),
+      el(
+        "ul.gloss__list",
+        {},
+        el("li", {}, el("b", {}, "Studio"), " — the inherited desk repo on the required path. Day one boots this."),
+        el("li", {}, el("b", {}, "World"), " — the shared game at play.gridschool.org. Depth. You see it on Monday; you ship into it when the spine allows."),
+        el("li", {}, el("b", {}, "Graph"), " — optional nanograph / GridSeak depth. Opens under graph steps, not as a second school.")
+      )
+    ),
+    el(
       "ol.fsteps",
       {},
       step({
         n: 1,
         title: "See the whole path",
-        body: "The middle rail is required: inherit a system, read it, change it, prove it, defend it, then one public trail. The world and the graph are depth (optional). You work them as far as the eight weeks allow. Today will not send you there while a required step is open.",
+        body: "The middle rail is required: inherit a system, read it, change it, prove it, defend it, then one public trail. The world and the graph are depth (optional). Today will not send you there while a required step is open.",
         action: btn({ label: "Open the map", variant: "solid", onclick: () => leave("map") }),
       }),
       step({
         n: 2,
         title: "Open the first step and do the work",
-        body: "Your first required steps are already open: how this board works, then making the inherited repo run. Read the step on the board, do the tasks, paste a link. Films in the Library appear when they are ready; do not wait on them.",
+        body: "How this board works, then making the studio desk run. Read the step, do the tasks, paste a link. The world is a cohort demo, not your first homework. Films appear in the Library when ready; do not wait on them.",
         action: first
           ? btn({
               label: `Go to ${first.title}`,

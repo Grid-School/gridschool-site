@@ -248,7 +248,7 @@ export function renderMap(ctx, initialArg) {
         {},
         modeToggle(),
         el("b.hud__count", {}, `Required ${prog.spine.lit} of ${prog.spine.total}`),
-        el("span.hud__depth", {}, `Depth ${prog.depth.lit} of ${prog.depth.total}`),
+        el("span.hud__depth", {}, `Depth ${prog.depth.lit} of ${prog.depth.total} · optional`),
         el("span.hud__law", {}, RULE)
       ),
       el(

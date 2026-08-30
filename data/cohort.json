@@ -5,6 +5,8 @@
   "weeks": 8,
   "spots": 5,
   "timezoneLabel": "MT",
+  "season": "us-home",
+  "seasonNote": "Wall-clock for live blocks. us-home = Aden evenings MT. ph-season = swap times per ops/solution-set.md (US evenings do not fit wake-14:00/work-22:00 PHT). Students always see timezoneLabel; operators swap season without changing ritual shape.",
   "recurring": [
     {
       "id": "cohort",
