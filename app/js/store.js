@@ -91,6 +91,19 @@ export function clearEvidence(nodeId) {
   });
 }
 
+/** Soft progress on a step (watched film, marked letter read). Does not light the node. */
+export function setStepFlag(nodeId, flag, value = true) {
+  return commit(() => {
+    overlay.stepFlags = { ...(overlay.stepFlags ?? {}) };
+    const prev = overlay.stepFlags[nodeId] ?? {};
+    overlay.stepFlags[nodeId] = { ...prev, [flag]: value, at: new Date().toISOString().slice(0, 10) };
+  });
+}
+
+export function stepFlags(nodeId) {
+  return mergedStudent().stepFlags?.[nodeId] ?? {};
+}
+
 /* ---------- the weekly steer ---------- */
 
 export function setFocusNext({ focus, next }) {
@@ -313,5 +326,6 @@ export function exportStudent() {
   const tasks = Object.fromEntries(
     Object.entries(student.tasks).filter(([, value]) => value && value.state)
   );
-  return JSON.stringify({ ...student, evidence, tasks }, null, 2);
+  const stepFlags = student.stepFlags ?? {};
+  return JSON.stringify({ ...student, evidence, tasks, stepFlags }, null, 2);
 }

@@ -379,10 +379,58 @@ body[data-view="step"] .view--step { flex: 1 1 auto; min-height: 0; }
 
 /* The graph and the list live in one view and swap in place, so the switch never
    reads as navigation to somewhere else. */
-.mapview { height: 100%; min-height: 0; display: flex; flex-direction: column; }
+.mapview { height: 100%; min-height: 0; display: flex; flex-direction: column; position: relative; }
 .mapview > .view { flex: 1 1 auto; min-height: 0; }
 .view--maplist { overflow-y: auto; }
 .maplist > * + * { margin-top: 16px; }
+.lock-float {
+  position: absolute;
+  left: 50%;
+  top: 26%;
+  transform: translateX(-50%);
+  z-index: 20;
+  width: min(420px, calc(100% - 32px));
+  pointer-events: auto;
+}
+.lock-note {
+  background: color-mix(in srgb, var(--surface) 94%, #000);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.45);
+}
+.lock-note__title { display: block; color: #fff; font-size: 15px; margin-bottom: 8px; }
+.lock-note p { color: var(--muted); font-size: 14px; line-height: 1.55; margin: 0; }
+.lock-note__acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.step--locked .lock-note { margin-top: 24px; max-width: 52ch; box-shadow: none; }
+.step__schedule, .step__ready {
+  margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--hair);
+}
+.welcome-sched { list-style: none; padding: 0; margin: 12px 0 0; display: flex; flex-direction: column; gap: 12px; max-width: 62ch; }
+.welcome-sched__item {
+  border: 1px solid var(--hair);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+}
+.welcome-sched__item b { display: block; color: #fff; font-size: 14px; }
+.welcome-sched__item span { display: block; color: var(--muted); font-size: 12.5px; margin-top: 3px; }
+.welcome-sched__item p { color: var(--text); font-size: 13.5px; line-height: 1.5; margin: 8px 0 0; }
+.ready-list { list-style: none; padding: 0; margin: 12px 0 0; display: flex; flex-direction: column; gap: 8px; max-width: 62ch; }
+.ready-list__item {
+  display: grid;
+  grid-template-columns: 1.25rem 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid var(--hair);
+  border-radius: var(--radius);
+  color: var(--muted);
+  font-size: 14px;
+}
+.ready-list__item.is-ok { color: var(--text); border-color: color-mix(in srgb, var(--ok) 35%, var(--hair)); }
+.ready-list__mark { color: var(--cyan); font-weight: 700; }
+.ready-list__item.is-ok .ready-list__mark { color: var(--ok); }
 
 /* the graph/list switch */
 .seg {
@@ -1174,7 +1222,7 @@ button.month__day:hover { border-color: var(--hair-cyan); background: #0b1522; }
 .step--welcome .lesson__sec--letter h2 { margin-bottom: 10px; }
 .step--welcome .lesson__sec--letter p { color: var(--text); font-size: 15.5px; line-height: 1.75; }
 .step--welcome .step__video { margin-top: 22px; }
-.step__do, .step__why, .step__video, .step__lesson, .step__tasks, .step__out, .step__mods {
+.step__do, .step__why, .step__video, .step__lesson, .step__tasks, .step__out, .step__mods, .step__schedule, .step__ready {
   margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--hair);
 }
 .step__lesson h2 { font-size: 16px; color: #fff; margin: 0 0 6px; }

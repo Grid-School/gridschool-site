@@ -16,6 +16,7 @@ import { STATUS, nextUp, progress } from "../graph/model.js";
 import { statusLabel, trackLabel, RULE } from "../copy.js";
 import { mapList } from "./map-list.js";
 import { createGridState, hashFor, VIEW } from "./grid-state.js";
+import { lockNotice, shouldInterceptLock } from "./lock-notice.js";
 
 /** Right side clears the control column, top clears the legend bar. */
 const INSETS = { top: 76, right: 132, bottom: 72, left: 150 };
@@ -31,10 +32,11 @@ export function renderMap(ctx, initialArg) {
   const hudTop = el("div.hud.hud--top");
   const hudSide = el("div.hud.hud--side");
   const status = el("div.hud.hud--status", { role: "status" });
+  const lockFloat = el("div.lock-float", { hidden: true });
   // Two projections of one thing, so they live in one view and swap in place.
   const canvas = el("div.view.view--map", {}, svg, hudTop, hudSide, status);
   const list = el("div.view.view--maplist", { hidden: true });
-  const root = el("div.mapview", {}, canvas, list);
+  const root = el("div.mapview", {}, canvas, list, lockFloat);
 
   let current = ctx;
   let signature = "";
@@ -125,7 +127,7 @@ export function renderMap(ctx, initialArg) {
           // Opening a node from the list goes back to the graph, because the
           // room is anchored to a node's position on the board. One event does
           // both: the machine cannot land on "list, with a room open".
-          onOpenNode: (id) => current.navigate("map", id),
+          onOpenNode: (id) => openNode(id),
         })
       );
     }
@@ -188,18 +190,51 @@ export function renderMap(ctx, initialArg) {
     camera.frame(here, { scale: 1, animate, insets: INSETS });
   }
 
+  function openNode(id) {
+    const node = current.state.graph.byId.get(id);
+    if (shouldInterceptLock(node)) {
+      showLockNotice(node);
+      return;
+    }
+    dismissLockNotice();
+    setStatus(null);
+    current.navigate("map", id);
+  }
+
+  function dismissLockNotice() {
+    lockFloat.hidden = true;
+    mount(lockFloat);
+  }
+
+  function showLockNotice(node) {
+    setStatus(null);
+    lockFloat.hidden = false;
+    mount(
+      lockFloat,
+      lockNotice({
+        graph: current.state.graph,
+        node,
+        onGo: (id) => {
+          dismissLockNotice();
+          current.navigate("map", id);
+        },
+        onDismiss: dismissLockNotice,
+      })
+    );
+  }
+
   function wireNodes() {
     scene.nodeEls.forEach((group, id) => {
       group.addEventListener("click", (event) => {
         if (camera.didDrag() || editor.isDragging()) return;
         if (editor.enabled && editor.mode === "connect") return;
         event.stopPropagation();
-        current.navigate("map", id);
+        openNode(id);
       });
       group.addEventListener("keydown", (event) => {
         if (event.key === "Enter" || event.key === " ") {
           event.preventDefault();
-          current.navigate("map", id);
+          openNode(id);
         }
       });
       group.addEventListener("mouseenter", () => {
@@ -329,6 +364,17 @@ export function renderMap(ctx, initialArg) {
   function hoverLine(id) {
     const node = current.state.graph.byId.get(id);
     if (!node) return null;
+    if (node.status === STATUS.LOCKED) {
+      const blockers = (node.requires ?? [])
+        .map((rid) => current.state.graph.byId.get(rid))
+        .filter((item) => item && item.status !== STATUS.LIT)
+        .map((item) => item.title);
+      const wait = blockers.length ? blockers.join(", ") : "a prior step";
+      return `${String(node.n).padStart(2, "0")} · ${node.title} · locked until ${wait}`;
+    }
+    if (node.status === STATUS.FUTURE) {
+      return `${String(node.n).padStart(2, "0")} · ${node.title} · opens later`;
+    }
     const parts = [`${String(node.n).padStart(2, "0")} · ${node.title}`];
     parts.push(trackLabel(node.track));
     if (node.why) parts.push(node.why);

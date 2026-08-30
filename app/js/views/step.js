@@ -7,13 +7,15 @@
 
 import { el, mount } from "../dom.js";
 import { btn, placeholder, toast, field } from "../ui.js";
-import { STATUS, blockedBy, progress, isSpine } from "../graph/model.js";
+import { STATUS, blockedBy, progress, isSpine, nextUp } from "../graph/model.js";
 import { taskRow, reviewScores } from "./parts.js";
 import { statusLabel, trackLabel, ccvvLabel, RULE } from "../copy.js";
 import { videoCard, resolveMedia } from "./video.js";
 import { handoffDisclosure } from "./handoff.js";
 import { TASK_STATE } from "../tasks.js";
 import { renderMarkdown } from "../markdown.js";
+import { lockNotice, shouldInterceptLock } from "./lock-notice.js";
+import { welcomeSchedule, welcomeReadiness, welcomeSubmitWarn } from "./welcome.js";
 
 const FALLBACK_VIDEO = {
   title: "Stream test · Big Buck Bunny (CC)",
@@ -99,8 +101,57 @@ export function renderStep(ctx, nodeId, moduleId = null) {
               ? "Placeholder until this welcome film is recorded. Play if you want to hear the shape; the letter below is the real orientation."
               : "Placeholder stream until this lesson is filmed. Play to confirm the player; the real film replaces this.",
           startOpen: true,
+          onWatch: welcome
+            ? () => {
+                current.store.setStepFlag(node.id, "watched", true);
+              }
+            : null,
         })
       : null;
+
+    if (shouldInterceptLock(node)) {
+      return el(
+        "div.step.step--locked",
+        {},
+        el(
+          "header.step__head",
+          {},
+          el(
+            "div.step__nav",
+            {},
+            btn({ label: "← Back to map", variant: "quiet", onclick: () => current.navigate("map") })
+          ),
+          el("b.eyebrow", {}, statusLabel(node.status)),
+          el("h1.step__title", {}, node.title),
+          el(
+            "p.step__lead",
+            {},
+            "This step is not open for turn-in yet. You can still read what is ahead — the board will not let you light it early."
+          )
+        ),
+        lockNotice({
+          graph,
+          node,
+          onGo: (id) => current.navigate("map", id),
+          onDismiss: () => current.navigate("map"),
+        }),
+        node.lesson?.length
+          ? el(
+              "section.step__lesson",
+              {},
+              el("b.eyebrow", {}, "Preview"),
+              node.lesson.map((section) =>
+                el(
+                  "section.lesson__sec",
+                  {},
+                  section.h && el("h2", {}, section.h),
+                  (section.p ?? []).map((paragraph) => el("p", {}, paragraph))
+                )
+              )
+            )
+          : null
+      );
+    }
 
     return el(
       "div.step",
@@ -165,6 +216,15 @@ export function renderStep(ctx, nodeId, moduleId = null) {
               )
             )
           : null,
+      welcome ? welcomeSchedule(current.state.cohort) : null,
+      welcome
+        ? welcomeReadiness({
+            node,
+            student,
+            store: current.store,
+            onMarked: () => paint(),
+          })
+        : null,
       node.kind === "future"
         ? placeholder({
             title: "Not open yet",
@@ -416,8 +476,22 @@ export function renderStep(ctx, nodeId, moduleId = null) {
             toast("That needs to be a URL a stranger can open.", "warn");
             return;
           }
-          current.store.submitEvidence(node.id, value, note.input.value.trim());
-          toast(`Step ${String(node.n).padStart(2, "0")} saved.`);
+          const warn = welcomeSubmitWarn(node, current.state.student);
+          if (warn) {
+            toast(warn, "warn");
+            return;
+          }
+          const nextState = current.store.submitEvidence(node.id, value, note.input.value.trim());
+          const next = nextUp(nextState.graph);
+          if (node.id === "or.start") {
+            toast(
+              next
+                ? `Orientation lit. Next open: ${next.title}.`
+                : "Orientation lit. Open the map for what is current."
+            );
+          } else {
+            toast(`Step ${String(node.n).padStart(2, "0")} saved.`);
+          }
         },
       },
       url.node,

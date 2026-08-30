@@ -61,13 +61,14 @@ export function videoCard({
   defaultQuality,
   watchWhen,
   startOpen = false,
+  onWatch = null,
 } = {}) {
   const resolved = resolveMedia({ youtube, path, base, hls, thumb, defaultQuality });
   if (!resolved) return null;
-  return buildCard({ title, mins, media: resolved, watchWhen, startOpen });
+  return buildCard({ title, mins, media: resolved, watchWhen, startOpen, onWatch });
 }
 
-function buildCard({ title, mins, media, watchWhen, startOpen }) {
+function buildCard({ title, mins, media, watchWhen, startOpen, onWatch }) {
   const posterKids = [
     media.thumb
       ? el("img.vid__poster-img", {
@@ -121,6 +122,11 @@ function buildCard({ title, mins, media, watchWhen, startOpen }) {
 
   function enterTheater() {
     if (theater) return;
+    try {
+      onWatch?.();
+    } catch {
+      /* watch tracking must never block playback */
+    }
     theater = openTheater({
       title,
       mins,

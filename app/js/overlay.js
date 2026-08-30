@@ -8,7 +8,7 @@
 
 export const overlayKey = (slug) => `gridschool.overlay.v1.${slug}`;
 
-const MERGE_KEYS = ["evidence", "tasks", "layout", "nodeOverrides"];
+const MERGE_KEYS = ["evidence", "tasks", "layout", "nodeOverrides", "stepFlags"];
 
 export function readOverlay(slug) {
   try {
@@ -51,6 +51,7 @@ export function mergeStudent(student, overlay) {
     tasks: { ...(student.tasks ?? {}), ...(overlay.tasks ?? {}) },
     layout: { ...(student.layout ?? {}), ...(overlay.layout ?? {}) },
     nodeOverrides: { ...(student.nodeOverrides ?? {}), ...(overlay.nodeOverrides ?? {}) },
+    stepFlags: { ...(student.stepFlags ?? {}), ...(overlay.stepFlags ?? {}) },
     // Lists replace rather than merge: the overlay owns the whole list once it
     // has touched it, which is the only version that can delete an entry.
     extraNodes: overlay.extraNodes ?? student.extraNodes ?? [],
