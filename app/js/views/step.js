@@ -207,6 +207,18 @@ export function renderStep(ctx, nodeId, moduleId = null) {
               node.reviewFor ? el("p.room__reviewfor", {}, el("b", {}, "Aden looks for "), node.reviewFor) : null
             )
           : null,
+        isSpine(node) && node.id !== "or.start"
+          ? el(
+              "details.reveal.step__rubric",
+              {},
+              el("summary", {}, "How week 7 scores you (the four skills)"),
+              el(
+                "p.room__hint",
+                {},
+                "Communication · Comprehension · Vision · Verification. The outside reader uses these. Write every turn-in so a stranger could score you on them — you will reuse that muscle in the live defense."
+              )
+            )
+          : null,
         blockers.length
           ? el(
               "div.room__blocked",
