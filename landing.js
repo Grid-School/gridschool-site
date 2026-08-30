@@ -1,6 +1,6 @@
 /**
- * Landing page: evidence panel + weekly-loop diagram + reveal-on-scroll.
- * No fake student sign-in.
+ * Landing page: weekly-loop diagram + reveal-on-scroll.
+ * The Living World hero boots from js/landing-world.js.
  */
 
 import { loadReceipts, mountEvidence } from "./js/evidence.js";
