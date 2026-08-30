@@ -18,7 +18,9 @@
       "where": "Discord · voice",
       "who": "All five and me",
       "agenda": "What you shipped. What a reviewer would still not trust. One live review.",
-      "required": true
+      "required": true,
+      "room": "discord",
+      "open": "Open Discord"
     },
     {
       "id": "oneone",
@@ -31,7 +33,9 @@
       "who": "You and me",
       "agenda": "Your code. Your defense. The next evidence URL.",
       "required": true,
-      "perStudent": true
+      "perStudent": true,
+      "room": "oneOnOne",
+      "open": "Open the call"
     },
     {
       "id": "ship",
@@ -43,7 +47,9 @@
       "where": "#ship",
       "who": "You",
       "agenda": "One URL from the last seven days. I mark it up over the weekend.",
-      "required": true
+      "required": true,
+      "room": "discord",
+      "open": "Open Discord"
     },
     {
       "id": "reviews",
@@ -55,7 +61,9 @@
       "where": "#asks and your board",
       "who": "Me",
       "agenda": "Up to three written reviews back. FOCUS and NEXT set for Monday.",
-      "required": false
+      "required": false,
+      "room": "discord",
+      "open": "Open Discord"
     }
   ],
   "milestones": [

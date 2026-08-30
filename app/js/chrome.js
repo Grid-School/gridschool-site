@@ -2,7 +2,7 @@
  * The shell around every view: rail, identity, the demo banner.
  * Built once and updated, so navigation never repaints the whole page.
  *
- * The rail has two doors and three drawers, on purpose. Eight items of equal
+ * The rail has two doors and two drawers, on purpose. Eight items of equal
  * weight is not a menu, it is a decision, and the student paying for this is
  * already out of decisions. Today answers "what now"; the Grid answers "where am I".
  * Everything else is either reached from those two or is a tool you go looking
@@ -28,7 +28,6 @@ const DOORS = [
 const TOOLS = [
   { id: "tasks", label: "All tasks" },
   { id: "calendar", label: "Calendar" },
-  { id: "library", label: "Library" },
 ];
 
 export function createChrome({ onNavigate, onReset, onExport }) {

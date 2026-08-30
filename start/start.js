@@ -1,7 +1,6 @@
 /**
- * Day one, rendered from config so it never lies about what is connected. Each
- * step either hands the student a working link or says plainly that the link is
- * coming, rather than showing a dead button.
+ * Day one. What do I do tonight.
+ * Three doors: the board, Discord, the 1:1. Week-1 work lives on the board.
  */
 
 import { link, LINKS } from "../config.js";
@@ -29,33 +28,18 @@ const STEPS = [
   {
     title: "Open your board",
     now: true,
-    body: `Your Path, your queue, your calendar, and your reviews in one place. Two fields matter every week: <b>Focus</b> and <b>Next</b>. I set them each Monday after reviews come back. A light turns on only when a URL exists.`,
+    body: `Today answers what to do next. The map is the whole path. A step lights only when a URL exists.`,
     action: { label: "Open my board", href: `../app/?s=${encodeURIComponent(slug)}`, variant: "cta" },
   },
   {
     title: "Join Discord",
-    body: `Discord. <code>#ship</code> requires a URL from the last seven days. <code>#asks</code> is where reviews get requested. Introduce yourself with a link, not a bio.`,
+    body: `<code>#ship</code> needs a URL from the last seven days. <code>#asks</code> is where you request reviews. Introduce yourself with a link, not a bio.`,
     action: { label: "Join Discord", linkKey: "discord" },
   },
   {
     title: "Book your weekly 1:1",
-    body: `One slot, same time every week, 45 minutes. The Monday cohort call is 75 minutes. Both are non-optional, and both show up on your calendar once booked.`,
+    body: `One slot, same time every week, 45 minutes. The Monday cohort call is 75 minutes. Both are on your calendar once booked.`,
     action: { label: "Pick my slot", linkKey: "oneOnOne" },
-  },
-  {
-    title: "Accept the tool pack",
-    body: `The prompts, the harness stub, and the Cursor rules I actually use. This is a bonus, not the product. The product is the review.`,
-    action: { label: "Accept the invite", linkKey: "toolPack" },
-  },
-  {
-    title: "Install the Coach and run one session tonight",
-    body: `Paste the Coach prompt into whichever AI you already pay for, then run one drill. It ends by writing a <code>FOR ADEN</code> block. Save it. It goes into your first review.`,
-    action: { label: "Open the Coach", href: `../app/?s=${encodeURIComponent(slug)}#/coach`, variant: "solid" },
-  },
-  {
-    title: "Open Welcome, then get the world running",
-    body: `The work lives in a live multiplayer world we are building together. Friends can walk in and see what you ship. Open Welcome on the board, write the first note, then boot the world on your machine and post proof in <code>#ship</code>.`,
-    action: { label: "Go to Welcome", href: `../app/?s=${encodeURIComponent(slug)}#/map/or.start`, variant: "solid" },
   },
 ];
 

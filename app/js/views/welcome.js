@@ -1,60 +1,11 @@
 /**
- * Welcome-step helpers: schedule from cohort + readiness that makes progress feel insured.
+ * Welcome-step helpers: readiness that makes the first note feel finishable.
+ * Calendar owns when. This page owns the note and the URL.
  */
 
 import { el } from "../dom.js";
 import { btn } from "../ui.js";
 import { TASK_STATE } from "../tasks.js";
-
-const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-
-function formatClock(hhmm, tz) {
-  if (!hhmm) return "";
-  const [hRaw, mRaw] = hhmm.split(":").map(Number);
-  const ampm = hRaw >= 12 ? "PM" : "AM";
-  const h = ((hRaw + 11) % 12) + 1;
-  const mins = String(mRaw ?? 0).padStart(2, "0");
-  return `${h}:${mins} ${ampm} ${tz || ""}`.trim();
-}
-
-/** Live rhythm so the welcome page is not a static essay about meetings. */
-export function welcomeSchedule(cohort) {
-  if (!cohort?.recurring?.length) return null;
-  const tz = cohort.timezoneLabel || "";
-  return el(
-    "section.step__schedule",
-    {},
-    el("b.eyebrow", {}, "How the week runs"),
-    el(
-      "p.room__hint",
-      {},
-      `Founding cohort · ${cohort.name || "Founding 001"}. Times are ${tz || "the cohort timezone"}. Open Calendar anytime for the exact dates.`
-    ),
-    el(
-      "ul.welcome-sched",
-      {},
-      cohort.recurring.map((item) => {
-        const day = DAYS[item.weekday] ?? "Weekly";
-        const when = item.mins
-          ? `${day} · ${formatClock(item.time, tz)} · ${item.mins} min`
-          : `${day} · ${formatClock(item.time, tz)}`;
-        return el(
-          "li.welcome-sched__item",
-          {},
-          el("b", {}, item.title),
-          el("span", {}, when),
-          item.where && el("span", {}, item.where),
-          item.agenda && el("p", {}, item.agenda)
-        );
-      })
-    ),
-    el(
-      "p.room__hint",
-      {},
-      "Discord is where the cohort talks between calls. Calendar is the clock. Today is the one next move. The board map is the whole path. You do not need to memorize this. You need to know where to look."
-    )
-  );
-}
 
 /**
  * Checklist that tracks watch / read / tasks / link so the first step feels

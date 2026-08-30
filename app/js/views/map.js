@@ -13,7 +13,7 @@ import { createCamera } from "../graph/camera.js";
 import { createEditor } from "../graph/editor.js";
 import { applyLayout, bounds } from "../graph/layout.js";
 import { STATUS, nextUp, progress } from "../graph/model.js";
-import { statusLabel, trackLabel, RULE } from "../copy.js";
+import { trackLabel } from "../copy.js";
 import { mapList } from "./map-list.js";
 import { createGridState, hashFor, VIEW } from "./grid-state.js";
 import { lockNotice, shouldInterceptLock } from "./lock-notice.js";
@@ -283,8 +283,7 @@ export function renderMap(ctx, initialArg) {
         {},
         modeToggle(),
         el("b.hud__count", {}, `Required ${prog.spine.lit} of ${prog.spine.total}`),
-        el("span.hud__depth", {}, `Depth ${prog.depth.lit} of ${prog.depth.total} · optional`),
-        el("span.hud__law", {}, RULE)
+        isAdmin && el("span.hud__depth", {}, `Depth ${prog.depth.lit} of ${prog.depth.total} · optional`)
       ),
       el(
         "div.hud__group",

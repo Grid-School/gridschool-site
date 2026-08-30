@@ -11,6 +11,7 @@ import { el } from "../dom.js";
 import { btn } from "../ui.js";
 import { KIND_LABEL, TASK_STATE, formatEstimate } from "../tasks.js";
 import { fmtDay, fmtTime, relativeDay } from "../time.js";
+import { link } from "../../../config.js";
 export { statusLabel } from "../copy.js";
 
 export const stateIdOf = (task) => task.weekKey ?? task.id;
@@ -90,6 +91,13 @@ export function taskRow(task, { store, navigate, showGo = false } = {}) {
 }
 
 export function eventRow(event, { now = new Date() } = {}) {
+  const href = event.room ? link(event.room) : null;
+  const go = event.room
+    ? href
+      ? btn({ label: event.open ?? "Open", variant: "quiet", href, target: "_blank" })
+      : el("span.notwired", {}, "not connected yet")
+    : null;
+
   return el(
     "div.ev",
     { class: `ev--${event.kind}` },
@@ -111,7 +119,8 @@ export function eventRow(event, { now = new Date() } = {}) {
         el("span.ev__rel", {}, relativeDay(event.date, now))
       ),
       (event.agenda || event.detail) && el("p.ev__agenda", {}, event.agenda ?? event.detail)
-    )
+    ),
+    go && el("div.ev__go", {}, go)
   );
 }
 

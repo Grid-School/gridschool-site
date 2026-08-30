@@ -7,10 +7,6 @@
 const DAY_MS = 86400000;
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const MONTHS_LONG = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December",
-];
 
 /** Parse YYYY-MM-DD as a local date so the calendar never shifts by a day. */
 export function parseDate(value) {
@@ -73,32 +69,6 @@ export function programPhase(cohort, now = new Date()) {
   return { phase: "running", days: 0, first, last };
 }
 
-/** The 1st of the month that contains `date`. */
-export function monthOf(date) {
-  const d = parseDate(date);
-  return new Date(d.getFullYear(), d.getMonth(), 1);
-}
-
-/**
- * A month as whole Monday-first weeks. Real calendars show the tail of the
- * previous month and the head of the next one; hiding them makes the first row
- * float and costs the student the sense of where the month sits in the year.
- */
-export function monthDays(anchor) {
-  const first = monthOf(anchor);
-  const last = new Date(first.getFullYear(), first.getMonth() + 1, 0);
-  const start = weekStart(first);
-  const end = addDays(weekStart(last), 6);
-  const days = [];
-  for (let day = start; day <= end; day = addDays(day, 1)) days.push(day);
-  return { first, last, start, end, days };
-}
-
-export function monthLabel(date) {
-  const d = parseDate(date);
-  return `${MONTHS_LONG[d.getMonth()]} ${d.getFullYear()}`;
-}
-
 export function fmtDay(date) {
   const d = parseDate(date);
   return `${WEEKDAYS[d.getDay()]} ${MONTHS[d.getMonth()]} ${d.getDate()}`;
@@ -139,7 +109,7 @@ export function eventsForWeek(cohort, student, week) {
     const weekday = rule.perStudent && student?.oneone?.weekday != null
       ? student.oneone.weekday
       : rule.weekday;
-    // Rules are authored Sunday-indexed; the grid runs Monday first.
+    // Rules are authored Sunday-indexed; week math is Monday-first.
     const offset = (weekday + 6) % 7;
     events.push({
       ...rule,
@@ -166,24 +136,6 @@ export function eventsForWeek(cohort, student, week) {
     if (a.date !== b.date) return a.date < b.date ? -1 : 1;
     return (a.time ?? "").localeCompare(b.time ?? "");
   });
-}
-
-/**
- * Every event between two dates, inclusive. The month grid spans weeks and can
- * reach outside the program, so the week loop is clamped rather than trusted.
- */
-export function eventsInRange(cohort, student, from, to) {
-  const firstWeek = Math.max(1, weekNumber(cohort.start, from));
-  const lastWeek = Math.min(weekNumber(cohort.start, to), cohort.weeks + 1);
-  const fromIso = isoDate(from);
-  const toIso = isoDate(to);
-  const events = [];
-  for (let week = firstWeek; week <= lastWeek; week += 1) {
-    for (const event of eventsForWeek(cohort, student, week)) {
-      if (event.date >= fromIso && event.date <= toIso) events.push(event);
-    }
-  }
-  return events;
 }
 
 /** The next thing on the calendar from `now`, looking a few weeks ahead. */

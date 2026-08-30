@@ -15,7 +15,7 @@ import { handoffDisclosure } from "./handoff.js";
 import { TASK_STATE } from "../tasks.js";
 import { renderMarkdown } from "../markdown.js";
 import { lockNotice, shouldInterceptLock } from "./lock-notice.js";
-import { welcomeSchedule, welcomeReadiness, welcomeSubmitWarn, isStepComplete } from "./welcome.js";
+import { welcomeReadiness, welcomeSubmitWarn, isStepComplete } from "./welcome.js";
 
 const FALLBACK_VIDEO = {
   title: "Lesson",
@@ -162,14 +162,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
         ),
         el("b.eyebrow", {}, stepEyebrow(node, graph)),
         el("h1.step__title", {}, node.title),
-        node.why ? el("p.step__lead", {}, node.why) : null,
-        el(
-          "p.step__scope",
-          {},
-          welcome
-            ? "Everything you need is on this page, and your first short write sits at the bottom."
-            : "Everything for this step is on this page. Optional deeper reading appears only if named below."
-        )
+        node.why ? el("p.step__lead", {}, node.why) : null
       ),
       card ? el("section.step__video", {}, card.node) : null,
       node.lesson?.length
@@ -198,7 +191,6 @@ export function renderStep(ctx, nodeId, moduleId = null) {
               )
             )
           : null,
-      welcome ? welcomeSchedule(current.state.cohort) : null,
       welcome
         ? welcomeReadiness({
             node,
@@ -249,13 +241,6 @@ export function renderStep(ctx, nodeId, moduleId = null) {
         {},
         el("b.eyebrow", {}, welcome ? "Your first link" : "Turn this in"),
         el("p.step__evidence", {}, node.evidence),
-        el(
-          "p.room__hint",
-          {},
-          welcome
-            ? "Paste the URL below when the note is done. That link lights the step."
-            : "Paste that URL in the field below. The link is what finishes the step."
-        ),
         !welcome && (node.ccvv?.length || node.reviewFor)
           ? el(
               "div.room__grade",
@@ -266,18 +251,6 @@ export function renderStep(ctx, nodeId, moduleId = null) {
               node.reviewFor
                 ? el("p.room__reviewfor", {}, el("b", {}, "A strong turn-in shows "), node.reviewFor)
                 : null
-            )
-          : null,
-        isSpine(node) && node.id !== "or.start"
-          ? el(
-              "details.reveal.step__rubric",
-              {},
-              el("summary", {}, "How week 7 scores you (the four skills)"),
-              el(
-                "p.room__hint",
-                {},
-                "Communication · Comprehension · Vision · Verification. The outside reader uses these. Write every turn-in so a stranger could score you on them. You will reuse that muscle in the live defense."
-              )
             )
           : null,
         blockers.length

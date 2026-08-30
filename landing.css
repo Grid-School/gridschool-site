@@ -263,6 +263,9 @@ h1 em { font-style: normal; color: var(--white); text-shadow: none; }
   text-shadow: 0 1px 8px rgba(1, 3, 6, 0.95);
   pointer-events: none;
 }
+.hero--world.is-live .dock {
+  will-change: transform;
+}
 .dock-state { display: flex; align-items: center; gap: 8px; color: var(--cyan); }
 .dock-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--cyan); }
 .dock-proof { margin-top: 10px; }
@@ -797,6 +800,7 @@ footer p { margin-top: 8px; }
   }
   .dock {
     left: 24px; top: 26%; bottom: auto;
+    transform: none;
   }
   .hero--world h1 { font-size: 26px; }
 }

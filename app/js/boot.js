@@ -3,7 +3,7 @@
  * on every state change. Views are plain functions except the map and Today,
  * which keep camera and conversation across navigation.
  *
- * There are two doors — Today and the Grid — plus three tools reached by name. The
+ * There are two doors — Today and the Grid — plus two tools reached by name. The
  * routes that used to be surfaces of their own are kept as aliases so links
  * already in the wild still land somewhere true.
  */
