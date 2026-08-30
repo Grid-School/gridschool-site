@@ -94,7 +94,7 @@ export function createChrome({ onNavigate, onReset, onExport }) {
   }
 
   /**
-   * Today badges what came back and has not been read - the one genuinely new
+   * Today badges what came back and has not been read — the one genuinely new
    * thing. The Grid carries the count of lit nodes, which is a fact rather than an
    * alarm, so it is styled as a count and not a dot.
    */

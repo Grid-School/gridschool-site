@@ -18,38 +18,38 @@ from pathlib import Path
 
 
 def load_graph(path="graph.json"):
-    return json.loads(Path(path).read_text())
+ return json.loads(Path(path).read_text())
 
 
 def approx_tokens(text):
-    """Honest heuristic: ~4 chars per token. Say so."""
-    return max(1, len(text) // 4)
+ """Honest heuristic: ~4 chars per token. Say so."""
+ return max(1, len(text) // 4)
 
 
 def pack(graph, sources, start, hops, budget, question):
-    """Assemble prompt from blast-radius files until budget fills."""
-    # reuse blast() from episode 04; map names -> file paths via your own index
-    names = [start] + [n for _, n in blast(graph, start, hops)]
-    chunks = []
-    used = 0
-    header = f"Question: {question}\nRelevant code:\n"
-    used += approx_tokens(header)
-    for name in names:
-        body = sources.get(name, f"# missing source for {name}\n")
-        block = f"\n# {name}\n{body}"
-        cost = approx_tokens(block)
-        if used + cost > budget:
-            break
-        chunks.append(block)
-        used += cost
-    prompt = header + "".join(chunks)
-    return prompt, used, len(chunks)
+ """Assemble prompt from blast-radius files until budget fills."""
+ # reuse blast() from episode 04; map names -> file paths via your own index
+ names = [start] + [n for _, n in blast(graph, start, hops)]
+ chunks = []
+ used = 0
+ header = f"Question: {question}\nRelevant code:\n"
+ used += approx_tokens(header)
+ for name in names:
+ body = sources.get(name, f"# missing source for {name}\n")
+ block = f"\n# {name}\n{body}"
+ cost = approx_tokens(block)
+ if used + cost > budget:
+ break
+ chunks.append(block)
+ used += cost
+ prompt = header + "".join(chunks)
+ return prompt, used, len(chunks)
 
 
 # blast imported/copied from episode 04
 ```
 
-Wire: `nanograph.py pack <fn> --hops 2 --budget 4000 --question "..."`.
+Wire: `nanograph.py pack <fn> --hops 2 --budget 4000 --question ".."`.
 
 Print the prompt, the token estimate, and how many functions fit. Do not pretend the estimator is exact; label it.
 

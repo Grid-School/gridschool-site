@@ -51,14 +51,14 @@ export function welcomeSchedule(cohort) {
     el(
       "p.room__hint",
       {},
-      "Discord is where the cohort talks between calls. Calendar is the clock. Today is the one next move. The board map is the whole path. You do not need to memorize this - you need to know where to look."
+      "Discord is where the cohort talks between calls. Calendar is the clock. Today is the one next move. The board map is the whole path. You do not need to memorize this. You need to know where to look."
     )
   );
 }
 
 /**
  * Checklist that tracks watch / read / tasks / link so the first step feels
- * like the board is helping you finish in order - without treating you like a child.
+ * like the board is helping you finish in order, without treating you like a child.
  */
 export function welcomeReadiness({ node, student, store, onMarked }) {
   const flags = student.stepFlags?.[node.id] ?? {};
@@ -113,7 +113,7 @@ export function welcomeReadiness({ node, student, store, onMarked }) {
     })),
     {
       ok: hasLink,
-      label: hasLink ? "First link saved - this step can light" : "Paste your note URL under Your first link",
+      label: hasLink ? "First link saved. This step can light." : "Paste your note URL under Your first link",
       act: null,
     },
   ];
@@ -130,7 +130,7 @@ export function welcomeReadiness({ node, student, store, onMarked }) {
       "p.room__hint",
       {},
       complete
-        ? "This orientation is done. The board will open the next steps that do not depend on each other - usually It runs and The four skills."
+        ? "This orientation is done. The board will open the next steps that do not depend on each other. That is usually It runs and The four skills."
         : readyToLink
           ? "You are ready for the link. Paste it below and this step lights."
           : `Working through ${doneCount} of ${rows.length}. The board is keeping the order honest so you do not have to guess.`
@@ -173,5 +173,5 @@ export function welcomeSubmitWarn(node, student) {
   const tasks = node.tasks ?? [];
   const missing = tasks.filter((task) => student.tasks?.[task.id]?.state !== TASK_STATE.DONE);
   if (!missing.length) return null;
-  return `Almost - check “${missing.map((task) => task.title).join("” and “")}” above so you know the note is complete, then save the link.`;
+  return `Check “${missing.map((task) => task.title).join("” and “")}” above so you know the note is complete, then save the link.`;
 }

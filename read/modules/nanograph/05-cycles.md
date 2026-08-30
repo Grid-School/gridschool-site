@@ -18,62 +18,62 @@ from pathlib import Path
 
 
 def load_graph(path="graph.json"):
-    return json.loads(Path(path).read_text())
+ return json.loads(Path(path).read_text())
 
 
 def find_cycles(graph):
-    """Return simple cycles as lists of node names (start == end)."""
-    cycles = []
-    visiting = set()
-    stack = []
-    seen = set()
+ """Return simple cycles as lists of node names (start == end)."""
+ cycles = []
+ visiting = set()
+ stack = []
+ seen = set()
 
-    def dfs(node):
-        if node in visiting:
-            i = stack.index(node)
-            cycles.append(stack[i:] + [node])
-            return
-        if node in seen:
-            return
-        visiting.add(node)
-        stack.append(node)
-        for nxt in graph.get(node, []):
-            if nxt in graph:
-                dfs(nxt)
-        stack.pop()
-        visiting.remove(node)
-        seen.add(node)
+ def dfs(node):
+ if node in visiting:
+ i = stack.index(node)
+ cycles.append(stack[i:] + [node])
+ return
+ if node in seen:
+ return
+ visiting.add(node)
+ stack.append(node)
+ for nxt in graph.get(node, []):
+ if nxt in graph:
+ dfs(nxt)
+ stack.pop()
+ visiting.remove(node)
+ seen.add(node)
 
-    for name in sorted(graph):
-        if name not in seen:
-            dfs(name)
-    uniq = []
-    keys = set()
-    for cyc in cycles:
-        body = cyc[:-1]
-        rot = tuple(min(tuple(body[i:] + body[:i]) for i in range(len(body))))
-        if rot not in keys:
-            keys.add(rot)
-            uniq.append(cyc)
-    return uniq
+ for name in sorted(graph):
+ if name not in seen:
+ dfs(name)
+ uniq = []
+ keys = set()
+ for cyc in cycles:
+ body = cyc[:-1]
+ rot = tuple(min(tuple(body[i:] + body[:i]) for i in range(len(body))))
+ if rot not in keys:
+ keys.add(rot)
+ uniq.append(cyc)
+ return uniq
 
 
 def main(argv):
-    path = argv[2] if len(argv) > 2 else "graph.json"
-    if len(argv) < 2 or argv[1] != "cycles":
-        print("usage: nanograph.py cycles [graph.json]")
-        return 2
-    cycles = find_cycles(load_graph(path))
-    if not cycles:
-        print("(no cycles)")
-        return 0
-    for cyc in cycles:
-        print(" -> ".join(cyc))
-    return 0
+ path = argv[2] if len(argv) > 2 else "graph.json"
+ if len(argv) < 2 or argv[1] != "cycles":
+ print("usage: nanograph.py cycles [graph.json]")
+ return 2
+ cycles = find_cycles(load_graph(path))
+ if not cycles:
+ print("(no cycles)")
+ return 0
+ for cyc in cycles:
+ print(" -> ".join(cyc))
+ return 0
 
 
 if __name__ == "__main__":
-    raise SystemExit(main(sys.argv))
+ raise SystemExit(main(sys.argv))
 ```
 
 ## How to read a cycle

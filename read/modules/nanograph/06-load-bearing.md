@@ -18,61 +18,61 @@ from pathlib import Path
 
 
 def load_graph(path="graph.json"):
-    return json.loads(Path(path).read_text())
+ return json.loads(Path(path).read_text())
 
 
 def degree(graph):
-    """In-degree: how many callers each node has."""
-    rev_count = {n: 0 for n in graph}
-    for callees in graph.values():
-        for c in callees:
-            if c in rev_count:
-                rev_count[c] += 1
-            else:
-                rev_count[c] = 1
-    return rev_count
+ """In-degree: how many callers each node has."""
+ rev_count = {n: 0 for n in graph}
+ for callees in graph.values():
+ for c in callees:
+ if c in rev_count:
+ rev_count[c] += 1
+ else:
+ rev_count[c] = 1
+ return rev_count
 
 
 def pagerank(graph, iters=40, damp=0.85):
-    nodes = sorted(set(graph) | {c for cs in graph.values() for c in cs})
-    n = len(nodes)
-    if n == 0:
-        return {}
-    score = {name: 1.0 / n for name in nodes}
-    for _ in range(iters):
-        nxt = {name: (1 - damp) / n for name in nodes}
-        for src in nodes:
-            outs = [c for c in graph.get(src, []) if c in score]
-            if not outs:
-                # dangling: share with everyone
-                share = damp * score[src] / n
-                for name in nodes:
-                    nxt[name] += share
-            else:
-                share = damp * score[src] / len(outs)
-                for dst in outs:
-                    nxt[dst] += share
-        score = nxt
-    return score
+ nodes = sorted(set(graph) | {c for cs in graph.values() for c in cs})
+ n = len(nodes)
+ if n == 0:
+ return {}
+ score = {name: 1.0 / n for name in nodes}
+ for _ in range(iters):
+ nxt = {name: (1, damp) / n for name in nodes}
+ for src in nodes:
+ outs = [c for c in graph.get(src, []) if c in score]
+ if not outs:
+ # dangling: share with everyone
+ share = damp * score[src] / n
+ for name in nodes:
+ nxt[name] += share
+ else:
+ share = damp * score[src] / len(outs)
+ for dst in outs:
+ nxt[dst] += share
+ score = nxt
+ return score
 
 
 def main(argv):
-    path = argv[2] if len(argv) > 2 else "graph.json"
-    if len(argv) < 2 or argv[1] != "rank":
-        print("usage: nanograph.py rank [graph.json]")
-        return 2
-    graph = load_graph(path)
-    deg = degree(graph)
-    pr = pagerank(graph)
-    rows = sorted(pr.items(), key=lambda kv: (-kv[1], kv[0]))[:10]
-    print("rank\tpr\tdegree\tname")
-    for i, (name, score) in enumerate(rows, 1):
-        print(f"{i}\t{score:.4f}\t{deg.get(name, 0)}\t{name}")
-    return 0
+ path = argv[2] if len(argv) > 2 else "graph.json"
+ if len(argv) < 2 or argv[1] != "rank":
+ print("usage: nanograph.py rank [graph.json]")
+ return 2
+ graph = load_graph(path)
+ deg = degree(graph)
+ pr = pagerank(graph)
+ rows = sorted(pr.items(), key=lambda kv: (-kv[1], kv[0]))[:10]
+ print("rank\tpr\tdegree\tname")
+ for i, (name, score) in enumerate(rows, 1):
+ print(f"{i}\t{score:.4f}\t{deg.get(name, 0)}\t{name}")
+ return 0
 
 
 if __name__ == "__main__":
-    raise SystemExit(main(sys.argv))
+ raise SystemExit(main(sys.argv))
 ```
 
 ## Numbers need sentences

@@ -12,7 +12,7 @@ const DRAG_THRESHOLD = 4;
 const clamp = (value) => Math.min(MAX_SCALE, Math.max(MIN_SCALE, value));
 
 /**
- * `shouldPan` lets the owner veto a press the camera would otherwise claim - 
+ * `shouldPan` lets the owner veto a press the camera would otherwise claim —
  * dragging a node has to move the node, not the canvas under it.
  */
 export function createCamera(svg, world, { onChange = () => {}, shouldPan = () => true } = {}) {

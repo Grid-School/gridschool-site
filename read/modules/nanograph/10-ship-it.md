@@ -32,44 +32,44 @@ HTML = """<!doctype html><meta charset=utf-8>
 <pre id=out></pre>
 <script>
 fetch('graph.json').then(r=>r.json()).then(g=>{
-  const lines = Object.entries(g).slice(0,200).map(([k,v]) => k + ' -> ' + v.join(', '));
-  document.getElementById('out').textContent = lines.join('\\n');
+ const lines = Object.entries(g).slice(0,200).map(([k,v]) => k + ' -> ' + v.join(', '));
+ document.getElementById('out').textContent = lines.join('\\n');
 });
 </script>
 """
 
 
 def serve(graph_path="graph.json", port=8765):
-    data = Path(graph_path).read_bytes()
+ data = Path(graph_path).read_bytes()
 
-    class Handler(BaseHTTPRequestHandler):
-        def do_GET(self):
-            if self.path in ("/", "/index.html"):
-                body = HTML.encode()
-                ctype = "text/html"
-            elif self.path.endswith("graph.json"):
-                body = data
-                ctype = "application/json"
-            else:
-                self.send_error(404)
-                return
-            self.send_response(200)
-            self.send_header("Content-Type", ctype)
-            self.send_header("Content-Length", str(len(body)))
-            self.end_headers()
-            self.wfile.write(body)
+ class Handler(BaseHTTPRequestHandler):
+ def do_GET(self):
+ if self.path in ("/", "/index.html"):
+ body = HTML.encode()
+ ctype = "text/html"
+ elif self.path.endswith("graph.json"):
+ body = data
+ ctype = "application/json"
+ else:
+ self.send_error(404)
+ return
+ self.send_response(200)
+ self.send_header("Content-Type", ctype)
+ self.send_header("Content-Length", str(len(body)))
+ self.end_headers()
+ self.wfile.write(body)
 
-        def log_message(self, *args):
-            pass
+ def log_message(self, *args):
+ pass
 
-    HTTPServer(("127.0.0.1", port), Handler).serve_forever()
+ HTTPServer(("127.0.0.1", port), Handler).serve_forever()
 ```
 
 Wire `nanograph.py --serve`. Open the page. Confirm a stranger on your machine could follow the README to the same screen.
 
 ## Exercise (not shown)
 
-Add a `/blast?fn=...&hops=2` endpoint that returns plain text. Commit it. Packaging includes the boring paths.
+Add a `/blast?fn=..&hops=2` endpoint that returns plain text. Commit it. Packaging includes the boring paths.
 
 ## Done when
 

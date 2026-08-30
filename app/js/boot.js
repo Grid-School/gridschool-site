@@ -3,7 +3,7 @@
  * on every state change. Views are plain functions except the map and Today,
  * which keep camera and conversation across navigation.
  *
- * There are two doors - Today and the Grid - plus three tools reached by name. The
+ * There are two doors — Today and the Grid — plus three tools reached by name. The
  * routes that used to be surfaces of their own are kept as aliases so links
  * already in the wild still land somewhere true.
  */
@@ -18,7 +18,6 @@ import { toast } from "./ui.js";
 import { renderPicker } from "./views/picker.js";
 import { renderToday } from "./views/today.js";
 import { renderMap } from "./views/map.js";
-import { renderStep, isStepArgs, moduleIdFromArgs } from "./views/step.js";
 import { renderTasks } from "./views/tasks.js";
 import { renderCalendar } from "./views/calendar.js";
 import { renderLibrary } from "./views/library.js";
@@ -134,36 +133,12 @@ function renderRoute() {
   const view = VIEWS[route.name];
   const ctx = context();
 
-  chrome.setActive(route.name === "map" ? "map" : route.name);
+  chrome.setActive(route.name);
   chrome.setIdentity(ctx.state, role);
   chrome.setBanner(ctx.state);
   chrome.setSignals(ctx.state);
-
-  // Full step page: #/map/<nodeId>[/m/...] - not a modal over the graph.
-  if (route.name === "map" && isStepArgs(route.args, ctx.state.graph)) {
-    document.body.dataset.view = "step";
-    const nodeId = route.args[0];
-    const moduleId = moduleIdFromArgs(route.args);
-    const key = `step:${nodeId}:${moduleId ?? ""}`;
-    let instance = instances.get(key);
-    // Drop other step instances so we do not leak DOM/listeners.
-    for (const [id, inst] of instances) {
-      if (id.startsWith("step:") && id !== key) {
-        inst.destroy?.();
-        instances.delete(id);
-      }
-    }
-    if (!instance) {
-      instance = renderStep(ctx, nodeId, moduleId);
-      instances.set(key, instance);
-    } else {
-      instance.update(ctx, nodeId, moduleId);
-    }
-    if (chrome.outlet.firstChild !== instance.node) mount(chrome.outlet, instance.node);
-    document.title = `${ctx.state.graph.byId.get(nodeId)?.title ?? "Step"} · ${ctx.state.student.name} · GridSchool`;
-    return;
-  }
-
+  // Lets the stylesheet react to the route — the map hides the page's fixed grid
+  // so there is only ever one grid, and it belongs to the world.
   document.body.dataset.view = route.name;
 
   if (view.persistent) {
@@ -174,6 +149,9 @@ function renderRoute() {
     } else {
       instance.update(ctx, ...route.args);
     }
+    // Re-mounting an already-mounted node detaches and re-attaches it, which
+    // throws away focus and restarts every transition inside it. The map is
+    // persistent precisely so that does not happen.
     if (chrome.outlet.firstChild !== instance.node) mount(chrome.outlet, instance.node);
   } else {
     mount(chrome.outlet, view.render(ctx, ...route.args));
@@ -207,7 +185,7 @@ async function start() {
 
   role = resolveRole();
   /* The console is not published on the public site. If the admin surface is
-     not actually there, the role is theater plus a dead button - degrade to
+     not actually there, the role is theater plus a dead button — degrade to
      student instead of rendering a door that 404s. */
   if (role === "admin" && !(await adminSurfaceExists())) role = "student";
 

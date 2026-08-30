@@ -2,7 +2,7 @@
  * What the Grid is showing, as one small machine.
  *
  * Three things used to decide that: a `selectedId` local, a `mode` local, and
- * the hash. Any two could disagree, and they did - leaving the board with a
+ * the hash. Any two could disagree, and they did, leaving the board with a
  * room open and coming back re-opened a room the URL said was shut, and the
  * room that came back could sit on top of the board with nothing to close it.
  *
@@ -82,7 +82,7 @@ export function reduce(state, event, { hasNode = () => true } = {}) {
 
 /**
  * The holder. One writer, one notification, and the current value is always the
- * result of a transition - never something a view assigned to.
+ * result of a transition, never something a view assigned to.
  */
 export function createGridState({ arg = null, hasNode = () => true, onChange = () => {} } = {}) {
   let state = stateFromArg(arg, hasNode);

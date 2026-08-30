@@ -7,7 +7,7 @@
  * node and which URL, and on Today, for anything that is not tied to a node.
  *
  * A review request without a stated doubt wastes both sides, so the doubt field
- * is not optional decoration - it is the point of the form.
+ * is not optional decoration, it is the point of the form.
  */
 
 import { el } from "../dom.js";

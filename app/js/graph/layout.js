@@ -139,7 +139,7 @@ export function phaseBands(graph) {
         minX: Math.min(...nodes.map((node) => node.x - node.r)),
         maxX: Math.max(...nodes.map((node) => node.x + node.r)),
         weeks: weeks.length
-          ? `${Math.min(...weeks)}-${Math.max(...weeks)}`
+          ? `${Math.min(...weeks)}–${Math.max(...weeks)}`
           : phase?.weeks ?? "",
       };
     });
@@ -159,9 +159,9 @@ export function phaseBands(graph) {
 }
 
 function joinWeeks(a, b) {
-  const nums = `${a}-${b}`.split("-").map(Number).filter(Number.isFinite);
+  const nums = `${a}–${b}`.split("–").map(Number).filter(Number.isFinite);
   if (!nums.length) return a || b;
-  return `${Math.min(...nums)}-${Math.max(...nums)}`;
+  return `${Math.min(...nums)}–${Math.max(...nums)}`;
 }
 
 /**

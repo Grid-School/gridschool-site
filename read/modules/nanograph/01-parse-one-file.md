@@ -31,8 +31,8 @@ Run it on itself: `python3 nanograph.py nanograph.py`. That wall of text is the 
 
 ```python
 for node in ast.walk(tree):
-    if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-        print(node.name)
+ if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+ print(node.name)
 ```
 
 `ast.walk` visits every node in the tree; `isinstance` filters for the type we care about. Run it. It prints nothing, which is correct: the file has no functions yet. First lesson in trusting a tool: empty output is an answer, not a bug.
@@ -47,41 +47,41 @@ import sys
 
 
 def parse_file(path):
-    """One file in, one report out: which functions exist, what each one calls."""
-    source = open(path).read()
-    tree = ast.parse(source, filename=path)
+ """One file in, one report out: which functions exist, what each one calls."""
+ source = open(path).read()
+ tree = ast.parse(source, filename=path)
 
-    functions = {}
-    for node in ast.walk(tree):
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-            functions[node.name] = sorted(set(calls_inside(node)))
-    return functions
+ functions = {}
+ for node in ast.walk(tree):
+ if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+ functions[node.name] = sorted(set(calls_inside(node)))
+ return functions
 
 
 def calls_inside(fn_node):
-    """Every name that gets called inside this function's body."""
-    for node in ast.walk(fn_node):
-        if isinstance(node, ast.Call):
-            yield call_name(node.func)
+ """Every name that gets called inside this function's body."""
+ for node in ast.walk(fn_node):
+ if isinstance(node, ast.Call):
+ yield call_name(node.func)
 
 
 def call_name(func):
-    """The readable name of a call target: foo() -> 'foo', obj.method() -> 'obj.method'."""
-    if isinstance(func, ast.Name):
-        return func.id
-    if isinstance(func, ast.Attribute):
-        return f"{call_name(func.value)}.{func.attr}"
-    return "<dynamic>"
+ """The readable name of a call target: foo() -> 'foo', obj.method() -> 'obj.method'."""
+ if isinstance(func, ast.Name):
+ return func.id
+ if isinstance(func, ast.Attribute):
+ return f"{call_name(func.value)}.{func.attr}"
+ return "<dynamic>"
 
 
 def main():
-    path = sys.argv[1] if len(sys.argv) > 1 else __file__
-    for name, calls in parse_file(path).items():
-        print(f"{name} -> {', '.join(calls) or '(calls nothing)'}")
+ path = sys.argv[1] if len(sys.argv) > 1 else __file__
+ for name, calls in parse_file(path).items():
+ print(f"{name} -> {', '.join(calls) or '(calls nothing)'}")
 
 
 if __name__ == "__main__":
-    main()
+ main()
 ```
 
 **4. The moment.** Run it with no arguments. It parses *itself*:
@@ -96,15 +96,15 @@ main -> <dynamic>.items, <dynamic>.join, len, parse_file, print
 Read that output slowly. Your tool just told you three true things about its own structure:
 
 - `call_name -> call_name`: it found its own recursion (an attribute chain
-  like `a.b.c` needs the inner name first). You wrote a recursive function and
-  the graph caught it.
+ like `a.b.c` needs the inner name first). You wrote a recursive function and
+ the graph caught it.
 - `<dynamic>.read`: `open(path).read()` calls `.read` on a value with no
-  name. The tool does not guess; it says `<dynamic>`. **When your tool does not
-  know, it must say so.** That rule is worth more than any feature, and it is
-  the difference between an instrument and a horoscope.
+ name. The tool does not guess; it says `<dynamic>`. **When your tool does not
+ know, it must say so.** That rule is worth more than any feature, and it is
+ the difference between an instrument and a horoscope.
 - `main -> parse_file` but nothing points at `main`: from inside one file,
-  nobody calls main. Whether that means "dead code" or "entry point" needs
-  more than one file to answer. That is exactly episode 02's problem.
+ nobody calls main. Whether that means "dead code" or "entry point" needs
+ more than one file to answer. That is exactly episode 02's problem.
 
 ## Exercise (not shown in any video)
 
@@ -124,6 +124,6 @@ students: push the repo with the exercise commits and drop the URL in #ship.
 ## Sources
 
 - Python `ast` docs: docs.python.org/3/library/ast.html. Skim `walk`, `Call`,
-  `FunctionDef`; ignore the rest for now.
+ `FunctionDef`; ignore the rest for now.
 - The pattern of building in runnable steps is stolen deliberately from
-  Karpathy's build-nanogpt, where the commit history is the textbook.
+ Karpathy's build-nanogpt, where the commit history is the textbook.

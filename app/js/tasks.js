@@ -69,7 +69,7 @@ export function buildQueue({ graph, curriculum, student, week }) {
 /**
  * The queue minus anything already handed over. Today asks for this rather than
  * the raw queue: a task you are waiting on is not a next action, and putting one
- * at the top of the list - or worse, in the primary button - teaches the student
+ * at the top of the list — or worse, in the primary button — teaches the student
  * that the list is decoration.
  *
  * The full ledger on the Tasks page still shows them, because that page is where
@@ -119,7 +119,7 @@ export function parallelWork({ graph, curriculum, student, week }) {
 /**
  * The quota is weekly, so it has to be counted weekly. This used to read a
  * lifetime counter on the student and label it "this week", which meant a good
- * week in week 3 showed as met for the rest of the program - the one number the
+ * week in week 3 showed as met for the rest of the program — the one number the
  * whole deal rests on, quietly wrong. It now counts dated entries inside the
  * week's own date range.
  */

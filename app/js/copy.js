@@ -9,7 +9,7 @@
 import { STATUS } from "./graph/model.js";
 
 export const RULE = "A step is done when it has a link.";
-/** @deprecated use RULE - kept so old imports do not break mid-edit */
+/** @deprecated use RULE, kept so old imports do not break mid-edit */
 export const LAW = RULE;
 
 export function statusLabel(status) {

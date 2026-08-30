@@ -1,6 +1,6 @@
 # 08 · Swap the parser
 
-*You need: episodes 03–07 working against `graph.json`. ~90 minutes. First real dependency: tree-sitter.*
+*You need: episodes 03-07 working against `graph.json`. ~90 minutes. First real dependency: tree-sitter.*
 
 ## The claim
 
@@ -13,7 +13,7 @@ Seams are what people mean when they say "good architecture." Systems with seams
 Whatever language you parse, the output is still:
 
 ```json
-{ "module.fn": ["other.fn", "..."] }
+{ "module.fn": ["other.fn", ".."] }
 ```
 
 Callers, blast, cycles, rank, and coupling read that shape and nothing else. If you find yourself editing a query because the parser changed, the seam leaked.
@@ -36,25 +36,25 @@ from pathlib import Path
 
 
 class PythonAstParser:
-    """Your episode-02 parser, wrapped."""
-    def parse_folder(self, root: Path) -> dict:
-        # return adjacency list {qualified: [callees]}
-        ...
+ """Your episode-02 parser, wrapped."""
+ def parse_folder(self, root: Path) -> dict:
+ # return adjacency list {qualified: [callees]}
+ ..
 
 
 class TreeSitterParser:
-    """Same method name. Different language. Same output shape."""
-    def __init__(self, language):
-        self.language = language
+ """Same method name. Different language. Same output shape."""
+ def __init__(self, language):
+ self.language = language
 
-    def parse_folder(self, root: Path) -> dict:
-        # walk files, query function defs + calls via tree-sitter,
-        # emit the same adjacency list
-        ...
+ def parse_folder(self, root: Path) -> dict:
+ # walk files, query function defs + calls via tree-sitter,
+ # emit the same adjacency list
+ ..
 
 
 def build_graph(root, parser) -> dict:
-    return parser.parse_folder(Path(root))
+ return parser.parse_folder(Path(root))
 ```
 
 Wire your CLI so `nanograph.py parse <root> --lang python|csharp` chooses a parser, writes `graph.json`, and leaves every other command untouched.

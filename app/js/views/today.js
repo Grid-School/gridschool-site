@@ -1,7 +1,7 @@
 /**
  * Today. One next action, a conversation, an input at the bottom, credits on
- * the right. Everything else that used to live here - streaks, quota gadgets,
- * a second copy of the queue - is a tool or it is gone. A first-time student
+ * the right. Everything else that used to live here, streaks, quota gadgets,
+ * a second copy of the queue, is a tool or it is gone. A first-time student
  * should know what to do and who to talk to in under five seconds.
  *
  * This view is persistent. The camera of the conversation is the scroll
@@ -268,7 +268,7 @@ export function renderToday(ctx) {
   };
 }
 
-/** Which codebase the next spine/depth step belongs to - one line so desk/world/graph never blur. */
+/** Which codebase the next spine/depth step belongs to, one line so desk/world/graph never blur. */
 function systemLine(node) {
   if (!node) return null;
   if (node.family === "world") return "This week's system · World (depth)";

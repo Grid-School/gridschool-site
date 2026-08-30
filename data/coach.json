@@ -1,10 +1,26 @@
 {
   "note": "The Coach lives on Today. Until the xAI proxy is connected it answers locally from the same packed context. Credits still move.",
   "axes": [
-    { "id": "communication", "label": "Communication", "blurb": "Say the true thing in the fewest words a stranger can act on." },
-    { "id": "comprehension", "label": "Comprehension", "blurb": "Understand code you did not write before you touch it." },
-    { "id": "vision", "label": "Vision", "blurb": "Choose what is worth building, and say why." },
-    { "id": "verification", "label": "Verification", "blurb": "Prove it works. Especially when a model told you it does." }
+    {
+      "id": "communication",
+      "label": "Communication",
+      "blurb": "Say the true thing in the fewest words a stranger can act on."
+    },
+    {
+      "id": "comprehension",
+      "label": "Comprehension",
+      "blurb": "Understand code you did not write before you touch it."
+    },
+    {
+      "id": "vision",
+      "label": "Vision",
+      "blurb": "Choose what is worth building, and say why."
+    },
+    {
+      "id": "verification",
+      "label": "Verification",
+      "blurb": "Prove it works. Especially when a model told you it does."
+    }
   ],
   "drills": [
     {

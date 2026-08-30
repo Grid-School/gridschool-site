@@ -20,46 +20,46 @@ from pathlib import Path
 
 
 def load_graph(path="graph.json"):
-    return json.loads(Path(path).read_text())
+ return json.loads(Path(path).read_text())
 
 
 def reverse_index(graph):
-    """callee -> [callers]. Built once; queries are lookups."""
-    rev = {name: [] for name in graph}
-    for caller, callees in graph.items():
-        for callee in callees:
-            rev.setdefault(callee, []).append(caller)
-    for name in rev:
-        rev[name] = sorted(set(rev[name]))
-    return rev
+ """callee -> [callers]. Built once; queries are lookups."""
+ rev = {name: [] for name in graph}
+ for caller, callees in graph.items():
+ for callee in callees:
+ rev.setdefault(callee, []).append(caller)
+ for name in rev:
+ rev[name] = sorted(set(rev[name]))
+ return rev
 
 
 def main(argv):
-    if len(argv) < 3:
-        print("usage: nanograph.py callers|callees <fn> [graph.json]")
-        return 2
-    cmd, target = argv[1], argv[2]
-    path = argv[3] if len(argv) > 3 else "graph.json"
-    graph = load_graph(path)
+ if len(argv) < 3:
+ print("usage: nanograph.py callers|callees <fn> [graph.json]")
+ return 2
+ cmd, target = argv[1], argv[2]
+ path = argv[3] if len(argv) > 3 else "graph.json"
+ graph = load_graph(path)
 
-    if cmd == "callees":
-        hits = graph.get(target, [])
-    elif cmd == "callers":
-        hits = reverse_index(graph).get(target, [])
-    else:
-        print(f"unknown command: {cmd}")
-        return 2
+ if cmd == "callees":
+ hits = graph.get(target, [])
+ elif cmd == "callers":
+ hits = reverse_index(graph).get(target, [])
+ else:
+ print(f"unknown command: {cmd}")
+ return 2
 
-    if not hits:
-        print("(none)")
-    else:
-        for name in hits:
-            print(name)
-    return 0
+ if not hits:
+ print("(none)")
+ else:
+ for name in hits:
+ print(name)
+ return 0
 
 
 if __name__ == "__main__":
-    raise SystemExit(main(sys.argv))
+ raise SystemExit(main(sys.argv))
 ```
 
 Walk the design before celebrating:
