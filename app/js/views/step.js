@@ -18,10 +18,9 @@ import { lockNotice, shouldInterceptLock } from "./lock-notice.js";
 import { welcomeSchedule, welcomeReadiness, welcomeSubmitWarn, isStepComplete } from "./welcome.js";
 
 const FALLBACK_VIDEO = {
-  title: "Stream test · Big Buck Bunny (CC)",
+  title: "Lesson",
   mins: 1,
   path: "test-bbb",
-  watchWhen: "Test clip on our CDN. Play, scrub, and switch quality. Real lesson films replace this.",
 };
 
 /** True when #/map/<id> should be the step page rather than the graph. */
@@ -84,10 +83,10 @@ export function renderStep(ctx, nodeId, moduleId = null) {
     const blockers = blockedBy(graph, node.id);
     const canTurnIn = node.status === STATUS.OPEN || node.status === STATUS.LIT;
     const welcome = node.id === "or.start";
-    // Planned films still get a poster + playable placeholder (CDN test clip) so
-    // the step has the same shape once real media lands.
+    // Every chapter has a player. If the lesson file is not on the CDN yet,
+    // the same player still opens so the page shape stays one film per step.
     const filmed = Boolean(node.video && resolveMedia(node.video));
-    const video = filmed ? node.video : node.video ? { ...FALLBACK_VIDEO, title: node.video.title || FALLBACK_VIDEO.title, mins: node.video.mins || FALLBACK_VIDEO.mins, watchWhen: node.video.watchWhen || FALLBACK_VIDEO.watchWhen } : null;
+    const video = filmed ? node.video : node.video ? { ...FALLBACK_VIDEO, title: node.video.title || FALLBACK_VIDEO.title, mins: node.video.mins || FALLBACK_VIDEO.mins } : null;
     const card = video
       ? videoCard({
           title: video.title,
@@ -95,11 +94,6 @@ export function renderStep(ctx, nodeId, moduleId = null) {
           youtube: video.youtube,
           path: video.path,
           thumb: video.thumb,
-          watchWhen: filmed
-            ? video.watchWhen ?? "Watch this, then do the steps."
-            : welcome
-              ? "This film is still being recorded. The letter below covers everything."
-              : "This lesson's film is still being recorded. The written lesson below covers everything.",
           startOpen: true,
           onWatch: welcome
             ? () => {
@@ -173,7 +167,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
           ? el(
               "p.step__scope",
               {},
-              "Watch or read first. Everything you need is on this page, and your first short write sits at the bottom."
+              "Watch first. Everything you need is on this page, and your first short write sits at the bottom."
             )
           : el(
               "p.step__scope",
@@ -185,9 +179,8 @@ export function renderStep(ctx, nodeId, moduleId = null) {
         ? el(
             "section.step__video",
             {},
-            el("b.eyebrow", {}, filmed ? "Watch" : welcome ? "Watch · coming soon" : "Watch · placeholder until filmed"),
+            el("b.eyebrow", {}, "Watch"),
             el("p.step__vidtitle", {}, `${node.video?.title || video.title} · ${node.video?.mins || video.mins} min`),
-            node.video?.watchWhen && el("p.muted", {}, node.video.watchWhen),
             card.node
           )
         : null,

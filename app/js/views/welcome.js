@@ -68,27 +68,11 @@ export function welcomeReadiness({ node, student, store, onMarked }) {
   const hasLink = Boolean(node.proof?.url);
   const watched = Boolean(flags.watched);
   const read = Boolean(flags.read);
-  const optionalWatchOk = watched || read; // reading the letter counts if film is placeholder
-
   const rows = [
     {
-      ok: optionalWatchOk,
-      label: watched
-        ? "Opened the welcome film"
-        : read
-          ? "Chose to read instead of watching"
-          : "Open the film above, or mark that you will read the letter",
-      act:
-        !watched &&
-        !read &&
-        btn({
-          label: "I'll read the letter",
-          variant: "quiet",
-          onclick: () => {
-            store.setStepFlag(node.id, "read", true);
-            onMarked?.();
-          },
-        }),
+      ok: watched,
+      label: watched ? "Opened the welcome film" : "Open the film above",
+      act: null,
     },
     {
       ok: read || allTasks || hasLink,
@@ -119,7 +103,7 @@ export function welcomeReadiness({ node, student, store, onMarked }) {
   ];
 
   const doneCount = rows.filter((row) => row.ok).length;
-  const readyToLink = optionalWatchOk && (read || allTasks) && allTasks;
+  const readyToLink = (watched || read) && allTasks;
   const complete = hasLink && allTasks;
 
   return el(

@@ -47,7 +47,7 @@ export function renderLibrary(ctx) {
         {},
         el("b.eyebrow", {}, "Watch in this order"),
         el("h1", {}, "Library"),
-        el("p.muted", {}, library.watchWhen)
+        library.note && el("p.muted", {}, library.note)
       ),
       ...library.tracks.map((track) =>
         panel(
@@ -56,21 +56,19 @@ export function renderLibrary(ctx) {
             "ol.lib",
             {},
             track.items.map((item, index) => {
-              const ready = Boolean(item.path || item.youtube);
               const player = videoCard({
                 title: item.title,
                 mins: item.mins,
                 youtube: item.youtube,
-                path: item.path,
+                path: item.path || (item.youtube ? undefined : "test-bbb"),
                 thumb: item.thumb,
-                watchWhen: item.watchWhen,
               });
               if (player) players.set(item.id, player);
 
               const watch = btn({
-                label: ready ? "Watch" : "Not filmed yet",
+                label: "Watch",
                 variant: "quiet",
-                disabled: !ready,
+                disabled: !player,
                 onclick: () => {
                   if (!player) return;
                   const open = player.toggle();
@@ -87,14 +85,13 @@ export function renderLibrary(ctx) {
 
               const row = el(
                 "li.lib__item",
-                { "data-id": item.id, class: ready ? "is-ready" : "is-planned" },
+                { "data-id": item.id, class: player ? "is-ready" : "" },
                 el("span.lib__n", {}, String(item.order ?? index + 1).padStart(2, "0")),
                 el(
                   "div.lib__body",
                   {},
                   el("b", {}, item.title),
                   el("span.lib__meta", {}, `${item.mins} min`),
-                  item.watchWhen && el("p.lib__when", {}, item.watchWhen),
                   player?.node
                 ),
                 watch

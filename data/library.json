@@ -1,59 +1,41 @@
 {
-  "note": "Films sit on the step they belong to. Most are still planned. Until a film is ready, open the step on the map, read it, and do the work. Do not binge. Lesson films use path under MEDIA.baseUrl (Lightsail CDN), not YouTube.",
-  "watchWhen": "Week 1 work is on the board: how this board works, then It runs. Open those steps and do them. Films appear here when ready. Later videos sit on the step they belong to.",
+  "note": "Films sit on the step they belong to. Watch in this order, or open the step and watch there. Do not binge.",
   "tracks": [
     {
       "id": "first",
       "title": "Week 1: board, then boot",
-      "blurb": "Required first. How this board works, then It runs. World and graph can wait. Films below are planned until marked ready; the stream test only confirms the player.",
+      "blurb": "Required first. How this board works, then It runs. World and graph can wait.",
       "items": [
         {
           "id": "v.board",
           "title": "How this board works",
           "mins": 8,
-          "status": "planned",
-          "watchWhen": "Watch once, on day one. A step is done when it has a link. Required versus depth.",
           "order": 1
         },
         {
           "id": "v.pf.runs",
           "title": "Make it boot",
           "mins": 12,
-          "status": "planned",
-          "watchWhen": "Watch before you clone the studio repo. Your first evidence is proof it ran.",
           "order": 2
-        },
-        {
-          "id": "v.stream.test",
-          "title": "Stream test · Big Buck Bunny (CC)",
-          "mins": 1,
-          "status": "ready",
-          "path": "test-bbb",
-          "watchWhen": "CDN test clip. Confirm play, scrub, and 360p-4K. Not a lesson.",
-          "order": 3
         }
       ]
     },
     {
       "id": "how",
       "title": "How the work runs",
-      "blurb": "Still early. How you send work and get notes back, and the simple board we use (to do, doing, done: that is Kanban; a short weekly plan is the useful part of Scrum).",
+      "blurb": "How you send work and get notes back, and the simple board we use (to do, doing, done: that is Kanban; a short weekly plan is the useful part of Scrum).",
       "items": [
         {
           "id": "v.review",
           "title": "Send work, get notes, change it",
           "mins": 10,
-          "status": "planned",
-          "watchWhen": "Watch before you send your first thing for review.",
-          "order": 4
+          "order": 3
         },
         {
           "id": "v.flow",
           "title": "To do, doing, done, and a weekly plan",
           "mins": 9,
-          "status": "planned",
-          "watchWhen": "Watch when you start the studio project. Kanban is the board. Scrum is the weekly plan. We use both, simply.",
-          "order": 5
+          "order": 4
         }
       ]
     },
@@ -66,25 +48,19 @@
           "id": "v.cv.four",
           "title": "Four skills: say it, understand it, choose it, check it",
           "mins": 14,
-          "status": "planned",
-          "watchWhen": "Watch once early. Communication, Comprehension, Vision, Verification. Every review uses these.",
-          "order": 6
+          "order": 5
         },
         {
           "id": "v.cv.understand",
           "title": "Reading code you did not write",
           "mins": 18,
-          "status": "planned",
-          "watchWhen": "Watch on You can read a system, before you open the repo with an assistant.",
-          "order": 7
+          "order": 6
         },
         {
           "id": "v.cap.change",
           "title": "Build the change, then ask for a review",
           "mins": 15,
-          "status": "planned",
-          "watchWhen": "Watch when you start the actual change on the studio repo.",
-          "order": 8
+          "order": 7
         }
       ]
     },
@@ -97,9 +73,7 @@
           "id": "v.li.publish",
           "title": "One trail after a receipt",
           "mins": 8,
-          "status": "planned",
-          "watchWhen": "Watch after the defense. One post or profile line that links the PR.",
-          "order": 9
+          "order": 8
         }
       ]
     }
