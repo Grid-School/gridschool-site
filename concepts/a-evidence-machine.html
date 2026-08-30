@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Concept A · The Evidence Machine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400&display=swap" rel="stylesheet">
+<style>
+/* CONCEPT A - THE EVIDENCE MACHINE
+   One idea: a claim is dark until the machine verifies it.
+   No card. No grid. No dashboard. The proof constellation IS the page. */
+
+:root {
+  --void: #020408;
+  --current: #28e1ff;
+  --dark-wire: #101a28;
+  --dim-wire: #1c2f44;
+  --ink: #c9d6e6;
+  --ghost: #4d6076;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body { height: 100%; }
+body {
+  background: var(--void);
+  color: var(--ink);
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-weight: 300;
+  overflow: hidden;
+}
+
+.stage {
+  position: relative;
+  height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}
+
+/* one soft pool of light behind the machine, nothing else */
+.stage::before {
+  content: "";
+  position: absolute;
+  top: 8%;
+  left: 50%;
+  width: min(90vw, 1100px);
+  aspect-ratio: 1.6;
+  transform: translateX(-38%);
+  background: radial-gradient(ellipse at center,
+    rgba(40, 225, 255, 0.055) 0%,
+    rgba(40, 225, 255, 0.018) 40%,
+    transparent 70%);
+  pointer-events: none;
+}
+
+/* ---- mark, floating free. no bar, no chrome ---- */
+.mark {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 34px 40px 0;
+  z-index: 2;
+}
+.mark svg { width: 26px; height: 26px; }
+.mark .g-on rect { fill: var(--current); }
+.mark .g-off rect { fill: #0d1826; }
+.mark span {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.42em;
+  color: var(--ghost);
+}
+.mark b { color: var(--ink); font-weight: 500; }
+
+/* ---- the machine ---- */
+.machine {
+  position: relative;
+  align-self: center;
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+.machine svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* wires: dark until proven */
+.wire {
+  fill: none;
+  stroke: var(--dark-wire);
+  stroke-width: 1.5;
+}
+.wire--lit {
+  stroke: var(--current);
+  filter: drop-shadow(0 0 6px rgba(40, 225, 255, 0.7));
+}
+
+/* nodes: circles only */
+.node circle.ring {
+  fill: var(--void);
+  stroke: var(--dim-wire);
+  stroke-width: 1.5;
+}
+.node circle.core { fill: #0c1522; }
+.node--lit circle.ring {
+  stroke: var(--current);
+  filter: drop-shadow(0 0 10px rgba(40, 225, 255, 0.85));
+}
+.node--lit circle.core { fill: var(--current); }
+
+/* the artifact core: the one bright object on the page */
+.artifact circle.halo {
+  fill: none;
+  stroke: rgba(40, 225, 255, 0.35);
+  stroke-width: 1;
+  stroke-dasharray: 2 6;
+}
+.artifact circle.body {
+  fill: #04121c;
+  stroke: var(--current);
+  stroke-width: 1.5;
+  filter: drop-shadow(0 0 18px rgba(40, 225, 255, 0.55));
+}
+.artifact text {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.3em;
+  fill: var(--current);
+  text-anchor: middle;
+}
+
+.lab {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  fill: var(--ghost);
+  text-anchor: middle;
+}
+.lab--lit { fill: var(--ink); }
+.stat {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  fill: #33475e;
+  text-anchor: middle;
+}
+.stat--lit { fill: rgba(40, 225, 255, 0.75); }
+
+/* far depth: two unfocused ghosts of other students' machines */
+.depth { filter: blur(3px); opacity: 0.4; }
+
+/* ---- the words, quiet, beneath the machine ---- */
+.words {
+  z-index: 2;
+  padding: 0 40px 52px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 48px;
+}
+h1 {
+  font-weight: 300;
+  font-size: clamp(22px, 2.6vw, 34px);
+  line-height: 1.35;
+  color: var(--ink);
+  max-width: 520px;
+  letter-spacing: 0.01em;
+}
+h1 b {
+  font-weight: 400;
+  color: #fff;
+}
+.words aside {
+  text-align: right;
+  flex: none;
+}
+.words aside p {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--ghost);
+  margin-bottom: 18px;
+}
+.enter {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 12px;
+  letter-spacing: 0.3em;
+  text-decoration: none;
+  color: var(--current);
+  border-bottom: 1px solid rgba(40, 225, 255, 0.4);
+  padding-bottom: 6px;
+}
+
+@media (max-width: 720px) {
+  body { overflow: auto; overflow-x: hidden; }
+  .stage { height: auto; min-height: 100vh; }
+  .mark { padding: 26px 24px 0; }
+  /* cinematic crop: the lit half of the machine fills the frame,
+     the unproven half exits into darkness off the right edge */
+  .machine {
+    padding: 40px 0;
+    overflow: hidden;
+  }
+  .machine svg {
+    width: 210%;
+    margin-left: -44%;
+  }
+  .words {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 8px 24px 44px;
+    gap: 30px;
+  }
+  .words aside { text-align: left; }
+}
+</style>
+</head>
+<body>
+
+<div class="stage">
+
+  <header class="mark">
+    <svg viewBox="0 0 36 36" aria-hidden="true">
+      <g transform="translate(18 18) rotate(45) translate(-12.5 -12.5)">
+        <g class="g-off">
+          <rect x="5.4" y="5.4" width="4.2" height="4.2" rx="1.2"/><rect x="10.4" y="5.4" width="4.2" height="4.2" rx="1.2"/><rect x="15.4" y="5.4" width="4.2" height="4.2" rx="1.2"/><rect x="20.4" y="5.4" width="4.2" height="4.2" rx="1.2"/><rect x="5.4" y="10.4" width="4.2" height="4.2" rx="1.2"/><rect x="10.4" y="10.4" width="4.2" height="4.2" rx="1.2"/><rect x="5.4" y="15.4" width="4.2" height="4.2" rx="1.2"/><rect x="10.4" y="15.4" width="4.2" height="4.2" rx="1.2"/><rect x="15.4" y="15.4" width="4.2" height="4.2" rx="1.2"/>
+        </g>
+        <g class="g-on">
+          <rect x="0.4" y="0.4" width="4.2" height="4.2" rx="1.2"/><rect x="5.4" y="0.4" width="4.2" height="4.2" rx="1.2"/><rect x="10.4" y="0.4" width="4.2" height="4.2" rx="1.2"/><rect x="15.4" y="0.4" width="4.2" height="4.2" rx="1.2"/><rect x="20.4" y="0.4" width="4.2" height="4.2" rx="1.2"/><rect x="0.4" y="5.4" width="4.2" height="4.2" rx="1.2"/><rect x="0.4" y="10.4" width="4.2" height="4.2" rx="1.2"/><rect x="15.4" y="10.4" width="4.2" height="4.2" rx="1.2"/><rect x="20.4" y="10.4" width="4.2" height="4.2" rx="1.2"/><rect x="0.4" y="15.4" width="4.2" height="4.2" rx="1.2"/><rect x="20.4" y="15.4" width="4.2" height="4.2" rx="1.2"/><rect x="0.4" y="20.4" width="4.2" height="4.2" rx="1.2"/><rect x="5.4" y="20.4" width="4.2" height="4.2" rx="1.2"/><rect x="10.4" y="20.4" width="4.2" height="4.2" rx="1.2"/><rect x="15.4" y="20.4" width="4.2" height="4.2" rx="1.2"/><rect x="20.4" y="20.4" width="4.2" height="4.2" rx="1.2"/>
+        </g>
+      </g>
+    </svg>
+    <span>GRID<b>SCHOOL</b></span>
+  </header>
+
+  <figure class="machine" aria-label="A change moves through the machine: commit, tests, review are verified and lit. Deploy and defense are still dark.">
+    <svg viewBox="0 0 1200 520">
+
+      <!-- far depth: someone else's machine, out of focus -->
+      <g class="depth">
+        <path class="wire" d="M 120 90 C 190 90 210 60 280 60"/>
+        <path class="wire wire--lit" d="M 280 60 C 350 60 370 95 440 95" opacity="0.5"/>
+        <circle cx="120" cy="90" r="5" fill="none" stroke="#1c2f44" stroke-width="1.5"/>
+        <circle cx="280" cy="60" r="5" fill="none" stroke="#1c2f44" stroke-width="1.5"/>
+        <circle cx="440" cy="95" r="5" fill="#28e1ff" opacity="0.4"/>
+      </g>
+      <g class="depth" style="filter: blur(4px); opacity: .25;">
+        <path class="wire" d="M 880 430 C 950 430 970 465 1040 465"/>
+        <circle cx="880" cy="430" r="5" fill="none" stroke="#1c2f44" stroke-width="1.5"/>
+        <circle cx="1040" cy="465" r="5" fill="none" stroke="#1c2f44" stroke-width="1.5"/>
+      </g>
+
+      <!-- the artifact: one change, submitted -->
+      <g class="artifact">
+        <circle class="halo" cx="420" cy="260" r="64"/>
+        <circle class="body" cx="420" cy="260" r="44"/>
+        <text x="420" y="256">ONE</text>
+        <text x="420" y="272">CHANGE</text>
+      </g>
+
+      <!-- verified wires: lit because it happened -->
+      <path class="wire wire--lit" d="M 464 260 C 540 260 560 150 640 150"/>
+      <path class="wire wire--lit" d="M 464 260 C 545 260 565 260 648 260"/>
+      <path class="wire wire--lit" d="M 464 260 C 540 260 560 372 640 372"/>
+
+      <!-- unproven wires: dark -->
+      <path class="wire" d="M 676 150 C 760 150 780 205 862 205"/>
+      <path class="wire" d="M 676 260 C 760 260 780 205 862 205" opacity="0.6"/>
+      <path class="wire" d="M 668 372 C 760 372 790 320 880 320"/>
+      <path class="wire" d="M 890 205 C 960 205 980 262 1048 262"/>
+      <path class="wire" d="M 908 320 C 965 320 985 276 1048 276" opacity="0.6"/>
+
+      <!-- lit nodes -->
+      <g class="node node--lit">
+        <circle class="ring" cx="662" cy="150" r="14"/>
+        <circle class="core" cx="662" cy="150" r="5"/>
+      </g>
+      <text class="lab lab--lit" x="662" y="118">COMMIT</text>
+      <text class="stat stat--lit" x="662" y="188">VERIFIED</text>
+
+      <g class="node node--lit">
+        <circle class="ring" cx="662" cy="260" r="14"/>
+        <circle class="core" cx="662" cy="260" r="5"/>
+      </g>
+      <text class="lab lab--lit" x="662" y="228">TESTS</text>
+      <text class="stat stat--lit" x="662" y="298">PASSING</text>
+
+      <g class="node node--lit">
+        <circle class="ring" cx="654" cy="372" r="14"/>
+        <circle class="core" cx="654" cy="372" r="5"/>
+      </g>
+      <text class="lab lab--lit" x="654" y="340">REVIEW</text>
+      <text class="stat stat--lit" x="654" y="410">2 REVISIONS · ACCEPTED</text>
+
+      <!-- dark nodes -->
+      <g class="node">
+        <circle class="ring" cx="876" cy="205" r="14"/>
+        <circle class="core" cx="876" cy="205" r="5"/>
+      </g>
+      <text class="lab" x="876" y="173">DEPLOY</text>
+      <text class="stat" x="876" y="243">NOT YET</text>
+
+      <g class="node">
+        <circle class="ring" cx="894" cy="320" r="14"/>
+        <circle class="core" cx="894" cy="320" r="5"/>
+      </g>
+      <text class="lab" x="894" y="358">DEFENSE</text>
+      <text class="stat" x="894" y="376">NOT YET</text>
+
+      <g class="node">
+        <circle class="ring" cx="1062" cy="268" r="14"/>
+        <circle class="core" cx="1062" cy="268" r="5"/>
+      </g>
+      <text class="lab" x="1062" y="236">TRUSTED</text>
+      <text class="stat" x="1062" y="306">EARNED, NEVER CLAIMED</text>
+
+    </svg>
+  </figure>
+
+  <div class="words">
+    <h1>You can already code. This machine checks whether anyone should <b>trust you with theirs.</b></h1>
+    <aside>
+      <p>5 SPOTS · 8 WEEKS · EVERY LIGHT IS A URL</p>
+      <a class="enter" href="#">APPLY</a>
+    </aside>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Concept C · Engineering Dossier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,340;9..144,400;9..144,540&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* CONCEPT C - ENGINEERING DOSSIER
+   One idea: GridSchool is an institution that examines engineers,
+   and this page is a page from the examination record.
+   No grid. No glow. No dark mode. Cyan appears exactly once: the verdict seal. */
+
+:root {
+  --paper: #f2efe7;
+  --ink: #141412;
+  --rule: #c9c4b4;
+  --faint: #8a8474;
+  --seal: #0e9cba;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Fraunces", Georgia, serif;
+  min-height: 100vh;
+}
+
+.sheet {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 48px 72px;
+}
+
+/* ---- masthead: institutional, ruled ---- */
+.masthead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 30px 0 18px;
+  border-bottom: 2px solid var(--ink);
+}
+.masthead .name {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.masthead svg { width: 24px; height: 24px; transform: translateY(3px); }
+.masthead .g-on rect { fill: var(--ink); }
+.masthead .g-off rect { fill: #d6d1c2; }
+.masthead .name span {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 12px;
+  letter-spacing: 0.4em;
+  font-weight: 500;
+}
+.masthead .file {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.2em;
+  color: var(--faint);
+  text-align: right;
+  line-height: 1.9;
+}
+
+/* ---- title block ---- */
+.title {
+  padding: 68px 0 56px;
+  border-bottom: 1px solid var(--rule);
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 3fr);
+  gap: 56px;
+  align-items: end;
+}
+h1 {
+  font-weight: 340;
+  font-size: clamp(40px, 5.4vw, 76px);
+  line-height: 1.06;
+  letter-spacing: -0.015em;
+}
+h1 em {
+  font-style: italic;
+  font-weight: 400;
+}
+.title aside {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  line-height: 2.15;
+  letter-spacing: 0.12em;
+  color: var(--faint);
+  border-left: 1px solid var(--rule);
+  padding-left: 22px;
+}
+.title aside b {
+  color: var(--ink);
+  font-weight: 500;
+}
+.title aside a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ---- the exhibit: a figure, not a card ---- */
+.exhibit {
+  display: grid;
+  grid-template-columns: minmax(0, 6.4fr) minmax(0, 3.6fr);
+  gap: 0;
+  border-bottom: 1px solid var(--rule);
+}
+.exhibit__fig {
+  padding: 48px 48px 48px 0;
+  border-right: 1px solid var(--rule);
+}
+.figno {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.26em;
+  color: var(--faint);
+  margin-bottom: 22px;
+}
+.trace { width: 100%; height: auto; display: block; }
+.trace .line {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.2;
+}
+.trace .line--dashed { stroke-dasharray: 3 5; stroke: var(--faint); }
+.trace .pt { fill: var(--paper); stroke: var(--ink); stroke-width: 1.2; }
+.trace .pt--solid { fill: var(--ink); }
+.trace text {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  fill: var(--ink);
+}
+.trace .sub { fill: var(--faint); font-size: 9px; }
+.caption {
+  margin-top: 26px;
+  font-size: 15.5px;
+  line-height: 1.65;
+  max-width: 54ch;
+}
+.caption i { color: var(--faint); }
+
+/* margin column: the reviewer's hand + the seal */
+.exhibit__margin {
+  padding: 48px 0 48px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+.note {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11.5px;
+  line-height: 1.9;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+}
+.note .who {
+  display: block;
+  margin-top: 12px;
+  color: var(--faint);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+}
+.note::before {
+  content: "REVIEWER, IN THE MARGIN";
+  display: block;
+  font-size: 9.5px;
+  letter-spacing: 0.26em;
+  color: var(--faint);
+  margin-bottom: 14px;
+}
+
+/* the single cyan object on the page */
+.verdict {
+  margin-top: auto;
+}
+.verdict::before {
+  content: "VERDICT · WRITTEN LIVE, ON THE RECORDING";
+  display: block;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.26em;
+  color: var(--faint);
+  margin-bottom: 16px;
+}
+.seal {
+  width: 118px;
+  height: 118px;
+  border: 1.5px solid var(--seal);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  transform: rotate(-8deg);
+  color: var(--seal);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-align: center;
+  line-height: 1.9;
+}
+.seal small {
+  display: block;
+  font-size: 8px;
+  letter-spacing: 0.2em;
+}
+.verdict p {
+  margin-top: 16px;
+  font-size: 13.5px;
+  font-style: italic;
+  color: var(--faint);
+  max-width: 26ch;
+  line-height: 1.6;
+}
+
+/* ---- foot: one action, ruled ---- */
+.foot {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+  padding-top: 30px;
+}
+.foot p {
+  font-size: 15px;
+  font-style: italic;
+  color: var(--faint);
+}
+.enter {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 12px;
+  letter-spacing: 0.3em;
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 6px;
+  white-space: nowrap;
+}
+
+@media (max-width: 860px) {
+  .sheet { padding: 0 22px 56px; }
+  .title {
+    grid-template-columns: 1fr;
+    gap: 34px;
+    padding: 44px 0 40px;
+  }
+  .title aside { border-left: 0; padding-left: 0; border-top: 1px solid var(--rule); padding-top: 20px; }
+  .exhibit { grid-template-columns: 1fr; }
+  .exhibit__fig { padding: 36px 0; border-right: 0; border-bottom: 1px solid var(--rule); }
+  .exhibit__margin { padding: 36px 0 8px; }
+  .foot { flex-direction: column; align-items: flex-start; gap: 24px; }
+}
+</style>
+</head>
+<body>
+
+<div class="sheet">
+
+  <header class="masthead">
+    <div class="name">
+      <svg viewBox="0 0 36 36" aria-hidden="true">
+        <g transform="translate(18 18) rotate(45) translate(-12.5 -12.5)">
+          <g class="g-off">
+            <rect x="5.4" y="5.4" width="4.2" height="4.2" rx="1.2"/><rect x="10.4" y="5.4" width="4.2" height="4.2" rx="1.2"/><rect x="15.4" y="5.4" width="4.2" height="4.2" rx="1.2"/><rect x="20.4" y="5.4" width="4.2" height="4.2" rx="1.2"/><rect x="5.4" y="10.4" width="4.2" height="4.2" rx="1.2"/><rect x="10.4" y="10.4" width="4.2" height="4.2" rx="1.2"/><rect x="5.4" y="15.4" width="4.2" height="4.2" rx="1.2"/><rect x="10.4" y="15.4" width="4.2" height="4.2" rx="1.2"/><rect x="15.4" y="15.4" width="4.2" height="4.2" rx="1.2"/>
+          </g>
+          <g class="g-on">
+            <rect x="0.4" y="0.4" width="4.2" height="4.2" rx="1.2"/><rect x="5.4" y="0.4" width="4.2" height="4.2" rx="1.2"/><rect x="10.4" y="0.4" width="4.2" height="4.2" rx="1.2"/><rect x="15.4" y="0.4" width="4.2" height="4.2" rx="1.2"/><rect x="20.4" y="0.4" width="4.2" height="4.2" rx="1.2"/><rect x="0.4" y="5.4" width="4.2" height="4.2" rx="1.2"/><rect x="0.4" y="10.4" width="4.2" height="4.2" rx="1.2"/><rect x="15.4" y="10.4" width="4.2" height="4.2" rx="1.2"/><rect x="20.4" y="10.4" width="4.2" height="4.2" rx="1.2"/><rect x="0.4" y="15.4" width="4.2" height="4.2" rx="1.2"/><rect x="20.4" y="15.4" width="4.2" height="4.2" rx="1.2"/><rect x="0.4" y="20.4" width="4.2" height="4.2" rx="1.2"/><rect x="5.4" y="20.4" width="4.2" height="4.2" rx="1.2"/><rect x="10.4" y="20.4" width="4.2" height="4.2" rx="1.2"/><rect x="15.4" y="20.4" width="4.2" height="4.2" rx="1.2"/><rect x="20.4" y="20.4" width="4.2" height="4.2" rx="1.2"/>
+          </g>
+        </g>
+      </svg>
+      <span>GRIDSCHOOL</span>
+    </div>
+    <div class="file">
+      ENGINEERING EVIDENCE · DOSSIER 001<br>
+      FOUNDING DEFENSE LAB · BOISE, IDAHO
+    </div>
+  </header>
+
+  <section class="title">
+    <h1>You can already code. That used to be <em>enough.</em></h1>
+    <aside>
+      <b>5 SPOTS · 8 WEEKS · $500</b><br>
+      One inherited system.<br>
+      Review by another hand.<br>
+      A defense, recorded.<br>
+      Every claim on this page is<br>
+      checkable: <a href="#">the server</a>, <a href="#">the code</a>,<br>
+      <a href="#">the platform</a>.
+    </aside>
+  </section>
+
+  <section class="exhibit">
+    <figure class="exhibit__fig">
+      <div class="figno">FIG. 1 · THE PATH OF ONE CHANGE THROUGH EXAMINATION</div>
+      <svg class="trace" viewBox="0 0 640 260">
+        <!-- one line, five stations, drafting style -->
+        <path class="line" d="M 40 140 H 180"/>
+        <path class="line" d="M 200 140 H 330"/>
+        <path class="line" d="M 350 140 H 470"/>
+        <path class="line line--dashed" d="M 490 140 H 590"/>
+
+        <circle class="pt pt--solid" cx="40" cy="140" r="5"/>
+        <circle class="pt pt--solid" cx="190" cy="140" r="7"/>
+        <circle class="pt pt--solid" cx="340" cy="140" r="7"/>
+        <circle class="pt" cx="480" cy="140" r="7"/>
+        <circle class="pt" cx="600" cy="140" r="9"/>
+
+        <text x="40" y="118" text-anchor="middle">INHERIT</text>
+        <text class="sub" x="40" y="170" text-anchor="middle">CODE YOU DID NOT WRITE</text>
+
+        <text x="190" y="118" text-anchor="middle">CHANGE</text>
+        <text class="sub" x="190" y="170" text-anchor="middle">PR + FAILURE LOG</text>
+
+        <text x="340" y="118" text-anchor="middle">REVIEW</text>
+        <text class="sub" x="340" y="170" text-anchor="middle">ANOTHER HAND MARKS IT</text>
+
+        <text x="480" y="118" text-anchor="middle">DEFENSE</text>
+        <text class="sub" x="480" y="170" text-anchor="middle">8 MIN · RECORDED</text>
+
+        <text x="600" y="118" text-anchor="middle">TRUSTED</text>
+        <text class="sub" x="600" y="170" text-anchor="middle">THE ONLY EXIT</text>
+
+        <!-- dimension marks, like a blueprint -->
+        <path class="line line--dashed" d="M 40 210 V 224 M 480 210 V 224 M 40 217 H 480"/>
+        <text class="sub" x="260" y="245" text-anchor="middle">EIGHT WEEKS, MEASURED IN RECEIPTS</text>
+      </svg>
+      <figcaption class="caption">
+        Solid marks exist today and resolve to public URLs. Open marks are earned in the room, never sold.
+        <i>A model can generate the portfolio. It cannot sit the examination.</i>
+      </figcaption>
+    </figure>
+
+    <div class="exhibit__margin">
+      <p class="note">
+        "Contract written before the change. Check runs without the author in the room. Accept."
+        <span class="who">WORKING ENGINEER · DID NOT HELP THE CANDIDATE</span>
+      </p>
+
+      <div class="verdict">
+        <div class="seal" aria-label="Verdict seal, unfilled until earned">
+          VERDICT<small>UNFILLED</small>
+        </div>
+        <p>Nobody can buy this filled in.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <p>For the five who can already code, and are done being unverifiable.</p>
+    <a class="enter" href="#">APPLY FOR A SPOT</a>
+  </footer>
+
+</div>
+
+</body>
+</html>
