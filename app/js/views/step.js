@@ -78,8 +78,23 @@ export function renderStep(ctx, nodeId, moduleId = null) {
     const isAdmin = current.role === "admin";
     const blockers = blockedBy(graph, node.id);
     const canTurnIn = node.status === STATUS.OPEN || node.status === STATUS.LIT;
-    const video = resolveMedia(node.video) ? node.video : FALLBACK_VIDEO;
-    const videoReady = node.video?.path || node.video?.youtube;
+    // Planned films still get a poster + playable placeholder (CDN test clip) so
+    // the step has the same shape once real media lands.
+    const filmed = Boolean(node.video && resolveMedia(node.video));
+    const video = filmed ? node.video : node.video ? { ...FALLBACK_VIDEO, title: node.video.title || FALLBACK_VIDEO.title, mins: node.video.mins || FALLBACK_VIDEO.mins, watchWhen: node.video.watchWhen || FALLBACK_VIDEO.watchWhen } : null;
+    const card = video
+      ? videoCard({
+          title: video.title,
+          mins: video.mins,
+          youtube: video.youtube,
+          path: video.path,
+          thumb: video.thumb,
+          watchWhen: filmed
+            ? video.watchWhen ?? "Watch this, then do the steps."
+            : "Placeholder stream until this lesson is filmed. Play to confirm the player; the real film replaces this.",
+          startOpen: true,
+        })
+      : null;
 
     return el(
       "div.step",
@@ -110,22 +125,14 @@ export function renderStep(ctx, nodeId, moduleId = null) {
       node.why
         ? el("section.step__why", {}, el("b.eyebrow", {}, "Why"), el("p", {}, node.why))
         : null,
-      videoReady
+      card
         ? el(
             "section.step__video",
             {},
-            el("b.eyebrow", {}, "Watch (optional)"),
-            el("p.step__vidtitle", {}, `${video.title} · ${video.mins} min`),
-            video.watchWhen && el("p.muted", {}, video.watchWhen),
-            videoCard({
-              title: video.title,
-              mins: video.mins,
-              youtube: video.youtube,
-              path: video.path,
-              thumb: video.thumb,
-              watchWhen: video.watchWhen ?? "Watch this, then do the steps.",
-              startOpen: false,
-            })?.node
+            el("b.eyebrow", {}, filmed ? "Watch" : "Watch · placeholder until filmed"),
+            el("p.step__vidtitle", {}, `${node.video?.title || video.title} · ${node.video?.mins || video.mins} min`),
+            node.video?.watchWhen && el("p.muted", {}, node.video.watchWhen),
+            card.node
           )
         : null,
       node.lesson?.length

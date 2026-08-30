@@ -635,7 +635,7 @@ body[data-view="step"] .view--step { flex: 1 1 auto; min-height: 0; }
 }
 .room__video .eyebrow,
 .room__video .room__vidtitle { text-align: left; }
-.room__video .vid { max-width: none; width: 100%; margin-inline: auto; }
+.step__video .vid { max-width: none; width: 100%; margin-inline: auto; display: block; }
 .room__lesson { max-width: 72ch; }
 .room__lesson .lesson__sec + .lesson__sec { margin-top: 18px; }
 .room__lesson h3 { font-size: 15px; color: #fff; margin: 0 0 4px; }
@@ -1113,12 +1113,22 @@ button.month__day:hover { border-color: var(--hair-cyan); background: #0b1522; }
 
 /* ---------- full step page (replaces map modal) ---------- */
 
+/* Full-width scroll host so the wheel works anywhere in the outlet, not only
+   over the narrow text column. Content stays centered inside .step. */
 .view--step {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+.view--step > .step,
+.view--step > .step--module {
   max-width: 46rem;
   margin: 0 auto;
   padding: 22px 22px 80px;
-  overflow-y: auto;
-  width: 100%;
   box-sizing: border-box;
 }
 .step__head { margin-bottom: 28px; }
@@ -1161,7 +1171,8 @@ button.month__day:hover { border-color: var(--hair-cyan); background: #0b1522; }
 }
 
 @media (max-width: 720px) {
-  .view--step { padding: 18px 16px 72px; }
+  .view--step > .step,
+  .view--step > .step--module { padding: 18px 16px 72px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
