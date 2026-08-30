@@ -20,7 +20,6 @@ import { setLineResolution } from "./world-lines.js";
 import { createGrid } from "./world-grid.js";
 import { createHero } from "./world-artifact.js";
 import { createHoverSpin } from "./world-hover-spin.js";
-import { createDockPin } from "./world-dock.js";
 
 export function createWorld({ canvas, dock }) {
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -135,7 +134,64 @@ export function createWorld({ canvas, dock }) {
     camera.lookAt(lookAt);
   }
 
-  const dockPin = createDockPin({ camera, root: dock?.root, view });
+  const pin = new THREE.Vector3();
+  const G_REACH = 4.72;
+
+  function screenRightOfG(y, vw) {
+    const ry = hero.gMark.rotation.y;
+    const c = Math.cos(ry);
+    const s = Math.sin(ry);
+    let maxX = -Infinity;
+    for (const [lx, ly] of [
+      [G_REACH, y],
+      [G_REACH * 0.82, y + 1.15],
+      [G_REACH * 0.82, y - 1.15],
+    ]) {
+      maxX = Math.max(
+        maxX,
+        project(pin, OBJECT.x + lx * c, ly, OBJECT.z - lx * s, vw).x,
+      );
+    }
+    return maxX;
+  }
+
+  function project(out, x, y, z, vw) {
+    out.set(x, y, z).project(camera);
+    return {
+      x: (out.x * 0.5 + 0.5) * vw.w,
+      y: (-out.y * 0.5 + 0.5) * vw.h,
+    };
+  }
+
+  function pinDock() {
+    if (!dock?.root) return;
+    const vw = view();
+    if (vw.w < 720) {
+      dock.root.style.left = "";
+      dock.root.style.top = "";
+      return;
+    }
+
+    const midY = OBJECT.h / 2 + BOB_AMP * bobWave(lastT);
+    const attachY = midY - 0.4;
+    const attach = project(pin, OBJECT.x, attachY, OBJECT.z, vw);
+    const gRight = screenRightOfG(attachY, vw);
+
+    const w = dock.root.offsetWidth;
+    const h = dock.root.offsetHeight;
+    const gap = 118;
+
+    let left = Math.round(gRight + gap);
+    const maxLeft = vw.w - w - 24;
+    if (left > maxLeft) left = Math.round(gRight + Math.max(32, maxLeft - gRight));
+    left = Math.max(24, Math.min(left, maxLeft));
+
+    let top = Math.round(attach.y - 14);
+    top = Math.max(24, Math.min(top, vw.h - h - 24));
+
+    dock.root.style.left = `${left}px`;
+    dock.root.style.top = `${top}px`;
+  }
 
   function pose(t) {
     placeCamera(t);
@@ -146,7 +202,7 @@ export function createWorld({ canvas, dock }) {
     hero.gMark.rotation.y =
       (reduced ? face : face + 0.7 * turnAway(t)) + hoverSpin.offset(t);
     applyBob(reduced ? 0 : t);
-    dockPin.apply(OBJECT.h / 2 + BOB_AMP * bobWave(reduced ? 0 : t) - 0.4);
+    pinDock();
   }
 
   function resize() {
@@ -155,7 +211,6 @@ export function createWorld({ canvas, dock }) {
     composer.setSize(w, h);
     setLineResolution(w, h);
     frame();
-    dockPin.measure();
     pose(reduced ? 0 : lastT);
     if (reduced || !playing) composer.render();
   }
@@ -186,10 +241,7 @@ export function createWorld({ canvas, dock }) {
   const ro = new ResizeObserver(resize);
   ro.observe(canvas);
   resize();
-  requestAnimationFrame(() => {
-    dockPin.measure();
-    dockPin.apply(OBJECT.h / 2 + BOB_AMP * bobWave(reduced ? 0 : lastT) - 0.4);
-  });
+  requestAnimationFrame(() => pinDock());
   if (reduced) {
     composer.render();
   } else {
