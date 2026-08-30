@@ -104,8 +104,11 @@ body[data-view="step"] .gridbg { display: none; }
 }
 .demobar b { color: var(--amber); font-family: "IBM Plex Mono", ui-monospace, monospace; letter-spacing: .1em; font-size: 11px; }
 
-.outlet { flex: 1 1 auto; min-width: 0; min-height: 0; outline: none; }
-body[data-view="today"] .outlet { display: flex; flex-direction: column; }
+/* The outlet is the scroll host for document-like views (calendar, tasks,
+   library, first-run). Map and step manage their own scrolling. */
+.outlet { flex: 1 1 auto; min-width: 0; min-height: 0; outline: none; overflow-y: auto; }
+body[data-view="map"] .outlet { overflow: hidden; }
+body[data-view="today"] .outlet { display: flex; flex-direction: column; overflow: hidden; }
 body[data-view="step"] .outlet { display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
 body[data-view="step"] .view--step { flex: 1 1 auto; min-height: 0; }
 .view { padding: 30px 26px 70px; max-width: 1240px; }
@@ -945,6 +948,10 @@ button.month__day:hover { border-color: var(--hair-cyan); background: #0b1522; }
 .ev__meta { display: flex; gap: 12px; flex-wrap: wrap; font-size: 12px; color: var(--muted); margin-top: 3px; }
 .ev__rel { color: var(--cyan); opacity: .8; }
 .ev__agenda { font-size: 13px; color: var(--muted); margin-top: 6px; }
+
+.dayloop { display: flex; flex-direction: column; gap: 8px; }
+.dayloop__line { font-size: 13.5px; color: var(--muted); }
+.dayloop__line b { color: #fff; font-size: 13.5px; }
 
 .rooms { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
 .room-card { border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 13px 14px; }

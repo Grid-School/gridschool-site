@@ -143,20 +143,24 @@ function studioBlock() {
   const play = link("play");
   const server = link("worldServer");
   const client = link("worldClient");
+  const jira = link("jira");
   return el(
     "div",
     {},
     el(
       "p.muted",
       {},
-      "The world is the live game. Features you ship stay there with a maker's mark, and anyone you send the link to can walk in. GridSeak is the graph engine. How much you take on there follows your goals, and I review that work the same way."
+      "The world is the live game. Features you ship stay there with a maker's mark, and anyone you send the link to can walk in. GridSeak is the graph engine. How much you take on there follows your goals, and I review that work the same way. Daily stories live on the ticket board."
     ),
     el(
       "div.room__acts",
       {},
       play && btn({ label: "Open the world", variant: "solid", href: play, target: "_blank" }),
       server && btn({ label: "World server", variant: "quiet", href: server, target: "_blank" }),
-      client && btn({ label: "World client", variant: "quiet", href: client, target: "_blank" })
+      client && btn({ label: "World client", variant: "quiet", href: client, target: "_blank" }),
+      jira
+        ? btn({ label: "Open the ticket board", variant: "quiet", href: jira, target: "_blank" })
+        : el("span.notwired", {}, "The ticket board is not connected yet. It arrives on day one.")
     )
   );
 }

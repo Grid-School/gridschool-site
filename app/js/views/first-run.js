@@ -72,13 +72,14 @@ export function renderFirstRun(ctx) {
     el(
       "section.gloss",
       {},
-      el("b.eyebrow", {}, "Three places work lives"),
+      el("b.eyebrow", {}, "Where work lives"),
       el(
         "ul.gloss__list",
         {},
         el("li", {}, el("b", {}, "World"), ": the live game at play.gridschool.org. We build it together. Friends can walk in and see what you shipped."),
         el("li", {}, el("b", {}, "GridSeak"), ": the graph engine. Take a slice that matches what you want to own."),
-        el("li", {}, el("b", {}, "The board"), ": the map of the work. A step lights when it has a link.")
+        el("li", {}, el("b", {}, "The ticket board"), ": your user stories, on Jira. What to work on next lives there. Week 1 teaches it."),
+        el("li", {}, el("b", {}, "The map"), ": lessons, films, and milestones. A step lights when it has a link.")
       )
     ),
     el(
@@ -87,7 +88,7 @@ export function renderFirstRun(ctx) {
       step({
         n: 1,
         title: "See the whole path",
-        body: "The required path: get a system running, read it, change it, prove it, defend it, then one public trail. The world is where that work lives. GridSeak is extra ownership when your goals want it.",
+        body: "The required path: learn the weekly loop, get the world running, read it, ship stories from the ticket board, prove them, defend your strongest, then one public trail. GridSeak is extra ownership when your goals want it.",
         action: btn({ label: "Open the map", variant: "solid", onclick: () => leave("map") }),
       }),
       step({

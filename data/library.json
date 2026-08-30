@@ -14,7 +14,7 @@
         },
         {
           "id": "v.pf.runs",
-          "title": "Make it boot",
+          "title": "A live game server on your laptop",
           "mins": 12,
           "order": 2
         }
@@ -26,16 +26,22 @@
       "blurb": "How you send work and get notes back, and the simple board we use (to do, doing, done: that is Kanban; a short weekly plan is the useful part of Scrum).",
       "items": [
         {
+          "id": "v.ops.flow",
+          "title": "The weekly loop: stories, branches, reviews",
+          "mins": 10,
+          "order": 3
+        },
+        {
           "id": "v.review",
           "title": "Send work, get notes, change it",
           "mins": 10,
-          "order": 3
+          "order": 4
         },
         {
           "id": "v.flow",
           "title": "To do, doing, done, and a weekly plan",
           "mins": 9,
-          "order": 4
+          "order": 5
         }
       ]
     },
@@ -48,19 +54,19 @@
           "id": "v.cv.four",
           "title": "Four skills: say it, understand it, choose it, check it",
           "mins": 14,
-          "order": 5
+          "order": 6
         },
         {
           "id": "v.cv.understand",
           "title": "Reading code you did not write",
           "mins": 18,
-          "order": 6
+          "order": 7
         },
         {
           "id": "v.cap.change",
           "title": "Build the change, then ask for a review",
           "mins": 15,
-          "order": 7
+          "order": 8
         }
       ]
     },
@@ -73,7 +79,7 @@
           "id": "v.li.publish",
           "title": "One trail after a receipt",
           "mins": 8,
-          "order": 8
+          "order": 9
         }
       ]
     }

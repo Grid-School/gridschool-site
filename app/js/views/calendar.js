@@ -67,13 +67,25 @@ export function renderCalendar(ctx, weekArg) {
       )
     ),
     panel(
+      { eyebrow: "The daily loop", title: "How a day runs" },
+      el(
+        "div.dayloop",
+        {},
+        dayLine("Today", "One next move, and the Coach. Start here."),
+        dayLine("The ticket board", "Your user story lives on Jira. Pull the next one when you are free."),
+        dayLine("The map", "The lesson, the film, and the milestone behind whatever you are working on."),
+        dayLine("Discord", "Stuck for thirty honest minutes, ask in #asks. Shipped, post in #ship.")
+      )
+    ),
+    panel(
       { eyebrow: "Where it happens", title: "The rooms" },
       el(
         "div.rooms",
         {},
         roomCard("Cohort call", "Discord voice, Mondays", "discord"),
         roomCard("Your 1:1", "Video call, your slot", "oneOnOne"),
-        roomCard("The room, all week", "Discord text channels", "discord")
+        roomCard("The ticket board", "Jira, all week", "jira"),
+        roomCard("Discord, all week", "Text channels between calls", "discord")
       )
     ),
     panel(
@@ -115,6 +127,10 @@ function dayCell(label, date, events, now) {
       : el("p.week__free", {}, "open"),
     !dayEvents.length && el("span.week__hint", {}, "your time")
   );
+}
+
+function dayLine(name, detail) {
+  return el("p.dayloop__line", {}, el("b", {}, name), el("span", {}, ` · ${detail}`));
 }
 
 function roomCard(title, detail, linkKey) {

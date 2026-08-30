@@ -268,10 +268,10 @@ export function renderToday(ctx) {
   };
 }
 
-/** Which codebase the next spine/depth step belongs to, one line so desk/world/graph never blur. */
+/** Which codebase the next spine/depth step belongs to, one line so world/graph never blur. */
 function systemLine(node) {
   if (!node) return null;
-  if (node.family === "world") return "This week's system · World (depth)";
   if (node.family === "graph") return "This week's system · Graph / nanograph (depth)";
-  return "This week's system · Studio desk (required path)";
+  if (node.family === "world") return "This week's system · The world (depth track)";
+  return "This week's system · The world (required path)";
 }

@@ -28,7 +28,7 @@ export function handoffForm({ store, node = null, onDone = () => {} } = {}) {
     label: "What is it",
     id: `rv-title${suffix}`,
     value: node ? `${String(node.n).padStart(2, "0")} ${node.title}` : "",
-    placeholder: "Studio repo: the caching change",
+    placeholder: "World server: the healthcheck fix",
   });
   const url = field({
     label: "Link to the work",

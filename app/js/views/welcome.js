@@ -109,7 +109,7 @@ export function welcomeReadiness({ node, student, store, onMarked }) {
       "p.room__hint",
       {},
       complete
-        ? "This chapter is done. It runs and The four skills are open next."
+        ? "This chapter is done. The next steps are open on the map."
         : readyToLink
           ? "You are ready for the link. Paste it below and this step lights."
           : `${doneCount} of ${rows.length} done.`

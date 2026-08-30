@@ -74,8 +74,8 @@
     {
       "week": 6,
       "kind": "gate",
-      "title": "Mission must be in review",
-      "detail": "PR open. Failure log started. If this is late, we cut scope, not standards."
+      "title": "Strongest PR in review",
+      "detail": "Your defense-candidate PR is open with its failure log started. If this is late, we cut scope, not standards."
     },
     {
       "week": 8,
