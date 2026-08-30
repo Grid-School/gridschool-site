@@ -61,6 +61,9 @@ export function renderStep(ctx, nodeId, moduleId = null) {
   }
 
   function stepEyebrow(node, graph) {
+    if (node.id === "or.start") {
+      return "Week 1 · Orientation · take your time";
+    }
     const family = (graph.families ?? []).find((item) => item.id === node.family);
     const prog = progress(graph);
     const track = trackLabel(node.track);
@@ -78,6 +81,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
     const isAdmin = current.role === "admin";
     const blockers = blockedBy(graph, node.id);
     const canTurnIn = node.status === STATUS.OPEN || node.status === STATUS.LIT;
+    const welcome = node.id === "or.start";
     // Planned films still get a poster + playable placeholder (CDN test clip) so
     // the step has the same shape once real media lands.
     const filmed = Boolean(node.video && resolveMedia(node.video));
@@ -91,14 +95,16 @@ export function renderStep(ctx, nodeId, moduleId = null) {
           thumb: video.thumb,
           watchWhen: filmed
             ? video.watchWhen ?? "Watch this, then do the steps."
-            : "Placeholder stream until this lesson is filmed. Play to confirm the player; the real film replaces this.",
+            : welcome
+              ? "Placeholder until this welcome film is recorded. Play if you want to hear the shape; the letter below is the real orientation."
+              : "Placeholder stream until this lesson is filmed. Play to confirm the player; the real film replaces this.",
           startOpen: true,
         })
       : null;
 
     return el(
       "div.step",
-      {},
+      { class: welcome ? "step--welcome" : "" },
       el(
         "header.step__head",
         {},
@@ -106,22 +112,28 @@ export function renderStep(ctx, nodeId, moduleId = null) {
           "div.step__nav",
           {},
           btn({ label: "← Back to map", variant: "quiet", onclick: () => current.navigate("map") }),
-          el("span.step__rule", {}, RULE)
+          welcome ? null : el("span.step__rule", {}, RULE)
         ),
         el("b.eyebrow", {}, stepEyebrow(node, graph)),
         el("h1.step__title", {}, node.title),
         node.why ? el("p.step__lead", {}, node.why) : null,
-        el(
-          "p.step__scope",
-          {},
-          "Everything for this step is on this page. Read first, then do the work. Optional deeper reading appears only if named below."
-        )
+        welcome
+          ? el(
+              "p.step__scope",
+              {},
+              "Settle in. Watch or read first — everything for this step is on this page. The small note at the bottom waits until it feels clear."
+            )
+          : el(
+              "p.step__scope",
+              {},
+              "Everything for this step is on this page. Optional deeper reading appears only if named below."
+            )
       ),
       card
         ? el(
             "section.step__video",
             {},
-            el("b.eyebrow", {}, filmed ? "Watch" : "Watch · placeholder until filmed"),
+            el("b.eyebrow", {}, filmed ? "Watch" : welcome ? "Watch · coming soon" : "Watch · placeholder until filmed"),
             el("p.step__vidtitle", {}, `${node.video?.title || video.title} · ${node.video?.mins || video.mins} min`),
             node.video?.watchWhen && el("p.muted", {}, node.video.watchWhen),
             card.node
@@ -131,11 +143,11 @@ export function renderStep(ctx, nodeId, moduleId = null) {
         ? el(
             "section.step__lesson",
             {},
-            el("b.eyebrow", {}, "Understand"),
-            node.lesson.map((section) =>
+            el("b.eyebrow", {}, welcome ? "Welcome" : "Lesson"),
+            node.lesson.map((section, index) =>
               el(
                 "section.lesson__sec",
-                {},
+                { class: welcome && index === 0 ? "lesson__sec--letter" : "" },
                 section.h && el("h2", {}, section.h),
                 (section.p ?? []).map((paragraph) => el("p", {}, paragraph))
               )
@@ -145,7 +157,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
           ? el(
               "section.step__lesson",
               {},
-              el("b.eyebrow", {}, "Understand"),
+              el("b.eyebrow", {}, "Lesson"),
               el(
                 "p.room__hint",
                 {},
@@ -164,8 +176,14 @@ export function renderStep(ctx, nodeId, moduleId = null) {
         ? el(
             "section.step__tasks",
             {},
-            el("b.eyebrow", {}, "Do the work"),
-            el("p.room__hint", {}, "Check a box when its Done when is true. Open Show steps only if you want the how-to."),
+            el("b.eyebrow", {}, welcome ? "When you are ready" : "Do the work"),
+            el(
+              "p.room__hint",
+              {},
+              welcome
+                ? "Two small writes. Same note. No grade on the checkboxes — only the link at the bottom finishes the step."
+                : "Check a box when its Done when is true. Open Show steps only if you want the how-to."
+            ),
             el(
               "div.tasks.tasks--tight",
               {},
@@ -187,14 +205,16 @@ export function renderStep(ctx, nodeId, moduleId = null) {
       el(
         "section.step__out",
         {},
-        el("b.eyebrow", {}, "Turn this in"),
+        el("b.eyebrow", {}, welcome ? "Your first link" : "Turn this in"),
         el("p.step__evidence", {}, node.evidence),
         el(
           "p.room__hint",
           {},
-          "Paste that URL in the field below. Checking tasks is useful; only the link finishes the step."
+          welcome
+            ? "Paste the URL below when the note is done. That is the only thing that lights this step."
+            : "Paste that URL in the field below. Checking tasks is useful; only the link finishes the step."
         ),
-        node.ccvv?.length || node.reviewFor
+        !welcome && (node.ccvv?.length || node.reviewFor)
           ? el(
               "div.room__grade",
               {},

@@ -1163,6 +1163,17 @@ button.month__day:hover { border-color: var(--hair-cyan); background: #0b1522; }
 .step__lead { color: var(--text); font-size: 16px; line-height: 1.55; margin-top: 10px; max-width: 70ch; }
 .step__scope { color: var(--muted); font-size: 13.5px; margin-top: 8px; max-width: 70ch; }
 .step__evidence { color: var(--text); font-size: 16px; line-height: 1.55; margin-top: 8px; max-width: 70ch; }
+.step--welcome .step__lead { font-size: 17px; line-height: 1.6; max-width: 62ch; }
+.step--welcome .lesson__sec--letter {
+  padding: 18px 20px;
+  border: 1px solid var(--hair);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  max-width: 62ch;
+}
+.step--welcome .lesson__sec--letter h2 { margin-bottom: 10px; }
+.step--welcome .lesson__sec--letter p { color: var(--text); font-size: 15.5px; line-height: 1.75; }
+.step--welcome .step__video { margin-top: 22px; }
 .step__do, .step__why, .step__video, .step__lesson, .step__tasks, .step__out, .step__mods {
   margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--hair);
 }
