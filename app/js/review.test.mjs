@@ -6,7 +6,7 @@ test("verdict alone is not a return", () => {
   assert.equal(validReviewReturn({ verdict: "ok" }), false);
 });
 
-test("scores must be integers 1–5", () => {
+test("scores must be integers 1-5", () => {
   assert.equal(
     validReviewReturn({
       verdict: "ok",

@@ -74,7 +74,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
       : "";
     const weeks =
       Array.isArray(node.weeks) && node.weeks.length
-        ? ` · week ${node.weeks[0] === node.weeks[1] ? node.weeks[0] : `${node.weeks[0]}–${node.weeks[1]}`}`
+        ? ` · week ${node.weeks[0] === node.weeks[1] ? node.weeks[0] : `${node.weeks[0]}-${node.weeks[1]}`}`
         : "";
     return `${track}${count} · ${family?.label ?? "Step"} · ${String(node.n).padStart(2, "0")} · ${statusLabel(node.status)}${weeks}`;
   }
@@ -126,7 +126,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
           el(
             "p.step__lead",
             {},
-            "This step is not open for turn-in yet. You can still read what is ahead — the board will not let you light it early."
+            "This step is not open for turn-in yet. You can still read what is ahead - the board will not let you light it early."
           )
         ),
         lockNotice({
@@ -173,7 +173,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
           ? el(
               "p.step__scope",
               {},
-              "Settle in. Watch or read first — everything for this step is on this page. The small note at the bottom waits until it feels clear."
+              "Settle in. Watch or read first - everything for this step is on this page. The small note at the bottom waits until it feels clear."
             )
           : el(
               "p.step__scope",
@@ -242,7 +242,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
               "p.room__hint",
               {},
               welcome
-                ? "Two small writes. Same note. No grade on the checkboxes — only the link at the bottom finishes the step."
+                ? "Two small writes. Same note. No grade on the checkboxes - only the link at the bottom finishes the step."
                 : "Check a box when its Done when is true. Open Show steps only if you want the how-to."
             ),
             el(
@@ -295,7 +295,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
               el(
                 "p.room__hint",
                 {},
-                "Communication · Comprehension · Vision · Verification. The outside reader uses these. Write every turn-in so a stranger could score you on them — you will reuse that muscle in the live defense."
+                "Communication · Comprehension · Vision · Verification. The outside reader uses these. Write every turn-in so a stranger could score you on them - you will reuse that muscle in the live defense."
               )
             )
           : null,

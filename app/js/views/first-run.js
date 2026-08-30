@@ -2,13 +2,13 @@
  * The first twenty minutes.
  *
  * A first-time board should not open on a dashboard. Nobody's first question is
- * "which of these five things should I click" — that question only exists
+ * "which of these five things should I click" - that question only exists
  * because we asked it. So the first visit opens on one screen that teaches the
  * three things the rest of the product assumes you know: the one rule, where the
  * two doors go, and what your first URL is.
  *
  * It is not a tour and it does not follow you around. It appears once, it can be
- * skipped, and it never appears again once there is evidence on the board —
+ * skipped, and it never appears again once there is evidence on the board - 
  * because at that point the student has already done the only thing that matters.
  */
 
@@ -76,9 +76,9 @@ export function renderFirstRun(ctx) {
       el(
         "ul.gloss__list",
         {},
-        el("li", {}, el("b", {}, "Studio"), " — the inherited desk repo on the required path. Day one boots this."),
-        el("li", {}, el("b", {}, "World"), " — the shared game at play.gridschool.org. Depth. You see it on Monday; you ship into it when the spine allows."),
-        el("li", {}, el("b", {}, "Graph"), " — optional nanograph / GridSeak depth. Opens under graph steps, not as a second school.")
+        el("li", {}, el("b", {}, "Studio"), " - the inherited desk repo on the required path. Day one boots this."),
+        el("li", {}, el("b", {}, "World"), " - the shared game at play.gridschool.org. Depth. You see it on Monday; you ship into it when the spine allows."),
+        el("li", {}, el("b", {}, "Graph"), " - optional nanograph / GridSeak depth. Opens under graph steps, not as a second school.")
       )
     ),
     el(

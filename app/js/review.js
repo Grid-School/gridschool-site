@@ -1,4 +1,4 @@
-/** Returned reviews need four 1–5 CCVV scores. Verdict alone is not enough. */
+/** Returned reviews need four 1-5 CCVV scores. Verdict alone is not enough. */
 export function validReviewReturn({ verdict, ccvv }) {
   if (!String(verdict ?? "").trim()) return false;
   if (!ccvv || typeof ccvv !== "object") return false;

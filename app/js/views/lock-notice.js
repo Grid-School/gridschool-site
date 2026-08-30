@@ -43,7 +43,7 @@ export function lockNotice({ graph, node, onGo, onDismiss }) {
     el(
       "p",
       {},
-      `You are not behind — this step is waiting on purpose. Finish ${list} That is what unlocks “${node.title}.”`
+      `You are not behind - this step is waiting on purpose. Finish ${list} That is what unlocks “${node.title}.”`
     ),
     actions({ graph, onGo, onDismiss, goLabel: null })
   );

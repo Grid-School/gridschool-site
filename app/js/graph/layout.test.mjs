@@ -78,8 +78,8 @@ test("phase bands do not share an x range", () => {
       { id: "li3", col: 3, family: "linkedin", n: 3, phase: "proof", x: 618, y: 0, r: 33 },
     ],
     [
-      { id: "foundation", label: "Start simple", weeks: "1–2" },
-      { id: "proof", label: "Add skill", weeks: "3–6" },
+      { id: "foundation", label: "Start simple", weeks: "1-2" },
+      { id: "proof", label: "Add skill", weeks: "3-6" },
     ]
   );
   applyLayout(g);

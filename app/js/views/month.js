@@ -3,7 +3,7 @@
  *
  * Nothing is imported for this. Every calendar library on the shelf ships its
  * own layout engine, its own event model and its own theme to fight, and this
- * calendar has no free-form events to manage — every entry is generated from the
+ * calendar has no free-form events to manage - every entry is generated from the
  * cohort rules. What was actually missing is what a real calendar gives you in
  * one glance: today, the days already gone, and where the month boundaries fall.
  *
@@ -28,7 +28,7 @@ const DOTS_SHOWN = 3;
 
 /**
  * `onPickWeek` receives a program week number, already clamped. Days outside the
- * program are shown but not clickable — pretending they lead somewhere would be
+ * program are shown but not clickable - pretending they lead somewhere would be
  * a dead end dressed as a link.
  */
 export function monthGrid({ cohort, student, week, now = new Date(), onPickWeek }) {

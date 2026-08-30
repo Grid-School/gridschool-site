@@ -1,6 +1,6 @@
 /**
  * Context pack. One function builds the system prompt and the user fence so
- * every caller — live Grok, the local demo reply, a future review pass —
+ * every caller - live Grok, the local demo reply, a future review pass - 
  * sends the same bytes.
  *
  * Untrusted content (the student's message, their files, their memory notes)

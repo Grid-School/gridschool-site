@@ -4,13 +4,13 @@
  * The point is spatial continuity: a panel that fades in from nowhere makes you
  * re-find your place afterwards, while a panel that expands from the node you
  * pressed and collapses back into it keeps the map fixed in your head. Callers
- * pass the screen point it should grow from; everything else — the scrim, escape,
- * focus, the return trip — is handled here so no view has to reimplement it.
+ * pass the screen point it should grow from; everything else - the scrim, escape,
+ * focus, the return trip - is handled here so no view has to reimplement it.
  *
  * There is one door: `setOpen(shouldBeOpen, …)`. Callers declare what is true
  * rather than issuing open and close commands, so a panel cannot be left on
- * screen by an owner that believes it is shut. Where it matters — escape, and
- * teardown — this asks the document what is showing rather than trusting its
+ * screen by an owner that believes it is shut. Where it matters - escape, and
+ * teardown - this asks the document what is showing rather than trusting its
  * own flag, because the flag is exactly what drifts when something goes wrong.
  */
 
@@ -20,7 +20,7 @@ const OUT_MS = 220;
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])';
 
 /**
- * `layer` is positioned by the caller's stylesheet — it fills whatever box it is
+ * `layer` is positioned by the caller's stylesheet - it fills whatever box it is
  * appended to, so a modal over the map covers the map and not the whole page.
  */
 export function createModal({ label, size = "wide", onClose = () => {} } = {}) {
@@ -83,7 +83,7 @@ export function createModal({ label, size = "wide", onClose = () => {} } = {}) {
     // trap has nothing to hold.
     const hadFocus = panel.contains(document.activeElement);
     mount(body, content);
-    /* Every open — same node or a new one — starts at the top. The panel is the
+    /* Every open - same node or a new one - starts at the top. The panel is the
        scroll container; remounting content alone leaves scrollTop in place. */
     panel.scrollTop = 0;
     body.scrollTop = 0;
@@ -114,7 +114,7 @@ export function createModal({ label, size = "wide", onClose = () => {} } = {}) {
     layer.classList.remove("is-open");
     layer.classList.add("is-closing");
     // The YouTube player keeps eating pointer events after the scrim fades, even
-    // when this layer is pointer-events: none — iframes do not inherit that.
+    // when this layer is pointer-events: none - iframes do not inherit that.
     // Pull them out now so the grid can be dragged the moment the room closes.
     layer.style.pointerEvents = "none";
     layer.inert = true;

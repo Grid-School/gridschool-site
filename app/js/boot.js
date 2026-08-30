@@ -3,7 +3,7 @@
  * on every state change. Views are plain functions except the map and Today,
  * which keep camera and conversation across navigation.
  *
- * There are two doors — Today and the Grid — plus three tools reached by name. The
+ * There are two doors - Today and the Grid - plus three tools reached by name. The
  * routes that used to be surfaces of their own are kept as aliases so links
  * already in the wild still land somewhere true.
  */
@@ -139,7 +139,7 @@ function renderRoute() {
   chrome.setBanner(ctx.state);
   chrome.setSignals(ctx.state);
 
-  // Full step page: #/map/<nodeId>[/m/...] — not a modal over the graph.
+  // Full step page: #/map/<nodeId>[/m/...] - not a modal over the graph.
   if (route.name === "map" && isStepArgs(route.args, ctx.state.graph)) {
     document.body.dataset.view = "step";
     const nodeId = route.args[0];
@@ -207,7 +207,7 @@ async function start() {
 
   role = resolveRole();
   /* The console is not published on the public site. If the admin surface is
-     not actually there, the role is theater plus a dead button — degrade to
+     not actually there, the role is theater plus a dead button - degrade to
      student instead of rendering a door that 404s. */
   if (role === "admin" && !(await adminSurfaceExists())) role = "student";
 

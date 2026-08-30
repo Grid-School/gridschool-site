@@ -1,6 +1,6 @@
 /**
  * The map. A navigable graph of the whole path, and the same nodes as a list.
- * Clicking a node opens the full step page (#/map/<nodeId>) — boot owns that
+ * Clicking a node opens the full step page (#/map/<nodeId>) - boot owns that
  * view. This file is the graph/list only.
  *
  * `#/map` is the graph, `#/map/list` is the list. "list" is reserved.

@@ -41,7 +41,7 @@ export function resolveSlug() {
 
 /**
  * The slug the current URL asks for, if it asks for one. Callers use this to
- * tell a deliberate link apart from a stored session that has gone stale —
+ * tell a deliberate link apart from a stored session that has gone stale - 
  * a board that existed on one host may not exist on another.
  */
 export function slugFromUrl() {

@@ -29,7 +29,7 @@
           "mins": 1,
           "status": "ready",
           "path": "test-bbb",
-          "watchWhen": "CDN test clip. Confirm play, scrub, and 360p–4K. Not a lesson.",
+          "watchWhen": "CDN test clip. Confirm play, scrub, and 360p-4K. Not a lesson.",
           "order": 3
         }
       ]
@@ -60,7 +60,7 @@
     {
       "id": "project",
       "title": "On the required spine",
-      "blurb": "Weeks 2–8. Watch the film that matches the spine step you are on, then do that step. Depth (world, graph) is elective; its videos sit on those nodes.",
+      "blurb": "Weeks 2-8. Watch the film that matches the spine step you are on, then do that step. Depth (world, graph) is elective; its videos sit on those nodes.",
       "items": [
         {
           "id": "v.cv.four",

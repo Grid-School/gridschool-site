@@ -1,4 +1,4 @@
-/* GridSchool landing — same design system as the Grid Map. Neon on near-black,
+/* GridSchool landing - same design system as the Grid Map. Neon on near-black,
    thin light, no film trade dress. The page IS the first product experience:
    calm, directed, one next action per screen. */
 
@@ -27,7 +27,7 @@ body {
   line-height: 1.65; overflow-x: hidden;
 }
 
-/* The grid floor fades toward the horizon — the same space the Map lives in. */
+/* The grid floor fades toward the horizon - the same space the Map lives in. */
 .gridbg {
   position: fixed; inset: 0; z-index: -1;
   background-image:

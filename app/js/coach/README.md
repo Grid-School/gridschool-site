@@ -1,4 +1,4 @@
-# The hosted Coach — what ships now, and what waits
+# The hosted Coach - what ships now, and what waits
 
 Today is the Coach. Not a dock, not a page of drills to copy, not a dashboard
 with a chat bolted on. The student lands, sees one next action, and talks.
@@ -39,8 +39,8 @@ need that. They need notes that survive a refresh and get quoted when the
 student mentions the same topic again.
 
 The retrieval function is one file (`memory.js`) with a stable shape:
-`retrieve(memory, query) → snippets`. When the corpus outgrows keyword search —
-video transcripts, every review, every failure log — swap the body of that
+`retrieve(memory, query) → snippets`. When the corpus outgrows keyword search - 
+video transcripts, every review, every failure log - swap the body of that
 function. Candidates when that day comes, in order of simplicity:
 
 1. **sqlite-vec** or **LanceDB** next to the student JSON, still local.
@@ -85,7 +85,7 @@ Hard rules baked into the client:
   hosted endpoint and a "this is a review" intent so we can spend more of the
   $50 on one turn.
 - **LeanSpark-style mentoring.** Relentless next-action, industry upskilling
-  prompts, weekly "what changed in the job market" — all of that is corpus, not
+  prompts, weekly "what changed in the job market" - all of that is corpus, not
   features. Write it into `coach-corpus.md` as we learn it.
 - **Cloud files / pull-when-relevant.** Same memory shape, stored off-browser.
   The student already has "add a file". The missing piece is a backend.
