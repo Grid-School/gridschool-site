@@ -15,6 +15,9 @@ export const LINKS = {
   discord: "REPLACE_ME_DISCORD_INVITE",
   toolPack: "REPLACE_ME_GITHUB_TOOLPACK_INVITE",
   studioRepo: "REPLACE_ME_GITHUB_STUDIO_REPO",
+  worldServer: "https://github.com/Grid-School/gridschool-world-server",
+  worldClient: "https://github.com/Grid-School/gridschool-world-client",
+  play: "https://play.gridschool.org",
   email: "support@gridschool.org",
 };
 

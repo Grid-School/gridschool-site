@@ -163,27 +163,15 @@ export function renderStep(ctx, nodeId, moduleId = null) {
         el("b.eyebrow", {}, stepEyebrow(node, graph)),
         el("h1.step__title", {}, node.title),
         node.why ? el("p.step__lead", {}, node.why) : null,
-        welcome
-          ? el(
-              "p.step__scope",
-              {},
-              "Watch first. Everything you need is on this page, and your first short write sits at the bottom."
-            )
-          : el(
-              "p.step__scope",
-              {},
-              "Everything for this step is on this page. Optional deeper reading appears only if named below."
-            )
+        el(
+          "p.step__scope",
+          {},
+          welcome
+            ? "Everything you need is on this page, and your first short write sits at the bottom."
+            : "Everything for this step is on this page. Optional deeper reading appears only if named below."
+        )
       ),
-      card
-        ? el(
-            "section.step__video",
-            {},
-            el("b.eyebrow", {}, "Watch"),
-            el("p.step__vidtitle", {}, `${node.video?.title || video.title} · ${node.video?.mins || video.mins} min`),
-            card.node
-          )
-        : null,
+      card ? el("section.step__video", {}, card.node) : null,
       node.lesson?.length
         ? el(
             "section.step__lesson",

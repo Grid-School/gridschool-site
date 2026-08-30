@@ -76,9 +76,9 @@ export function renderFirstRun(ctx) {
       el(
         "ul.gloss__list",
         {},
-        el("li", {}, el("b", {}, "Studio"), ": the inherited desk repo on the required path. Day one boots this."),
-        el("li", {}, el("b", {}, "World"), ": the shared game at play.gridschool.org. Depth. You see it on Monday; you ship into it when the spine allows."),
-        el("li", {}, el("b", {}, "Graph"), ": optional nanograph depth. Its readings open under the graph steps on the map.")
+        el("li", {}, el("b", {}, "World"), ": the live game at play.gridschool.org. We build it together. Friends can walk in and see what you shipped."),
+        el("li", {}, el("b", {}, "GridSeak"), ": the graph engine. Take a slice that matches what you want to own."),
+        el("li", {}, el("b", {}, "The board"), ": the map of the work. A step lights when it has a link.")
       )
     ),
     el(
@@ -87,13 +87,13 @@ export function renderFirstRun(ctx) {
       step({
         n: 1,
         title: "See the whole path",
-        body: "The middle rail is required: inherit a system, read it, change it, prove it, defend it, then one public trail. The world and the graph are depth (optional). Today will not send you there while a required step is open.",
+        body: "The required path: get a system running, read it, change it, prove it, defend it, then one public trail. The world is where that work lives. GridSeak is extra ownership when your goals want it.",
         action: btn({ label: "Open the map", variant: "solid", onclick: () => leave("map") }),
       }),
       step({
         n: 2,
         title: "Open the first step and do the work",
-        body: "Open Welcome. Watch so you know what the eight weeks are, then write a short public note and paste the link. You will see the world in Monday's call.",
+        body: "Open Welcome. This chapter shows you the eight weeks. Write a short public note and paste the link.",
         action: first
           ? btn({
               label: `Go to ${first.title}`,
@@ -136,7 +136,7 @@ export function renderFirstRun(ctx) {
       {},
       btn({ label: "Take me to my board", variant: "solid", onclick: () => leave("today") }),
       discord
-        ? btn({ label: "Open the room in Discord", variant: "quiet", href: discord, target: "_blank" })
+        ? btn({ label: "Open Discord", variant: "quiet", href: discord, target: "_blank" })
         : el("span.notwired", {}, "The Discord invite is not connected yet. It arrives on day one.")
     )
   );

@@ -33,7 +33,7 @@ const STEPS = [
     action: { label: "Open my board", href: `../app/?s=${encodeURIComponent(slug)}`, variant: "cta" },
   },
   {
-    title: "Join the room",
+    title: "Join Discord",
     body: `Discord. <code>#ship</code> requires a URL from the last seven days. <code>#asks</code> is where reviews get requested. Introduce yourself with a link, not a bio.`,
     action: { label: "Join Discord", linkKey: "discord" },
   },
@@ -53,9 +53,9 @@ const STEPS = [
     action: { label: "Open the Coach", href: `../app/?s=${encodeURIComponent(slug)}#/coach`, variant: "solid" },
   },
   {
-    title: "Ship tonight: make Northline run",
-    body: `Clone <code>companies/gridschool-phase0/studio</code>. Run the two commands in the README. You should see T-1842 on Support. That is the lie. Post the status output in <code>#ship</code>, then attach it to It runs.`,
-    action: { label: "Go to It runs", href: `../app/?s=${encodeURIComponent(slug)}#/map/pf.runs`, variant: "solid" },
+    title: "Open Welcome, then get the world running",
+    body: `The work lives in a live multiplayer world we are building together. Friends can walk in and see what you ship. Open Welcome on the board, write the first note, then boot the world on your machine and post proof in <code>#ship</code>.`,
+    action: { label: "Go to Welcome", href: `../app/?s=${encodeURIComponent(slug)}#/map/or.start`, variant: "solid" },
   },
 ];
 

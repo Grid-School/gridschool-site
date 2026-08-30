@@ -12,7 +12,7 @@
  */
 
 import { el } from "../dom.js";
-import { panel, btn, placeholder, copy, dot } from "../ui.js";
+import { panel, btn, copy, dot } from "../ui.js";
 import { STATUS, isSpine } from "../graph/model.js";
 import { statusLabel, reviewScores } from "./parts.js";
 import { trackLabel } from "../copy.js";
@@ -52,15 +52,7 @@ export function mapList({ state, onOpenNode }) {
           el("div.rvs", {}, loose.map((review) => reviewLine(review)))
         )
       : null,
-    panel({ eyebrow: "The shared codebase", title: "Studio repo" }, studioBlock()),
-    panel(
-      { eyebrow: "Coming", title: "Public contributions" },
-      placeholder({
-        title: "Merged pull requests on a public tool",
-        note: "The capstone ends with a merged public pull request, or an internship if that is the true path. Most people here have the degree and not the job yet. The PR is the usual path.",
-        when: "That step sits at the end of the capstone track.",
-      })
-    )
+    panel({ eyebrow: "The shared codebases", title: "The world, and GridSeak" }, studioBlock())
   );
 }
 
@@ -148,17 +140,23 @@ function linkBlock(nodes, name) {
 }
 
 function studioBlock() {
-  const href = link("studioRepo");
+  const play = link("play");
+  const server = link("worldServer");
+  const client = link("worldClient");
   return el(
     "div",
     {},
     el(
       "p.muted",
       {},
-      "The repo I hand you is deliberately messy and deliberately real, because inherited systems are the job."
+      "The world is the live game. Features you ship stay there with a maker's mark, and anyone you send the link to can walk in. GridSeak is the graph engine. How much you take on there follows your goals, and I review that work the same way."
     ),
-    href
-      ? btn({ label: "Open the studio repo", variant: "solid", href, target: "_blank" })
-      : el("span.notwired", {}, "Repo access is not connected yet. You get an invite on day one.")
+    el(
+      "div.room__acts",
+      {},
+      play && btn({ label: "Open the world", variant: "solid", href: play, target: "_blank" }),
+      server && btn({ label: "World server", variant: "quiet", href: server, target: "_blank" }),
+      client && btn({ label: "World client", variant: "quiet", href: client, target: "_blank" })
+    )
   );
 }

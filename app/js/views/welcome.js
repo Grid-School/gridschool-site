@@ -70,11 +70,6 @@ export function welcomeReadiness({ node, student, store, onMarked }) {
   const read = Boolean(flags.read);
   const rows = [
     {
-      ok: watched,
-      label: watched ? "Opened the welcome film" : "Open the film above",
-      act: null,
-    },
-    {
       ok: read || allTasks || hasLink,
       label: read || allTasks || hasLink ? "Welcome letter acknowledged" : "Read the letter, then mark it",
       act:
