@@ -15,7 +15,7 @@ import { handoffDisclosure } from "./handoff.js";
 import { TASK_STATE } from "../tasks.js";
 import { renderMarkdown } from "../markdown.js";
 import { lockNotice, shouldInterceptLock } from "./lock-notice.js";
-import { welcomeSchedule, welcomeReadiness, welcomeSubmitWarn } from "./welcome.js";
+import { welcomeSchedule, welcomeReadiness, welcomeSubmitWarn, isStepComplete } from "./welcome.js";
 
 const FALLBACK_VIDEO = {
   title: "Stream test · Big Buck Bunny (CC)",
@@ -50,7 +50,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
       mount(
         root,
         el("header.view__head", {}, el("h1", {}, "That step is not on this board")),
-        btn({ label: "Back to map", variant: "solid", onclick: () => current.navigate("map") })
+        btn({ label: "Back to board", variant: "solid", onclick: () => current.navigate("map") })
       );
       return;
     }
@@ -119,7 +119,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
           el(
             "div.step__nav",
             {},
-            btn({ label: "← Back to map", variant: "quiet", onclick: () => current.navigate("map") })
+            btn({ label: "← Back to board", variant: "quiet", onclick: () => current.navigate("map") })
           ),
           el("b.eyebrow", {}, statusLabel(node.status)),
           el("h1.step__title", {}, node.title),
@@ -149,7 +149,8 @@ export function renderStep(ctx, nodeId, moduleId = null) {
                 )
               )
             )
-          : null
+          : null,
+        stepBar({ node, graph, student, locked: true })
       );
     }
 
@@ -162,7 +163,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
         el(
           "div.step__nav",
           {},
-          btn({ label: "← Back to map", variant: "quiet", onclick: () => current.navigate("map") }),
+          btn({ label: "← Back to board", variant: "quiet", onclick: () => current.navigate("map") }),
           welcome ? null : el("span.step__rule", {}, RULE)
         ),
         el("b.eyebrow", {}, stepEyebrow(node, graph)),
@@ -358,7 +359,53 @@ export function renderStep(ctx, nodeId, moduleId = null) {
             )
           )
         : null,
+      stepBar({ node, graph, student, locked: false }),
       isAdmin ? adminBlock(node, graph) : null
+    );
+  }
+
+  /** Sticky exit + continue. Next enables only when this step is actually done. */
+  function stepBar({ node, graph, student, locked = false }) {
+    const complete = !locked && isStepComplete(node, student);
+    const next = nextUp(graph);
+    const advance =
+      complete && next && next.id !== node.id
+        ? next
+        : complete
+          ? null
+          : null;
+    const nextLabel = advance
+      ? `Next · ${advance.title}`
+      : complete
+        ? "See the board"
+        : "Next";
+
+    return el(
+      "footer.step__bar",
+      {},
+      btn({
+        label: "Back to board",
+        variant: "quiet",
+        onclick: () => current.navigate("map"),
+      }),
+      el(
+        "div.step__bar-next",
+        {},
+        !complete &&
+          !locked &&
+          el("span.step__bar-hint", {}, "Save your link below to unlock Next"),
+        btn({
+          label: nextLabel,
+          variant: "solid",
+          disabled: locked || !complete,
+          title: complete ? undefined : "Finish this step first",
+          onclick: () => {
+            if (!complete) return;
+            if (advance) current.navigate("map", advance.id);
+            else current.navigate("map");
+          },
+        })
+      )
     );
   }
 
@@ -499,7 +546,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
       el(
         "div.room__acts",
         {},
-        btn({ label: node.status === STATUS.LIT ? "Update the link" : "Save the link", variant: "solid", type: "submit" }),
+        btn({ label: node.status === STATUS.LIT ? "Update the link" : "Mark this step done", variant: "solid", type: "submit" }),
         node.status === STATUS.LIT &&
           btn({
             label: "Remove the link",

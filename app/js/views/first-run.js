@@ -93,7 +93,7 @@ export function renderFirstRun(ctx) {
       step({
         n: 2,
         title: "Open the first step and do the work",
-        body: "Open Welcome. Watch or read the letter so you know what the eight weeks are. Then write a short public note and paste the link. The world is a Monday demo, not day-one homework.",
+        body: "Open Welcome. Watch or read so you know what the eight weeks are. Then write a short public note and paste the link. The world is a Monday demo, not day-one homework.",
         action: first
           ? btn({
               label: `Go to ${first.title}`,

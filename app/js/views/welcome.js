@@ -28,7 +28,7 @@ export function welcomeSchedule(cohort) {
     el(
       "p.room__hint",
       {},
-      `Founding cohort · ${cohort.name || "this room"}. Times are ${tz || "the cohort timezone"}. Open Calendar anytime for the exact dates.`
+      `Founding cohort · ${cohort.name || "Founding 001"}. Times are ${tz || "the cohort timezone"}. Open Calendar anytime for the exact dates.`
     ),
     el(
       "ul.welcome-sched",
@@ -51,7 +51,7 @@ export function welcomeSchedule(cohort) {
     el(
       "p.room__hint",
       {},
-      "Discord is the room between calls. Calendar is the clock. Today is the one next move. Map is the whole path. You do not need to memorize this — you need to know where to look."
+      "Discord is where the cohort talks between calls. Calendar is the clock. Today is the one next move. The board map is the whole path. You do not need to memorize this — you need to know where to look."
     )
   );
 }
@@ -149,6 +149,22 @@ export function welcomeReadiness({ node, student, store, onMarked }) {
       )
     )
   );
+}
+
+/** True when this step is finished enough to enable Continue / Next. */
+export function isStepComplete(node, student) {
+  if (!node) return false;
+  if (node.proof?.url || student?.evidence?.[node.id]?.url) {
+    if (node.id !== "or.start") return true;
+    const tasks = node.tasks ?? [];
+    const allTasks =
+      tasks.length === 0 ||
+      tasks.every((task) => student?.tasks?.[task.id]?.state === TASK_STATE.DONE);
+    const flags = student?.stepFlags?.[node.id] ?? {};
+    const oriented = Boolean(flags.watched || flags.read || allTasks);
+    return allTasks && oriented;
+  }
+  return false;
 }
 
 /** Gentle check before saving the welcome link. Returns a warn message or null. */
