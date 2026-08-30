@@ -110,21 +110,13 @@ export function renderStep(ctx, nodeId, moduleId = null) {
         ),
         el("b.eyebrow", {}, stepEyebrow(node, graph)),
         el("h1.step__title", {}, node.title),
+        node.why ? el("p.step__lead", {}, node.why) : null,
         el(
-          "p.step__lead",
+          "p.step__scope",
           {},
-          "Leave able to inherit a messy system, change it, prove it, and defend it. Everything for this step is on this page. Optional deeper reading appears only if named below."
+          "Everything for this step is on this page. Read first, then do the work. Optional deeper reading appears only if named below."
         )
       ),
-      el(
-        "section.step__do",
-        {},
-        el("b.eyebrow", {}, "Do this step"),
-        el("p.step__evidence", {}, node.evidence)
-      ),
-      node.why
-        ? el("section.step__why", {}, el("b.eyebrow", {}, "Why"), el("p", {}, node.why))
-        : null,
       card
         ? el(
             "section.step__video",
@@ -196,7 +188,12 @@ export function renderStep(ctx, nodeId, moduleId = null) {
         "section.step__out",
         {},
         el("b.eyebrow", {}, "Turn this in"),
-        el("p.room__done", {}, el("b", {}, "Done when "), node.evidence),
+        el("p.step__evidence", {}, node.evidence),
+        el(
+          "p.room__hint",
+          {},
+          "Paste that URL in the field below. Checking tasks is useful; only the link finishes the step."
+        ),
         node.ccvv?.length || node.reviewFor
           ? el(
               "div.room__grade",
@@ -204,7 +201,9 @@ export function renderStep(ctx, nodeId, moduleId = null) {
               node.ccvv?.length
                 ? el("p.room__ccvv", {}, el("b", {}, "Graded on "), node.ccvv.map(ccvvLabel).join(" · "))
                 : null,
-              node.reviewFor ? el("p.room__reviewfor", {}, el("b", {}, "Aden looks for "), node.reviewFor) : null
+              node.reviewFor
+                ? el("p.room__reviewfor", {}, el("b", {}, "A strong turn-in shows "), node.reviewFor)
+                : null
             )
           : null,
         isSpine(node) && node.id !== "or.start"

@@ -1160,11 +1160,12 @@ button.month__day:hover { border-color: var(--hair-cyan); background: #0b1522; }
   font-size: 11px; letter-spacing: .06em; color: var(--muted);
 }
 .step__title { font-size: clamp(22px, 3vw, 28px); color: #fff; margin-top: 6px; }
-.step__lead { color: var(--muted); font-size: 14.5px; margin-top: 10px; max-width: 70ch; }
+.step__lead { color: var(--text); font-size: 16px; line-height: 1.55; margin-top: 10px; max-width: 70ch; }
+.step__scope { color: var(--muted); font-size: 13.5px; margin-top: 8px; max-width: 70ch; }
+.step__evidence { color: var(--text); font-size: 16px; line-height: 1.55; margin-top: 8px; max-width: 70ch; }
 .step__do, .step__why, .step__video, .step__lesson, .step__tasks, .step__out, .step__mods {
   margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--hair);
 }
-.step__evidence { color: var(--text); font-size: 16px; line-height: 1.55; margin-top: 8px; }
 .step__lesson h2 { font-size: 16px; color: #fff; margin: 0 0 6px; }
 .step__lesson .lesson__sec + .lesson__sec { margin-top: 20px; }
 .step__lesson p { color: var(--muted); font-size: 15px; line-height: 1.7; margin-top: 8px; }

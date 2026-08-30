@@ -55,7 +55,7 @@ export function renderFirstRun(ctx) {
       el(
         "p.muted",
         {},
-        "Three things and you are running. You leave able to inherit a messy system, change it, prove it, and defend it. You can leave this screen whenever you want; it will not come back once you have attached your first link."
+        "Three things and you are running. Read the rule, see the path, open the first step. This screen will not come back once you attach your first link."
       )
     ),
     el(
@@ -93,7 +93,7 @@ export function renderFirstRun(ctx) {
       step({
         n: 2,
         title: "Open the first step and do the work",
-        body: "How this board works, then making the studio desk run. Read the step, do the tasks, paste a link. The world is a cohort demo, not your first homework. Films appear in the Library when ready; do not wait on them.",
+        body: "Open Start here. Read the short lesson so you know what the eight weeks are. Then write a public note and paste the link. The world is a Monday demo, not day-one homework. Films land in the Library when ready; do not wait on them.",
         action: first
           ? btn({
               label: `Go to ${first.title}`,
@@ -105,7 +105,7 @@ export function renderFirstRun(ctx) {
       step({
         n: 3,
         title: first ? `Save your first link on: ${first.title}` : "Save your first link",
-        body: first?.evidence ?? "One link, live, that a stranger can open.",
+        body: "On that step: write the board rule in your words, name two steps you can work this week, put both in one gist or doc, paste the URL under Turn this in.",
         action: first
           ? btn({
               label: "Go to this step",
