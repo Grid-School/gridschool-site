@@ -119,7 +119,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
           el(
             "div.step__nav",
             {},
-            btn({ label: "← Back to board", variant: "quiet", onclick: () => current.navigate("map") })
+            btn({ label: "← Board", variant: "quiet", onclick: () => current.navigate("map") })
           ),
           el("b.eyebrow", {}, statusLabel(node.status)),
           el("h1.step__title", {}, node.title),
@@ -163,7 +163,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
         el(
           "div.step__nav",
           {},
-          btn({ label: "← Back to board", variant: "quiet", onclick: () => current.navigate("map") }),
+          btn({ label: "← Board", variant: "quiet", onclick: () => current.navigate("map") }),
           welcome ? null : el("span.step__rule", {}, RULE)
         ),
         el("b.eyebrow", {}, stepEyebrow(node, graph)),
