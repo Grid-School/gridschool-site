@@ -74,7 +74,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
       : "";
     const weeks =
       Array.isArray(node.weeks) && node.weeks.length
-        ? ` · week ${node.weeks[0] === node.weeks[1] ? node.weeks[0] : `${node.weeks[0]}-${node.weeks[1]}`}`
+        ? ` · week ${node.weeks[0] === node.weeks[1] ? node.weeks[0] : `${node.weeks[0]} to ${node.weeks[1]}`}`
         : "";
     return `${track}${count} · ${family?.label ?? "Step"} · ${String(node.n).padStart(2, "0")} · ${statusLabel(node.status)}${weeks}`;
   }

@@ -18,6 +18,7 @@ import { toast } from "./ui.js";
 import { renderPicker } from "./views/picker.js";
 import { renderToday } from "./views/today.js";
 import { renderMap } from "./views/map.js";
+import { renderStep, isStepArgs, moduleIdFromArgs } from "./views/step.js";
 import { renderTasks } from "./views/tasks.js";
 import { renderCalendar } from "./views/calendar.js";
 import { renderLibrary } from "./views/library.js";
@@ -133,12 +134,36 @@ function renderRoute() {
   const view = VIEWS[route.name];
   const ctx = context();
 
-  chrome.setActive(route.name);
+  chrome.setActive(route.name === "map" ? "map" : route.name);
   chrome.setIdentity(ctx.state, role);
   chrome.setBanner(ctx.state);
   chrome.setSignals(ctx.state);
-  // Lets the stylesheet react to the route — the map hides the page's fixed grid
-  // so there is only ever one grid, and it belongs to the world.
+
+  // Full step page: #/map/<nodeId>[/m/...] not a modal over the graph.
+  if (route.name === "map" && isStepArgs(route.args, ctx.state.graph)) {
+    document.body.dataset.view = "step";
+    const nodeId = route.args[0];
+    const moduleId = moduleIdFromArgs(route.args);
+    const key = `step:${nodeId}:${moduleId ?? ""}`;
+    let instance = instances.get(key);
+    // Drop other step instances so we do not leak DOM/listeners.
+    for (const [id, inst] of instances) {
+      if (id.startsWith("step:") && id !== key) {
+        inst.destroy?.();
+        instances.delete(id);
+      }
+    }
+    if (!instance) {
+      instance = renderStep(ctx, nodeId, moduleId);
+      instances.set(key, instance);
+    } else {
+      instance.update(ctx, nodeId, moduleId);
+    }
+    if (chrome.outlet.firstChild !== instance.node) mount(chrome.outlet, instance.node);
+    document.title = `${ctx.state.graph.byId.get(nodeId)?.title ?? "Step"} · ${ctx.state.student.name} · GridSchool`;
+    return;
+  }
+
   document.body.dataset.view = route.name;
 
   if (view.persistent) {
