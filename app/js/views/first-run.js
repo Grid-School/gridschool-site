@@ -66,7 +66,7 @@ export function renderFirstRun(ctx) {
       el(
         "p.law__sub",
         {},
-        "Not effort, not hours, not a course marked complete. A link a stranger can open. That is the whole system, and it is why this board can never lie to you about where you are."
+        "A link a stranger can open is what marks a step done. That is the whole system, and it is why this board always shows you exactly where you are."
       )
     ),
     el(
@@ -78,7 +78,7 @@ export function renderFirstRun(ctx) {
         {},
         el("li", {}, el("b", {}, "Studio"), ": the inherited desk repo on the required path. Day one boots this."),
         el("li", {}, el("b", {}, "World"), ": the shared game at play.gridschool.org. Depth. You see it on Monday; you ship into it when the spine allows."),
-        el("li", {}, el("b", {}, "Graph"), ": optional nanograph / GridSeak depth. Opens under graph steps, not as a second school.")
+        el("li", {}, el("b", {}, "Graph"), ": optional nanograph depth. Its readings open under the graph steps on the map.")
       )
     ),
     el(
@@ -93,7 +93,7 @@ export function renderFirstRun(ctx) {
       step({
         n: 2,
         title: "Open the first step and do the work",
-        body: "Open Welcome. Watch or read so you know what the eight weeks are. Then write a short public note and paste the link. The world is a Monday demo, not day-one homework.",
+        body: "Open Welcome. Watch or read so you know what the eight weeks are, then write a short public note and paste the link. You will see the world in Monday's call.",
         action: first
           ? btn({
               label: `Go to ${first.title}`,
@@ -128,7 +128,7 @@ export function renderFirstRun(ctx) {
       el(
         "p.doors__note",
         {},
-        "Tasks, the calendar, and the library sit below the line. You go get them by name when you need them. Long graph readings open from graph steps, not from a separate Reading door."
+        "Tasks, the calendar, and the library sit below the line. You go get them by name when you need them, and long graph readings open from the graph steps themselves."
       )
     ),
     el(

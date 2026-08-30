@@ -43,7 +43,7 @@ export function lockNotice({ graph, node, onGo, onDismiss }) {
     el(
       "p",
       {},
-      `You are not behind. This step is waiting on purpose. Finish ${list} That is what unlocks “${node.title}.”`
+      `“${node.title}” opens once the steps before it are done. ${list}`
     ),
     actions({ graph, onGo, onDismiss, goLabel: null })
   );

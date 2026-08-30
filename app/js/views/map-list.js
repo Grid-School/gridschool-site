@@ -155,7 +155,7 @@ function studioBlock() {
     el(
       "p.muted",
       {},
-      "The repo I hand you is deliberately messy and deliberately real. You are not hunting GitHub for a project that will accept you. Inherited systems are the job."
+      "The repo I hand you is deliberately messy and deliberately real, because inherited systems are the job."
     ),
     href
       ? btn({ label: "Open the studio repo", variant: "solid", href, target: "_blank" })

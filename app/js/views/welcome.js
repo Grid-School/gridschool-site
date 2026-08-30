@@ -130,10 +130,10 @@ export function welcomeReadiness({ node, student, store, onMarked }) {
       "p.room__hint",
       {},
       complete
-        ? "This orientation is done. The board will open the next steps that do not depend on each other. That is usually It runs and The four skills."
+        ? "This chapter is done. It runs and The four skills are open next."
         : readyToLink
           ? "You are ready for the link. Paste it below and this step lights."
-          : `Working through ${doneCount} of ${rows.length}. The board is keeping the order honest so you do not have to guess.`
+          : `${doneCount} of ${rows.length} done.`
     ),
     el(
       "ul.ready-list",

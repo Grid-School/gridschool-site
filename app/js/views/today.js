@@ -56,7 +56,7 @@ export function renderToday(ctx) {
       "div.composer__bar",
       {},
       attachBtn,
-      el("span.composer__hint", {}, coachIsLive() ? COACH.model : "Practice mode. A scripted reply, not a model, until the key is connected."),
+      el("span.composer__hint", {}, coachIsLive() ? COACH.model : "Practice mode. Replies are scripted until the Coach goes live."),
       creditsEl,
       sendBtn
     ),

@@ -131,7 +131,7 @@ export function renderLibrary(ctx) {
             {
               eyebrow: "Deeper reading",
               title: "Graph textbook and briefs",
-              note: "These open under the step they belong to. Progress stays on the board, not on a separate Reading school.",
+              note: "These open under the step they belong to, and your progress stays on the board.",
             },
             el(
               "div.lib__nodes",

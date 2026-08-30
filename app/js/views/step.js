@@ -98,8 +98,8 @@ export function renderStep(ctx, nodeId, moduleId = null) {
           watchWhen: filmed
             ? video.watchWhen ?? "Watch this, then do the steps."
             : welcome
-              ? "Placeholder until this welcome film is recorded. Play if you want to hear the shape; the letter below is the real orientation."
-              : "Placeholder stream until this lesson is filmed. Play to confirm the player; the real film replaces this.",
+              ? "This film is still being recorded. The letter below covers everything."
+              : "This lesson's film is still being recorded. The written lesson below covers everything.",
           startOpen: true,
           onWatch: welcome
             ? () => {
@@ -126,7 +126,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
           el(
             "p.step__lead",
             {},
-            "This step is not open for turn-in yet. You can still read what is ahead. The board will not let you light it early."
+            "This step opens after the ones before it. You are welcome to read ahead."
           )
         ),
         lockNotice({
@@ -173,7 +173,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
           ? el(
               "p.step__scope",
               {},
-              "Settle in. Watch or read first. Everything for this step is on this page. The small note at the bottom waits until it feels clear."
+              "Watch or read first. Everything you need is on this page, and your first short write sits at the bottom."
             )
           : el(
               "p.step__scope",
@@ -242,7 +242,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
               "p.room__hint",
               {},
               welcome
-                ? "Two small writes. Same note. Nobody grades the checkboxes. Only the link at the bottom finishes the step."
+                ? "Two short writes that go in one note. Check each box when its Done when line is true, then paste the note's link below."
                 : "Check a box when its Done when is true. Open Show steps only if you want the how-to."
             ),
             el(
@@ -272,8 +272,8 @@ export function renderStep(ctx, nodeId, moduleId = null) {
           "p.room__hint",
           {},
           welcome
-            ? "Paste the URL below when the note is done. That is the only thing that lights this step."
-            : "Paste that URL in the field below. Checking tasks is useful; only the link finishes the step."
+            ? "Paste the URL below when the note is done. That link lights the step."
+            : "Paste that URL in the field below. The link is what finishes the step."
         ),
         !welcome && (node.ccvv?.length || node.reviewFor)
           ? el(
@@ -303,7 +303,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
           ? el(
               "div.room__blocked",
               {},
-              el("p.room__hint", {}, "This step stays locked until the ones below are done."),
+              el("p.room__hint", {}, "This step opens after the ones below."),
               el(
                 "div.room__prereqs",
                 {},
@@ -336,7 +336,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
             el(
               "p.room__hint",
               {},
-              "Not required to light this step. Opens on this board under this step, not a separate school."
+              "Optional reading that opens right here, under this step."
             ),
             el(
               "div.step__modlist",
