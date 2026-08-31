@@ -19,6 +19,8 @@ export const TRACK = {
 };
 
 const DEPTH_FAMILIES = new Set(["world", "graph"]);
+// Career (signal) is a mixed family: core nodes are spine via node.track or
+// family.track; expansion nodes set track: "depth" explicitly.
 
 /** Spine is the graded path to the defense. Depth is elective. */
 export function trackOf(node, families = []) {
@@ -32,7 +34,7 @@ export function isSpine(node) {
   return (node.track ?? TRACK.SPINE) === TRACK.SPINE;
 }
 
-export function buildGraph(curriculum, student) {
+export function buildGraph(curriculum, student, { unlockAll = false } = {}) {
   const extra = student?.extraNodes ?? [];
   const overrides = student?.nodeOverrides ?? {};
   const families = curriculum.families ?? [];
@@ -58,6 +60,13 @@ export function buildGraph(curriculum, student) {
   }
   for (const node of nodes) {
     node.status = statusOf(node, byId, evidence);
+    if (
+      unlockAll &&
+      (node.status === STATUS.LOCKED || node.status === STATUS.FUTURE)
+    ) {
+      node.devForced = true;
+      node.status = STATUS.OPEN;
+    }
   }
 
   // Depth the map renders instead of hiding: how far into a node's tasks the

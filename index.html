@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GridSchool. You can already code. That used to be enough.</title>
-<meta name="description" content="You can already code. Employers still don't trust you. Five people. Eight weeks. One messy system you verify and defend. I do not promise a company hires you.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<meta name="description" content="You can already code. Employers still don't trust you. Five people. Eight weeks. I raise the odds you get trusted. After the lab, you can always reach me.">
 <meta property="og:title" content="GridSchool. You can already code. That used to be enough.">
-<meta property="og:description" content="Five people. Eight weeks. One messy system you verify and defend.">
+<meta property="og:description" content="Five people. Eight weeks. I raise the odds you get trusted. The door stays open after the lab.">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <meta property="og:url" content="https://gridschool.org/">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://gridschool.org/assets/og.png">
@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="landing.css?v=32">
+<link rel="stylesheet" href="landing.css?v=37">
 <script type="importmap">
 {
   "imports": {
@@ -82,8 +82,12 @@
 
 <main id="top">
 
- <section class="hero hero--world" aria-label="The Living World">
+ <section class="hero hero--world is-booting" aria-label="The Living World">
  <canvas id="world" aria-label="The GridSchool G over a coordinate grid."></canvas>
+ <div class="hero__boot" aria-hidden="true">
+ <i class="hero__boot-hold"></i>
+ <i class="hero__boot-flash"></i>
+ </div>
  <div class="hero__fallback" aria-hidden="true">
  <svg class="hero__fallback-mark" viewBox="0 0 36 36">
  <g transform="translate(18 18) rotate(45) translate(-12.5 -12.5)">
@@ -106,8 +110,8 @@
  </dl>
  </aside>
  <div class="hero__words">
- <h1>Your code will stand<br>somewhere real.</h1>
- <p class="lede">Ship into a running multiplayer world. Every change is reviewed, deployed, and real, or it does not count.</p>
+ <h1>You can already code.<br>Employers still don't trust you.</h1>
+ <p class="lede">Eight weeks inside one messy system: ship, get reviewed, defend live. I raise the odds you get trusted. After the lab, you can always reach me, including once you're hired.</p>
  <p class="offer">FOUNDING DEFENSE LAB · 5 SPOTS · 8 WEEKS</p>
  <a class="enter" href="apply/">APPLY FOR A SPOT<span class="enter-arrow" aria-hidden="true">→</span></a>
  </div>
@@ -115,7 +119,7 @@
 
  <section class="wrap wrap--wide" id="board">
  <h2>The evidence a model cannot fake</h2>
- <p class="section-lede muted">One messy repo I give you. Three things a hiring manager can click. Then three stories you can defend in a room. If a model could produce it for you in a weekend, it does not count. The week-by-week board is your Path. <a class="hero__alt" href="path/">See it empty.</a></p>
+ <p class="section-lede muted">One messy repo I give you. Three things a hiring manager can click. Then three stories you can defend in a room. That is how you stay ahead when AI made claims cheap. If a model could produce it for you in a weekend, it does not count. The week-by-week board is your Path. <a class="hero__alt" href="path/">See it empty.</a></p>
  <div class="board">
  <ol class="board__stack">
  <li class="bitem">
@@ -264,8 +268,8 @@
  </section>
 
  <section class="wrap" id="offer">
- <h2>Eight weeks.<br>Five spots.<br>You leave with proof nobody can argue with.</h2>
- <p class="muted">Bootcamps teach beginners and sell certificates. Mentors give advice and disappear. Cheap courses already teach the stack. Here you work inside a real, messy system, a short synthetic first job's worth of tickets, review, and proof, and finish by defending live to a working engineer who didn't help you. Their written verdict is yours to show anyone. Founding is $500: the first five carry the proof, so they pay the least anyone ever will. Once they defend, the rate rises.</p>
+ <h2>Eight weeks.<br>Five spots.<br>Proof that moves the odds.</h2>
+ <p class="muted">Bootcamps teach beginners and sell certificates. Mentors give advice and disappear. Cheap courses already teach the stack. Here you work inside a real, messy system: tickets, review, and proof on work AI made cheap to fake. You finish by defending live to a working engineer who didn't help you. Their written verdict is yours to show anyone. The lab is eight weeks. Access to me is not a countdown; founding five can always reach me, including after they're hired. Founding is $500: the first five carry the proof, so they pay the least anyone ever will. Once they defend, the rate rises.</p>
  <div class="tablewrap">
  <table class="price-table">
  <tr><th>You get</th><th class="right">Founding</th></tr>
@@ -274,6 +278,7 @@
  <tr><td>A real, messy codebase to own, plus a live multiplayer world your code ships into</td><td>included</td></tr>
  <tr><td>Your live defense, recorded, with a working engineer's written verdict on it</td><td>included</td></tr>
  <tr><td>Your progress board, my prompt + testing toolkit, and a five-person room that ships</td><td>included</td></tr>
+ <tr><td>Career track: LinkedIn review, your own site with projects on it, a simple system for posts, and help showing the work where employers and other builders look</td><td>included</td></tr>
  <tr><td>Trust Gap scorecard</td><td>free</td></tr>
  <tr class="price-final"><td>What it costs, founding</td><td>$500, or $100 then $400</td></tr>
  </table>
@@ -286,7 +291,7 @@
  <li><strong>Score your trust gap, free.</strong> Rate yourself 1-5 on the four things hiring actually checks: proof you've worked in code you didn't write, a check a stranger can run, a defense you've given out loud, a public trail that points at real work. Under 12 out of 20? You're exactly who this was built for. <a class="hero__alt" href="diagnostic/">Score it now</a>, it costs nothing.</li>
  <li><strong>If you vanish, I stop.</strong> Miss three weeks and your spot ends. This is not a library card, and that protects the four people who showed up.</li>
  </ol>
- <p class="muted">I won't promise a company hires you. Anyone who does is lying to you. I have no alumni wall yet, and that's exactly why the founding rate exists: the first five carry the proof, so they pay the least anyone will ever pay. Once they've defended in front of outside engineers, the price goes up and the door gets smaller.</p>
+ <p class="muted">A company's yes is still theirs. Your evidence won't be. I have no alumni wall yet, and that's why the founding rate exists: the first five carry the proof, so they pay the least anyone will ever pay. Once they've defended in front of outside engineers, the price goes up and the next door gets smaller. The founding door to me stays open.</p>
  </div>
 
  <div class="verdict" aria-label="The external reader's verdict form, empty until it is earned">
@@ -333,7 +338,7 @@
  <section class="wrap" id="founder">
  <h2>I'm Aden. Don't take my word for any of this.</h2>
  <div class="founder">
- <p class="muted">I'm a working software engineer, not a placement shop. I paid $20k for a bootcamp on my way in, and I built this because I knew what that money should have bought. The door I walked through is harder to open now, so the proof has to be stronger. Everything this page claims is checkable, so check it: the world server is live and deploys in public, the code is on GitHub, the platform is walkable right now, and every student PR will carry a real name. I don't have a wall of alumni yet. The founding five build it, and they'll be able to say they were first.</p>
+ <p class="muted">I'm a working software engineer, not a placement shop. I paid $20k for a bootcamp on my way in, and I built this because I knew what that money should have bought. The industry filled with AI; the people who stay ahead can change a real system, check the model, and defend the result. Everything this page claims is checkable, so check it: the world server is live and deploys in public, the code is on GitHub, the platform is walkable right now, and every student PR will carry a real name. I don't have a wall of alumni yet. The founding five build it, they can always reach me after, and they'll be able to say they were first.</p>
  <ul class="founder__receipts">
  <li><a href="https://world-staging.gridschool.org/health" target="_blank" rel="noopener">The world server, live ↗</a></li>
  <li><a href="https://github.com/Grid-School" target="_blank" rel="noopener">The code, public ↗</a></li>
@@ -352,13 +357,13 @@
  <section class="wrap" id="faq">
  <h2>Straight answers</h2>
  <details><summary>Will you get me a job?</summary>
- <p>Not the way a placement shop means it. I will not promise their yes. I will make you evaluable. What I refuse to sell is a guarantee.</p>
+ <p>I raise the odds you get trusted: messy system, real review, live defense, outside verdict. Career guidance is included: LinkedIn review, your site, a simple system for posts. A company's yes is still theirs. Your evidence won't be. After the lab, founding five can always reach me, including once they're hired.</p>
  </details>
  <details><summary>Is this a bootcamp?</summary>
  <p>No. Bootcamps teach beginners and sell job-or-refund. Curriculum itself is cheap now. You already write programs. This room sells proof and an outside engineer's attestation, not another course.</p>
  </details>
  <details><summary>Why not YouTube, ChatGPT, or a mentor?</summary>
- <p>Those are information. Information lost its moat. This is a messy system, a live defense, five people who notice when you go quiet, and a verdict form filled by someone who did not help you.</p>
+ <p>Those are information. Information lost its moat. This is the AI-era craft on a messy system: check the model, own the blast radius, survive review, defend live. Five people notice when you go quiet. A verdict form gets filled by someone who did not help you. The door stays open after the lab.</p>
  </details>
  <details><summary>I never got hired after COVID / the AI wave. Is that me?</summary>
  <p>If you cannot write a working program, learn that first. If you can already code: the apprenticeship rung got thinner while AI made claims and portfolios cheaper. The missing piece is usually proof someone else can trust, not another tutorial.</p>
@@ -381,7 +386,7 @@
  GridSchool · for people who can already code. When that used to be enough. ·
  <a href="mailto:support@gridschool.org">support@gridschool.org</a>
  <p>© 2026 GRID SCHOOL LLC · Boise, Idaho · <a href="terms/">Terms</a> · <a href="privacy/">Privacy</a><br>
- I do not promise a company hires you. I promise evidence you can defend.</p>
+ I raise the odds. A company's yes is still theirs. Your evidence won't be.</p>
  </div>
 </footer>
 

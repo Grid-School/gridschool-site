@@ -1,5 +1,5 @@
 /**
- * Layout. Columns are time. Rails have a home: LinkedIn above, skills in the
+ * Layout. Columns are time. Rails have a home: Career above, skills in the
  * middle, portfolio below. Extra nodes in a fat column swell out from the
  * center. The edges move. The middle stays put. Neighbors stay near neighbors.
  * A student's saved layout always wins.
@@ -10,8 +10,8 @@ export const COL_W = 206;
 export const LANE_H = 216;
 
 const RADIUS = { core: 33, future: 25, outcome: 40 };
-/** Rail order, top to bottom: Publish · The world · Skills+Mission · Repo · Graph. */
-const FAMILY_RANK = { linkedin: 0, world: 0.5, ccvv: 1, capstone: 1, portfolio: 2, graph: 3 };
+/** Rail order, top to bottom: Career · The world · Skills+Mission · Repo · Graph. */
+const FAMILY_RANK = { signal: 0, linkedin: 0, world: 0.5, ccvv: 1, capstone: 1, portfolio: 2, graph: 3 };
 
 export function radiusOf(node) {
   if (node.kind === "future") return RADIUS.future;
@@ -64,7 +64,9 @@ function placeLump(nodes) {
 }
 
 function railOf(node) {
-  if (node.family === "linkedin" || node.family === "world") return "top";
+  if (node.family === "signal" || node.family === "linkedin" || node.family === "world") {
+    return "top";
+  }
   if (node.family === "portfolio" || node.family === "graph") return "bot";
   return "mid";
 }
@@ -88,7 +90,7 @@ function stackInto(nodes, edge, direction) {
 }
 
 /**
- * LinkedIn stays the top rail. Skills and capstone share the middle.
+ * Career stays the top rail. Skills and capstone share the middle.
  * Portfolio is always under those. Authored `lane` only breaks ties.
  */
 function stackOrder(a, b) {
@@ -116,8 +118,8 @@ export function bounds(graph, pad = 130) {
 }
 
 /**
- * One header per time band. A column's phase is the LinkedIn node in it
- * (the spine), so two phases cannot claim the same x and sit on each other.
+ * One header per time band. A column's phase prefers a Career spine node
+ * in that column, so two phases cannot claim the same x and sit on each other.
  */
 export function phaseBands(graph) {
   const byCol = new Map();
@@ -130,7 +132,11 @@ export function phaseBands(graph) {
   const columns = [...byCol.entries()]
     .sort((a, b) => a[0] - b[0])
     .map(([col, nodes]) => {
-      const spine = nodes.find((node) => node.family === "linkedin") ?? nodes[0];
+      const spine =
+        nodes.find((node) => node.family === "signal" && node.track !== "depth") ??
+        nodes.find((node) => node.family === "signal") ??
+        nodes.find((node) => node.family === "linkedin") ??
+        nodes[0];
       const phase = (graph.phases ?? []).find((item) => item.id === spine.phase);
       const weeks = nodes.flatMap((node) => node.weeks ?? []).filter(Number.isFinite);
       return {

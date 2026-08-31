@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 220" role="img" aria-labelledby="title desc">
+  <title id="title">Content engine flow</title>
+  <desc id="desc">Trigger leads to five questions, then a draft, then a voice gate before anything could ship.</desc>
+  <rect width="720" height="220" fill="#05070c"/>
+  <defs>
+    <marker id="a" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+      <path d="M0,0 L7,3.5 L0,7 Z" fill="#28e1ff"/>
+    </marker>
+  </defs>
+  <g font-family="IBM Plex Mono, ui-monospace, monospace">
+    <text x="24" y="32" font-size="11" letter-spacing="0.12em" fill="#28e1ff">ENGINE FLOW</text>
+    <g>
+      <rect x="24" y="60" width="130" height="100" rx="8" fill="#0a0e16" stroke="#28e1ff" stroke-width="1.5"/>
+      <text x="40" y="100" font-size="12" fill="#e8ecf4">Trigger</text>
+      <text x="40" y="120" font-size="10" fill="#5c6578">ship · review</text>
+      <text x="40" y="136" font-size="10" fill="#5c6578">fail · decide</text>
+    </g>
+    <path d="M164 110 H198" stroke="#28e1ff" stroke-width="1.5" marker-end="url(#a)"/>
+    <g>
+      <rect x="208" y="60" width="150" height="100" rx="8" fill="#0a0e16" stroke="#28e1ff" stroke-width="1.5"/>
+      <text x="224" y="100" font-size="12" fill="#e8ecf4">5 questions</text>
+      <text x="224" y="120" font-size="10" fill="#5c6578">notes in the doc</text>
+    </g>
+    <path d="M368 110 H402" stroke="#28e1ff" stroke-width="1.5" marker-end="url(#a)"/>
+    <g>
+      <rect x="412" y="60" width="130" height="100" rx="8" fill="#0a0e16" stroke="#28e1ff" stroke-width="1.5"/>
+      <text x="428" y="100" font-size="12" fill="#e8ecf4">Draft</text>
+      <text x="428" y="120" font-size="10" fill="#5c6578">dated · yours</text>
+    </g>
+    <path d="M552 110 H586" stroke="#28e1ff" stroke-width="1.5" marker-end="url(#a)"/>
+    <g>
+      <rect x="596" y="60" width="100" height="100" rx="8" fill="#0a0e16" stroke="#28e1ff" stroke-width="1.5"/>
+      <text x="612" y="100" font-size="12" fill="#e8ecf4">Gate</text>
+      <text x="612" y="120" font-size="10" fill="#5c6578">voice</text>
+      <text x="612" y="136" font-size="10" fill="#5c6578">check</text>
+    </g>
+    <text x="24" y="200" font-size="11" fill="#5c6578">Publish comes later. This node stops at dated drafts that pass the gate.</text>
+  </g>
+</svg>

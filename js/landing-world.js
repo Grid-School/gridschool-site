@@ -1,9 +1,12 @@
 /**
- * Boot the Living World hero. Vendored Three. Falls back to a static
- * mark if WebGL is missing. Pauses the loop when the hero is offscreen.
+ * Boot the Living World hero. Vendored Three.
+ * Soft hold, then neon ignite, then the 3D world.
+ * The 2D mark is only for machines with no WebGL.
  */
 
 import { createWorld } from "./world/world-scene.js";
+
+const IGNITE_MS = 720;
 
 function hasWebGL() {
   try {
@@ -14,14 +17,22 @@ function hasWebGL() {
   }
 }
 
-const hero = document.querySelector(".hero--world");
-const canvas = document.getElementById("world");
-if (hero && canvas && hasWebGL()) {
+function reducedMotion() {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function goStatic(hero) {
+  hero.classList.remove("is-booting", "is-igniting");
+  hero.classList.add("is-static");
+}
+
+function goLive(hero) {
+  hero.classList.remove("is-booting", "is-igniting");
   hero.classList.add("is-live");
-  const world = createWorld({
-    canvas,
-    dock: { root: document.getElementById("dock") },
-  });
+}
+
+function arm(hero, world) {
+  goLive(hero);
   const io = new IntersectionObserver(
     ([entry]) => {
       if (entry.isIntersecting) world.play();
@@ -30,6 +41,25 @@ if (hero && canvas && hasWebGL()) {
     { threshold: 0.08 },
   );
   io.observe(hero);
+  world.play();
+}
+
+const hero = document.querySelector(".hero--world");
+const canvas = document.getElementById("world");
+if (hero && canvas && hasWebGL()) {
+  try {
+    const quiet = reducedMotion();
+    if (!quiet) hero.classList.add("is-igniting");
+    const t0 = performance.now();
+    const world = createWorld({
+      canvas,
+      dock: { root: document.getElementById("dock") },
+    });
+    const wait = quiet ? 0 : Math.max(0, IGNITE_MS - (performance.now() - t0));
+    window.setTimeout(() => arm(hero, world), wait);
+  } catch {
+    goStatic(hero);
+  }
 } else if (hero) {
-  hero.classList.add("is-static");
+  goStatic(hero);
 }

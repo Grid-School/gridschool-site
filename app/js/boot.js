@@ -23,6 +23,7 @@ import { renderTasks } from "./views/tasks.js";
 import { renderCalendar } from "./views/calendar.js";
 import { renderLibrary } from "./views/library.js";
 import { renderFirstRun, shouldOpenFirstRun } from "./views/first-run.js";
+import { toggleDevUnlock, setDevUnlock } from "./dev-mode.js";
 
 const VIEWS = {
   today: { render: renderToday, persistent: true },
@@ -50,8 +51,12 @@ let role = "student";
 
 function resolveRole() {
   const params = new URLSearchParams(location.search);
-  if (params.get("admin") === "1") return "admin";
+  if (params.get("admin") === "1" || params.get("dev") === "1") return "admin";
   return currentSession()?.role ?? "student";
+}
+
+function wantsDevUnlock() {
+  return new URLSearchParams(location.search).get("dev") === "1";
 }
 
 function renderGate() {
@@ -209,10 +214,10 @@ async function start() {
   }
 
   role = resolveRole();
-  /* The console is not published on the public site. If the admin surface is
-     not actually there, the role is theater plus a dead button — degrade to
-     student instead of rendering a door that 404s. */
-  if (role === "admin" && !(await adminSurfaceExists())) role = "student";
+  /* Admin console is excluded from the public deploy. Keep instructor role when
+     ?admin=1 or ?dev=1 so Dev unlock still works; only hide the console link. */
+  const showAdminConsole = role === "admin" && (await adminSurfaceExists());
+  if (wantsDevUnlock()) setDevUnlock(true);
 
   try {
     await store.init(slug, { tour: !unlocked });
@@ -244,6 +249,8 @@ async function start() {
   }
 
   chrome = createChrome({
+    role,
+    showAdminConsole,
     onNavigate: (name) => router.go(name),
     onReset: () => {
       store.resetLocalEdits();
@@ -252,6 +259,16 @@ async function start() {
     onExport: () => {
       download(`${slug}.json`, store.exportStudent());
       toast("Exported. Drop it in data/students/ to make it real.");
+    },
+    onToggleDev: () => {
+      toggleDevUnlock();
+      store.refresh();
+      toast(
+        store.state().unlockAll
+          ? "Dev unlock on. All nodes open for reading."
+          : "Dev unlock off. Prerequisites gate the map again.",
+        "ok"
+      );
     },
   });
 

@@ -23,6 +23,30 @@ const FALLBACK_VIDEO = {
   path: "test-bbb",
 };
 
+/** One lesson block: heading, paragraphs, optional figure. */
+function lessonSection(section, { letter = false } = {}) {
+  const fig = section.fig;
+  return el(
+    "section.lesson__sec",
+    { class: letter ? "lesson__sec--letter" : "" },
+    section.h && el("h2", {}, section.h),
+    (section.p ?? []).map((paragraph) => el("p", {}, paragraph)),
+    fig?.src
+      ? el(
+          "figure.lesson__fig",
+          {},
+          el("img", {
+            src: fig.src,
+            alt: fig.alt || "",
+            loading: "lazy",
+            decoding: "async",
+          }),
+          fig.caption ? el("figcaption", {}, fig.caption) : null
+        )
+      : null
+  );
+}
+
 /** True when #/map/<id> should be the step page rather than the graph. */
 export function isStepArgs(args, graph) {
   const list = Array.isArray(args) ? args : [];
@@ -134,14 +158,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
               "section.step__lesson",
               {},
               el("b.eyebrow", {}, "Preview"),
-              node.lesson.map((section) =>
-                el(
-                  "section.lesson__sec",
-                  {},
-                  section.h && el("h2", {}, section.h),
-                  (section.p ?? []).map((paragraph) => el("p", {}, paragraph))
-                )
-              )
+              node.lesson.map((section) => lessonSection(section))
             )
           : null,
         stepBar({ node, graph, student, locked: true })
@@ -171,12 +188,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
             {},
             el("b.eyebrow", {}, welcome ? "Welcome" : "Lesson"),
             node.lesson.map((section, index) =>
-              el(
-                "section.lesson__sec",
-                { class: welcome && index === 0 ? "lesson__sec--letter" : "" },
-                section.h && el("h2", {}, section.h),
-                (section.p ?? []).map((paragraph) => el("p", {}, paragraph))
-              )
+              lessonSection(section, { letter: welcome && index === 0 })
             )
           )
         : node.lessonLocked

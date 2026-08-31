@@ -1,17 +1,29 @@
 /**
  * State container. Server truth (the JSON files) stays immutable; every change a
- * student or Aden makes lands in a local overlay so the platform is fully
- * walkable before a backend exists.
+ * student or Aden makes lands in persist (localStorage today, API later).
+ *
+ * Student mutations write the student domain only. Instructor mutations write
+ * the instructor domain only. That is how a drag cannot wipe a review return.
  *
  * `exportStudent()` prints the merged result in the exact shape of
- * data/students/<slug>.json, which is how a demo edit becomes real state.
+ * data/students/<slug>.json.
  */
 
 import { loadBoard } from "./api.js";
 import { buildGraph } from "./graph/model.js";
 import { weekNumber } from "./time.js";
-import { readOverlay, writeOverlay, clearOverlay, mergeStudent } from "./overlay.js";
+import {
+  read,
+  clear as clearPersist,
+  patchStudent,
+  patchInstructor,
+  requestReview,
+  mergeStudent,
+  STUDENT_KEYS,
+  INSTRUCTOR_KEYS,
+} from "./persist.js";
 import { validReviewReturn } from "./review.js";
+import { isDevUnlock } from "./dev-mode.js";
 
 export { validReviewReturn };
 
@@ -20,15 +32,23 @@ let overlay = {};
 let slug = null;
 const listeners = new Set();
 
+function pick(source, keys) {
+  const out = {};
+  for (const key of keys) {
+    if (source[key] !== undefined) out[key] = source[key];
+  }
+  return out;
+}
+
 export async function init(nextSlug, { tour = false } = {}) {
   slug = nextSlug;
   base = await loadBoard(nextSlug, { tour });
-  overlay = readOverlay(nextSlug);
+  overlay = read(nextSlug);
   return state();
 }
 
-function persist() {
-  writeOverlay(slug, overlay);
+function syncFromPersist() {
+  overlay = read(slug);
 }
 
 function mergedStudent() {
@@ -37,7 +57,8 @@ function mergedStudent() {
 
 export function state() {
   const student = mergedStudent();
-  const graph = buildGraph(base.curriculum, student);
+  const unlockAll = isDevUnlock();
+  const graph = buildGraph(base.curriculum, student, { unlockAll });
   const week = Math.min(
     Math.max(1, weekNumber(base.cohort.start)),
     base.cohort.weeks + 1
@@ -50,6 +71,7 @@ export function state() {
     slug,
     hasLocalEdits: Object.keys(overlay).length > 0,
     lessonsLocked: base.curriculum.lessonsLocked === true,
+    unlockAll,
   };
 }
 
@@ -58,42 +80,61 @@ export function subscribe(listener) {
   return () => listeners.delete(listener);
 }
 
-function commit(mutate) {
-  mutate();
-  persist();
+/** Rebuild without mutating overlay (e.g. Dev Mode toggle). */
+export function refresh() {
   const next = state();
   listeners.forEach((listener) => listener(next));
   return next;
 }
 
+function publish() {
+  const next = state();
+  listeners.forEach((listener) => listener(next));
+  return next;
+}
+
+function commitStudent(mutate, event = null) {
+  mutate();
+  patchStudent(slug, pick(overlay, STUDENT_KEYS), event);
+  syncFromPersist();
+  return publish();
+}
+
+function commitInstructor(mutate, event = null) {
+  mutate();
+  patchInstructor(slug, pick(overlay, INSTRUCTOR_KEYS), event);
+  syncFromPersist();
+  return publish();
+}
+
 /* ---------- tasks ---------- */
 
 export function setTaskState(id, taskState) {
-  return commit(() => {
+  return commitStudent(() => {
     overlay.tasks = { ...(overlay.tasks ?? {}) };
     if (taskState === "todo") delete overlay.tasks[id];
     else overlay.tasks[id] = { state: taskState, at: new Date().toISOString().slice(0, 10) };
-  });
+  }, { kind: "task.toggled", payload: { taskId: id, state: taskState } });
 }
 
 /* ---------- evidence: the only thing that lights a node ---------- */
 
 export function submitEvidence(nodeId, url, note = "") {
-  return commit(() => {
+  return commitStudent(() => {
     overlay.evidence = { ...(overlay.evidence ?? {}) };
     overlay.evidence[nodeId] = { url, note, at: new Date().toISOString().slice(0, 10) };
-  });
+  }, { kind: "evidence.submitted", payload: { nodeId, url } });
 }
 
 export function clearEvidence(nodeId) {
-  return commit(() => {
+  return commitStudent(() => {
     overlay.evidence = { ...(overlay.evidence ?? {}), [nodeId]: null };
   });
 }
 
 /** Soft progress on a step (watched film, marked letter read). Does not light the node. */
 export function setStepFlag(nodeId, flag, value = true) {
-  return commit(() => {
+  return commitStudent(() => {
     overlay.stepFlags = { ...(overlay.stepFlags ?? {}) };
     const prev = overlay.stepFlags[nodeId] ?? {};
     overlay.stepFlags[nodeId] = { ...prev, [flag]: value, at: new Date().toISOString().slice(0, 10) };
@@ -104,10 +145,10 @@ export function stepFlags(nodeId) {
   return mergedStudent().stepFlags?.[nodeId] ?? {};
 }
 
-/* ---------- the weekly steer ---------- */
+/* ---------- the weekly steer (instructor) ---------- */
 
 export function setFocusNext({ focus, next }) {
-  return commit(() => {
+  return commitInstructor(() => {
     if (focus !== undefined) overlay.focus = focus;
     if (next !== undefined) overlay.next = next;
   });
@@ -116,20 +157,20 @@ export function setFocusNext({ focus, next }) {
 /* ---------- map editing ---------- */
 
 export function moveNode(id, x, y) {
-  return commit(() => {
+  return commitStudent(() => {
     overlay.layout = { ...(overlay.layout ?? {}), [id]: { x: Math.round(x), y: Math.round(y) } };
-  });
+  }, { kind: "layout.changed", payload: { nodeId: id } });
 }
 
 export function overrideNode(id, patch) {
-  return commit(() => {
+  return commitInstructor(() => {
     overlay.nodeOverrides = { ...(overlay.nodeOverrides ?? {}) };
     overlay.nodeOverrides[id] = { ...(overlay.nodeOverrides[id] ?? {}), ...patch };
   });
 }
 
 export function addNode(node) {
-  return commit(() => {
+  return commitInstructor(() => {
     const extras = [...(overlay.extraNodes ?? base.student.extraNodes ?? [])];
     extras.push(node);
     overlay.extraNodes = extras;
@@ -137,20 +178,26 @@ export function addNode(node) {
 }
 
 export function removeNode(id) {
-  return commit(() => {
+  commitInstructor(() => {
     const extras = (overlay.extraNodes ?? base.student.extraNodes ?? []).filter((n) => n.id !== id);
     overlay.extraNodes = extras;
-    if (overlay.layout) delete overlay.layout[id];
+  });
+  return commitStudent(() => {
+    if (overlay.layout) {
+      const layout = { ...(overlay.layout ?? {}) };
+      delete layout[id];
+      overlay.layout = layout;
+    }
   });
 }
 
 /** Rewire a dependency. Refuses to create a cycle. */
 export function setRequires(id, requires) {
   const student = mergedStudent();
-  const graph = buildGraph(base.curriculum, student);
+  const graph = buildGraph(base.curriculum, student, { unlockAll: isDevUnlock() });
   const wouldCycle = requires.some((from) => reaches(graph, id, from));
   if (wouldCycle) return { error: "That would make the path loop back on itself." };
-  return commit(() => {
+  return commitInstructor(() => {
     overlay.nodeOverrides = { ...(overlay.nodeOverrides ?? {}) };
     overlay.nodeOverrides[id] = { ...(overlay.nodeOverrides[id] ?? {}), requires };
   });
@@ -177,7 +224,7 @@ function reaches(graph, fromId, targetId) {
 /* ---------- quota: a dated log, because the quota is weekly ---------- */
 
 export function logQuota(kind) {
-  return commit(() => {
+  return commitInstructor(() => {
     const log = [...(overlay.quotaLog ?? base.student.quotaLog ?? [])];
     log.push({ at: new Date().toISOString().slice(0, 10), kind });
     overlay.quotaLog = log;
@@ -186,7 +233,7 @@ export function logQuota(kind) {
 
 /** Undo the most recent entry of a kind. Mis-taps should not need a data edit. */
 export function undoQuota(kind) {
-  return commit(() => {
+  return commitInstructor(() => {
     const log = [...(overlay.quotaLog ?? base.student.quotaLog ?? [])];
     for (let index = log.length - 1; index >= 0; index -= 1) {
       if (log[index].kind === kind) {
@@ -201,33 +248,43 @@ export function undoQuota(kind) {
 /* ---------- reviews ---------- */
 
 export function addReview(review) {
-  return commit(() => {
-    const reviews = [...(overlay.reviews ?? base.student.reviews ?? [])];
-    reviews.unshift({ id: `rv-${Date.now()}`, state: "in-review", sent: new Date().toISOString().slice(0, 10), ...review });
-    overlay.reviews = reviews;
-  });
+  const entry = {
+    id: `rv-${Date.now()}`,
+    state: "in-review",
+    sent: new Date().toISOString().slice(0, 10),
+    ...review,
+    state: "in-review",
+  };
+  requestReview(slug, entry);
+  syncFromPersist();
+  return publish();
 }
 
 export function setReviewState(id, reviewState, verdict, scores) {
-  return commit(() => {
-    const reviews = (overlay.reviews ?? base.student.reviews ?? []).map((review) =>
-      review.id === id
-        ? {
-            ...review,
-            state: reviewState,
-            verdict: verdict ?? review.verdict,
-            ...(scores
-              ? {
-                  ccvv: scores.ccvv ?? review.ccvv,
-                  taughtMove: scores.taughtMove ?? review.taughtMove,
-                }
-              : {}),
-            returned: reviewState === "returned" ? new Date().toISOString().slice(0, 10) : review.returned,
-          }
-        : review
-    );
-    overlay.reviews = reviews;
-  });
+  return commitInstructor(
+    () => {
+      const reviews = (overlay.reviews ?? base.student.reviews ?? []).map((review) =>
+        review.id === id
+          ? {
+              ...review,
+              state: reviewState,
+              verdict: verdict ?? review.verdict,
+              ...(scores
+                ? {
+                    ccvv: scores.ccvv ?? review.ccvv,
+                    taughtMove: scores.taughtMove ?? review.taughtMove,
+                  }
+                : {}),
+              returned: reviewState === "returned" ? new Date().toISOString().slice(0, 10) : review.returned,
+            }
+          : review
+      );
+      overlay.reviews = reviews;
+    },
+    reviewState === "returned"
+      ? { kind: "review.returned", payload: { reviewId: id } }
+      : null
+  );
 }
 
 /**
@@ -235,31 +292,31 @@ export function setReviewState(id, reviewState, verdict, scores) {
  * back" would sit on the board forever and stop meaning anything.
  */
 export function markReviewRead(id) {
-  return commit(() => {
-    const read = new Set(overlay.readReviews ?? base.student.readReviews ?? []);
-    read.add(id);
-    overlay.readReviews = [...read];
+  return commitStudent(() => {
+    const readIds = new Set(overlay.readReviews ?? base.student.readReviews ?? []);
+    readIds.add(id);
+    overlay.readReviews = [...readIds];
   });
 }
 
 /* ---------- coach: conversation, memory, usage ---------- */
 
 export function appendChat(turn) {
-  return commit(() => {
+  return commitStudent(() => {
     const chat = overlay.chat ?? mergedStudent().chat ?? { turns: [] };
     overlay.chat = { turns: [...(chat.turns ?? []), turn] };
   });
 }
 
 export function recordUsage(entry) {
-  return commit(() => {
+  return commitStudent(() => {
     overlay.usage = [...(overlay.usage ?? mergedStudent().usage ?? []), entry];
   });
 }
 
 /** One commit for a finished turn so Today does not paint twice. */
 export function recordTurn({ user, assistant, usage, memoryNote, memoryFiles = [] }) {
-  return commit(() => {
+  return commitStudent(() => {
     const current = mergedStudent();
     const chat = overlay.chat ?? current.chat ?? { turns: [] };
     const turns = [...(chat.turns ?? [])];
@@ -283,20 +340,34 @@ export function recordTurn({ user, assistant, usage, memoryNote, memoryFiles = [
   });
 }
 
+function isQuestionNote(text) {
+  const trimmed = String(text ?? "").trim();
+  return /^\?/.test(trimmed) || /^q:/i.test(trimmed);
+}
+
 export function addMemoryNote(text) {
   const trimmed = String(text ?? "").trim();
   if (!trimmed) return state();
-  return commit(() => {
+  const event = isQuestionNote(trimmed)
+    ? { kind: "question.asked", payload: { text: trimmed.slice(0, 200) } }
+    : null;
+  return commitStudent(() => {
     const memory = overlay.memory ?? mergedStudent().memory ?? { notes: [], files: [] };
     overlay.memory = {
       ...memory,
       notes: [{ id: `n-${Date.now()}`, at: new Date().toISOString(), text: trimmed }, ...(memory.notes ?? [])],
     };
-  });
+    if (event) {
+      overlay.questions = [
+        { id: `q-${Date.now()}`, at: new Date().toISOString(), text: trimmed },
+        ...(overlay.questions ?? []),
+      ];
+    }
+  }, event);
 }
 
 export function addMemoryFile({ name, text }) {
-  return commit(() => {
+  return commitStudent(() => {
     const memory = overlay.memory ?? mergedStudent().memory ?? { notes: [], files: [] };
     overlay.memory = {
       ...memory,
@@ -311,20 +382,19 @@ export function addMemoryFile({ name, text }) {
 /* ---------- demo controls ---------- */
 
 export function resetLocalEdits() {
-  return commit(() => {
-    overlay = {};
-    clearOverlay(slug);
-  });
+  clearPersist(slug);
+  overlay = {};
+  return publish();
 }
 
 /** The merged board in the shape of data/students/<slug>.json. */
 export function exportStudent() {
   const student = mergedStudent();
   const evidence = Object.fromEntries(
-    Object.entries(student.evidence).filter(([, value]) => value && value.url)
+    Object.entries(student.evidence ?? {}).filter(([, value]) => value && value.url)
   );
   const tasks = Object.fromEntries(
-    Object.entries(student.tasks).filter(([, value]) => value && value.state)
+    Object.entries(student.tasks ?? {}).filter(([, value]) => value && value.state)
   );
   const stepFlags = student.stepFlags ?? {};
   return JSON.stringify({ ...student, evidence, tasks, stepFlags }, null, 2);

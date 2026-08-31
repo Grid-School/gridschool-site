@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 280" role="img" aria-labelledby="title desc">
+  <title id="title">Project page receipt shape</title>
+  <desc id="desc">Four beats on a project page: what was wrong, what changed, how to verify, what to watch next, each with a link.</desc>
+  <rect width="720" height="280" fill="#05070c"/>
+  <g font-family="IBM Plex Mono, ui-monospace, monospace">
+    <text x="24" y="36" font-size="11" letter-spacing="0.12em" fill="#28e1ff">RECEIPT PAGE</text>
+    <g fill="#0a0e16" stroke="#1e2636">
+      <rect x="24" y="56" width="156" height="180" rx="8"/>
+      <rect x="196" y="56" width="156" height="180" rx="8"/>
+      <rect x="368" y="56" width="156" height="180" rx="8"/>
+      <rect x="540" y="56" width="156" height="180" rx="8"/>
+    </g>
+    <g stroke="#28e1ff" stroke-width="1.5" fill="none">
+      <rect x="24" y="56" width="156" height="180" rx="8"/>
+      <rect x="196" y="56" width="156" height="180" rx="8"/>
+      <rect x="368" y="56" width="156" height="180" rx="8"/>
+      <rect x="540" y="56" width="156" height="180" rx="8"/>
+    </g>
+    <g fill="#28e1ff" font-size="10">
+      <text x="40" y="84">1 · WRONG</text>
+      <text x="212" y="84">2 · CHANGE</text>
+      <text x="384" y="84">3 · VERIFY</text>
+      <text x="556" y="84">4 · WATCH</text>
+    </g>
+    <g fill="#e8ecf4" font-size="12">
+      <text x="40" y="120">What broke</text>
+      <text x="40" y="138">or was missing</text>
+      <text x="212" y="120">What you</text>
+      <text x="212" y="138">changed</text>
+      <text x="384" y="120">How a stranger</text>
+      <text x="384" y="138">checks it</text>
+      <text x="556" y="120">What you would</text>
+      <text x="556" y="138">watch next</text>
+    </g>
+    <g fill="#5c6578" font-size="10">
+      <text x="40" y="200">concrete · named</text>
+      <text x="212" y="200">system · surface</text>
+      <text x="384" y="200">PR · check · demo</text>
+      <text x="556" y="200">judgment shows</text>
+    </g>
+    <g fill="#28e1ff" font-size="10">
+      <text x="40" y="220">↗ link</text>
+      <text x="212" y="220">↗ link</text>
+      <text x="384" y="220">↗ link</text>
+      <text x="556" y="220">↗ link</text>
+    </g>
+  </g>
+</svg>

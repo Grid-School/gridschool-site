@@ -90,9 +90,15 @@ body[data-view="step"] .gridbg { display: none; }
 .rail__who b { display: block; font-size: 13.5px; color: #fff; }
 .rail__who span { display: block; font-size: 11.5px; color: var(--muted); }
 .rail__role {
-  display: inline-block; margin-top: 5px; color: var(--amber);
-  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 10px; letter-spacing: .14em;
+  display: inline-block;
+  margin-top: 4px;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: .12em;
+  color: var(--ghost);
+  text-transform: uppercase;
 }
+.rail__role--dev { color: var(--amber); }
 .rail__acts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 
 /* ---------- demo banner ---------- */
@@ -1174,6 +1180,27 @@ html.vid-lock, html.vid-lock body { overflow: hidden; }
 .step__lesson h2 { font-size: 16px; color: #fff; margin: 0 0 6px; }
 .step__lesson .lesson__sec + .lesson__sec { margin-top: 20px; }
 .step__lesson p { color: var(--muted); font-size: 15px; line-height: 1.7; margin-top: 8px; }
+.lesson__fig {
+  margin: 14px 0 4px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #05070c;
+}
+.lesson__fig img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+}
+.lesson__fig figcaption {
+  margin-top: 10px;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 12px;
+  line-height: 1.45;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}
 .step__modlist { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
 .step__mod {
   text-align: left; cursor: pointer;

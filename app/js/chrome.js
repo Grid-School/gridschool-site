@@ -30,7 +30,14 @@ const TOOLS = [
   { id: "calendar", label: "Calendar" },
 ];
 
-export function createChrome({ onNavigate, onReset, onExport }) {
+export function createChrome({
+  onNavigate,
+  onReset,
+  onExport,
+  onToggleDev,
+  role: chromeRole = "student",
+  showAdminConsole = false,
+}) {
   const railNav = el("nav.rail__nav", { "aria-label": "Where to go" });
   const railTools = el("nav.rail__tools", { "aria-label": "Tools" });
   const identity = el("div.rail__id");
@@ -113,6 +120,8 @@ export function createChrome({ onNavigate, onReset, onExport }) {
   }
 
   function setIdentity(state, role) {
+    const instructor = role === "admin" || chromeRole === "admin";
+    const canDev = instructor || state.slug === "demo";
     mount(
       identity,
       el(
@@ -120,12 +129,21 @@ export function createChrome({ onNavigate, onReset, onExport }) {
         {},
         el("b", {}, state.student.name),
         el("span", {}, `${state.cohort.name} · week ${Math.min(state.week, state.cohort.weeks)}`),
-        role === "admin" && el("span.rail__role", {}, "Instructor view")
+        instructor && el("span.rail__role", {}, "Instructor view"),
+        canDev &&
+          state.unlockAll &&
+          el("span.rail__role.rail__role--dev", {}, "Dev unlock")
       ),
       el(
         "div.rail__acts",
         {},
-        role === "admin" && btn({ label: "Admin", variant: "quiet", href: "../admin/" }),
+        canDev &&
+          btn({
+            label: state.unlockAll ? "Dev unlock: on" : "Dev unlock: off",
+            variant: "quiet",
+            onclick: onToggleDev,
+          }),
+        showAdminConsole && btn({ label: "Admin", variant: "quiet", href: "../admin/" }),
         btn({ label: "Export board", variant: "quiet", onclick: onExport }),
         state.hasLocalEdits && btn({ label: "Reset demo", variant: "quiet", onclick: onReset }),
         btn({
@@ -149,6 +167,19 @@ export function createChrome({ onNavigate, onReset, onExport }) {
    * would be lost, which is a fact the student needs, not a disclaimer.
    */
   function setBanner(state) {
+    if (state.unlockAll) {
+      banner.hidden = false;
+      mount(
+        banner,
+        el("b", {}, "Dev unlock on."),
+        el(
+          "span",
+          {},
+          "Every node is open for reading and turn-in. Lighting still requires a real URL. Use Dev unlock in the rail to restore gating."
+        )
+      );
+      return;
+    }
     if (state.slug === "demo") {
       banner.hidden = false;
       mount(

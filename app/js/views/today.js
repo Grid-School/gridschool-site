@@ -16,6 +16,7 @@ import { nextUp } from "../graph/model.js";
 import { credits, formatUsd, attachmentBudget } from "../coach/credits.js";
 import { rememberIntent } from "../coach/memory.js";
 import { sendTurn, coachIsLive } from "../coach/client.js";
+import { systemLine } from "./system-line.js";
 
 const TEXT_FILES = /\.(txt|md|markdown|json|diff|patch|py|js|mjs|ts|tsx|jsx|css|html|rs|go|java|rb|sh|yml|yaml|toml|csv)$/i;
 
@@ -268,10 +269,3 @@ export function renderToday(ctx) {
   };
 }
 
-/** Which codebase the next spine/depth step belongs to, one line so world/graph never blur. */
-function systemLine(node) {
-  if (!node) return null;
-  if (node.family === "graph") return "This week's system · Graph / nanograph (depth)";
-  if (node.family === "world") return "This week's system · The world (depth track)";
-  return "This week's system · The world (required path)";
-}

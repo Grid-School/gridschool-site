@@ -4,7 +4,7 @@
     {
       "id": "first",
       "title": "Week 1: board, then boot",
-      "blurb": "Required first. How this board works, then It runs. World and graph can wait.",
+      "blurb": "Required first. How this board works, then It runs. World, graph, and Career can wait for a mission receipt.",
       "items": [
         {
           "id": "v.board",
@@ -48,7 +48,7 @@
     {
       "id": "project",
       "title": "On the required spine",
-      "blurb": "Weeks 2-8. Watch the film that matches the spine step you are on, then do that step. Depth (world, graph) is elective; its videos sit on those nodes.",
+      "blurb": "Weeks 2-8. Watch the film that matches the spine step you are on, then do that step. After cap.change, Career core is required. Depth (world, graph, Career expansion) is elective.",
       "items": [
         {
           "id": "v.cv.four",
@@ -67,19 +67,74 @@
           "title": "Build the change, then ask for a review",
           "mins": 15,
           "order": 8
+        },
+        {
+          "id": "v.sg.profile",
+          "title": "LinkedIn that reads as you",
+          "mins": 12,
+          "order": 9
+        },
+        {
+          "id": "v.sg.site",
+          "title": "Host your site",
+          "mins": 14,
+          "order": 10
+        },
+        {
+          "id": "v.sg.show",
+          "title": "Show the real work",
+          "mins": 10,
+          "order": 11
+        }
+      ]
+    },
+    {
+      "id": "career-depth",
+      "title": "Career depth",
+      "blurb": "Optional after the site shows real work. Content system, posts, article, OSS.",
+      "items": [
+        {
+          "id": "v.sg.engine",
+          "title": "A system that feeds posts",
+          "mins": 11,
+          "order": 12
+        },
+        {
+          "id": "v.sg.post",
+          "title": "One post from the system",
+          "mins": 8,
+          "order": 13
+        },
+        {
+          "id": "v.sg.habit",
+          "title": "Two posts in seven days",
+          "mins": 7,
+          "order": 14
+        },
+        {
+          "id": "v.sg.article",
+          "title": "One article you own",
+          "mins": 10,
+          "order": 15
+        },
+        {
+          "id": "v.sg.oss",
+          "title": "Something others can use",
+          "mins": 11,
+          "order": 16
         }
       ]
     },
     {
       "id": "after",
-      "title": "After a receipt",
-      "blurb": "Only after the defense. One trail that points at the work. Not a brand course, and not week 1.",
+      "title": "After the defense",
+      "blurb": "Required. One trail that points at the work. Not week 1.",
       "items": [
         {
           "id": "v.li.publish",
           "title": "One trail after a receipt",
           "mins": 8,
-          "order": 9
+          "order": 17
         }
       ]
     }

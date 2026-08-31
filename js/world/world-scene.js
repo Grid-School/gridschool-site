@@ -242,11 +242,10 @@ export function createWorld({ canvas, dock }) {
   ro.observe(canvas);
   resize();
   requestAnimationFrame(() => pinDock());
-  if (reduced) {
-    composer.render();
-  } else {
-    play();
-  }
+  // One warm frame only. Caller starts the loop after boot ignite so bloom
+  // work does not starve the reveal timer.
+  pose(0);
+  composer.render();
 
   return {
     play,

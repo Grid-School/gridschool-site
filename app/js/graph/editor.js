@@ -145,7 +145,7 @@ export function createEditor({ scene, camera, getGraph, store, onCommit, onStatu
       n,
       title: title || `Custom node ${n}`,
       phase: graph.phases.at(-1)?.id ?? "proof",
-      family: graph.families?.[0]?.id ?? "linkedin",
+      family: graph.families?.[0]?.id ?? "signal",
       weeks: [],
       col: slot.col,
       lane: slot.lane,

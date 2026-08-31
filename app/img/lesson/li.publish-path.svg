@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 200" role="img" aria-labelledby="title desc">
+  <title id="title">Stranger path to the defense</title>
+  <desc id="desc">From public LinkedIn through one trail to the defense recording or PR pack in about ten seconds.</desc>
+  <rect width="720" height="200" fill="#05070c"/>
+  <defs>
+    <marker id="b" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+      <path d="M0,0 L7,3.5 L0,7 Z" fill="#28e1ff"/>
+    </marker>
+  </defs>
+  <g font-family="IBM Plex Mono, ui-monospace, monospace">
+    <text x="24" y="32" font-size="11" letter-spacing="0.12em" fill="#28e1ff">STRANGER PATH · ≤10s</text>
+    <g>
+      <rect x="24" y="56" width="180" height="88" rx="8" fill="#0a0e16" stroke="#28e1ff" stroke-width="1.5"/>
+      <text x="40" y="92" font-size="13" fill="#e8ecf4">LinkedIn</text>
+      <text x="40" y="112" font-size="10" fill="#5c6578">public profile</text>
+    </g>
+    <path d="M214 100 H248" stroke="#28e1ff" stroke-width="1.5" marker-end="url(#b)"/>
+    <g>
+      <rect x="258" y="56" width="180" height="88" rx="8" fill="#0a0e16" stroke="#28e1ff" stroke-width="1.5"/>
+      <text x="274" y="92" font-size="13" fill="#e8ecf4">One trail</text>
+      <text x="274" y="112" font-size="10" fill="#5c6578">post or Featured</text>
+    </g>
+    <path d="M448 100 H482" stroke="#28e1ff" stroke-width="1.5" marker-end="url(#b)"/>
+    <g>
+      <rect x="492" y="56" width="204" height="88" rx="8" fill="#0a0e16" stroke="#28e1ff" stroke-width="1.5"/>
+      <text x="508" y="92" font-size="13" fill="#e8ecf4">Defense / PR pack</text>
+      <text x="508" y="112" font-size="10" fill="#5c6578">receipt already exists</text>
+    </g>
+    <text x="24" y="180" font-size="11" fill="#5c6578">Private window. No scavenger hunt. Same story as the site.</text>
+  </g>
+</svg>
