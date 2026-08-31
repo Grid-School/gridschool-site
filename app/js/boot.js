@@ -10,7 +10,7 @@
 
 import { el, mount, download } from "./dom.js";
 import * as store from "./store.js";
-import { resolveSlug, slugFromUrl, currentSession, signOut } from "./session.js";
+import { resolveSlug, slugFromUrl, currentSession, signOut, setPersistToken } from "./session.js";
 import { tryStoredKey, unlock } from "./gate.js";
 import { createRouter } from "./router.js";
 import { createChrome } from "./chrome.js";
@@ -227,7 +227,12 @@ async function start() {
 
   try {
     await store.init(slug, { tour: !unlocked });
-  } catch {
+  } catch (error) {
+    if (error?.code === "BAD_TOKEN") {
+      setPersistToken("");
+      renderPersistDoor(app, slug);
+      return;
+    }
     /* A stored session can outlive its board: signed in on a machine that has
        the private boards, then opened on a host that publishes only the tour.
        That is not the visitor's problem, so drop the session and offer what is

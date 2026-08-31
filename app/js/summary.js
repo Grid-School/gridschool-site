@@ -18,7 +18,13 @@ export async function loadCohortBoards() {
     roster.students.map(async (slug) => {
       try {
         const file = await loadStudent(slug);
-        if (remoteEnabled(slug)) await hydrateFromRemote(slug);
+        if (remoteEnabled(slug)) {
+          try {
+            await hydrateFromRemote(slug);
+          } catch (error) {
+            if (error.code !== "BAD_TOKEN") throw error;
+          }
+        }
         const student = mergeStudent(file, readOverlay(slug));
         const graph = buildGraph(curriculum, student);
         const attention = listEvents(slug, { attentionOnly: true });

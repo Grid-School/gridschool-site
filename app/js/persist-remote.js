@@ -69,6 +69,10 @@ export async function hydrateFromRemote(slug, { force = false } = {}) {
     return snap;
   } catch (error) {
     if (error.code === "NO_TOKEN" || error.status === 404) return null;
+    if (error.status === 401) {
+      error.code = "BAD_TOKEN";
+      throw error;
+    }
     console.warn("persist hydrate failed", error);
     return null;
   }
