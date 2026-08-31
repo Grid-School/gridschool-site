@@ -24,6 +24,7 @@ import { renderCalendar } from "./views/calendar.js";
 import { renderLibrary } from "./views/library.js";
 import { renderFirstRun, shouldOpenFirstRun } from "./views/first-run.js";
 import { toggleDevUnlock, setDevUnlock } from "./dev-mode.js";
+import { needsPersistToken, renderPersistDoor } from "./persist-door.js";
 
 const VIEWS = {
   today: { render: renderToday, persistent: true },
@@ -210,6 +211,11 @@ async function start() {
 
   if (!slug) {
     renderPicker(app);
+    return;
+  }
+
+  if (unlocked && needsPersistToken(slug)) {
+    renderPersistDoor(app, slug);
     return;
   }
 

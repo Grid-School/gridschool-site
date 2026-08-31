@@ -1,6 +1,6 @@
 /**
- * State container. Server truth (the JSON files) stays immutable; every change a
- * student or Aden makes lands in persist (localStorage today, API later).
+ * State container. JSON files are the seed. Every change a student or Aden
+ * makes lands in persist (local cache, flushed to Postgres when the API is up).
  *
  * Student mutations write the student domain only. Instructor mutations write
  * the instructor domain only. That is how a drag cannot wipe a review return.
@@ -22,6 +22,7 @@ import {
   STUDENT_KEYS,
   INSTRUCTOR_KEYS,
 } from "./persist.js";
+import { flushAfterLocalWrite, hydrateFromRemote, startPolling } from "./persist-remote.js";
 import { validReviewReturn } from "./review.js";
 import { isDevUnlock } from "./dev-mode.js";
 
@@ -43,6 +44,13 @@ function pick(source, keys) {
 export async function init(nextSlug, { tour = false } = {}) {
   slug = nextSlug;
   base = await loadBoard(nextSlug, { tour });
+  if (!tour && nextSlug !== "demo") {
+    await hydrateFromRemote(nextSlug, { force: true });
+    startPolling(nextSlug, () => {
+      overlay = read(nextSlug);
+      publish();
+    });
+  }
   overlay = read(nextSlug);
   return state();
 }
@@ -97,6 +105,7 @@ function commitStudent(mutate, event = null) {
   mutate();
   patchStudent(slug, pick(overlay, STUDENT_KEYS), event);
   syncFromPersist();
+  void flushAfterLocalWrite(slug, "student", { event });
   return publish();
 }
 
@@ -104,6 +113,7 @@ function commitInstructor(mutate, event = null) {
   mutate();
   patchInstructor(slug, pick(overlay, INSTRUCTOR_KEYS), event);
   syncFromPersist();
+  void flushAfterLocalWrite(slug, "instructor", { event });
   return publish();
 }
 
@@ -257,6 +267,7 @@ export function addReview(review) {
   };
   requestReview(slug, entry);
   syncFromPersist();
+  void flushAfterLocalWrite(slug, "review-request", { review: entry });
   return publish();
 }
 

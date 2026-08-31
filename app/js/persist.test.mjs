@@ -32,6 +32,23 @@ function installMemoryStorage() {
 
 installMemoryStorage();
 
+test("replace writes a split remote snapshot into the local cache", async () => {
+  const { replace, readDoc } = await import("./persist.js");
+  const slug = "t-replace";
+  clear(slug);
+  replace(slug, {
+    student: { layout: { "or.start": { x: 7, y: 8 } }, focus: "should-drop" },
+    instructor: { focus: "Real focus", evidence: { skip: true } },
+    events: [{ id: "ev-1", kind: "evidence.submitted", attention: true }],
+  });
+  const doc = readDoc(slug);
+  assert.deepEqual(doc.student.layout["or.start"], { x: 7, y: 8 });
+  assert.equal(doc.student.focus, undefined);
+  assert.equal(doc.instructor.focus, "Real focus");
+  assert.equal(doc.instructor.evidence, undefined);
+  assert.equal(doc.events[0].id, "ev-1");
+});
+
 test("mergeStudent + export keys match demo.json shape", () => {
   const merged = mergeStudent(demo, {
     evidence: { "or.start": { url: "https://example.com/note", at: "2026-08-30" } },

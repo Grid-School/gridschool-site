@@ -5,6 +5,7 @@
  */
 
 const KEY = "gridschool.session.v2";
+const TOKEN_KEY = "gridschool.persist.token";
 
 export function currentSession() {
   try {
@@ -16,10 +17,29 @@ export function currentSession() {
   return null;
 }
 
-export function signIn(slug, { role = "student" } = {}) {
-  const session = { slug, role, at: Date.now(), demo: true };
+export function signIn(slug, { role = "student", persistToken: token } = {}) {
+  const session = { slug, role, at: Date.now(), demo: slug === "demo" };
+  if (token) session.persistToken = token;
   localStorage.setItem(KEY, JSON.stringify(session));
   return session;
+}
+
+/** Founding API token. Session wins; otherwise the desk stores it once. */
+export function persistToken() {
+  const fromSession = currentSession()?.persistToken;
+  if (fromSession) return fromSession;
+  try {
+    return localStorage.getItem(TOKEN_KEY) || "";
+  } catch {
+    return "";
+  }
+}
+
+export function setPersistToken(token) {
+  const value = String(token ?? "").trim();
+  if (value) localStorage.setItem(TOKEN_KEY, value);
+  else localStorage.removeItem(TOKEN_KEY);
+  return value;
 }
 
 export function signOut() {

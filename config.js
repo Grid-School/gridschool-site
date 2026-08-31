@@ -75,6 +75,15 @@ export const MEDIA = {
   youtubeChannel: "REPLACE_ME_YOUTUBE_CHANNEL",
 };
 
+/**
+ * Lab notebook. Demo never leaves the browser. Real slugs hydrate/flush to
+ * this API when a founding token is in localStorage (`gridschool.persist.token`).
+ * The API binds to localhost and talks to GridSchool Postgres (643600678330).
+ */
+export const PERSIST = {
+  endpoint: "https://gridschool-persist.2q0rcr0ks5h5e.us-west-2.cs.amazonlightsail.com",
+};
+
 export const PRICING = {
   deposit: 100,
   balance: 400,

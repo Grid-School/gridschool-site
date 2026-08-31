@@ -4,7 +4,8 @@
  */
 
 import { loadRoster, loadStudent, loadCurriculum, loadCohort } from "./api.js";
-import { readOverlay, mergeStudent } from "./overlay.js";
+import { readOverlay, mergeStudent, listEvents } from "./overlay.js";
+import { hydrateFromRemote, remoteEnabled } from "./persist-remote.js";
 import { buildGraph, progress, nextUp, STATUS } from "./graph/model.js";
 import { quotaStatus, waitingOn, buildQueue } from "./tasks.js";
 import { weekNumber } from "./time.js";
@@ -17,9 +18,11 @@ export async function loadCohortBoards() {
     roster.students.map(async (slug) => {
       try {
         const file = await loadStudent(slug);
+        if (remoteEnabled(slug)) await hydrateFromRemote(slug);
         const student = mergeStudent(file, readOverlay(slug));
         const graph = buildGraph(curriculum, student);
-        return summarize({ slug, student, graph, curriculum, cohort, week });
+        const attention = listEvents(slug, { attentionOnly: true });
+        return summarize({ slug, student, graph, curriculum, cohort, week, attention });
       } catch (error) {
         return { slug, error: error.message };
       }
@@ -29,7 +32,7 @@ export async function loadCohortBoards() {
   return { boards: boards.filter((board) => !board.error), broken: boards.filter((b) => b.error), curriculum, cohort, week };
 }
 
-function summarize({ slug, student, graph, curriculum, cohort, week }) {
+function summarize({ slug, student, graph, curriculum, cohort, week, attention = [] }) {
   const prog = progress(graph);
   const quota = quotaStatus({ curriculum, student, cohort, week });
   const waiting = waitingOn({ graph, student });
@@ -48,14 +51,16 @@ function summarize({ slug, student, graph, curriculum, cohort, week }) {
     waiting,
     queueLength: queue.length,
     nextNode: next,
+    attention,
     /** The single line I need in a glance: is this person moving or stalled? */
-    signal: signalFor({ prog, quota, waiting, student, week }),
+    signal: signalFor({ prog, quota, waiting, student, week, attention }),
   };
 }
 
-function signalFor({ prog, quota, waiting, student, week }) {
+function signalFor({ prog, quota, waiting, student, week, attention = [] }) {
   if (!student.focus || !student.next) return { tone: "warn", text: "No Focus or Next set" };
   if (waiting.reviews.length) return { tone: "wait", text: `${waiting.reviews.length} waiting on me` };
+  if (attention.length) return { tone: "wait", text: `${attention.length} need a reply` };
   if (quota.active && !quota.met) return { tone: "warn", text: "Quota not met this week" };
   if (week > 2 && prog.spine.lit === 0) return { tone: "bad", text: "Nothing required lit past week 2" };
   return { tone: "ok", text: "Moving" };

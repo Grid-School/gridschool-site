@@ -1,9 +1,9 @@
 /**
  * Persist seam for the student lab notebook.
  *
- * Today: localStorage, split into student vs instructor domains so one writer
- * cannot clobber the other. Later: swap the driver for Postgres + API on
- * GridSchool AWS (643600678330). Do not invent a second student shape.
+ * localStorage is the cache. When PERSIST.endpoint is set, persist-remote.js
+ * hydrates/flushes to Postgres on GridSchool AWS (643600678330). Demo never
+ * leaves this browser. Do not invent a second student shape.
  *
  * Spec: ops/student-data.md
  */
@@ -36,6 +36,13 @@ export const ATTENTION_KINDS = new Set([
   "question.asked",
   "chat.needs_human",
 ]);
+
+export const ATTENTION_LABELS = {
+  "evidence.submitted": "URL landed",
+  "review.requested": "Review requested",
+  "question.asked": "Question",
+  "chat.needs_human": "Coach needs you",
+};
 
 const MAP_KEYS = new Set(["evidence", "tasks", "layout", "nodeOverrides", "stepFlags"]);
 
@@ -145,6 +152,21 @@ export function read(slug) {
   return flatten(readRaw(slug));
 }
 
+/** Split document (student / instructor / events) for the remote driver. */
+export function readDoc(slug) {
+  return readRaw(slug);
+}
+
+/** Replace the local cache from a remote snapshot. */
+export function replace(slug, doc) {
+  writeRaw(slug, {
+    student: pick(doc?.student ?? {}, STUDENT_KEYS),
+    instructor: pick(doc?.instructor ?? {}, INSTRUCTOR_KEYS),
+    events: Array.isArray(doc?.events) ? doc.events : [],
+  });
+  return flatten(readRaw(slug));
+}
+
 export function clear(slug) {
   try {
     localStorage.removeItem(storageKey(slug));
@@ -157,7 +179,7 @@ export function clear(slug) {
 
 /**
  * Student-domain patch. Only STUDENT_KEYS apply. Optional attention/silent event.
- * Later API driver: PATCH /students/:slug/student
+ * API driver: PATCH /students/:slug/student
  */
 export function patchStudent(slug, patch, event = null) {
   const doc = readRaw(slug);
@@ -171,7 +193,7 @@ export function patchStudent(slug, patch, event = null) {
 
 /**
  * Instructor-domain patch. Only INSTRUCTOR_KEYS apply.
- * Later API driver: PATCH /students/:slug/instructor
+ * API driver: PATCH /students/:slug/instructor
  */
 export function patchInstructor(slug, patch, event = null) {
   const doc = readRaw(slug);
@@ -185,7 +207,7 @@ export function patchInstructor(slug, patch, event = null) {
 
 /**
  * Student sends work for review: append an in-review item without wiping returns.
- * Later API: same as student patch that appends to reviews under a review-request rule.
+ * API: POST /students/:slug/review-request (append, never replace returns).
  */
 export function requestReview(slug, review) {
   const doc = readRaw(slug);
