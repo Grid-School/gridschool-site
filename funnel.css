@@ -203,6 +203,13 @@
 .rejected { border-color: color-mix(in srgb, #ff7b7b 30%, var(--line)); }
 .rejected h2 { color: #ffc9c9; }
 
+.hp {
+  position: absolute;
+  left: -9999px;
+  height: 0;
+  overflow: hidden;
+}
+
 @media (max-width: 640px) {
   .ff__row { grid-template-columns: 1fr; }
 }

@@ -284,6 +284,7 @@ export function seedFromSnapshot(snap) {
   return {
     slug: snap?.slug,
     name: identity.name ?? snap?.slug,
+    email: identity.email ?? "",
     cohort: identity.cohort ?? "founding-001",
     joined: identity.joined,
     public: identity.public === true,

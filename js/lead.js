@@ -6,7 +6,7 @@
  * When Tally or a real endpoint exists, `submit()` is the only function to change.
  */
 
-import { LINKS, isPlaceholder } from "../config.js";
+import { LINKS, PERSIST, isPlaceholder } from "../config.js";
 
 const KEY = "gridschool.application.v1";
 const PAID_KEY = "gridschool.enrollment.v1";
@@ -79,6 +79,29 @@ export function submit(data) {
     return { mode: "external", url: LINKS.application, record };
   }
   return { mode: "local", url: "../applied/", record };
+}
+
+/**
+ * Best-effort desk ingest. Failures stay local. Never mints a seat.
+ * Tally later replaces this POST, not the enroll click.
+ */
+export async function ingestLead(record) {
+  const endpoint = PERSIST?.endpoint;
+  if (!endpoint || isPlaceholder(endpoint)) return;
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 3000);
+  try {
+    await fetch(`${String(endpoint).replace(/\/$/, "")}/leads/apply`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(record),
+      signal: ctrl.signal,
+    });
+  } catch {
+    /* mailto / local record still stand */
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 /** Paint a "connected / not connected" marker next to an integration. */

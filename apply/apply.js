@@ -3,7 +3,7 @@
  * yet rather than taking their money, and hands the record to lead.js.
  */
 
-import { submit } from "../js/lead.js";
+import { submit, ingestLead } from "../js/lead.js";
 
 const form = document.getElementById("form");
 const screen = document.getElementById("screen");
@@ -65,7 +65,7 @@ function validate(data) {
   return problems;
 }
 
-form.addEventListener("submit", (event) => {
+form.addEventListener("submit", async (event) => {
   event.preventDefault();
   const raw = Object.fromEntries(new FormData(form).entries());
   const data = { ...raw, commit: form.elements.commit.checked ? "yes" : "" };
@@ -83,5 +83,6 @@ form.addEventListener("submit", (event) => {
 
   formError.hidden = true;
   const result = submit(data);
+  await ingestLead(result.record);
   location.href = result.mode === "external" ? result.url : "../applied/";
 });

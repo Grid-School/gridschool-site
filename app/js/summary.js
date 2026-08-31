@@ -6,16 +6,23 @@
 import { loadRoster, loadStudent, loadCurriculum, loadCohort } from "./api.js";
 import { readOverlay, mergeStudent, listEvents } from "./overlay.js";
 import { hydrateFromRemote, remoteEnabled } from "./persist-remote.js";
+import { listPersistSlugs } from "./persist-admin.js";
 import { buildGraph, progress, nextUp, STATUS } from "./graph/model.js";
 import { quotaStatus, waitingOn, buildQueue } from "./tasks.js";
 import { weekNumber } from "./time.js";
 
 export async function loadCohortBoards() {
-  const [roster, curriculum, cohort] = await Promise.all([loadRoster(), loadCurriculum(), loadCohort()]);
+  const [roster, curriculum, cohort, persistSlugs] = await Promise.all([
+    loadRoster(),
+    loadCurriculum(),
+    loadCohort(),
+    listPersistSlugs(),
+  ]);
   const week = Math.min(Math.max(1, weekNumber(cohort.start)), cohort.weeks + 1);
+  const slugs = [...new Set([...(roster.students ?? []), ...persistSlugs])];
 
   const boards = await Promise.all(
-    roster.students.map(async (slug) => {
+    slugs.map(async (slug) => {
       try {
         const file = await loadStudent(slug);
         if (remoteEnabled(slug)) {
