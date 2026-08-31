@@ -81,7 +81,7 @@ export const MEDIA = {
  * The API binds to localhost and talks to GridSchool Postgres (643600678330).
  */
 export const PERSIST = {
-  endpoint: "https://gridschool-persist.2q0rcr0ks5h5e.us-west-2.cs.amazonlightsail.com",
+  endpoint: "https://lab.gridschool.org",
 };
 
 export const PRICING = {
