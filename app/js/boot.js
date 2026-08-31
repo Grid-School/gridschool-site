@@ -1,7 +1,8 @@
 /**
- * Boot. Resolve who is looking, load the board, wire the router, and re-render
- * on every state change. Views are plain functions except the map and Today,
- * which keep camera and conversation across navigation.
+ * Boot. Resolve who is looking, load the board, wire the router. Persist writes
+ * update chrome and the visible view. They do not remount Today, the map, or a
+ * step. Views are plain functions except those three, which keep camera,
+ * conversation, and a draft across a flush.
  *
  * There are two doors — Today and the Grid — plus two tools reached by name. The
  * routes that used to be surfaces of their own are kept as aliases so links
@@ -135,15 +136,33 @@ function context() {
 }
 
 let router = null;
+let lastIdentityKey = "";
+
+function syncChrome() {
+  const ctx = context();
+  const state = ctx.state;
+  chrome.setActive(route.name === "map" ? "map" : route.name);
+  chrome.setBanner(state);
+  chrome.setSignals(state);
+  const identityKey = [
+    state.slug,
+    state.student.name,
+    state.week,
+    state.unlockAll ? "1" : "0",
+    state.hasLocalEdits ? "1" : "0",
+    state.persistStatus?.state ?? "off",
+    role,
+  ].join("|");
+  if (identityKey !== lastIdentityKey) {
+    chrome.setIdentity(state, role);
+    lastIdentityKey = identityKey;
+  }
+}
 
 function renderRoute() {
   const view = VIEWS[route.name];
   const ctx = context();
-
-  chrome.setActive(route.name === "map" ? "map" : route.name);
-  chrome.setIdentity(ctx.state, role);
-  chrome.setBanner(ctx.state);
-  chrome.setSignals(ctx.state);
+  syncChrome();
 
   // Full step page: #/map/<nodeId>[/m/...] not a modal over the graph.
   if (route.name === "map" && isStepArgs(route.args, ctx.state.graph)) {
@@ -193,6 +212,24 @@ function renderRoute() {
 
 function cap(text) {
   return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+/** Persist writes update chrome and the visible view. They do not remount. */
+function onStoreChange() {
+  if (!chrome) return;
+  syncChrome();
+  const ctx = context();
+  if (route.name === "map" && isStepArgs(route.args, ctx.state.graph)) {
+    const key = `step:${route.args[0]}:${moduleIdFromArgs(route.args) ?? ""}`;
+    instances.get(key)?.update(ctx, route.args[0], moduleIdFromArgs(route.args));
+    return;
+  }
+  const view = VIEWS[route.name];
+  if (view?.persistent) {
+    instances.get(route.name)?.update(ctx, ...route.args);
+    return;
+  }
+  if (view) mount(chrome.outlet, view.render(ctx, ...route.args));
 }
 
 async function start() {
@@ -269,7 +306,11 @@ async function start() {
     },
     onExport: () => {
       download(`${slug}.json`, store.exportStudent());
-      toast("Exported. Drop it in data/students/ to make it real.");
+      toast(
+        slug === "demo"
+          ? "Exported. Drop it in data/students/ to make it real."
+          : "Backup downloaded."
+      );
     },
     onToggleDev: () => {
       toggleDevUnlock();
@@ -296,7 +337,7 @@ async function start() {
     },
   });
 
-  store.subscribe(() => renderRoute());
+  store.subscribe(onStoreChange);
 
   window.addEventListener("keydown", (event) => {
     if (event.target.matches("input, textarea, select")) return;

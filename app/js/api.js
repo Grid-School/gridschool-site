@@ -1,7 +1,11 @@
 /**
- * The data seam. Today every read is a static JSON file. When a real backend
- * exists, only the four fetch calls in this file change.
+ * The data seam. Static JSON for the tour. A real seat without a public
+ * student file seeds identity from the notebook API.
  */
+
+import { loadPrivateJson } from "./gate.js";
+import { seedFromSnapshot } from "./persist.js";
+import { fetchSnapshot, remoteEnabled } from "./persist-remote.js";
 
 const BASE = "../data/";
 const cache = new Map();
@@ -15,8 +19,6 @@ async function getJson(path) {
   cache.set(path, promise);
   return promise;
 }
-
-import { loadPrivateJson } from "./gate.js";
 
 /**
  * Plaintext in local development; decrypted through the gate on the live site.
@@ -38,7 +40,26 @@ export const loadCurriculum = ({ tour = false } = {}) => {
 };
 export const loadCohort = () => getJson("cohort.json");
 export const loadRoster = () => getJson("roster.json");
-export const loadStudent = (slug) => getJson(`students/${slug}.json`);
+
+/**
+ * Local/dev reads data/students/<slug>.json. On the public tour that file is
+ * stripped for private seats. The notebook API is then the seed: identity
+ * from Postgres, live writes from hydrate. Demo never takes this path.
+ */
+export async function loadStudent(slug) {
+  const path = `students/${slug}.json`;
+  try {
+    return await getJson(path);
+  } catch (error) {
+    cache.delete(path);
+    if (slug === "demo" || !remoteEnabled(slug)) throw error;
+    const snap = await fetchSnapshot(slug);
+    if (!snap?.slug) throw error;
+    const seed = seedFromSnapshot(snap);
+    cache.set(path, Promise.resolve(seed));
+    return seed;
+  }
+}
 export const loadCoach = () => getJson("coach.json");
 export const loadLibrary = () => getJson("library.json");
 

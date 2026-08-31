@@ -78,7 +78,7 @@ export const MEDIA = {
 /**
  * Lab notebook. Demo never leaves the browser. Real slugs hydrate/flush to
  * this API when a founding token is in localStorage (`gridschool.persist.token`).
- * The API binds to localhost and talks to GridSchool Postgres (643600678330).
+ * Hosted at lab.gridschool.org on GridSchool AWS (643600678330).
  */
 export const PERSIST = {
   endpoint: "https://lab.gridschool.org",

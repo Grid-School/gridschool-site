@@ -22,7 +22,7 @@ import {
   STUDENT_KEYS,
   INSTRUCTOR_KEYS,
 } from "./persist.js";
-import { flushAfterLocalWrite, hydrateFromRemote, startPolling } from "./persist-remote.js";
+import { flushAfterLocalWrite, hydrateFromRemote, persistStatus, startPolling } from "./persist-remote.js";
 import { validReviewReturn } from "./review.js";
 import { isDevUnlock } from "./dev-mode.js";
 
@@ -78,6 +78,7 @@ export function state() {
     week,
     slug,
     hasLocalEdits: Object.keys(overlay).length > 0,
+    persistStatus: persistStatus(),
     lessonsLocked: base.curriculum.lessonsLocked === true,
     unlockAll,
   };
@@ -101,20 +102,28 @@ function publish() {
   return next;
 }
 
+function flushThenPublish(domain, extra = {}) {
+  void flushAfterLocalWrite(slug, domain, extra).then(() => {
+    publish();
+  });
+}
+
 function commitStudent(mutate, event = null) {
   mutate();
   patchStudent(slug, pick(overlay, STUDENT_KEYS), event);
   syncFromPersist();
-  void flushAfterLocalWrite(slug, "student", { event });
-  return publish();
+  const next = publish();
+  flushThenPublish("student", { event });
+  return next;
 }
 
 function commitInstructor(mutate, event = null) {
   mutate();
   patchInstructor(slug, pick(overlay, INSTRUCTOR_KEYS), event);
   syncFromPersist();
-  void flushAfterLocalWrite(slug, "instructor", { event });
-  return publish();
+  const next = publish();
+  flushThenPublish("instructor", { event });
+  return next;
 }
 
 /* ---------- tasks ---------- */
@@ -267,8 +276,9 @@ export function addReview(review) {
   };
   requestReview(slug, entry);
   syncFromPersist();
-  void flushAfterLocalWrite(slug, "review-request", { review: entry });
-  return publish();
+  const next = publish();
+  flushThenPublish("review-request", { review: entry });
+  return next;
 }
 
 export function setReviewState(id, reviewState, verdict, scores) {

@@ -11,9 +11,14 @@ import {
   listEvents,
   mergeStudent,
   read,
+  pendingOf,
+  hasPending,
+  markFlushed,
+  replace,
   ATTENTION_KINDS,
   STUDENT_KEYS,
   INSTRUCTOR_KEYS,
+  seedFromSnapshot,
 } from "./persist.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "../../data");
@@ -31,6 +36,57 @@ function installMemoryStorage() {
 }
 
 installMemoryStorage();
+
+test("seedFromSnapshot is identity only and never public by default", () => {
+  const seed = seedFromSnapshot({
+    slug: "aden",
+    identity: { name: "Aden", cohort: "founding-001", joined: "2026-08-19", note: "private" },
+    student: { evidence: { "or.start": { url: "https://secret.test" } } },
+    instructor: { focus: "secret" },
+  });
+  assert.equal(seed.slug, "aden");
+  assert.equal(seed.name, "Aden");
+  assert.equal(seed.public, false);
+  assert.equal(seed.evidence, undefined);
+  assert.equal(seed.focus, undefined);
+});
+
+test("patch sets pending; markFlushed clears it", () => {
+  const slug = "t-pending";
+  clear(slug);
+  patchStudent(slug, { tasks: { "or.start.law": { state: "done", at: "2026-08-31" } } });
+  assert.equal(pendingOf(slug).student, true);
+  assert.equal(pendingOf(slug).instructor, false);
+  assert.equal(hasPending(slug), true);
+  patchInstructor(slug, { focus: "One sentence" });
+  assert.equal(pendingOf(slug).instructor, true);
+  markFlushed(slug, "student");
+  assert.equal(pendingOf(slug).student, false);
+  assert.equal(pendingOf(slug).instructor, true);
+  markFlushed(slug, "instructor");
+  assert.equal(hasPending(slug), false);
+  requestReview(slug, { id: "rv-p", title: "Pending review" });
+  assert.equal(pendingOf(slug).instructor, true);
+  markFlushed(slug, "review-request");
+  assert.equal(pendingOf(slug).instructor, false);
+});
+
+test("replace refuses to overwrite a pending domain", () => {
+  const slug = "t-pending-replace";
+  clear(slug);
+  patchStudent(slug, {
+    evidence: { "or.start": { url: "https://example.com/keep", at: "2026-08-31" } },
+  });
+  replace(slug, {
+    student: { evidence: {} },
+    instructor: { focus: "from server" },
+    events: [],
+  });
+  const flat = read(slug);
+  assert.equal(flat.evidence["or.start"].url, "https://example.com/keep");
+  assert.equal(flat.focus, undefined);
+  assert.equal(hasPending(slug), true);
+});
 
 test("replace writes a split remote snapshot into the local cache", async () => {
   const { replace, readDoc } = await import("./persist.js");

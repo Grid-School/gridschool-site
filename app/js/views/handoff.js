@@ -12,6 +12,7 @@
 
 import { el } from "../dom.js";
 import { btn, field, toast } from "../ui.js";
+import { registerLeaveGuard, clearLeaveGuard } from "../leave-guard.js";
 
 const KINDS = [
   { id: "pr", label: "A pull request" },
@@ -51,6 +52,25 @@ export function handoffForm({ store, node = null, onDone = () => {} } = {}) {
     KINDS.map((kind) => el("option", { value: kind.id }, kind.label))
   );
 
+  const initialTitle = node ? `${String(node.n).padStart(2, "0")} ${node.title}` : "";
+  const initialUrl = node?.proof?.url ?? "";
+  const guardId = `review${suffix}`;
+  registerLeaveGuard(
+    guardId,
+    () => {
+      const liveTitle = document.getElementById(`rv-title${suffix}`);
+      const liveUrl = document.getElementById(`rv-url${suffix}`);
+      const liveAsk = document.getElementById(`rv-ask${suffix}`);
+      if (!liveTitle && !liveUrl && !liveAsk) return false;
+      return (
+        (liveTitle?.value.trim() ?? "") !== initialTitle ||
+        (liveUrl?.value.trim() ?? "") !== initialUrl ||
+        (liveAsk?.value.trim() ?? "") !== ""
+      );
+    },
+    "This review is not sent. Click Send it or you will lose it."
+  );
+
   return el(
     "form.rvform",
     {
@@ -58,6 +78,7 @@ export function handoffForm({ store, node = null, onDone = () => {} } = {}) {
         event.preventDefault();
         if (!title.input.value.trim()) return toast("Give it a name.", "warn");
         if (!/^https?:\/\/.+/.test(url.input.value.trim())) return toast("I need a link I can open.", "warn");
+        clearLeaveGuard(guardId);
         store.addReview({
           title: title.input.value.trim(),
           link: url.input.value.trim(),

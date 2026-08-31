@@ -29,7 +29,7 @@ export const INSTRUCTOR_KEYS = [
   "quotaLog",
 ];
 
-/** Kinds that should Telegram Aden when a hosted notify exists. */
+/** Kinds that Telegram Aden (email if Telegram is down). */
 export const ATTENTION_KINDS = new Set([
   "evidence.submitted",
   "review.requested",
@@ -50,8 +50,23 @@ export const storageKey = (slug) => `gridschool.persist.v1.${slug}`;
 /** Pre-split overlay key. Migrated on read. */
 export const legacyOverlayKey = (slug) => `gridschool.overlay.v1.${slug}`;
 
+function emptyPending() {
+  return { student: false, instructor: false };
+}
+
 function emptyDoc() {
-  return { student: {}, instructor: {}, events: [] };
+  return { student: {}, instructor: {}, events: [], pending: emptyPending() };
+}
+
+function normalizePending(pending) {
+  return {
+    student: Boolean(pending?.student),
+    instructor: Boolean(pending?.instructor),
+  };
+}
+
+function withPending(doc, patch) {
+  return { ...normalizePending(doc?.pending), ...patch };
 }
 
 function pick(source, keys) {
@@ -96,6 +111,7 @@ function readRaw(slug) {
           student: parsed.student ?? {},
           instructor: parsed.instructor ?? {},
           events: Array.isArray(parsed.events) ? parsed.events : [],
+          pending: normalizePending(parsed.pending),
         };
       }
     }
@@ -107,7 +123,7 @@ function readRaw(slug) {
     const legacy = JSON.parse(localStorage.getItem(legacyOverlayKey(slug)) || "null");
     if (legacy && typeof legacy === "object") {
       const split = splitFlat(legacy);
-      const doc = { ...split, events: [] };
+      const doc = { ...split, events: [], pending: emptyPending() };
       writeRaw(slug, doc);
       return doc;
     }
@@ -126,6 +142,7 @@ function writeRaw(slug, doc) {
         student: doc.student ?? {},
         instructor: doc.instructor ?? {},
         events: doc.events ?? [],
+        pending: normalizePending(doc.pending),
       })
     );
     return true;
@@ -157,12 +174,33 @@ export function readDoc(slug) {
   return readRaw(slug);
 }
 
-/** Replace the local cache from a remote snapshot. */
+export function pendingOf(slug) {
+  return normalizePending(readRaw(slug).pending);
+}
+
+export function hasPending(slug) {
+  const pending = pendingOf(slug);
+  return pending.student || pending.instructor;
+}
+
+export function markFlushed(slug, domain) {
+  const doc = readRaw(slug);
+  const pending = normalizePending(doc.pending);
+  if (domain === "student") pending.student = false;
+  else if (domain === "instructor" || domain === "review-request") pending.instructor = false;
+  writeRaw(slug, { ...doc, pending });
+  return pending;
+}
+
+/** Replace the local cache from a remote snapshot. Refuses while a domain is pending. */
 export function replace(slug, doc) {
+  const current = readRaw(slug);
+  if (current.pending.student || current.pending.instructor) return flatten(current);
   writeRaw(slug, {
     student: pick(doc?.student ?? {}, STUDENT_KEYS),
     instructor: pick(doc?.instructor ?? {}, INSTRUCTOR_KEYS),
     events: Array.isArray(doc?.events) ? doc.events : [],
+    pending: emptyPending(),
   });
   return flatten(readRaw(slug));
 }
@@ -185,7 +223,7 @@ export function patchStudent(slug, patch, event = null) {
   const doc = readRaw(slug);
   const allowed = pick(patch, STUDENT_KEYS);
   const student = mergeMaps(doc.student, allowed);
-  let next = { ...doc, student };
+  let next = { ...doc, student, pending: withPending(doc, { student: true }) };
   if (event?.kind) next = pushEvent(next, event.kind, event.payload ?? {});
   writeRaw(slug, next);
   return flatten(next);
@@ -199,7 +237,7 @@ export function patchInstructor(slug, patch, event = null) {
   const doc = readRaw(slug);
   const allowed = pick(patch, INSTRUCTOR_KEYS);
   const instructor = mergeMaps(doc.instructor, allowed);
-  let next = { ...doc, instructor };
+  let next = { ...doc, instructor, pending: withPending(doc, { instructor: true }) };
   if (event?.kind) next = pushEvent(next, event.kind, event.payload ?? {});
   writeRaw(slug, next);
   return flatten(next);
@@ -223,6 +261,7 @@ export function requestReview(slug, review) {
   let next = {
     ...doc,
     instructor: { ...doc.instructor, reviews },
+    pending: withPending(doc, { instructor: true }),
   };
   next = pushEvent(next, "review.requested", {
     reviewId: entry.id,
@@ -237,6 +276,21 @@ export function listEvents(slug, { attentionOnly = false } = {}) {
   const events = readRaw(slug).events ?? [];
   if (!attentionOnly) return events;
   return events.filter((event) => event.attention || ATTENTION_KINDS.has(event.kind));
+}
+
+/** Identity + empty domains from a persist snapshot. Overlay holds the live writes. */
+export function seedFromSnapshot(snap) {
+  const identity = snap?.identity ?? {};
+  return {
+    slug: snap?.slug,
+    name: identity.name ?? snap?.slug,
+    cohort: identity.cohort ?? "founding-001",
+    joined: identity.joined,
+    public: identity.public === true,
+    clock: identity.clock ?? {},
+    oneone: identity.oneone ?? {},
+    note: identity.note ?? "",
+  };
 }
 
 /** Merge a student file with its overlay. The shape both surfaces read from. */
@@ -270,8 +324,9 @@ export function readOverlay(slug) {
 
 /** Full replace of both domains from a flat overlay (demo reset / rare). */
 export function writeOverlay(slug, overlay) {
+  const current = readRaw(slug);
   const split = splitFlat(overlay ?? {});
-  writeRaw(slug, { ...split, events: readRaw(slug).events ?? [] });
+  writeRaw(slug, { ...split, events: current.events ?? [], pending: current.pending });
   return true;
 }
 

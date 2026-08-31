@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS students (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
--- Attention + audit. Telegram (later) marks notified_at.
+-- Attention + audit. persist_notify.py marks notified_at after Telegram or email.
 CREATE TABLE IF NOT EXISTS student_events (
   id BIGSERIAL PRIMARY KEY,
   slug TEXT NOT NULL REFERENCES students (slug) ON DELETE CASCADE,

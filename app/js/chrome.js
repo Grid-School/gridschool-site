@@ -145,7 +145,9 @@ export function createChrome({
           }),
         showAdminConsole && btn({ label: "Admin", variant: "quiet", href: "../admin/" }),
         btn({ label: "Export board", variant: "quiet", onclick: onExport }),
-        state.hasLocalEdits && btn({ label: "Reset demo", variant: "quiet", onclick: onReset }),
+        state.slug === "demo" &&
+          state.hasLocalEdits &&
+          btn({ label: "Reset demo", variant: "quiet", onclick: onReset }),
         btn({
           label: "Sign out",
           variant: "quiet",
@@ -162,11 +164,23 @@ export function createChrome({
   }
 
   /**
-   * The demo board announces itself; a real student's board does not wear a
-   * "demo" label. A real board only speaks up when there are local edits that
-   * would be lost, which is a fact the student needs, not a disclaimer.
+   * Demo announces itself. A real board is silent when the notebook has the
+   * click. It only speaks when the click is still only on this machine.
    */
   function setBanner(state) {
+    if (state.slug !== "demo" && state.persistStatus?.state === "local-only") {
+      banner.hidden = false;
+      mount(
+        banner,
+        el("b", {}, "Notebook unreachable."),
+        el(
+          "span",
+          {},
+          "This click is only on this machine. Later clicks retry. Another device will not see it until the notebook is up."
+        )
+      );
+      return;
+    }
     if (state.unlockAll) {
       banner.hidden = false;
       mount(
@@ -192,15 +206,6 @@ export function createChrome({
             ? "Walk everything. The full lesson text unlocks with the access key you receive at enrollment."
             : "Nothing here is connected to a real payment or account. Everything you click works."
         )
-      );
-      return;
-    }
-    if (state.hasLocalEdits) {
-      banner.hidden = false;
-      mount(
-        banner,
-        el("b", {}, "Unsaved to the record."),
-        el("span", {}, "Your changes live in this browser until they are exported to your board file.")
       );
       return;
     }

@@ -1,7 +1,15 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { hydrateFromRemote, flushAfterLocalWrite, remoteEnabled, startPolling, stopPolling } from "./persist-remote.js";
-import { replace, readDoc, clear } from "./persist.js";
+import {
+  hydrateFromRemote,
+  flushAfterLocalWrite,
+  persistStatus,
+  remoteEnabled,
+  startPolling,
+  stopPolling,
+  fetchSnapshot,
+} from "./persist-remote.js";
+import { replace, readDoc, clear, patchStudent, hasPending } from "./persist.js";
 import { setPersistToken } from "./session.js";
 
 function installMemoryStorage() {
@@ -68,6 +76,76 @@ test("hydrate writes remote snapshot locally; flush posts student domain", async
   const sent = JSON.parse(calls[1].body);
   assert.equal(sent.patch.tasks["or.start.law"].state, "done");
   assert.equal(sent.event.kind, "task.toggled");
+});
+
+test("failed flush then hydrate does not replace local evidence", async () => {
+  const calls = [];
+  globalThis.fetch = async (url, opts) => {
+    calls.push(opts.method);
+    if (opts.method === "PATCH") {
+      return { ok: false, status: 503, json: async () => ({ error: "down" }) };
+    }
+    return {
+      ok: true,
+      json: async () => ({ student: { evidence: {} }, instructor: {}, events: [] }),
+    };
+  };
+  setPersistToken("test-admin");
+  clear("aden");
+  patchStudent("aden", {
+    evidence: { "or.start": { url: "https://example.com/keep", at: "2026-08-31" } },
+  });
+  const result = await hydrateFromRemote("aden", { force: true });
+  assert.equal(result.reason, "pending-unflushed");
+  assert.equal(readDoc("aden").student.evidence["or.start"].url, "https://example.com/keep");
+  assert.equal(hasPending("aden"), true);
+  assert.equal(persistStatus().state, "local-only");
+  assert.equal(calls.includes("GET"), false);
+});
+
+test("hydrate flushes pending then applies the server echo", async () => {
+  globalThis.fetch = async (_url, opts) => {
+    if (opts.method === "PATCH") {
+      return { ok: true, json: async () => ({ ok: true, student_updated_at: "2" }) };
+    }
+    return {
+      ok: true,
+      json: async () => ({
+        student: { evidence: { "or.start": { url: "https://example.com/keep", at: "2026-08-31" } } },
+        instructor: {},
+        events: [],
+        student_updated_at: "2",
+      }),
+    };
+  };
+  setPersistToken("test-admin");
+  clear("aden");
+  patchStudent("aden", {
+    evidence: { "or.start": { url: "https://example.com/keep", at: "2026-08-31" } },
+  });
+  const snap = await hydrateFromRemote("aden", { force: true });
+  assert.equal(snap.skipped, undefined);
+  assert.equal(readDoc("aden").student.evidence["or.start"].url, "https://example.com/keep");
+  assert.equal(hasPending("aden"), false);
+  assert.equal(persistStatus().state, "ok");
+});
+
+test("fetchSnapshot GETs without writing the local cache", async () => {
+  const calls = [];
+  globalThis.fetch = async (url, opts) => {
+    calls.push({ url, method: opts.method });
+    return {
+      ok: true,
+      json: async () => ({ slug: "aden", identity: { name: "Aden", public: false } }),
+    };
+  };
+  setPersistToken("test-admin");
+  clear("aden");
+  const snap = await fetchSnapshot("aden");
+  assert.equal(snap.slug, "aden");
+  assert.equal(readDoc("aden").student.evidence, undefined);
+  assert.equal(calls[0].method, "GET");
+  assert.match(calls[0].url, /\/students\/aden$/);
 });
 
 test("poll does not fire for demo and stopPolling is safe", () => {

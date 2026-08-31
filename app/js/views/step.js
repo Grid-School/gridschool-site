@@ -16,6 +16,7 @@ import { TASK_STATE } from "../tasks.js";
 import { renderMarkdown } from "../markdown.js";
 import { lockNotice, shouldInterceptLock } from "./lock-notice.js";
 import { welcomeReadiness, welcomeSubmitWarn, isStepComplete } from "./welcome.js";
+import { registerLeaveGuard, clearLeaveGuard, isLeaveDirty } from "../leave-guard.js";
 
 const FALLBACK_VIDEO = {
   title: "Lesson",
@@ -463,21 +464,36 @@ export function renderStep(ctx, nodeId, moduleId = null) {
   }
 
   function evidenceForm(node) {
+    const savedUrl = node.proof?.url ?? "";
+    const savedNote = node.proof?.note ?? "";
     const url = field({
       label: "The link",
       id: `ev-url-${node.id}`,
       type: "url",
-      value: node.proof?.url ?? "",
+      value: savedUrl,
       placeholder: "https://",
       hint: "Paste the link. That is what marks this step done.",
     });
     const note = field({
       label: "What should I look at",
       id: `ev-note-${node.id}`,
-      value: node.proof?.note ?? "",
+      value: savedNote,
       placeholder: "What should I look at hardest?",
       textarea: true,
     });
+
+    registerLeaveGuard(
+      "evidence",
+      () => {
+        const liveUrl = document.getElementById(`ev-url-${node.id}`);
+        const liveNote = document.getElementById(`ev-note-${node.id}`);
+        if (!liveUrl) return false;
+        return liveUrl.value.trim() !== savedUrl || (liveNote?.value.trim() ?? "") !== savedNote;
+      },
+      node.status === STATUS.LIT
+        ? "You changed the link. Click Update the link or you will lose it."
+        : "This link is not on the board yet. Click Mark this step done or you will lose it."
+    );
 
     return el(
       "form.room__form",
@@ -494,6 +510,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
             toast(warn, "warn");
             return;
           }
+          clearLeaveGuard("evidence");
           const nextState = current.store.submitEvidence(node.id, value, note.input.value.trim());
           const next = nextUp(nextState.graph);
           if (node.id === "or.start") {
@@ -519,6 +536,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
             variant: "quiet",
             onclick: (event) => {
               event.preventDefault();
+              clearLeaveGuard("evidence");
               current.store.clearEvidence(node.id);
               toast("Link removed.", "warn");
             },
@@ -544,15 +562,35 @@ export function renderStep(ctx, nodeId, moduleId = null) {
     );
   }
 
+  function draftOpen() {
+    if (isLeaveDirty()) return true;
+    const node = current.state.graph.byId.get(currentNodeId);
+    const liveUrl = document.getElementById(`ev-url-${currentNodeId}`);
+    const liveNote = document.getElementById(`ev-note-${currentNodeId}`);
+    if (!liveUrl || !node) return false;
+    return (
+      liveUrl.value.trim() !== (node.proof?.url ?? "") ||
+      (liveNote?.value.trim() ?? "") !== (node.proof?.note ?? "")
+    );
+  }
+
   paint();
 
   return {
     node: root,
     update(nextCtx, nextNodeId = currentNodeId, nextModuleId = null) {
+      const same =
+        (nextNodeId ?? currentNodeId) === currentNodeId &&
+        (nextModuleId ?? null) === currentModuleId;
       current = nextCtx;
       currentNodeId = nextNodeId ?? currentNodeId;
       currentModuleId = nextModuleId ?? null;
+      if (same && draftOpen()) return;
       paint();
+    },
+    destroy() {
+      clearLeaveGuard("evidence");
+      if (currentNodeId) clearLeaveGuard(`review-${currentNodeId}`);
     },
   };
 }
