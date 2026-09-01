@@ -20,6 +20,7 @@ export const LINKS = {
   worldClient: "https://github.com/Grid-School/gridschool-world-client",
   play: "https://play.gridschool.org",
   email: "support@gridschool.org",
+  applyEmail: "apply@gridschool.org",
 };
 
 /**

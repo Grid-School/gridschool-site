@@ -63,7 +63,7 @@ export function formatApplication(data) {
 
 export function mailtoHref(data) {
   const subject = `GridSchool application: ${data.name ?? "unknown"}`;
-  return `mailto:${LINKS.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(formatApplication(data))}`;
+  return `mailto:${LINKS.applyEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(formatApplication(data))}`;
 }
 
 /**
