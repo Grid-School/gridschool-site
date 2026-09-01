@@ -734,7 +734,7 @@ ol.mission li:first-child { border-top: 0; }
 /* ---------- proof list / tables / guarantee / faq (copy-dense blocks) ---------- */
 
 .proof-list { margin: 18px 0 0 4px; }
-.proof-list li { margin: 12px 0 12px 26px; color: var(--muted); }
+.proof-list li { margin: 12px 0 12px 26px; color: var(--muted); overflow-wrap: break-word; }
 .proof-list li::marker { color: var(--ok); }
 .proof-list strong { color: var(--text); }
 
@@ -743,10 +743,13 @@ table { width: 100%; border-collapse: collapse; font-size: 15px; }
 th, td { padding: 12px 14px; text-align: left; border: 1px solid var(--line); vertical-align: top; }
 th { color: var(--cyan); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; background: var(--bg2); }
 th.right { text-align: right; }
-td:first-child { color: var(--white); font-weight: 600; white-space: nowrap; }
+td:first-child { color: var(--white); font-weight: 600; white-space: normal; overflow-wrap: break-word; }
 td.warn { color: var(--amber); font-weight: 600; }
 tr.us td { color: var(--cyan); }
-.price-table td:last-child { text-align: right; color: var(--muted); white-space: nowrap; }
+.price-table { table-layout: fixed; }
+.price-table th:last-child,
+.price-table td:last-child { width: 30%; }
+.price-table td:last-child { text-align: right; color: var(--muted); white-space: normal; }
 .price-final td { color: var(--cyan) !important; font-size: 18px; font-weight: 800; }
 
 .guarantee {
@@ -922,7 +925,6 @@ footer p { margin-top: 8px; }
   .evidence__body { grid-area: body; }
   .evidence__state { grid-area: state; justify-self: end; }
   th, td { padding: 9px 8px; font-size: 13.5px; }
-  td:first-child { white-space: normal; }
 }
 
 @media (prefers-reduced-motion: reduce) {
