@@ -47,16 +47,25 @@ export function signOut() {
 }
 
 /**
- * Resolve who is looking at the board. ?s=<slug> wins so a link can be shared,
- * and it also becomes the stored session.
+ * Resolve who is looking at the board. Demo signs in from the URL. A real seat
+ * only becomes the session when a notebook token is already on this device.
  */
 export function resolveSlug() {
   const fromUrl = slugFromUrl();
-  if (fromUrl) {
-    signIn(fromUrl);
+  if (fromUrl === "demo") {
+    signIn("demo");
+    return "demo";
+  }
+  if (fromUrl && persistToken()) {
+    signIn(fromUrl, { persistToken: persistToken() });
     return fromUrl;
   }
+  if (fromUrl) return fromUrl;
   return currentSession()?.slug ?? null;
+}
+
+export function inviteFromUrl() {
+  return new URLSearchParams(location.search).get("invite") || "";
 }
 
 /**

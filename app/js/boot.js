@@ -11,12 +11,12 @@
 
 import { el, mount, download } from "./dom.js";
 import * as store from "./store.js";
-import { resolveSlug, slugFromUrl, currentSession, signOut, setPersistToken } from "./session.js";
-import { tryStoredKey, unlock } from "./gate.js";
+import { resolveSlug, slugFromUrl, currentSession, signOut, setPersistToken, inviteFromUrl, persistToken } from "./session.js";
+import { tryStoredKey } from "./gate.js";
 import { createRouter } from "./router.js";
 import { createChrome } from "./chrome.js";
 import { toast } from "./ui.js";
-import { renderPicker } from "./views/picker.js";
+import { renderLogin } from "./views/login.js";
 import { renderToday } from "./views/today.js";
 import { renderMap } from "./views/map.js";
 import { renderStep, isStepArgs, moduleIdFromArgs } from "./views/step.js";
@@ -25,7 +25,6 @@ import { renderCalendar } from "./views/calendar.js";
 import { renderLibrary } from "./views/library.js";
 import { renderFirstRun, shouldOpenFirstRun } from "./views/first-run.js";
 import { toggleDevUnlock, setDevUnlock } from "./dev-mode.js";
-import { needsPersistToken, renderPersistDoor } from "./persist-door.js";
 
 const VIEWS = {
   today: { render: renderToday, persistent: true },
@@ -59,61 +58,6 @@ function resolveRole() {
 
 function wantsDevUnlock() {
   return new URLSearchParams(location.search).get("dev") === "1";
-}
-
-function renderGate() {
-  const input = el("input", {
-    type: "password",
-    id: "gate-key",
-    placeholder: "Access key",
-    autocomplete: "current-password",
-    style: "width:100%;font:inherit;font-size:15px;color:var(--text);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:11px 13px;",
-  });
-  const err = el("p", { style: "color:#ff9d9d;font-size:13px;margin-top:8px;", hidden: true }, "That key does not open this. Check for typos, or ask Aden.");
-  const form = el(
-    "form",
-    {
-      style: "margin-top:14px",
-      onsubmit: async (event) => {
-        event.preventDefault();
-        try {
-          await unlock(input.value);
-          location.reload();
-        } catch {
-          err.hidden = false;
-          input.select();
-        }
-      },
-    },
-    el("label", { for: "gate-key", style: "display:block;font-size:14px;margin-bottom:6px;color:var(--text)" }, "Your access key"),
-    input,
-    err,
-    el("button.b.b--solid", { type: "submit", style: "margin-top:12px" }, "Open the platform")
-  );
-
-  mount(
-    app,
-    el(
-      "div.gate",
-      {},
-      el(
-        "div.picker",
-        {},
-        el("h1", {}, "Student access"),
-        el("p.muted", {}, "The platform and its lessons are part of the program. You receive your access key when you enroll."),
-        form,
-        el(
-          "p.picker__foot",
-          {},
-          "Not a student yet? ",
-          el("a", { href: "./?s=demo" }, "Walk the demo board"),
-          " or ",
-          el("a", { href: "../#offer" }, "see what you get"),
-          "."
-        )
-      )
-    )
-  );
 }
 
 async function adminSurfaceExists() {
@@ -233,26 +177,24 @@ function onStoreChange() {
 }
 
 async function start() {
-  /* On the live site the curriculum ships encrypted; the lessons render only
-     after the access key. The demo board is the one exception: it walks the
-     whole platform on the public tour copy (no lesson text), because the
-     walkable platform is the proof the school is real. Local development has
-     the plaintext and skips all of this. */
+  /* Invite or return login injects both secrets. The student never types them.
+     Demo stays the public tour: no account, no lesson text on the live site. */
+  const invite = inviteFromUrl();
+  if (invite) {
+    renderLogin(app, { invite });
+    return;
+  }
+
   const unlocked = await tryStoredKey();
   const slug = resolveSlug();
 
-  if (!unlocked && slug !== "demo") {
-    renderGate();
+  if (slug !== "demo" && (!unlocked || !persistToken())) {
+    renderLogin(app, { email: "" });
     return;
   }
 
   if (!slug) {
-    renderPicker(app);
-    return;
-  }
-
-  if (unlocked && needsPersistToken(slug)) {
-    renderPersistDoor(app, slug);
+    renderLogin(app);
     return;
   }
 
@@ -267,7 +209,7 @@ async function start() {
   } catch (error) {
     if (error?.code === "BAD_TOKEN") {
       setPersistToken("");
-      renderPersistDoor(app, slug);
+      renderLogin(app);
       return;
     }
     /* A stored session can outlive its board: signed in on a machine that has
@@ -276,7 +218,7 @@ async function start() {
        actually here instead of a dead end. */
     if (!slugFromUrl()) {
       signOut();
-      renderPicker(app);
+      renderLogin(app);
       return;
     }
     mount(
@@ -289,7 +231,7 @@ async function start() {
           {},
           el("h1", {}, "That board is not on this site"),
           el("p.muted", {}, "The link may be for a private board, or the name may be misspelled."),
-          el("p", {}, el("a", { href: "./" }, "Open the demo board instead"))
+          el("p", {}, el("a", { href: "./?s=demo" }, "Open the demo board instead"))
         )
       )
     );

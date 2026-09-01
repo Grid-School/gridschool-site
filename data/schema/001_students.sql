@@ -54,6 +54,8 @@ CREATE INDEX IF NOT EXISTS student_events_attention_pending
     );
 
 -- Reconstitute data/students/<slug>.json shape for export / backup.
+-- DROP first. CREATE OR REPLACE cannot reshape columns once 002 added email.
+DROP VIEW IF EXISTS student_export;
 CREATE OR REPLACE VIEW student_export AS
 SELECT
   s.slug,

@@ -78,6 +78,7 @@ export const MEDIA = {
 /**
  * Lab notebook. Demo never leaves the browser. Real slugs hydrate/flush to
  * this API when a founding token is in localStorage (`gridschool.persist.token`).
+ * Login and invite redeem inject that token. Students never paste it.
  * Hosted at lab.gridschool.org on GridSchool AWS (643600678330).
  */
 export const PERSIST = {
