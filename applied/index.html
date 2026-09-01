@@ -31,37 +31,35 @@
 
   <div class="fhead">
     <div class="chip">Application received</div>
-    <h1 id="hello">That is in. Two steps before we talk.</h1>
-    <p class="muted">I read every application myself and reply within one working day. The two steps below are the screen. They take about thirty minutes total.</p>
+    <h1 id="hello">That is in.</h1>
+    <p class="muted" id="lede">I have what you sent. I reply within one working day: a call time, or the real reason plus what would change it.</p>
   </div>
-
-  <div id="wire"></div>
 
   <div class="fcard fcard--lit">
-    <span class="feyebrow">Step one · the boot screen</span>
-    <h2>Run the studio repo and reply with the output</h2>
-    <p>Clone the repo, run the two commands in its README, and email me the output plus one sentence: why does the test lie? Thirty minutes, capped. An error is a fine answer; a confident invention is the only failing one. How you report a failure tells me more than a green check.</p>
-    <div id="bootscreen"></div>
+    <span class="feyebrow">What you do now</span>
+    <h2>Nothing. Watch your inbox.</h2>
+    <p>The form was the handoff. I already have your name, your email, and the work link. You do not need to copy this into another email.</p>
+    <div id="book"></div>
   </div>
 
-  <div class="fcard">
-    <span class="feyebrow">Step two · the fit call</span>
-    <h2>Book the 20-minute call</h2>
-    <p>Once your boot screen output is in. Camera optional. Bring one question about your own work, not about the program.</p>
-    <div id="book"></div>
+  <div class="fcard" id="bootcard" hidden>
+    <span class="feyebrow">If I say yes</span>
+    <h2>The studio repo, before day one</h2>
+    <p>Clone it, run the two commands in the README, and send the output plus one sentence: why does the test lie? An error is a fine answer. A confident invention is the only failing one.</p>
+    <div id="bootscreen"></div>
   </div>
 
   <div class="fcard">
     <span class="feyebrow">What happens on the call</span>
     <ol class="nextlist">
       <li><b>1</b><div><h3>We look at your work together</h3><p>Five minutes on what a hiring manager sees when they land on it, said plainly.</p></div></li>
-      <li><b>2</b><div><h3>You tell me what you have tried</h3><p>Applications, referrals, projects. I am looking for which one of those is actually broken.</p></div></li>
-      <li><b>3</b><div><h3>We both decide, with a day to sleep on it</h3><p>Nothing is sold on the call. Inside one working day you get a real answer: the deposit link, or the actual reason plus what would change it.</p></div></li>
+      <li><b>2</b><div><h3>You tell me what you have tried</h3><p>The shape of the search, not a count. I am looking for which part is actually broken.</p></div></li>
+      <li><b>3</b><div><h3>We both decide, with a day to sleep on it</h3><p>Nothing is sold on the call. Then a real answer: the pay link, or the actual reason plus what would change it.</p></div></li>
     </ol>
   </div>
 
   <div class="fcard">
-    <span class="feyebrow">Free, before we talk</span>
+    <span class="feyebrow">Free, if you want it</span>
     <h3>Trust Gap Diagnostic</h3>
     <p>Score yourself on four things: inherited-system proof, a check a stranger can run, a live defense, a public trail. Under 12, bring the score to the call. I do not charge for it.</p>
     <p class="muted" style="margin-top:12px"><a class="hero__alt" href="../diagnostic/">Score it now, two minutes.</a></p>
@@ -70,7 +68,7 @@
   <div class="fcard" id="receiptcard" hidden>
     <span class="feyebrow">Your copy</span>
     <h3>What you sent</h3>
-    <p id="receiptnote">This is on my desk. I reply within one working day. Keep this page if you want your own copy.</p>
+    <p id="receiptnote">This is on my desk. I reply within one working day.</p>
     <pre class="receipt" id="receipt"></pre>
     <div class="fsubmit" id="receiptsend" hidden>
       <a class="btn btn--solid" id="mailto" href="mailto:apply@gridschool.org?subject=GridSchool%20application">Email this to Aden</a>

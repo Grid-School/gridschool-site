@@ -82,6 +82,9 @@ form.addEventListener("submit", async (event) => {
   }
 
   formError.hidden = true;
+  const button = form.querySelector('button[type="submit"]');
+  button.disabled = true;
+  button.textContent = "Sending…";
   const result = submit(data);
   const ingested = await ingestLead(result.record);
   try {
@@ -89,5 +92,5 @@ form.addEventListener("submit", async (event) => {
   } catch {
     /* ignore */
   }
-  location.href = result.mode === "external" ? result.url : "../applied/";
+  location.href = result.url;
 });

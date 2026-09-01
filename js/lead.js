@@ -72,9 +72,6 @@ export function mailtoHref(data) {
  */
 export function submit(data) {
   const record = saveApplication(data);
-  if (!isPlaceholder(LINKS.application)) {
-    return { mode: "external", url: LINKS.application, record };
-  }
   return { mode: "local", url: "../applied/", record };
 }
 
@@ -84,6 +81,7 @@ export function submit(data) {
 export async function ingestLead(record) {
   const endpoint = PERSIST?.endpoint;
   if (!endpoint || isPlaceholder(endpoint)) return false;
+  if (/@example\.com$/i.test(record?.email || "")) return false;
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 8000);
   try {
