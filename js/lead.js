@@ -1,9 +1,6 @@
 /**
- * The application record. Kept in the browser at founding so the funnel is
- * walkable end to end, and formatted into a block that can be emailed or pasted
- * into whatever intake tool gets connected later.
- *
- * When Tally or a real endpoint exists, `submit()` is the only function to change.
+ * The application record. Saved locally so applied/ can show their copy.
+ * The real handoff is POST /leads/apply. Mailto is only a fallback if that fails.
  */
 
 import { LINKS, PERSIST, isPlaceholder } from "../config.js";
@@ -47,6 +44,7 @@ const LABELS = {
   years: "Experience",
   shipped: "What they shipped",
   applications: "Applications, last 30 days",
+  search: "Where the search is",
   blocking: "What they think is blocking them",
   plan: "Money",
   commit: "Can commit 10 to 15 hours a week and Mondays",
@@ -69,9 +67,8 @@ export function mailtoHref(data) {
 }
 
 /**
- * Hand the application off. Returns where the visitor should go next.
- * Real intake wins when it is connected; otherwise the record stays local and
- * the next page shows the block to email, which is honest and still works.
+ * Hand the application off. Persist ingest is the door. Tally later can replace
+ * the POST, not the enroll click.
  */
 export function submit(data) {
   const record = saveApplication(data);
@@ -82,23 +79,23 @@ export function submit(data) {
 }
 
 /**
- * Best-effort desk ingest. Failures stay local. Never mints a seat.
- * Tally later replaces this POST, not the enroll click.
+ * Desk ingest. Never mints a seat. Returns true when the lab stored the lead.
  */
 export async function ingestLead(record) {
   const endpoint = PERSIST?.endpoint;
-  if (!endpoint || isPlaceholder(endpoint)) return;
+  if (!endpoint || isPlaceholder(endpoint)) return false;
   const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), 3000);
+  const timer = setTimeout(() => ctrl.abort(), 8000);
   try {
-    await fetch(`${String(endpoint).replace(/\/$/, "")}/leads/apply`, {
+    const res = await fetch(`${String(endpoint).replace(/\/$/, "")}/leads/apply`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(record),
       signal: ctrl.signal,
     });
+    return res.ok;
   } catch {
-    /* mailto / local record still stand */
+    return false;
   } finally {
     clearTimeout(timer);
   }

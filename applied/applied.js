@@ -1,6 +1,6 @@
 /**
- * After the application. Books the call when Cal.com is connected, and otherwise
- * hands the applicant their own record to email, which still closes the loop.
+ * After the application. The lab already has the record when ingest succeeded.
+ * Mailto is only the fallback if the post did not land.
  */
 
 import { getApplication, formatApplication, mailtoHref } from "../js/lead.js";
@@ -54,13 +54,28 @@ if (fitCall) {
 if (application) {
   const card = document.getElementById("receiptcard");
   const receipt = document.getElementById("receipt");
+  const send = document.getElementById("receiptsend");
+  const note = document.getElementById("receiptnote");
+  let ingested = false;
+  try {
+    ingested = sessionStorage.getItem("gridschool.apply.ingested") === "1";
+  } catch {
+    ingested = false;
+  }
   card.hidden = false;
   receipt.textContent = formatApplication(application);
-  document.getElementById("mailto").href = mailtoHref(application);
-  document.getElementById("copy").addEventListener("click", (event) => {
-    navigator.clipboard?.writeText(formatApplication(application)).then(() => {
-      event.target.textContent = "Copied";
-      setTimeout(() => (event.target.textContent = "Copy it"), 1800);
+  if (ingested) {
+    note.textContent = "This is on my desk. I reply within one working day. Keep this page if you want your own copy.";
+    send.hidden = true;
+  } else {
+    note.textContent = "The desk did not receive this. Email it to me so I have it on the call.";
+    send.hidden = false;
+    document.getElementById("mailto").href = mailtoHref(application);
+    document.getElementById("copy").addEventListener("click", (event) => {
+      navigator.clipboard?.writeText(formatApplication(application)).then(() => {
+        event.target.textContent = "Copied";
+        setTimeout(() => (event.target.textContent = "Copy it"), 1800);
+      });
     });
-  });
+  }
 }

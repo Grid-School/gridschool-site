@@ -10,7 +10,7 @@ const screen = document.getElementById("screen");
 const formError = document.getElementById("formerr");
 
 const REQUIRED_TEXT = ["name", "email", "work", "shipped", "blocking"];
-const REQUIRED_PICK = ["years", "applications"];
+const REQUIRED_PICK = ["years", "search"];
 
 /** The one disqualifier. Said on the page, before any money moves. */
 form.addEventListener("change", (event) => {
@@ -83,6 +83,11 @@ form.addEventListener("submit", async (event) => {
 
   formError.hidden = true;
   const result = submit(data);
-  await ingestLead(result.record);
+  const ingested = await ingestLead(result.record);
+  try {
+    sessionStorage.setItem("gridschool.apply.ingested", ingested ? "1" : "0");
+  } catch {
+    /* ignore */
+  }
   location.href = result.mode === "external" ? result.url : "../applied/";
 });
