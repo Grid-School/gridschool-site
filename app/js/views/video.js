@@ -50,6 +50,21 @@ function absoluteUrl(value, root = "") {
   return `${root.replace(/\/$/, "")}/${value.replace(/^\//, "")}`;
 }
 
+/**
+ * What the film covers, in text. Shown under the player while a step's film
+ * is not yet recorded, so the concept reaches the student now and the film,
+ * when it exists, adds a worked example rather than the only explanation.
+ */
+export function filmSummary({ summary, filmed = false } = {}) {
+  if (!summary || filmed) return null;
+  return el(
+    "div.vid__summary",
+    {},
+    el("b", {}, "What the film covers"),
+    el("p", {}, summary)
+  );
+}
+
 export function videoCard({
   title,
   mins,

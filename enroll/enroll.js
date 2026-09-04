@@ -1,7 +1,9 @@
 /**
- * Checkout. Plans are described here once and rendered from data, so a price
- * change happens in config.js and nowhere else. When a Stripe link exists the
- * button goes to Stripe; until then it walks the demo path to day one.
+ * Checkout. Plans are described here once and rendered from data. No dollar
+ * figure is printed: the rate is quoted on the call and Stripe shows it at
+ * checkout, so a price change happens in Stripe and the sales script, never
+ * here. When a Stripe link exists the button goes to Stripe; until then it
+ * walks the demo path to day one.
  */
 
 import { link, PRICING } from "../config.js";
@@ -12,8 +14,8 @@ const PLANS = [
     id: "founding",
     tag: "Most take this",
     best: true,
-    price: `$${PRICING.founding}`,
-    sub: "once, for the eight weeks. Founding rate: the first five carry the proof.",
+    price: PRICING.foundingLabel,
+    sub: "once, for the eight weeks, at the figure we agreed on your call. Checkout shows it before you pay.",
     linkKey: "foundingCheckout",
     cta: "Take the spot",
     includes: [
@@ -28,8 +30,8 @@ const PLANS = [
   {
     id: "deposit",
     tag: "Same lab",
-    price: `$${PRICING.deposit} + $${PRICING.balance}`,
-    sub: "deposit now, the rest after week 1, once you know exactly what you are paying for.",
+    price: PRICING.depositLabel,
+    sub: "deposit now, the rest after week 1, once you know exactly what you are paying for. Both figures are on checkout.",
     linkKey: "depositCheckout",
     cta: "Pay the deposit",
     includes: [

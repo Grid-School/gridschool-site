@@ -21,6 +21,9 @@ import { createGrid } from "./world-grid.js";
 import { createHero } from "./world-artifact.js";
 import { createHoverSpin } from "./world-hover-spin.js";
 
+/** The dock never rides up under the fixed nav. */
+const NAV_CLEAR = 88;
+
 export function createWorld({ canvas, dock }) {
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -181,13 +184,21 @@ export function createWorld({ canvas, dock }) {
     const h = dock.root.offsetHeight;
     const gap = 118;
 
-    let left = Math.round(gRight + gap);
     const maxLeft = vw.w - w - 24;
-    if (left > maxLeft) left = Math.round(gRight + Math.max(32, maxLeft - gRight));
-    left = Math.max(24, Math.min(left, maxLeft));
+    let left = Math.round(gRight + gap);
+    // Centre the dock on the G's waist and keep it under the nav.
+    let top = Math.round(attach.y - h / 2);
 
-    let top = Math.round(attach.y - 14);
-    top = Math.max(24, Math.min(top, vw.h - h - 24));
+    if (gRight + 24 + w > vw.w - 24) {
+      // No room beside the G: sit under its pad instead of over it.
+      const foot = project(pin, OBJECT.x, -0.2, OBJECT.z, vw);
+      left = Math.round(foot.x - w / 2);
+      top = Math.round(foot.y + 72);
+    } else if (left > maxLeft) {
+      left = Math.round(gRight + Math.max(24, maxLeft - gRight));
+    }
+    left = Math.max(24, Math.min(left, maxLeft));
+    top = Math.max(NAV_CLEAR, Math.min(top, vw.h - h - 24));
 
     dock.root.style.left = `${left}px`;
     dock.root.style.top = `${top}px`;

@@ -148,7 +148,7 @@ export function reviewRow(review, { store, isAdmin = false } = {}) {
       "div.rv__head",
       {},
       el("b", {}, review.title),
-      el("span.rv__state", {}, returned ? "Notes are back" : "In review")
+      el("span.rv__state", {}, returned ? (review.outcome === "changes" ? "Sent back for changes" : "Accepted") : "In review")
     ),
     el(
       "div.rv__meta",

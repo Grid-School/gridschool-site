@@ -37,3 +37,23 @@
   border-left: 2px solid var(--cyan); color: var(--muted);
 }
 .prose a { color: var(--cyan); }
+.prose table {
+  width: 100%; margin-top: 1.1em; border-collapse: collapse;
+  font-size: 14.5px; line-height: 1.5;
+}
+.prose th, .prose td { padding: 9px 10px; border: 1px solid var(--line); vertical-align: top; text-align: left; }
+.prose th { color: #fff; font-weight: 600; background: var(--bg2); }
+.prose td { color: var(--text); }
+.prose tr:nth-child(even) td { background: color-mix(in srgb, var(--bg2) 55%, transparent); }
+.prose .diagram {
+  margin-top: 1.1em; padding: 14px 16px; overflow-x: auto;
+  border: 1px solid var(--line); border-radius: var(--radius); background: #05070c;
+}
+.prose .diagram svg { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+/* Mermaid measured its labels outside .prose; the paragraph rules above would
+   re-size them inside and clip the boxes. */
+.prose .diagram svg p { font: inherit; color: inherit; margin: 0; line-height: inherit; }
+.prose pre.diagram--failed { border-color: var(--amber); }
+.mods__series { margin: 22px 0 6px; }
+.mods__series b { display: block; color: #fff; font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+.mods__series span { display: block; color: var(--muted); font-size: 14px; margin-top: 4px; }

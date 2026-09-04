@@ -4,9 +4,10 @@
  * decision stays in CSS where the brand system lives.
  */
 
-import { el, clear } from "../dom.js";
+import { el, clear } from "../../dom.js";
 import { edgePath, bounds, phaseBands } from "./layout.js";
-import { STATUS } from "./model.js";
+import { spreadLabels } from "./labels.js";
+import { STATUS, traceSet } from "../model.js";
 
 const LABEL_CHARS = 17;
 /**
@@ -92,6 +93,7 @@ function renderPhases(scene, graph) {
 function renderFamilies(scene, graph) {
   const origin = Math.min(...graph.nodes.map((node) => node.x));
   const gutter = origin - 140;
+  const rail = [];
   for (const family of graph.families ?? []) {
     const nodes = graph.nodes.filter((node) => node.family === family.id);
     if (!nodes.length) continue;
@@ -100,18 +102,25 @@ function renderFamilies(scene, graph) {
       if (node.x === best.x && node.y < best.y) return node;
       return best;
     });
-    const alongRail = family.id !== "capstone";
+    if (family.id === "capstone") {
+      scene.phaseLayer.append(
+        el(
+          "text.familylabel",
+          { x: first.x, y: first.y - first.r - 44, "text-anchor": "middle" },
+          family.label
+        )
+      );
+      continue;
+    }
+    rail.push({ label: family.label, y: first.y + 4 });
+  }
+  for (const item of spreadLabels(rail)) {
     scene.phaseLayer.append(
-      el(
-        "text.familylabel",
-        alongRail
-          ? { x: gutter, y: first.y + 4, "text-anchor": "end" }
-          : { x: first.x, y: first.y - first.r - 44, "text-anchor": "middle" },
-        family.label
-      )
+      el("text.familylabel", { x: gutter, y: item.y, "text-anchor": "end" }, item.label)
     );
   }
 }
+
 
 function renderEdges(scene, graph) {
   clear(scene.edgeLayer);
@@ -171,6 +180,8 @@ function metaFor(node) {
   if (node.status === STATUS.LOCKED) return "locked";
   const { done = 0, total = 0 } = node.taskProgress ?? {};
   if (node.status === STATUS.LIT) return "lit";
+  if (node.awaitingSignoff) return "awaiting sign-off";
+  if (node.offered) return "on offer";
   return total ? `${done}/${total} tasks` : "open";
 }
 
@@ -233,6 +244,8 @@ export function paint(scene, graph, { selectedId = null, nextId = null, tracingI
     group.classList.toggle("is-open", node.status === STATUS.OPEN);
     group.classList.toggle("is-locked", node.status === STATUS.LOCKED);
     group.classList.toggle("is-future", node.status === STATUS.FUTURE);
+    group.classList.toggle("is-offered", Boolean(node.offered));
+    group.classList.toggle("is-submitted", Boolean(node.awaitingSignoff));
     group.classList.toggle("is-next", id === nextId);
     group.classList.toggle("is-selected", id === selectedId);
     group.classList.toggle("is-onpath", Boolean(trace?.has(id)));
@@ -263,21 +276,6 @@ export function paint(scene, graph, { selectedId = null, nextId = null, tracingI
     path.classList.toggle("edge--onpath", Boolean(trace?.has(from) && trace?.has(to)));
     path.classList.toggle("edge--dimmed", Boolean(trace) && !(trace.has(from) && trace.has(to)));
   });
-}
-
-/** The node plus everything upstream of it: the route that earns it. */
-function traceSet(graph, id) {
-  const set = new Set([id]);
-  const stack = [id];
-  while (stack.length) {
-    const current = stack.pop();
-    for (const from of graph.byId.get(current)?.requires ?? []) {
-      if (set.has(from)) continue;
-      set.add(from);
-      stack.push(from);
-    }
-  }
-  return set;
 }
 
 /** Cheap position sync during a drag. No rebuild, no flicker. */

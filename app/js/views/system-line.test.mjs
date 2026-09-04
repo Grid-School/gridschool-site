@@ -48,6 +48,13 @@ test("systemLine keeps world and graph as depth wording", () => {
   );
 });
 
+test("systemLine labels the owned-system project family as depth", () => {
+  assert.equal(
+    systemLine({ family: "project", track: "depth" }),
+    "This week's system · Your own system (depth)"
+  );
+});
+
 test("systemLine returns null for unknown family (never invents the world)", () => {
   assert.equal(systemLine({ family: "mystery", track: "spine" }), null);
   assert.equal(systemLine(null), null);

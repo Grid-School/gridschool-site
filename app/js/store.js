@@ -164,6 +164,24 @@ export function stepFlags(nodeId) {
   return mergedStudent().stepFlags?.[nodeId] ?? {};
 }
 
+/* ---------- electives: the student picks which depth to add ---------- */
+
+export function chooseNode(nodeId) {
+  return commitStudent(() => {
+    const chosen = new Set(overlay.chosen ?? mergedStudent().chosen ?? []);
+    chosen.add(nodeId);
+    overlay.chosen = [...chosen];
+  }, { kind: "node.chosen", payload: { nodeId } });
+}
+
+export function unchooseNode(nodeId) {
+  return commitStudent(() => {
+    const chosen = new Set(overlay.chosen ?? mergedStudent().chosen ?? []);
+    chosen.delete(nodeId);
+    overlay.chosen = [...chosen];
+  });
+}
+
 /* ---------- the weekly steer (instructor) ---------- */
 
 export function setFocusNext({ focus, next }) {

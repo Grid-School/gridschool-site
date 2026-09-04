@@ -13,8 +13,27 @@ import { COACH } from "../../../config.js";
 import { nextAction } from "./next.js";
 import { retrieve, formatSnippets } from "./memory.js";
 import { credits, formatUsd } from "./credits.js";
+import { modeOf } from "../modes.js";
 
 const FENCE = "-----";
+
+/**
+ * The lines about the open node the coach needs beyond its title: which
+ * evaluation mode it is in (Defense means the coach must not answer the
+ * measured part) and what would show the student does not have the skill,
+ * so the coach probes for that instead of accepting a fluent answer.
+ */
+export function nodeLines(node) {
+  if (!node) return [];
+  const mode = modeOf(node);
+  return [
+    `Open node: ${String(node.n).padStart(2, "0")} ${node.title}. Lights when: ${node.evidence}`,
+    mode.key === "open" ? null : `Mode: ${mode.label}. ${mode.rule}`,
+    node.proves?.falsification ? `Would show they do not have it: ${node.proves.falsification}` : null,
+    node.awaitingSignoff ? "Standing: submitted, awaiting sign-off. It lights when Aden's review returns." : null,
+    node.offered ? "Standing: on offer, not yet picked. Depth is the student's choice." : null,
+  ].filter((line) => line !== null);
+}
 
 export function packContext({ state, prompt, corpus, userText, files = [] }) {
   const next = nextAction(state);
@@ -31,7 +50,7 @@ export function packContext({ state, prompt, corpus, userText, files = [] }) {
     `Student: ${student.name}. Cohort ${cohort.name}, week ${Math.min(week, cohort.weeks)}.`,
     `Next action (${next.kind}): ${next.title}`,
     next.why ? `Why: ${next.why}` : null,
-    next.node ? `Open node: ${String(next.node.n).padStart(2, "0")} ${next.node.title}. Lights when: ${next.node.evidence}` : null,
+    ...nodeLines(next.node),
     next.task ? `Top task: ${next.task.title}` : null,
     student.focus ? `This week's focus: ${student.focus}` : null,
     student.next ? `This week's next: ${student.next}` : null,

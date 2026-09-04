@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { buildGraph, nextUp, progress, STATUS, TRACK } from "./model.js";
+import { buildGraph, nextUp, progress, visibleGraph, STATUS, TRACK } from "./model.js";
 
 const families = [
   { id: "ccvv", track: "spine" },
@@ -63,9 +63,119 @@ test("progress splits spine from depth and ignores future nodes", () => {
   assert.equal(prog.spine.lit, 1);
   assert.equal(prog.spine.total, 2);
   assert.equal(prog.depth.lit, 0);
-  assert.equal(prog.depth.total, 1);
+  assert.equal(prog.depth.total, 0, "unpicked depth is not on the student's plate");
+  assert.equal(prog.depth.offered, 1);
+  assert.equal(prog.depth.available, 1);
   assert.equal(prog.lit, 1);
   assert.equal(prog.total, 3);
+});
+
+test("a depth node is offered when its prerequisites light, hidden while they do not, and counted once picked", () => {
+  const nodes = [
+    { id: "or.start", n: 0, family: "ccvv", requires: [] },
+    { id: "gr.parse", n: 9, family: "graph", requires: ["or.start"] },
+    { id: "gr.query", n: 10, family: "graph", requires: ["gr.parse"] },
+  ];
+  const dark = buildGraph(curriculum(nodes), { evidence: {} });
+  assert.equal(dark.byId.get("gr.parse").hidden, true);
+  assert.equal(visibleGraph(dark).nodes.map((node) => node.id).join(), "or.start");
+
+  const lit = buildGraph(curriculum(nodes), { evidence: { "or.start": { url: "https://x/a" } } });
+  assert.equal(lit.byId.get("gr.parse").offered, true);
+  assert.equal(lit.byId.get("gr.parse").hidden, false);
+  assert.equal(lit.byId.get("gr.query").hidden, true);
+  assert.deepEqual(visibleGraph(lit).edges.map((edge) => edge.id), ["or.start->gr.parse"]);
+  assert.equal(progress(lit).depth.total, 0);
+
+  const picked = buildGraph(curriculum(nodes), {
+    evidence: { "or.start": { url: "https://x/a" } },
+    chosen: ["gr.parse"],
+  });
+  assert.equal(picked.byId.get("gr.parse").offered, false);
+  assert.equal(picked.byId.get("gr.parse").chosen, true);
+  assert.equal(progress(picked).depth.total, 1);
+  assert.equal(nextUp(picked).id, "gr.parse");
+});
+
+test("nextUp prefers picked depth over offered depth once the spine is clear", () => {
+  const graph = buildGraph(
+    curriculum([
+      { id: "or.start", n: 0, family: "ccvv", requires: [] },
+      { id: "wd.local", n: 9, family: "world", requires: [] },
+      { id: "gr.parse", n: 12, family: "graph", requires: [] },
+    ]),
+    { evidence: { "or.start": { url: "https://x/a" } }, chosen: ["gr.parse"] }
+  );
+  assert.equal(nextUp(graph).id, "gr.parse");
+});
+
+test("a signoff node unlocks its dependents on submit and lights on an accepting verdict", () => {
+  const nodes = [
+    { id: "pj.ship", n: 1, family: "ccvv", signoff: true, requires: [] },
+    { id: "pj.users", n: 2, family: "ccvv", requires: ["pj.ship"] },
+    { id: "cap.defend", n: 3, family: "capstone", gate: true, requires: ["pj.ship"] },
+  ];
+  const submitted = buildGraph(curriculum(nodes), {
+    evidence: { "pj.ship": { url: "https://x/app" } },
+    reviews: [{ id: "r1", nodeId: "pj.ship", state: "in-review", link: "https://x/app" }],
+  });
+  assert.equal(submitted.byId.get("pj.ship").status, STATUS.OPEN);
+  assert.equal(submitted.byId.get("pj.ship").awaitingSignoff, true);
+  assert.equal(submitted.byId.get("pj.users").status, STATUS.OPEN, "the next ticket does not wait on the review");
+  assert.equal(submitted.byId.get("cap.defend").status, STATUS.LOCKED, "a gate waits for the verdict");
+
+  const signed = buildGraph(curriculum(nodes), {
+    evidence: { "pj.ship": { url: "https://x/app" } },
+    reviews: [{ id: "r1", nodeId: "pj.ship", state: "returned", outcome: "accepted", link: "https://x/app" }],
+  });
+  assert.equal(signed.byId.get("pj.ship").status, STATUS.LIT);
+  assert.equal(signed.byId.get("pj.ship").awaitingSignoff, false);
+  assert.equal(signed.byId.get("cap.defend").status, STATUS.OPEN);
+});
+
+test("a review sent back for changes never re-locks, and hands the student a fix task", () => {
+  const nodes = [
+    { id: "pj.ship", n: 1, family: "ccvv", signoff: true, requires: [], tasks: [{ id: "t1", title: "Ship" }] },
+    { id: "pj.users", n: 2, family: "ccvv", requires: ["pj.ship"] },
+  ];
+  const back = buildGraph(curriculum(nodes), {
+    evidence: { "pj.ship": { url: "https://x/app" } },
+    reviews: [
+      { id: "r1", nodeId: "pj.ship", state: "returned", outcome: "changes", link: "https://x/app", verdict: "Add tests. Then we talk.", taughtMove: "" },
+    ],
+  });
+  const ship = back.byId.get("pj.ship");
+  assert.equal(ship.status, STATUS.OPEN);
+  assert.equal(ship.needsFix, true);
+  assert.equal(back.byId.get("pj.users").status, STATUS.OPEN, "what opened on submit stays open");
+  assert.deepEqual(
+    ship.tasks.map((task) => task.title),
+    ["Ship", "Address the review: Add tests."]
+  );
+  assert.equal(ship.tasks.at(-1).id, "pj.ship.fix.r1", "the fix task id is stable per review");
+
+  // Resubmitting at a new link clears the fix; the old verdict is stale.
+  const moved = buildGraph(curriculum(nodes), {
+    evidence: { "pj.ship": { url: "https://x/app-v2" } },
+    reviews: [{ id: "r1", nodeId: "pj.ship", state: "returned", outcome: "changes", link: "https://x/app" }],
+  });
+  assert.equal(moved.byId.get("pj.ship").needsFix, false);
+  assert.equal(moved.byId.get("pj.ship").awaitingSignoff, true);
+  assert.equal(moved.byId.get("pj.ship").tasks.length, 1);
+});
+
+test("an accepting verdict on an older link does not light the current one; a legacy verdict without outcome does", () => {
+  const nodes = [{ id: "pj.ship", n: 1, family: "ccvv", signoff: true, requires: [] }];
+  const stale = buildGraph(curriculum(nodes), {
+    evidence: { "pj.ship": { url: "https://x/v2" } },
+    reviews: [{ id: "r1", nodeId: "pj.ship", state: "returned", outcome: "accepted", link: "https://x/v1" }],
+  });
+  assert.equal(stale.byId.get("pj.ship").status, STATUS.OPEN);
+  const legacy = buildGraph(curriculum(nodes), {
+    evidence: { "pj.ship": { url: "https://x/v2" } },
+    reviews: [{ id: "r1", nodeId: "pj.ship", state: "returned" }],
+  });
+  assert.equal(legacy.byId.get("pj.ship").status, STATUS.LIT);
 });
 
 test("Career signal family can mix spine core and depth expansion on one rail", () => {
@@ -90,7 +200,8 @@ test("Career signal family can mix spine core and depth expansion on one rail", 
   assert.equal(graph.byId.get("sg.engine").status, STATUS.LOCKED);
   const prog = progress(graph);
   assert.equal(prog.spine.total, 2);
-  assert.equal(prog.depth.total, 1);
+  assert.equal(prog.depth.available, 1);
+  assert.equal(prog.depth.total, 0);
   assert.equal(nextUp(graph).id, "sg.profile");
 });
 

@@ -2,16 +2,20 @@
  * Layout. Columns are time. Rails have a home: Career above, skills in the
  * middle, portfolio below. Extra nodes in a fat column swell out from the
  * center. The edges move. The middle stays put. Neighbors stay near neighbors.
- * A student's saved layout always wins.
+ * A student's saved layout always wins. The lattice this produces is a seed;
+ * `relax.js` then lets the unpinned nodes settle so chains read as chains and
+ * families gather (see that file for the forces).
  */
+
+import { relax } from "./relax.js";
 
 export const COL_W = 206;
 /** Center to center. Every pair of stacked nodes uses this, never a squeeze. */
 export const LANE_H = 216;
 
 const RADIUS = { core: 33, future: 25, outcome: 40 };
-/** Rail order, top to bottom: Career · The world · Skills+Mission · Repo · Graph. */
-const FAMILY_RANK = { signal: 0, linkedin: 0, world: 0.5, ccvv: 1, capstone: 1, portfolio: 2, graph: 3 };
+/** Rail order, top to bottom: Career · The world · Skills+Mission · Repo · Your system · Graph. */
+const FAMILY_RANK = { signal: 0, linkedin: 0, world: 0.5, ccvv: 1, capstone: 1, portfolio: 2, project: 2.5, graph: 3 };
 
 export function radiusOf(node) {
   if (node.kind === "future") return RADIUS.future;
@@ -43,6 +47,7 @@ export function applyLayout(graph, savedLayout = {}) {
     }
     placeLump(nodes.filter((node) => !node.pinned));
   }
+  relax(graph.nodes, graph.edges ?? []);
   return graph;
 }
 
@@ -67,7 +72,7 @@ function railOf(node) {
   if (node.family === "signal" || node.family === "linkedin" || node.family === "world") {
     return "top";
   }
-  if (node.family === "portfolio" || node.family === "graph") return "bot";
+  if (node.family === "portfolio" || node.family === "project" || node.family === "graph") return "bot";
   return "mid";
 }
 
@@ -105,12 +110,13 @@ function rankOf(node) {
   return FAMILY_RANK[node.family] ?? 1;
 }
 
-export function bounds(graph, pad = 130) {
+/** The left pad defaults wide because the SVG rail labels hang there. */
+export function bounds(graph, pad = 130, left = Math.max(pad, 300)) {
   if (!graph.nodes.length) return { minX: 0, minY: 0, maxX: 1, maxY: 1 };
   const xs = graph.nodes.map((n) => n.x);
   const ys = graph.nodes.map((n) => n.y);
   return {
-    minX: Math.min(...xs) - Math.max(pad, 300),
+    minX: Math.min(...xs) - left,
     minY: Math.min(...ys) - pad,
     maxX: Math.max(...xs) + pad,
     maxY: Math.max(...ys) + pad,
@@ -185,9 +191,32 @@ function joinWeeks(a, b) {
  * as plumbing, and this graph is meant to read as flow.
  */
 export function edgePath(a, b) {
+  const c = edgeCurve(a, b);
+  return `M ${round(c.x1)} ${round(c.y1)} C ${round(c.c1x)} ${round(c.c1y)} ${round(c.c2x)} ${round(c.c2y)} ${round(c.x2)} ${round(c.y2)}`;
+}
+
+/**
+ * The one cubic behind every edge, as eight numbers. The SVG scene turns it
+ * into a path string; the 3D scene samples it onto the floor. One curve, two
+ * renderers, so the beams and the wires cannot disagree about the route.
+ */
+export function edgeCurve(a, b) {
   const dx = b.x - a.x;
   if (Math.abs(dx) < 8) return sameColumnCurve(a, b);
   return horizontalCurve(a, b, dx);
+}
+
+/** A point on the cubic at t in [0, 1]. */
+export function pointOnCurve(c, t) {
+  const u = 1 - t;
+  const w0 = u * u * u;
+  const w1 = 3 * u * u * t;
+  const w2 = 3 * u * t * t;
+  const w3 = t * t * t;
+  return {
+    x: w0 * c.x1 + w1 * c.c1x + w2 * c.c2x + w3 * c.x2,
+    y: w0 * c.y1 + w1 * c.c1y + w2 * c.c2y + w3 * c.y2,
+  };
 }
 
 /**
@@ -205,7 +234,7 @@ function horizontalCurve(a, b, dx) {
   const x1 = a.x + dir * (a.r + GAP);
   const x2 = b.x - dir * (b.r + GAP);
   const pull = tension(x2 - x1);
-  return `M ${round(x1)} ${round(a.y)} C ${round(x1 + dir * pull)} ${round(a.y)} ${round(x2 - dir * pull)} ${round(b.y)} ${round(x2)} ${round(b.y)}`;
+  return { x1, y1: a.y, c1x: x1 + dir * pull, c1y: a.y, c2x: x2 - dir * pull, c2y: b.y, x2, y2: b.y };
 }
 
 function sameColumnCurve(a, b) {
@@ -213,7 +242,7 @@ function sameColumnCurve(a, b) {
   const x1 = a.x + dir * (a.r + GAP);
   const x2 = b.x + dir * (b.r + GAP);
   const pull = Math.max(40, Math.abs(b.y - a.y) * 0.35);
-  return `M ${round(x1)} ${round(a.y)} C ${round(x1 + dir * pull)} ${round(a.y)} ${round(x2 + dir * pull)} ${round(b.y)} ${round(x2)} ${round(b.y)}`;
+  return { x1, y1: a.y, c1x: x1 + dir * pull, c1y: a.y, c2x: x2 + dir * pull, c2y: b.y, x2, y2: b.y };
 }
 
 /** Breathing room between the rim and the wire, so the two never touch. */

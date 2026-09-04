@@ -107,12 +107,12 @@ export function copy(text, message = "Copied.") {
     .catch(() => toast("Could not reach the clipboard. Select and copy by hand.", "warn"));
 }
 
-export function toast(message, tone = "ok") {
+export function toast(message, tone = "ok", { ms = 2600 } = {}) {
   const node = el("div.toast", { class: `toast--${tone}`, role: "status" }, message);
   document.body.append(node);
   requestAnimationFrame(() => node.classList.add("is-in"));
   setTimeout(() => {
     node.classList.remove("is-in");
     setTimeout(() => node.remove(), 300);
-  }, 2600);
+  }, ms);
 }

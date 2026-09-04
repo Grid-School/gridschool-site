@@ -13,15 +13,18 @@
 
 import { el } from "../dom.js";
 import { panel, btn, copy, dot } from "../ui.js";
-import { STATUS, isSpine } from "../graph/model.js";
-import { statusLabel, reviewScores } from "./parts.js";
+import { STATUS, isSpine, nextUp } from "../graph/model.js";
+import { inSequence, standingOf, STANDING_LABEL, STANDING_TONE } from "../graph/standing.js";
+import { reviewScores } from "./parts.js";
 import { trackLabel } from "../copy.js";
 import { fmtDay } from "../time.js";
 import { link } from "../../../config.js";
 
 export function mapList({ state, onOpenNode }) {
   const { graph, student } = state;
-  const ordered = [...graph.nodes].sort((a, b) => a.n - b.n);
+  // The same sequence the floor walks, so the two projections cannot disagree.
+  const ordered = inSequence(graph.nodes);
+  const nextId = nextUp(graph)?.id ?? null;
   const lit = ordered.filter((node) => node.status === STATUS.LIT);
   const spine = ordered.filter((node) => node.kind !== "future" && isSpine(node));
   const spineLit = spine.filter((node) => node.status === STATUS.LIT);
@@ -44,7 +47,7 @@ export function mapList({ state, onOpenNode }) {
             })
           : null,
       },
-      el("div.mlrows", {}, familyBlocks(graph, ordered, reviewsByNode, onOpenNode))
+      el("div.mlrows", {}, sequenceRows(graph, ordered, reviewsByNode, nextId, onOpenNode))
     ),
     loose.length
       ? panel(
@@ -56,30 +59,22 @@ export function mapList({ state, onOpenNode }) {
   );
 }
 
-function familyBlocks(graph, ordered, reviewsByNode, onOpenNode) {
-  const seen = new Set();
-  const blocks = [];
-  for (const family of graph.families ?? []) {
-    const nodes = ordered.filter((node) => node.family === family.id);
-    if (!nodes.length) continue;
-    nodes.forEach((node) => seen.add(node.id));
-    blocks.push(
-      el("b.mlfam", {}, `${family.label} · ${trackLabel(family.track)}`),
-      ...nodes.map((node) => row(node, reviewsByNode.get(node.id) ?? [], onOpenNode))
-    );
-  }
-  const rest = ordered.filter((node) => !seen.has(node.id));
-  if (rest.length) {
-    blocks.push(el("b.mlfam", {}, "Other"), ...rest.map((node) => row(node, reviewsByNode.get(node.id) ?? [], onOpenNode)));
-  }
-  return blocks;
+/**
+ * One list, in walking order, with the family as a tag on each row. Grouping
+ * by family was a second ordering beside the map's; a student reading both
+ * should see one path.
+ */
+function sequenceRows(graph, ordered, reviewsByNode, nextId, onOpenNode) {
+  const familyLabel = new Map((graph.families ?? []).map((family) => [family.id, family.label]));
+  return ordered.map((node) => row(node, reviewsByNode.get(node.id) ?? [], onOpenNode, nextId, familyLabel.get(node.family)));
 }
 
-function row(node, reviews, onOpenNode) {
+function row(node, reviews, onOpenNode, nextId, family) {
   const latest = reviews[0];
+  const standing = standingOf(node, nextId);
   return el(
     "div.mlrow",
-    { class: `mlrow--${node.status}` },
+    { class: `mlrow--${node.status} mlrow--s-${standing}` },
     el(
       "button.mlrow__open",
       {
@@ -87,9 +82,10 @@ function row(node, reviews, onOpenNode) {
         onclick: () => onOpenNode(node.id),
         "aria-label": `Open step ${node.n}, ${node.title}`,
       },
-      dot(node.status),
+      dot(standing),
       el("span.mlrow__n", {}, String(node.n).padStart(2, "0")),
-      el("span.mlrow__title", {}, node.title)
+      el("span.mlrow__title", {}, node.title),
+      family && el("span.mlrow__fam", {}, `${family} · ${trackLabel(node.track)}`)
     ),
     el(
       "div.mlrow__proof",
@@ -102,7 +98,7 @@ function row(node, reviews, onOpenNode) {
     el(
       "div.mlrow__side",
       {},
-      el("span.mlrow__state", {}, statusLabel(node.status)),
+      el("span", { class: `mlrow__state mlrow__state--${STANDING_TONE[standing]}` }, STANDING_LABEL[standing]),
       node.proof?.at && el("span.mlrow__at", {}, fmtDay(node.proof.at)),
       latest && el("span", { class: `mlrow__rv mlrow__rv--${latest.state}` }, latest.state === "returned" ? "reviewed" : "in review")
     )

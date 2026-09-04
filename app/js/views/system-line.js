@@ -10,6 +10,7 @@ const FAMILY_LINE = {
   capstone: "This week's system · Mission (required)",
   world: "This week's system · The world (depth track)",
   graph: "This week's system · Graph / nanograph (depth)",
+  project: "This week's system · Your own system (depth)",
 };
 
 export function systemLine(node) {

@@ -326,10 +326,20 @@ h1 em { font-style: normal; color: var(--white); text-shadow: none; }
 .hero--world.is-live .dock { opacity: 1; }
 .dock-state { display: flex; align-items: center; gap: 8px; color: var(--cyan); }
 .dock-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--cyan); }
-.dock-proof { margin-top: 10px; }
-.dock-proof div { display: grid; grid-template-columns: 5.4em auto; gap: 0 18px; }
-.dock-proof dt { color: var(--ghost); font-weight: 400; }
-.dock-proof dd { margin: 0; color: var(--text); }
+/* The three artifacts a hiring manager can click. Sans for the words so it
+   reads as a promise, mono numerals so it still belongs to the machine. */
+.dock-list { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 7px; max-width: 250px; white-space: normal; }
+.dock-list li { display: grid; grid-template-columns: 2.2em 1fr; gap: 0 10px; align-items: baseline; }
+.dock-list b { color: var(--cyan); font-weight: 400; }
+.dock-list span {
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 13.5px; letter-spacing: 0; line-height: 1.4; color: var(--text);
+}
+.dock-foot {
+  margin: 12px 0 0; padding-top: 9px; color: var(--muted);
+  border-top: 1px solid var(--hair);
+  max-width: 250px; white-space: normal;
+}
 
 .hero__alt { color: var(--cyan); text-decoration: none; font-size: 14.5px; }
 .hero__alt:hover { text-decoration: underline; }

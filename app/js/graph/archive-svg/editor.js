@@ -6,7 +6,7 @@
  * Only Aden sees this. A student's board is theirs to walk, not to rewire.
  */
 
-import { el, clear } from "../dom.js";
+import { el, clear } from "../../dom.js";
 import { edgePath, freeSlot } from "./layout.js";
 import { syncPositions } from "./scene.js";
 

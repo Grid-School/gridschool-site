@@ -1,5 +1,5 @@
 {
-  "note": "The Coach lives on Today. Until the xAI proxy is connected it answers locally from the same packed context. Credits still move.",
+  "note": "The Coach lives at #/coach, reached from the step page and the first run. Until the xAI proxy is connected it answers locally from the same packed context. Credits still move.",
   "axes": [
     {
       "id": "communication",
@@ -83,6 +83,6 @@
   "handoff": {
     "title": "The FOR ADEN block",
     "instruction": "End every session by asking the Coach for this, then paste it into #asks. It is how I review your thinking without sitting through the session.",
-    "template": "FOR ADEN\nDrill: <which one>\nWhere I got stuck:\nWhat I would do differently:\nWhat I still cannot defend:\nMy prompts worth reviewing: <paste 1-2>"
+    "template": "FOR ADEN\nDrill: <which one>\nWhere I got stuck:\nWhat I would do differently:\nWhat I still cannot defend:\nClaims I called sure that I could not show: <count and one example>\nMy prompts worth reviewing: <paste 1-2>"
   }
 }

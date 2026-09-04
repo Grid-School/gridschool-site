@@ -1,12 +1,17 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { applyLayout, LANE_H, phaseBands, edgePath } from "./layout.js";
+import { CLEAR_Y } from "./relax.js";
 
 function graph(nodes, phases = []) {
   return { nodes: nodes.map((node) => ({ r: 33, ...node })), phases };
 }
 
-test("stacked nodes in one column share one vertical step", () => {
+/**
+ * The lattice is a seed; relax.js settles it. What must survive: stacked nodes
+ * never sit inside each other's clearance, and the rail order holds.
+ */
+test("stacked nodes in one column keep clear of each other, in rail order", () => {
   const g = graph([
     { id: "li", col: 2, family: "linkedin", n: 1, lane: 0, x: 0, y: 0 },
     { id: "a", col: 2, family: "ccvv", n: 2, lane: 0.62, x: 0, y: 0 },
@@ -15,13 +20,13 @@ test("stacked nodes in one column share one vertical step", () => {
     { id: "pf", col: 2, family: "portfolio", n: 5, lane: 2, x: 0, y: 0 },
   ]);
   applyLayout(g);
-  const ys = g.nodes.map((node) => node.y).sort((a, b) => a - b);
+  const ys = g.nodes.map((node) => node.y);
   for (let i = 1; i < ys.length; i += 1) {
-    assert.equal(ys[i] - ys[i - 1], LANE_H);
+    assert.ok(ys[i] - ys[i - 1] >= CLEAR_Y, `${g.nodes[i].id} crowds ${g.nodes[i - 1].id}`);
   }
 });
 
-test("a fat column swells from the center; thin rails stay home", () => {
+test("a fat column swells from the center; thin rails stay in order", () => {
   const g = graph([
     { id: "li0", col: 0, family: "linkedin", n: 1, lane: 0 },
     { id: "cv0", col: 0, family: "ccvv", n: 2, lane: 1 },
@@ -36,14 +41,12 @@ test("a fat column swells from the center; thin rails stay home", () => {
   ]);
   applyLayout(g);
   const at = (id) => g.nodes.find((node) => node.id === id).y;
-  assert.equal(at("cv0"), 0);
-  assert.equal(at("b"), 0);
-  assert.equal(at("li0"), -LANE_H);
-  assert.equal(at("li1"), -LANE_H);
-  assert.equal(at("pf0"), LANE_H);
-  assert.equal(at("pf1"), LANE_H);
-  assert.equal(at("li2"), -2 * LANE_H);
-  assert.equal(at("pf2"), 2 * LANE_H);
+  assert.ok(at("li0") < at("cv0") && at("cv0") < at("pf0"), "column 0 rail order");
+  assert.ok(at("li1") < at("pf1"), "column 1 rail order");
+  assert.ok(at("li2") < at("a") && at("a") < at("b") && at("b") < at("c") && at("c") < at("pf2"), "column 2 rail order");
+  assert.ok(at("li2") < at("li0") - LANE_H / 2, "the fat column's Career rail steps out");
+  assert.ok(at("pf2") > at("pf0") + LANE_H / 2, "the fat column's portfolio rail steps out");
+  assert.ok(Math.abs(at("b")) < LANE_H / 2, "the middle of the fat column stays near the skills line");
 });
 
 test("every edge leaves and arrives on the horizontal", () => {

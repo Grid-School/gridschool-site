@@ -2,13 +2,15 @@
  * The shell around every view: rail, identity, the demo banner.
  * Built once and updated, so navigation never repaints the whole page.
  *
- * The rail has two doors and two drawers, on purpose. Eight items of equal
+ * The rail has one door and two drawers, on purpose. Eight items of equal
  * weight is not a menu, it is a decision, and the student paying for this is
- * already out of decisions. Today answers "what now"; the Grid answers "where am I".
- * Everything else is either reached from those two or is a tool you go looking
- * for by name, so it sits below the line, quiet, and never competes.
+ * already out of decisions. The Map answers both "where am I" and "what now":
+ * the lit column is the step you are on, and Next opens it. Everything else is
+ * either reached from the map or is a tool you go looking for by name, so it
+ * sits below the line, quiet, and never competes. The Coach keeps its route
+ * (#/coach) and is reached from the step page and the first run, not the rail.
  *
- * The two doors carry state. A label tells you where a link goes; a badge tells
+ * The door carries state. A label tells you where a link goes; a badge tells
  * you whether to go. That is the difference between navigation and a menu.
  */
 
@@ -20,10 +22,8 @@ import { lock } from "./gate.js";
 import { returnedUnread } from "./tasks.js";
 import { progress } from "./graph/model.js";
 
-const DOORS = [
-  { id: "today", label: "Today", hint: "Talk. One next thing." },
-  { id: "map", label: "Map", hint: "The whole path" },
-];
+/** One door. The map is where the student is, what is next, and the whole path. */
+const DOORS = [{ id: "map", label: "Map", hint: "Where you are. What is next." }];
 
 const TOOLS = [
   { id: "tasks", label: "All tasks" },
@@ -100,23 +100,19 @@ export function createChrome({
   }
 
   /**
-   * Today badges what came back and has not been read — the one genuinely new
-   * thing. The Grid carries the count of lit nodes, which is a fact rather than an
-   * alarm, so it is styled as a count and not a dot.
+   * The Map carries the count of lit nodes, a fact rather than an alarm, so it
+   * is styled as a count and not a dot. Reviews that came back and have not
+   * been read ride along in the title; the step page is where they are read.
    */
   function setSignals(state) {
     const unread = returnedUnread(state.student).length;
-    const todayBadge = badges.get("today");
-    todayBadge.hidden = unread === 0;
-    todayBadge.textContent = String(unread);
-    todayBadge.title = `${unread} review${unread === 1 ? "" : "s"} came back`;
-
     const prog = progress(state.graph);
     const mapBadge = badges.get("map");
     mapBadge.hidden = false;
     mapBadge.className = "rail__badge rail__badge--count";
     mapBadge.textContent = `${prog.spine.lit}/${prog.spine.total}`;
-    mapBadge.title = `Required ${prog.spine.lit} of ${prog.spine.total}. Depth ${prog.depth.lit} of ${prog.depth.total}.`;
+    const reviews = unread ? ` ${unread} review${unread === 1 ? "" : "s"} came back.` : "";
+    mapBadge.title = `Required ${prog.spine.lit} of ${prog.spine.total}. Depth ${prog.depth.lit} of ${prog.depth.total}.${reviews}`;
   }
 
   function setIdentity(state, role) {

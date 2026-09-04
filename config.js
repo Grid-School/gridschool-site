@@ -86,12 +86,17 @@ export const PERSIST = {
   endpoint: "https://lab.gridschool.org",
 };
 
+/**
+ * No dollar figure is printed anywhere on the site. The rate is quoted on the
+ * call and shown by Stripe at checkout, because it will move over the next
+ * year and a stale number on a page is a lie the site tells for you. Copy
+ * says "founding rate"; the numbers live in Stripe and in the sales script.
+ */
 export const PRICING = {
-  deposit: 100,
-  balance: 400,
-  founding: 500,
   spots: 5,
   weeks: 8,
+  foundingLabel: "Founding rate",
+  depositLabel: "Deposit, then the balance",
 };
 
 /** True when a config value is still a placeholder. */

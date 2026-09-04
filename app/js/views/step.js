@@ -10,11 +10,16 @@ import { btn, placeholder, toast, field } from "../ui.js";
 import { STATUS, blockedBy, progress, isSpine, nextUp } from "../graph/model.js";
 import { taskRow, reviewScores } from "./parts.js";
 import { statusLabel, trackLabel, ccvvLabel, RULE } from "../copy.js";
-import { videoCard, resolveMedia } from "./video.js";
+import { videoCard, resolveMedia, filmSummary } from "./video.js";
 import { handoffDisclosure } from "./handoff.js";
 import { TASK_STATE } from "../tasks.js";
-import { renderMarkdown } from "../markdown.js";
+import { renderMarkdown, splitTitle } from "../markdown.js";
+import { hydrateMermaid, mermaidSource } from "../mermaid.js";
+import { provesBlock } from "./proves.js";
+import { modeLine } from "./mode.js";
 import { lockNotice, shouldInterceptLock } from "./lock-notice.js";
+import { electiveBlock } from "./elective.js";
+import { signoffNotice, submitLabel, linkHint } from "./signoff.js";
 import { welcomeReadiness, welcomeSubmitWarn, isStepComplete } from "./welcome.js";
 import { registerLeaveGuard, clearLeaveGuard, isLeaveDirty } from "../leave-guard.js";
 
@@ -24,7 +29,11 @@ const FALLBACK_VIDEO = {
   path: "test-bbb",
 };
 
-/** One lesson block: heading, paragraphs, optional figure. */
+/**
+ * One lesson block: heading, paragraphs, then an optional figure. A figure is
+ * either an image (`fig.src`) or a diagram written as mermaid source
+ * (`mermaid`, with an optional `caption`); the diagram is drawn after mount.
+ */
 function lessonSection(section, { letter = false } = {}) {
   const fig = section.fig;
   return el(
@@ -43,6 +52,14 @@ function lessonSection(section, { letter = false } = {}) {
             decoding: "async",
           }),
           fig.caption ? el("figcaption", {}, fig.caption) : null
+        )
+      : null,
+    section.mermaid
+      ? el(
+          "figure.lesson__fig.lesson__fig--diagram",
+          {},
+          mermaidSource(section.mermaid),
+          section.caption ? el("figcaption", {}, section.caption) : null
         )
       : null
   );
@@ -84,6 +101,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
       return;
     }
     mount(root, stepView(node, graph, student));
+    hydrateMermaid(root);
   }
 
   function stepEyebrow(node, graph) {
@@ -180,9 +198,18 @@ export function renderStep(ctx, nodeId, moduleId = null) {
         ),
         el("b.eyebrow", {}, stepEyebrow(node, graph)),
         el("h1.step__title", {}, node.title),
-        node.why ? el("p.step__lead", {}, node.why) : null
+        node.why ? el("p.step__lead", {}, node.why) : null,
+        welcome ? null : modeLine(node)
       ),
-      card ? el("section.step__video", {}, card.node) : null,
+      electiveBlock({ node, store: current.store }),
+      card
+        ? el(
+            "section.step__video",
+            {},
+            card.node,
+            filmSummary({ summary: node.video?.summary, filmed })
+          )
+        : null,
       node.lesson?.length
         ? el(
             "section.step__lesson",
@@ -204,6 +231,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
               )
             )
           : null,
+      welcome ? null : provesBlock(node),
       welcome
         ? welcomeReadiness({
             node,
@@ -284,7 +312,8 @@ export function renderStep(ctx, nodeId, moduleId = null) {
               )
             )
           : null,
-        canTurnIn && node.status === STATUS.LIT ? litBlock(node) : null,
+        canTurnIn ? signoffNotice(node) : null,
+        canTurnIn && (node.status === STATUS.LIT || node.awaitingSignoff) ? litBlock(node) : null,
         canTurnIn ? evidenceForm(node) : null,
         canTurnIn
           ? el(
@@ -355,6 +384,13 @@ export function renderStep(ctx, nodeId, moduleId = null) {
         variant: "quiet",
         onclick: () => current.navigate("map"),
       }),
+      // The Coach has no door on the rail; a step is where you get stuck.
+      btn({
+        label: "Ask the Coach",
+        variant: "quiet",
+        title: "Talk the next move through",
+        onclick: () => current.navigate("coach"),
+      }),
       el(
         "div.step__bar-next",
         {},
@@ -410,13 +446,13 @@ export function renderStep(ctx, nodeId, moduleId = null) {
     try {
       const res = await fetch(new URL(`../../../read/modules/${mid}.md`, import.meta.url), { cache: "no-store" });
       if (!res.ok) throw new Error("missing");
-      const text = await res.text();
-      const title = text.match(/^#\s+(.+)$/m)?.[1];
+      const { title, body } = splitTitle(await res.text());
       if (title) {
         const h1 = root.querySelector(".step__title");
         if (h1) h1.textContent = title;
       }
-      article.innerHTML = renderMarkdown(text);
+      article.innerHTML = renderMarkdown(body);
+      hydrateMermaid(article);
     } catch {
       article.innerHTML =
         "<p>That file is not on disk yet. If this is a graph module, sync reading before deploy.</p>";
@@ -472,7 +508,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
       type: "url",
       value: savedUrl,
       placeholder: "https://",
-      hint: "Paste the link. That is what marks this step done.",
+      hint: linkHint(node),
     });
     const note = field({
       label: "What should I look at",
@@ -490,9 +526,9 @@ export function renderStep(ctx, nodeId, moduleId = null) {
         if (!liveUrl) return false;
         return liveUrl.value.trim() !== savedUrl || (liveNote?.value.trim() ?? "") !== savedNote;
       },
-      node.status === STATUS.LIT
+      node.status === STATUS.LIT || node.awaitingSignoff
         ? "You changed the link. Click Update the link or you will lose it."
-        : "This link is not on the board yet. Click Mark this step done or you will lose it."
+        : `This link is not on the board yet. Click ${submitLabel(node, false)} or you will lose it.`
     );
 
     return el(
@@ -529,8 +565,8 @@ export function renderStep(ctx, nodeId, moduleId = null) {
       el(
         "div.room__acts",
         {},
-        btn({ label: node.status === STATUS.LIT ? "Update the link" : "Mark this step done", variant: "solid", type: "submit" }),
-        node.status === STATUS.LIT &&
+        btn({ label: submitLabel(node, node.status === STATUS.LIT || node.awaitingSignoff), variant: "solid", type: "submit" }),
+        (node.status === STATUS.LIT || node.awaitingSignoff) &&
           btn({
             label: "Remove the link",
             variant: "quiet",

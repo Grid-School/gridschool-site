@@ -1,7 +1,110 @@
 {
   "title": "Reading",
   "note": "These modules are the textbook. The board is the sequence. Type the code. Do not paste it.",
+  "seriesNotes": {
+    "disciplines": "The eight kinds of work an engineer does when implementation is cheap, how the program measures them, and the thread that carries the evidence into public. Read each one just before the step that uses it.",
+    "nanograph": "Build a code graph from nothing, one module at a time. The Graph track on the board.",
+    "student-zero": "The founder's own path through the map, kept honest."
+  },
   "modules": [
+    {
+      "id": "disciplines/00-the-agentic-systems-engineer",
+      "title": "00 · The engineer this program is building",
+      "series": "disciplines",
+      "mins": 12,
+      "attachesTo": "cv.four"
+    },
+    {
+      "id": "disciplines/01-system-comprehension",
+      "title": "01 · System comprehension",
+      "series": "disciplines",
+      "mins": 14,
+      "attachesTo": "cv.understand"
+    },
+    {
+      "id": "disciplines/02-context-and-graph-engineering",
+      "title": "02 · Context and graph engineering",
+      "series": "disciplines",
+      "mins": 12,
+      "attachesTo": "gr.pack"
+    },
+    {
+      "id": "disciplines/03-problem-framing",
+      "title": "03 · Problem framing",
+      "series": "disciplines",
+      "mins": 11,
+      "attachesTo": "cv.frame"
+    },
+    {
+      "id": "disciplines/04-specification-engineering",
+      "title": "04 · Specification engineering",
+      "series": "disciplines",
+      "mins": 13,
+      "attachesTo": "cv.spec"
+    },
+    {
+      "id": "disciplines/05-agentic-workflow-engineering",
+      "title": "05 · Agentic workflow engineering",
+      "series": "disciplines",
+      "mins": 14,
+      "attachesTo": "cv.delegate"
+    },
+    {
+      "id": "disciplines/06-evaluation-engineering",
+      "title": "06 · Evaluation engineering",
+      "series": "disciplines",
+      "mins": 13,
+      "attachesTo": "cv.check"
+    },
+    {
+      "id": "disciplines/07-reliability-and-systems-reasoning",
+      "title": "07 · Reliability and systems reasoning",
+      "series": "disciplines",
+      "mins": 12,
+      "attachesTo": "wd.ticket"
+    },
+    {
+      "id": "disciplines/08-product-and-value-engineering",
+      "title": "08 · Product and value engineering",
+      "series": "disciplines",
+      "mins": 12,
+      "attachesTo": "cap.outcome"
+    },
+    {
+      "id": "disciplines/09-technical-communication-and-defense",
+      "title": "09 · Technical communication and defense",
+      "series": "disciplines",
+      "mins": 13,
+      "attachesTo": "cap.defend"
+    },
+    {
+      "id": "disciplines/10-evidence-gates-and-the-ledger",
+      "title": "10 · Evidence, gates and the ledger",
+      "series": "disciplines",
+      "mins": 14,
+      "attachesTo": "or.start"
+    },
+    {
+      "id": "disciplines/11-the-portfolio-thread",
+      "title": "11 · The portfolio thread",
+      "series": "disciplines",
+      "mins": 13,
+      "attachesTo": "sg.profile"
+    },
+    {
+      "id": "disciplines/12-work-states-after-scrum",
+      "title": "12 · Work states after Scrum",
+      "series": "disciplines",
+      "mins": 11,
+      "attachesTo": "ops.flow"
+    },
+    {
+      "id": "disciplines/13-evaluation-modes-and-traps",
+      "title": "13 · Evaluation modes and traps",
+      "series": "disciplines",
+      "mins": 10,
+      "attachesTo": "or.start"
+    },
     {
       "id": "nanograph/00-your-repo-is-a-graph",
       "title": "00 · Your repo is a graph",

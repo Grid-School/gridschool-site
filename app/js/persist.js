@@ -18,11 +18,13 @@ export const STUDENT_KEYS = [
   "usage",
   "readReviews",
   "questions",
+  "chosen",
 ];
 
 export const INSTRUCTOR_KEYS = [
   "focus",
   "next",
+  "reader",
   "reviews",
   "extraNodes",
   "nodeOverrides",

@@ -25,6 +25,7 @@ import { renderCalendar } from "./views/calendar.js";
 import { renderLibrary } from "./views/library.js";
 import { renderFirstRun, shouldOpenFirstRun } from "./views/first-run.js";
 import { toggleDevUnlock, setDevUnlock } from "./dev-mode.js";
+import { startReminders } from "./reminders.js";
 
 const VIEWS = {
   today: { render: renderToday, persistent: true },
@@ -47,7 +48,7 @@ const ALIASES = {
 const app = document.getElementById("app");
 const instances = new Map();
 let chrome = null;
-let route = { name: "today", args: [] };
+let route = { name: "map", args: [] };
 let role = "student";
 
 function resolveRole() {
@@ -271,7 +272,7 @@ async function start() {
   router = createRouter({
     routes: VIEWS,
     aliases: ALIASES,
-    fallback: "today",
+    fallback: "map",
     onNavigate: (next) => {
       route = next;
       renderRoute();
@@ -280,11 +281,13 @@ async function start() {
   });
 
   store.subscribe(onStoreChange);
+  // Meeting reminders: an hour and fifteen minutes before every live room.
+  startReminders({ getState: () => store.state() });
 
   window.addEventListener("keydown", (event) => {
     if (event.target.matches("input, textarea, select")) return;
     if (event.metaKey || event.ctrlKey || event.altKey) return;
-    const shortcuts = { t: "today", m: "map", k: "tasks", c: "calendar" };
+    const shortcuts = { m: "map", k: "tasks", c: "calendar" };
     if (shortcuts[event.key]) router.go(shortcuts[event.key]);
   });
 

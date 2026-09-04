@@ -1,6 +1,13 @@
 /**
- * Minimal markdown → HTML for step modules. Same rules as /read/read.js so
- * nanograph pages look the same in-board and on the public mirror.
+ * Minimal markdown → HTML for reading modules and step lessons. One renderer
+ * for the in-board module view and the public /read mirror, so a page looks
+ * the same in both places.
+ *
+ * Supported: h1-h3, paragraphs, bullet and numbered lists, blockquotes,
+ * fenced code, pipe tables, inline code / bold / italic / links.
+ *
+ * A ```mermaid fence is emitted as <code class="lang-mermaid"> and left as
+ * text. `mermaid.js` draws it in place after mount, on pages that have one.
  */
 
 function escapeHtml(text) {
@@ -17,6 +24,39 @@ function inline(text) {
     .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
     .replace(/(^|[^*])\*([^*]+)\*/g, "$1<em>$2</em>")
     .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+}
+
+const isTableRow = (line) => /^\s*\|.*\|\s*$/.test(line);
+const isTableRule = (line) => /^\s*\|(\s*:?-{3,}:?\s*\|)+\s*$/.test(line);
+
+function splitCells(line) {
+  return line
+    .trim()
+    .replace(/^\|/, "")
+    .replace(/\|$/, "")
+    .split("|")
+    .map((cell) => cell.trim());
+}
+
+function renderTable(header, rows) {
+  const head = `<thead><tr>${header.map((cell) => `<th>${inline(cell)}</th>`).join("")}</tr></thead>`;
+  const body = rows.length
+    ? `<tbody>${rows.map((row) => `<tr>${row.map((cell) => `<td>${inline(cell)}</td>`).join("")}</tr>`).join("")}</tbody>`
+    : "";
+  return `<table>${head}${body}</table>`;
+}
+
+/**
+ * A module file opens with its own `# Title` so it reads whole on GitHub. The
+ * pages that show it already print a title in their header, so they take the
+ * heading here and render only the body. A file with no leading H1 comes back
+ * with `title: null` and its text untouched.
+ */
+export function splitTitle(src) {
+  const text = String(src).replace(/\r\n/g, "\n");
+  const match = text.match(/^\s*# ([^\n]*)\n+/);
+  if (!match) return { title: null, body: text };
+  return { title: match[1].trim(), body: text.slice(match[0].length) };
 }
 
 export function renderMarkdown(src) {
@@ -54,6 +94,18 @@ export function renderMarkdown(src) {
       }
       out.push(`<pre><code class="lang-${lang}">${escapeHtml(buf.join("\n"))}</code></pre>`);
       i += 1;
+      continue;
+    }
+    if (isTableRow(line) && i + 1 < lines.length && isTableRule(lines[i + 1])) {
+      flush();
+      const header = splitCells(line);
+      const rows = [];
+      i += 2;
+      while (i < lines.length && isTableRow(lines[i])) {
+        rows.push(splitCells(lines[i]));
+        i += 1;
+      }
+      out.push(renderTable(header, rows));
       continue;
     }
     if (/^#{1,3} /.test(line)) {

@@ -1,8 +1,12 @@
 /**
  * Public reading surface. Catalog is the allow-list; a module id that is not
- * in catalog.json is not fetched. Markdown is rendered here so the source of
- * truth can stay a .md file.
+ * in catalog.json is not fetched. Markdown is rendered with the same module
+ * the board uses, so a page reads the same in both places. Diagrams are drawn
+ * after render by mermaid.js, only on pages that carry one.
  */
+
+import { renderMarkdown, splitTitle } from "../app/js/markdown.js";
+import { hydrateMermaid } from "../app/js/mermaid.js";
 
 const CATALOG = new URL("./catalog.json", import.meta.url);
 const MODULES = new URL("./modules/", import.meta.url);
@@ -15,97 +19,6 @@ function escapeHtml(text) {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
-}
-
-function inline(text) {
-  return escapeHtml(text)
-    .replace(/`([^`]+)`/g, "<code>$1</code>")
-    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
-    .replace(/(^|[^*])\*([^*]+)\*/g, "$1<em>$2</em>")
-    .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
-}
-
-function renderMarkdown(src) {
-  const lines = src.replace(/\r\n/g, "\n").split("\n");
-  const out = [];
-  let i = 0;
-  let para = [];
-  let list = null;
-
-  const flushPara = () => {
-    if (!para.length) return;
-    out.push(`<p>${inline(para.join(" "))}</p>`);
-    para = [];
-  };
-  const flushList = () => {
-    if (!list) return;
-    out.push(`<${list.tag}>${list.items.map((item) => `<li>${inline(item)}</li>`).join("")}</${list.tag}>`);
-    list = null;
-  };
-  const flush = () => {
-    flushPara();
-    flushList();
-  };
-
-  while (i < lines.length) {
-    const line = lines[i];
-    if (line.startsWith("```")) {
-      flush();
-      const lang = escapeHtml(line.slice(3).trim());
-      const buf = [];
-      i += 1;
-      while (i < lines.length && !lines[i].startsWith("```")) {
-        buf.push(lines[i]);
-        i += 1;
-      }
-      out.push(`<pre><code class="lang-${lang}">${escapeHtml(buf.join("\n"))}</code></pre>`);
-      i += 1;
-      continue;
-    }
-    if (/^#{1,3} /.test(line)) {
-      flush();
-      const level = line.match(/^#+/)[0].length;
-      out.push(`<h${level}>${inline(line.replace(/^#{1,3} /, ""))}</h${level}>`);
-      i += 1;
-      continue;
-    }
-    if (/^> /.test(line)) {
-      flush();
-      out.push(`<blockquote><p>${inline(line.slice(2))}</p></blockquote>`);
-      i += 1;
-      continue;
-    }
-    if (/^[-*] /.test(line)) {
-      flushPara();
-      if (!list || list.tag !== "ul") {
-        flushList();
-        list = { tag: "ul", items: [] };
-      }
-      list.items.push(line.slice(2));
-      i += 1;
-      continue;
-    }
-    if (/^\d+\. /.test(line)) {
-      flushPara();
-      if (!list || list.tag !== "ol") {
-        flushList();
-        list = { tag: "ol", items: [] };
-      }
-      list.items.push(line.replace(/^\d+\. /, ""));
-      i += 1;
-      continue;
-    }
-    if (!line.trim()) {
-      flush();
-      i += 1;
-      continue;
-    }
-    flushList();
-    para.push(line.trim());
-    i += 1;
-  }
-  flush();
-  return out.join("\n");
 }
 
 function modulePath(id) {
@@ -127,30 +40,42 @@ function catalogItems(catalog) {
   ];
 }
 
+function link(item, meta) {
+  const a = document.createElement("a");
+  a.href = `?m=${encodeURIComponent(item.id)}`;
+  a.innerHTML = `<b>${escapeHtml(item.title)}</b><span>${escapeHtml(meta)}</span>`;
+  return a;
+}
+
+/** Series in catalog order; a series header names what the group is for. */
+function seriesGroups(modules) {
+  const groups = new Map();
+  for (const mod of modules) {
+    const key = mod.series ?? "reading";
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(mod);
+  }
+  return groups;
+}
+
 function renderIndex(catalog) {
   document.title = "Reading. GridSchool";
   $("h1").textContent = catalog.title ?? "Reading";
   $(".lede").textContent = catalog.note ?? "";
   const list = $("nav.mods");
+  const notes = catalog.seriesNotes ?? {};
   list.replaceChildren(
-    ...catalog.modules.map((mod) => {
-      const a = document.createElement("a");
-      a.href = `?m=${encodeURIComponent(mod.id)}`;
-      a.innerHTML = `<b>${escapeHtml(mod.title)}</b><span>${escapeHtml(mod.series ?? "")}${mod.mins ? ` · ${mod.mins} min` : ""}</span>`;
-      return a;
+    ...[...seriesGroups(catalog.modules ?? [])].flatMap(([series, mods]) => {
+      const head = document.createElement("p");
+      head.className = "mods__series";
+      head.innerHTML = `<b>${escapeHtml(series)}</b>${notes[series] ? `<span>${escapeHtml(notes[series])}</span>` : ""}`;
+      return [head, ...mods.map((mod) => link(mod, `${mod.series ?? ""}${mod.mins ? ` · ${mod.mins} min` : ""}`))];
     })
   );
   if (catalog.briefs?.length) {
     const briefNav = $("nav.briefs");
     briefNav.hidden = false;
-    briefNav.replaceChildren(
-      ...catalog.briefs.map((brief) => {
-        const a = document.createElement("a");
-        a.href = `?m=${encodeURIComponent(brief.id)}`;
-        a.innerHTML = `<b>${escapeHtml(brief.title)}</b><span>${escapeHtml(brief.date ?? "This month")}</span>`;
-        return a;
-      })
-    );
+    briefNav.replaceChildren(...catalog.briefs.map((brief) => link(brief, brief.date ?? "This month")));
   }
   if (catalog.readings?.length) {
     let readNav = $("nav.readings");
@@ -160,14 +85,7 @@ function renderIndex(catalog) {
       $("nav.briefs").after(readNav);
     }
     readNav.hidden = false;
-    readNav.replaceChildren(
-      ...catalog.readings.map((item) => {
-        const a = document.createElement("a");
-        a.href = `?m=${encodeURIComponent(item.id)}`;
-        a.innerHTML = `<b>${escapeHtml(item.title)}</b><span>${escapeHtml(item.series ?? "reading")}</span>`;
-        return a;
-      })
-    );
+    readNav.replaceChildren(...catalog.readings.map((item) => link(item, item.series ?? "reading")));
   }
 }
 
@@ -186,12 +104,15 @@ async function renderModule(catalog, id) {
   document.title = `${meta.title}. GridSchool`;
   $("h1").textContent = meta.title;
   $(".lede").textContent = meta.series ? `${meta.series}${meta.mins ? ` · ${meta.mins} min` : ""}` : meta.date ?? "";
-  $("article").innerHTML = renderMarkdown(await res.text());
+  const article = $("article");
+  // The page header owns the title; the file's own H1 would print it twice.
+  article.innerHTML = renderMarkdown(splitTitle(await res.text()).body);
   $("nav.mods").hidden = true;
   const briefs = $("nav.briefs");
   if (briefs) briefs.hidden = true;
   const readings = $("nav.readings");
   if (readings) readings.hidden = true;
+  hydrateMermaid(article);
 }
 
 const catalog = await loadCatalog();

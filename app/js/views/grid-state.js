@@ -1,42 +1,30 @@
 /**
- * What the Grid is showing, as one small machine.
+ * What the Map is showing, as one small machine.
  *
- * Three things used to decide that: a `selectedId` local, a `mode` local, and
- * the hash. Any two could disagree, and they did, leaving the board with a
- * room open and coming back re-opened a room the URL said was shut, and the
- * room that came back could sit on top of the board with nothing to close it.
+ * Two projections of one board: the floor (`#/map`) and the list
+ * (`#/map/list`). The projection and the URL are both derived from one value,
+ * so they cannot disagree. Opening a node is a step page (`#/map/<nodeId>`),
+ * owned by the router, never a state here.
  *
- * Here there is one value. The projection, the open room, and the URL are all
- * derived from it, so "the URL says closed while a room is open" is not a state
- * this can hold. Views read it and never write their own copy.
+ * `3d` is kept as an argument because links to `#/map/3d` were sent while the
+ * floor was behind a toggle; it now means the floor, which is the default.
  */
 
-export const VIEW = { GRID: "grid", LIST: "list" };
+export const VIEW = { MAP: "map", LIST: "list" };
 
-/** The one argument to #/map that is not a node id. */
+/** The arguments to #/map that are not node ids. */
 export const LIST_ARG = "list";
+export const LEGACY_FLOOR_ARG = "3d";
+export const RESERVED_ARGS = [LIST_ARG, LEGACY_FLOOR_ARG];
 
-/**
- * The list is a projection of the whole board, so a room cannot be open inside
- * it. Normalising here rather than at each call site is what makes that true by
- * construction instead of by everyone remembering.
- */
-function normalize(state) {
-  if (state.view === VIEW.LIST) return { view: VIEW.LIST, room: null };
-  return { view: VIEW.GRID, room: state.room ?? null };
-}
-
-/** Route argument to state. An unknown node id opens nothing. */
-export function stateFromArg(arg, hasNode = () => true) {
-  if (arg === LIST_ARG) return normalize({ view: VIEW.LIST });
-  const id = arg || null;
-  return normalize({ view: VIEW.GRID, room: id && hasNode(id) ? id : null });
+/** Route argument to state. Anything that is not the list is the floor. */
+export function stateFromArg(arg) {
+  return { view: arg === LIST_ARG ? VIEW.LIST : VIEW.MAP };
 }
 
 /** State back to a route argument. Round-trips with stateFromArg. */
 export function argFor(state) {
-  if (state.view === VIEW.LIST) return LIST_ARG;
-  return state.room ?? null;
+  return state.view === VIEW.LIST ? LIST_ARG : null;
 }
 
 export function hashFor(state, base = "map") {
@@ -45,50 +33,30 @@ export function hashFor(state, base = "map") {
 }
 
 export function sameState(a, b) {
-  return a.view === b.view && a.room === b.room;
+  return a.view === b.view;
 }
 
-/**
- * The only way state changes. Pure, so the rules are testable without a DOM.
- * `hasNode` keeps a stale or hand-typed id from opening a room for a node that
- * is not on this student's board.
- */
-export function reduce(state, event, { hasNode = () => true } = {}) {
+/** The only way state changes. Pure, so the rules are testable without a DOM. */
+export function reduce(state, event) {
   switch (event.type) {
     case "route":
-      return stateFromArg(event.arg, hasNode);
-
-    case "open":
-      if (!event.id || !hasNode(event.id)) return state;
-      return normalize({ view: VIEW.GRID, room: event.id });
-
-    case "toggle":
-      if (!event.id || !hasNode(event.id)) return state;
-      if (state.view === VIEW.GRID && state.room === event.id) {
-        return normalize({ view: VIEW.GRID, room: null });
-      }
-      return normalize({ view: VIEW.GRID, room: event.id });
-
-    case "close":
-      return normalize({ ...state, room: null });
-
+      return stateFromArg(event.arg);
     case "view":
-      return normalize({ view: event.view === VIEW.LIST ? VIEW.LIST : VIEW.GRID, room: state.room });
-
+      return { view: event.view === VIEW.LIST ? VIEW.LIST : VIEW.MAP };
     default:
       return state;
   }
 }
 
 /**
- * The holder. One writer, one notification, and the current value is always the
- * result of a transition, never something a view assigned to.
+ * The holder. One writer, one notification, and the current value is always
+ * the result of a transition, never something a view assigned to.
  */
-export function createGridState({ arg = null, hasNode = () => true, onChange = () => {} } = {}) {
-  let state = stateFromArg(arg, hasNode);
+export function createGridState({ arg = null, onChange = () => {} } = {}) {
+  let state = stateFromArg(arg);
 
   function dispatch(event) {
-    const next = reduce(state, event, { hasNode });
+    const next = reduce(state, event);
     if (sameState(next, state)) return state;
     const previous = state;
     state = next;
@@ -102,11 +70,7 @@ export function createGridState({ arg = null, hasNode = () => true, onChange = (
     },
     dispatch,
     route: (nextArg) => dispatch({ type: "route", arg: nextArg ?? null }),
-    open: (id) => dispatch({ type: "open", id }),
-    toggle: (id) => dispatch({ type: "toggle", id }),
-    close: () => dispatch({ type: "close" }),
     setView: (view) => dispatch({ type: "view", view }),
     isList: () => state.view === VIEW.LIST,
-    openRoom: () => state.room,
   };
 }
