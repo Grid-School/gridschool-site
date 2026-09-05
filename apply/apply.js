@@ -23,7 +23,7 @@ function showTurnDown() {
   screen.innerHTML = `
     <div class="fcard rejected">
       <h2>Come back when you have one thing that runs.</h2>
-      <p>This lab starts from there. A free course will get you further, faster, than eight weeks here would right now, and I'd rather send you there than take money for a spot that wouldn't help yet.</p>
+      <p>The residency starts from there. A free course will get you further, faster, than a year here would right now, and I'd rather send you there than take money for a spot that wouldn't help yet.</p>
       <p>Any language. Build one small program end to end, then apply again. I'll read it.</p>
     </div>`;
   screen.scrollIntoView({ behavior: "smooth", block: "center" });

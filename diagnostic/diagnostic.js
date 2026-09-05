@@ -65,7 +65,7 @@ form.addEventListener("submit", (event) => {
 function verdictFor(total) {
   if (total <= 11) {
     return {
-      line: "This is exactly the gap the Defense Lab exists to close. Not a skill gap: an evidence gap. Eight weeks turns each of these four numbers into a link.",
+      line: "This is exactly the gap the residency exists to close. Not a skill gap: an evidence gap. The year turns each of these four numbers into a link.",
       note: "Bring this score to the fit call. It becomes the baseline your board is measured against.",
       cta: "Apply for a spot",
     };
@@ -78,7 +78,7 @@ function verdictFor(total) {
     };
   }
   return {
-    line: "Your evidence is most of the way there. You may only be missing the publish step: making what already exists findable by a stranger. The lab would sharpen it, and an honest read is you might not need all eight weeks.",
+    line: "Your evidence is most of the way there. You may only be missing the publish step: making what already exists findable by a stranger. The residency would sharpen it, and an honest read is you may land before the year is out.",
     note: "If you apply, say your score. I will tell you on the call whether the lab is worth your money, and I have turned people away for being too ready.",
     cta: "Apply anyway",
   };

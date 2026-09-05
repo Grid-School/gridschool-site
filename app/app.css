@@ -506,113 +506,7 @@ body[data-view="step"] .view--step { flex: 1 1 auto; min-height: 0; }
 .mlrow__rv--returned { color: var(--ok); }
 
 .view--map { position: relative; height: 100%; overflow: hidden; }
-.map { width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
-.map[hidden] { display: none; }
-.map.is-panning { cursor: grabbing; }
-.map.is-connecting { cursor: crosshair; }
-.floor { opacity: .5; }
-.world--animating { transition: transform .38s cubic-bezier(.22, .61, .36, 1); }
-
-.phaseline { stroke: var(--line); stroke-width: 1; stroke-dasharray: 2 9; opacity: .55; fill: none; }
-.phaselabel {
-  fill: var(--muted); font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 11px; letter-spacing: .16em; text-transform: uppercase; opacity: .7;
-}
-.phaselabel__weeks { opacity: .62; }
-.familylabel {
-  fill: var(--cyan); font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: calc(11px * var(--map-lod, 1)); letter-spacing: .14em; text-transform: uppercase; opacity: .8;
-  paint-order: stroke fill; stroke: var(--bg); stroke-width: 6px; stroke-linejoin: round;
-}
-
-.edge { fill: none; stroke: #26395c; stroke-width: 1.6; stroke-linecap: round; }
-.edge--done { stroke: color-mix(in srgb, var(--ok) 46%, #26395c); }
-.edge--live {
-  stroke: var(--cyan); stroke-dasharray: 5 8; animation: flow 1.5s linear infinite;
-  filter: drop-shadow(0 0 3px rgba(40, 225, 255, .45));
-}
-.edge--onpath { stroke: var(--cyan); stroke-width: 2; }
-.edge--dimmed { opacity: .22; }
-.edge--draft { stroke: var(--amber); stroke-dasharray: 4 6; }
-@keyframes flow { to { stroke-dashoffset: -26; } }
-
-.gnode { cursor: pointer; }
-.gnode__hit { fill: transparent; }
-.gnode__halo { fill: none; stroke: none; }
-.gnode__ring { fill: #070c15; stroke: #24344f; stroke-width: 1.6; }
-.gnode__core { fill: #0d1524; stroke: none; }
-.gnode__num {
-  fill: var(--muted); font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 13px; font-weight: 600; letter-spacing: .04em; pointer-events: none;
-}
-/* Curved edges pass under labels, so labels carry the page colour as a halo:
-   stroke first, fill on top, and the text stays readable over a wire. */
-.gnode__label, .gnode__meta {
-  paint-order: stroke fill; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round;
-}
-.gnode__label { fill: var(--text); font-size: 12.5px; font-weight: 600; pointer-events: none; }
-.gnode__meta {
-  fill: var(--muted); font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 9.5px; letter-spacing: .13em; text-transform: uppercase; pointer-events: none;
-}
-
-.gnode__prog {
-  fill: none; stroke: var(--cyan); stroke-width: 3; stroke-linecap: round;
-  opacity: .85; pointer-events: none;
-}
-.gnode__proofchip {
-  fill: var(--ok); font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 10.5px; letter-spacing: .04em; opacity: .8; pointer-events: none;
-}
-.gnode__rvdot { fill: none; stroke: none; pointer-events: none; }
-.gnode__rvdot.rv--sent { fill: var(--amber); opacity: .9; }
-.gnode__rvdot.rv--back { fill: var(--cyan); opacity: .9; }
-.map.lod-far .gnode__proofchip { opacity: 0; }
-
-.gnode.is-lit .gnode__ring { stroke: var(--ok); }
-.gnode.is-lit .gnode__prog { stroke: var(--ok); opacity: .5; }
-.gnode.is-lit .gnode__core { fill: color-mix(in srgb, var(--ok) 12%, #0d1524); }
-.gnode.is-lit .gnode__num { fill: var(--ok); }
-.gnode.is-lit .gnode__halo { stroke: color-mix(in srgb, var(--ok) 22%, transparent); stroke-width: 1; }
-
-.gnode.is-open .gnode__ring { stroke: var(--cyan); }
-.gnode.is-open .gnode__num { fill: var(--cyan); }
-
-/* On offer: open and yours to pick. Dashed in the open colour so it reads as
-   a door, not a wall. Submitted: the URL is in, the verdict is not. */
-.gnode.is-offered .gnode__ring { stroke-dasharray: 6 4; opacity: .85; }
-.gnode.is-offered .gnode__core { fill: transparent; }
-.gnode.is-submitted .gnode__ring { stroke: var(--amber); }
-.gnode.is-submitted .gnode__prog { stroke: var(--amber); }
-.gnode.is-submitted .gnode__num { fill: var(--amber); }
-
-.gnode.is-locked .gnode__ring { stroke: var(--locked); stroke-dasharray: 3 5; }
-.gnode.is-locked .gnode__num, .gnode.is-locked .gnode__label { fill: var(--locked); }
-
-.gnode.is-future .gnode__ring { stroke: color-mix(in srgb, var(--amber) 42%, transparent); stroke-dasharray: 2 6; }
-.gnode.is-future .gnode__num, .gnode.is-future .gnode__meta { fill: color-mix(in srgb, var(--amber) 70%, transparent); }
-
-.gnode.is-next .gnode__halo {
-  stroke: var(--cyan); stroke-width: 1.2; opacity: .5;
-  animation: breathe 2.8s ease-in-out infinite;
-}
-@keyframes breathe { 0%, 100% { opacity: .18; } 50% { opacity: .6; } }
-
-.gnode.is-selected .gnode__ring { stroke: #fff; stroke-width: 2.2; }
-.gnode.is-selected .gnode__label { fill: #fff; }
-.gnode.is-wiring .gnode__ring { stroke: var(--amber); stroke-width: 2.4; }
-.gnode.is-dimmed { opacity: .3; }
-/* Depth is real but quieter than the required spine so day-one eyes do not treat it as homework. */
-.gnode.is-depth:not(.is-next):not(.is-selected) { opacity: .55; }
-.gnode.is-depth.is-locked:not(.is-next) { opacity: .38; }
-.gnode.is-depth .gnode__label { fill: color-mix(in srgb, var(--muted) 70%, #8a9bb8); }
-.map.lod-far .gnode.is-depth .gnode__num { opacity: .65; }
-.gnode:focus { outline: none; }
-.gnode:focus-visible .gnode__ring { stroke: #fff; stroke-dasharray: 3 3; }
-
-.map.lod-far .gnode__meta, .map.lod-far .gnode__label { opacity: 0; }
-.map.lod-far .phaselabel { font-size: 15px; opacity: 1; }
-.map.is-editable .gnode { cursor: move; }
+/* The SVG board's node, edge and phase styles left with it (app/js/graph/archive-svg/). */
 
 /* HUD */
 .hud { position: absolute; z-index: 2; display: flex; gap: 14px; pointer-events: none; }
@@ -1330,7 +1224,6 @@ pre.diagram--failed { border-color: var(--amber); }
 
 @media (prefers-reduced-motion: reduce) {
   .edge--live { animation: none; }
-  .gnode.is-next .gnode__halo { animation: none; opacity: .45; }
   .world--animating { transition: none; }
 }
 

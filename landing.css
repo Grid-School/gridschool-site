@@ -1,6 +1,6 @@
-/* GridSchool landing - same design system as the Grid Map. Neon on near-black,
-   thin light, no film trade dress. The page IS the first product experience:
-   calm, directed, one next action per screen. */
+/* GridSchool shared chrome for the funnel and legal pages: tokens, nav, buttons,
+   copy blocks, footer. Neon on near-black, thin light, no film trade dress.
+   The landing page (index.html) re-tokens this on body.home in home.css. */
 
 :root {
   /* surfaces */
@@ -122,11 +122,6 @@ body {
   background: color-mix(in srgb, var(--bg) 92%, transparent);
   backdrop-filter: blur(10px);
 }
-body:has(.hero--world) .nav {
-  position: fixed; left: 0; right: 0;
-  background: linear-gradient(to bottom, var(--bg) 55%, transparent);
-  backdrop-filter: none;
-}
 .nav::after {
   content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
   pointer-events: none;
@@ -159,121 +154,6 @@ body:has(.hero--world) .nav {
 .nav__links a:hover { color: var(--white); }
 .nav__actions { margin-left: auto; display: flex; gap: 10px; align-items: center; }
 
-/* ---------- hero: Living World ---------- */
-
-.hero--world {
-  position: relative;
-  min-height: 100dvh;
-  max-width: none;
-  margin: 0;
-  padding: 0;
-  display: block;
-  overflow: hidden;
-  background: var(--bg);
-}
-.hero--world #world {
-  position: absolute; inset: 0; width: 100%; height: 100%; display: block;
-  opacity: 0; transition: opacity 280ms ease;
-}
-.hero--world.is-live #world { opacity: 1; }
-.hero--world.is-static #world { display: none; }
-
-/* 2D mark only when WebGL is gone. Never the default paint. */
-.hero__fallback { display: none; }
-.hero--world.is-static .hero__fallback {
-  display: block;
-  position: absolute; inset: 0;
-  background-image:
-    linear-gradient(var(--grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-  background-size: 48px 48px;
-  mask-image: radial-gradient(ellipse at 62% 48%, black 12%, transparent 70%);
-  -webkit-mask-image: radial-gradient(ellipse at 62% 48%, black 12%, transparent 70%);
-}
-.hero__fallback-mark {
-  position: absolute; left: 52%; top: 38%;
-  width: min(28vw, 220px); height: min(28vw, 220px);
-  transform: translate(-20%, -10%);
-}
-.hero__fallback-mark .g-on rect { fill: var(--cyan); }
-.hero__fallback-mark .g-off rect { fill: var(--logo-dim); }
-
-/* Boot: neon core expands and fades while Three loads. Soft hold until live. */
-.hero__boot {
-  position: absolute; inset: 0; z-index: 1;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 320ms ease;
-}
-.hero--world.is-booting .hero__boot { opacity: 1; }
-.hero--world.is-live .hero__boot,
-.hero--world.is-static .hero__boot {
-  opacity: 0;
-}
-.hero__boot-hold,
-.hero__boot-flash {
-  position: absolute;
-  left: 58%; top: 44%;
-  width: 36px; height: 36px;
-  margin: -18px 0 0 -18px;
-  border-radius: 50%;
-  background: #e8fbff;
-}
-.hero__boot-hold {
-  background: var(--cyan);
-  opacity: 0.55;
-  box-shadow:
-    0 0 18px color-mix(in srgb, var(--cyan) 70%, transparent),
-    0 0 48px color-mix(in srgb, var(--cyan) 35%, transparent),
-    0 0 96px color-mix(in srgb, var(--cyan) 18%, transparent);
-  animation: world-hold 1.4s ease-in-out infinite alternate;
-}
-.hero__boot-flash {
-  opacity: 0;
-  box-shadow:
-    0 0 20px #fff,
-    0 0 48px #e8fbff,
-    0 0 96px var(--cyan),
-    0 0 160px color-mix(in srgb, var(--cyan) 60%, transparent);
-}
-/* Ignite starts from JS once the world exists, so the expand always leads the reveal. */
-.hero--world.is-igniting .hero__boot-flash {
-  animation: world-ignite 0.7s cubic-bezier(0.12, 0.82, 0.22, 1) forwards;
-}
-@keyframes world-ignite {
-  0% { transform: scale(0.15); opacity: 1; }
-  28% { opacity: 1; }
-  100% { transform: scale(28); opacity: 0; }
-}
-@keyframes world-hold {
-  from { transform: scale(1); opacity: 0.42; }
-  to { transform: scale(1.35); opacity: 0.7; }
-}
-
-.hero__words {
-  position: absolute;
-  /* Sit closer to the world on wide viewports; stay edge-safe on narrow. */
-  left: clamp(40px, 12vw, 220px);
-  top: calc(30% + 50px);
-  z-index: 3;
-  max-width: clamp(400px, 30vw, 520px);
-}
-.hero__words > * { position: relative; z-index: 1; }
-.hero__words::before {
-  content: "";
-  position: absolute;
-  inset: -64px -120px -56px -64px;
-  background: radial-gradient(
-    ellipse 78% 74% at 24% 34%,
-    rgba(1, 3, 6, 0.96) 0%,
-    rgba(1, 3, 6, 0.78) 38%,
-    rgba(1, 3, 6, 0.28) 64%,
-    transparent 80%
-  );
-  z-index: 0;
-  pointer-events: none;
-}
-
 h1 {
   font-size: var(--fs-h1); line-height: 1.22; color: var(--white);
   font-weight: 300; letter-spacing: .005em;
@@ -282,11 +162,6 @@ h1 em { font-style: normal; color: var(--white); text-shadow: none; }
 .lede {
   margin-top: 22px; font-size: 15px; font-weight: 300;
   color: #b8c6d4; line-height: 1.7; letter-spacing: .015em;
-}
-.offer {
-  margin-top: 28px;
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 9px; letter-spacing: .14em; color: #93aabf;
 }
 .enter {
   display: inline-flex; align-items: center; gap: 10px;
@@ -306,41 +181,6 @@ h1 em { font-style: normal; color: var(--white); text-shadow: none; }
 }
 .enter:hover .enter-arrow, .enter:focus-visible .enter-arrow { transform: translateX(4px); }
 
-.dock {
-  position: absolute; left: 58%; top: 42%; z-index: 3;
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 10px; letter-spacing: .12em; line-height: 1.75;
-  color: var(--ghost); padding: 6px 12px 8px;
-  max-width: calc(100vw - 80px); white-space: nowrap;
-  opacity: 0;
-  transition: opacity 320ms ease;
-  background: radial-gradient(
-    ellipse 70% 72% at 20% 30%,
-    rgba(1, 3, 6, 0.88) 16%,
-    rgba(1, 3, 6, 0.4) 58%,
-    transparent 78%
-  );
-  text-shadow: 0 1px 8px rgba(1, 3, 6, 0.95);
-  pointer-events: none;
-}
-.hero--world.is-live .dock { opacity: 1; }
-.dock-state { display: flex; align-items: center; gap: 8px; color: var(--cyan); }
-.dock-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--cyan); }
-/* The three artifacts a hiring manager can click. Sans for the words so it
-   reads as a promise, mono numerals so it still belongs to the machine. */
-.dock-list { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 7px; max-width: 250px; white-space: normal; }
-.dock-list li { display: grid; grid-template-columns: 2.2em 1fr; gap: 0 10px; align-items: baseline; }
-.dock-list b { color: var(--cyan); font-weight: 400; }
-.dock-list span {
-  font-family: "IBM Plex Sans", system-ui, sans-serif;
-  font-size: 13.5px; letter-spacing: 0; line-height: 1.4; color: var(--text);
-}
-.dock-foot {
-  margin: 12px 0 0; padding-top: 9px; color: var(--muted);
-  border-top: 1px solid var(--hair);
-  max-width: 250px; white-space: normal;
-}
-
 .hero__alt { color: var(--cyan); text-decoration: none; font-size: 14.5px; }
 .hero__alt:hover { text-decoration: underline; }
 .chip {
@@ -348,209 +188,6 @@ h1 em { font-style: normal; color: var(--white); text-shadow: none; }
   font-family: "IBM Plex Mono", ui-monospace, monospace;
   font-size: var(--fs-chip); letter-spacing: .14em;
   color: #93aabf; text-transform: uppercase;
-}
-
-/* Evidence record: real system surface, not a marketing card. */
-.evidence {
-  min-width: 0;
-  border: 1px solid var(--line);
-  background: var(--surface-2);
-  border-radius: var(--radius);
-  box-shadow: inset 0 0 0 1px var(--hair);
-  padding: 18px 20px 16px;
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
-}
-.evidence__head {
-  display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
-  margin-bottom: 14px; padding-bottom: 12px;
-  border-bottom: 1px solid var(--line);
-}
-.evidence__id {
-  font-size: var(--fs-chip); letter-spacing: .18em; text-transform: uppercase;
-  color: var(--lit);
-}
-.evidence__meta {
-  font-size: 10px; letter-spacing: .08em; color: var(--pending); text-align: right;
-}
-.evidence__rail {
-  display: flex; flex-wrap: wrap; gap: 4px 0; align-items: center;
-  margin-bottom: 16px; padding-bottom: 14px;
-  border-bottom: 1px solid var(--line);
-  position: relative;
-}
-.evidence__step {
-  font-size: 9px; letter-spacing: .12em; text-transform: uppercase;
-  color: var(--pending); padding: 2px 0;
-}
-.evidence__step.is-lit { color: var(--lit); }
-.evidence__sep {
-  width: 10px; height: 1px; margin: 0 6px;
-  background: color-mix(in srgb, var(--line) 80%, var(--pending));
-  position: relative; flex: none;
-}
-.evidence__sep::after {
-  content: ""; position: absolute; inset: -1px 0;
-  background: linear-gradient(90deg, transparent, var(--lit), transparent);
-  opacity: 0;
-}
-.evidence.is-ready .evidence__sep::after {
-  opacity: .55;
-  animation: railcurrent var(--dur-drift) linear infinite;
-}
-@keyframes railcurrent {
-  0% { transform: translateX(-100%); opacity: 0; }
-  15% { opacity: .55; }
-  50% { opacity: .85; }
-  85% { opacity: .55; }
-  100% { transform: translateX(100%); opacity: 0; }
-}
-.evidence__rows { display: grid; gap: 0; }
-.evidence__row {
-  display: grid; grid-template-columns: 18px minmax(72px, 96px) 1fr auto;
-  gap: 10px; align-items: start;
-  padding: 11px 0;
-  border-top: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
-}
-.evidence__row:first-child { border-top: 0; }
-.evidence__dot {
-  width: 8px; height: 8px; border-radius: 50%; margin-top: 5px;
-  border: 1.4px solid color-mix(in srgb, var(--text) 28%, var(--ring-mid));
-  background: var(--node-void);
-}
-.evidence__row.is-lit .evidence__dot {
-  border-color: var(--proven);
-  background: var(--proven);
-  box-shadow: 0 0 8px color-mix(in srgb, var(--proven) 40%, transparent);
-}
-.evidence__row.is-pending .evidence__dot {
-  border-color: color-mix(in srgb, var(--pending) 45%, var(--line));
-  background: transparent;
-}
-.evidence__label {
-  font-size: 10px; letter-spacing: .16em; text-transform: uppercase;
-  color: var(--pending); padding-top: 3px;
-}
-.evidence__row.is-lit .evidence__label { color: var(--text); }
-.evidence__body { min-width: 0; }
-.evidence__title {
-  font-size: 12.5px; color: var(--text); line-height: 1.35;
-  font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
-  font-weight: 600;
-}
-.evidence__row.is-pending .evidence__title { color: var(--pending); font-weight: 500; }
-.evidence__detail {
-  font-size: 11px; color: var(--pending); margin-top: 3px; line-height: 1.4;
-  word-break: break-all;
-}
-.evidence__body a {
-  color: var(--lit); text-decoration: none;
-}
-.evidence__body a:hover { text-decoration: underline; }
-.evidence__state {
-  font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
-  padding-top: 4px; white-space: nowrap;
-}
-.evidence__row.is-lit .evidence__state { color: var(--proven); }
-.evidence__row.is-pending .evidence__state { color: var(--pending); }
-.evidence__divider {
-  margin: 10px 0 2px;
-  padding: 8px 0 4px;
-  border-top: 1px dashed color-mix(in srgb, var(--line) 80%, transparent);
-  font-size: 9px; letter-spacing: .18em; text-transform: uppercase;
-  color: var(--pending);
-}
-.evidence__foot {
-  margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line);
-  font-size: 11px; color: var(--pending); line-height: 1.45;
-  font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
-}
-
-/* ---------- shared diagram primitives ---------- */
-
-.jrail {
-  fill: none; stroke: color-mix(in srgb, var(--cyan) 24%, var(--rail-mid)); stroke-width: 1.5;
-}
-.jrail--signal { stroke: color-mix(in srgb, var(--cyan) 16%, var(--rail-mid)); }
-.jnode .ring {
-  fill: var(--node-void); stroke: color-mix(in srgb, var(--text) 22%, var(--ring-mid)); stroke-width: 1.6;
-}
-.jnode .core { fill: color-mix(in srgb, var(--text) 10%, var(--core-mid)); }
-.jlab {
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 12px; fill: var(--text); text-anchor: middle;
-}
-.jskill {
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 10px; fill: var(--muted); letter-spacing: .08em; text-anchor: middle;
-}
-.jskill--lane { text-anchor: start; }
-.diagram__caption {
-  text-align: center; margin-top: 8px; font-size: 11px;
-  letter-spacing: .3em; text-transform: uppercase; color: var(--muted);
-}
-
-/* ---------- the weekly loop (interactive, lives inside #how) ----------
-   Four rotated squares (the G-mark's geometry) on a dashed circle around
-   PROOF. The page's one interactive diagram: a phase lights on hover/focus/
-   tap and one caption line explains it. One light at a time. */
-
-.loop { max-width: 520px; margin: 8px auto 36px; padding: 0; }
-.loop svg { width: 100%; height: auto; display: block; }
-.loop__ring {
-  fill: none; stroke: color-mix(in srgb, var(--cyan) 22%, var(--rail-mid));
-  stroke-width: 1.4; stroke-dasharray: 3 9;
-}
-.loop__arrow {
-  fill: none; stroke: color-mix(in srgb, var(--cyan) 45%, var(--rail-mid));
-  stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round;
-}
-.loop__center rect, .loop__box rect {
-  fill: color-mix(in srgb, var(--node-void) 72%, transparent);
-  stroke: color-mix(in srgb, var(--text) 25%, var(--ring-mid)); stroke-width: 1.6;
-  transition: stroke .25s ease;
-}
-.loop__center rect { stroke: color-mix(in srgb, var(--text) 25%, var(--ring-mid)); }
-.loop__proof {
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 27px; letter-spacing: .18em; fill: var(--text); text-anchor: middle;
-  transition: fill .25s ease;
-}
-.loop__icon {
-  fill: none; stroke: var(--muted); stroke-width: 1.6;
-  stroke-linecap: round; stroke-linejoin: round;
-  transition: stroke .25s ease;
-}
-.loop__fill { fill: var(--muted); stroke: none; transition: fill .25s ease; }
-.loop__word {
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 12.5px; letter-spacing: .14em; fill: var(--text); text-anchor: middle;
-}
-.loop__node, .loop__center { cursor: pointer; outline: none; }
-.loop__node:hover .loop__box rect,
-.loop__node:focus-visible .loop__box rect,
-.loop__node.is-active .loop__box rect {
-  stroke: var(--cyan);
-  filter: drop-shadow(0 0 7px color-mix(in srgb, var(--cyan) 35%, transparent));
-}
-.loop__node:hover .loop__icon,
-.loop__node:focus-visible .loop__icon,
-.loop__node.is-active .loop__icon { stroke: var(--cyan); }
-.loop__node:hover .loop__fill,
-.loop__node:focus-visible .loop__fill,
-.loop__node.is-active .loop__fill { fill: var(--cyan); }
-.loop__center:hover rect,
-.loop__center:focus-visible rect,
-.loop__center.is-active rect {
-  stroke: var(--cyan);
-  filter: drop-shadow(0 0 9px color-mix(in srgb, var(--cyan) 30%, transparent));
-}
-.loop__center:hover .loop__proof,
-.loop__center:focus-visible .loop__proof,
-.loop__center.is-active .loop__proof { fill: var(--cyan); }
-.loop__read {
-  text-align: center; margin-top: 16px; min-height: 48px;
-  font-size: 15px; color: var(--text); max-width: 440px;
-  margin-left: auto; margin-right: auto;
 }
 
 /* ---------- sections ---------- */
@@ -584,7 +221,6 @@ ul.gap li::before {
   width: 6px; height: 6px; border-radius: 50%;
   border: 1.5px solid color-mix(in srgb, var(--cyan) 50%, var(--line));
 }
-.stat-inline { color: var(--text); font-weight: 600; }
 
 .rule {
   border-left: 3px solid var(--amber); padding: 14px 18px; margin: 24px 0;
@@ -592,163 +228,9 @@ ul.gap li::before {
 }
 .rule strong { color: var(--text); }
 
-/* Who cards: edge-light primitive. Do not copy onto more surfaces. */
-@property --edge-a {
-  syntax: "<angle>"; initial-value: 0deg; inherits: false;
-}
-
 .gap a { color: var(--cyan); }
 
-/* ---------- the mission timeline (#how): time, not a feature list.
-   The offer table is the only enumerated stack on the page; this section
-   answers "what are the eight weeks" so the stack below reads as a reveal. */
-
-ol.mission { list-style: none; margin: 26px 0 0; padding: 0; }
-ol.mission li {
-  display: grid; grid-template-columns: 108px 1fr; gap: 18px;
-  padding: 16px 0; border-top: 1px solid var(--line);
-}
-ol.mission li:first-child { border-top: 0; }
-.mission__wk {
-  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 13px;
-  color: var(--cyan); letter-spacing: .06em; padding-top: 4px; white-space: nowrap;
-}
-.mission__body b { color: var(--text); display: block; margin-bottom: 3px; }
-.mission__body p { color: var(--muted); margin: 0; }
-.mission__cadence { color: var(--muted); margin-top: 22px; font-size: 15px; }
-@media (max-width: 560px) {
-  ol.mission li { grid-template-columns: 1fr; gap: 4px; }
-}
-
-/* ---------- the board: two receipts | figure | trail + stories
-   Not a timeline. Weeks live on the Path. Unlit nodes. No connectors. */
-
-.board {
-  margin-top: 34px;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(200px, 280px) minmax(0, 1fr);
-  grid-template-areas: "left art right";
-  gap: 16px 20px;
-  align-items: stretch;
-}
-.board__stack {
-  list-style: none;
-  display: grid;
-  grid-template-rows: 1fr 1fr;
-  gap: 15px;
-  min-width: 0;
-}
-.board__stack:first-of-type { grid-area: left; }
-.board__stack:last-of-type { grid-area: right; }
-.board__art {
-  grid-area: art;
-  margin: 0;
-  min-width: 0;
-  min-height: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.board__art img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  object-position: center;
-  mix-blend-mode: lighten;
-}
-.bitem {
-  position: relative;
-  display: grid; grid-template-columns: 34px 1fr; gap: 14px; align-items: start;
-  border: 1px solid var(--line); background: var(--bg2);
-  padding: 18px 20px; border-radius: var(--radius);
-  box-shadow: inset 0 0 0 1px var(--hair);
-}
-.bitem__node {
-  width: 34px; height: 34px; border-radius: 50%; margin-top: 2px;
-  border: 1.6px solid color-mix(in srgb, var(--text) 32%, var(--ring-mid)); background: var(--node-void);
-  display: grid; place-items: center;
-}
-.bitem__node::after {
-  content: ""; width: 10px; height: 10px; border-radius: 50%;
-  background: color-mix(in srgb, var(--text) 16%, var(--core-mid));
-}
-.bitem small {
-  display: block; font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase;
-  color: var(--muted); margin-bottom: 6px;
-}
-.bitem h3 { font-size: var(--fs-h3); color: var(--white); margin-bottom: 6px; }
-.bitem p { color: var(--text); font-size: 14.5px; line-height: 1.5; }
-.bitem__why { color: var(--muted) !important; margin-top: 8px; }
-
-/* ---------- CCVV cards: the map's legend, grown up ---------- */
-
-.ccvv { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 26px; }
-.ccvv__card {
-  position: relative;
-  border: 1px solid var(--line);
-  background: var(--bg2); padding: 22px; border-radius: var(--radius);
-}
-.ccvv__card--cyan { --track: var(--cyan); }
-.ccvv__card--amber { --track: var(--amber); }
-.ccvv__card--ok { --track: var(--ok); }
-.ccvv__card--out { --track: var(--out); }
-
-.ccvv__card::before {
-  content: ""; position: absolute; inset: -1px; border-radius: inherit;
-  padding: 1.5px; pointer-events: none;
-  background: conic-gradient(from var(--edge-a),
-    transparent 0deg 264deg,
-    color-mix(in srgb, var(--track) 55%, transparent) 300deg,
-    var(--track) 318deg,
-    color-mix(in srgb, var(--track) 55%, transparent) 336deg,
-    transparent 372deg);
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  mask-composite: exclude;
-  animation: edgedrift var(--dur-drift) linear infinite, edgebreathe 9s ease-in-out infinite;
-}
-.ccvv__card:nth-child(2)::before { animation-delay: -7s, -3s; }
-.ccvv__card:nth-child(3)::before { animation-delay: -13s, -5s; }
-.ccvv__card:nth-child(4)::before { animation-delay: -19s, -7s; }
-@keyframes edgedrift { to { --edge-a: 360deg; } }
-@keyframes edgebreathe {
-  0%, 100% { opacity: .55; }
-  50% { opacity: 1; }
-}
-.ccvv__mark {
-  width: 34px; height: 34px; display: grid; place-items: center; margin-bottom: 14px;
-  border: 1.5px solid var(--track); color: var(--track); font-weight: 700; font-size: 12px;
-  font-family: "IBM Plex Mono", ui-monospace, monospace; letter-spacing: .04em;
-  border-radius: 50%;
-}
-.ccvv__card h3 { color: var(--white); font-size: 17px; margin-bottom: 8px; }
-.ccvv__card p { color: var(--muted); font-size: 14px; line-height: 1.6; }
-
-/* ---------- the Grid section ---------- */
-
-.gridshot {
-  margin-top: 30px; border: 1px solid var(--line); background: var(--bg2);
-  box-shadow: 0 30px 80px color-mix(in srgb, #000 55%, transparent), 0 0 44px color-mix(in srgb, var(--cyan) 5%, transparent);
-}
-.gridshot img { width: 100%; display: block; }
-.gridshot figcaption {
-  display: flex; align-items: center; justify-content: space-between; gap: 14px;
-  padding: 14px 18px; border-top: 1px solid var(--line);
-  font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted);
-}
-
 /* ---------- proof list / tables / guarantee / faq (copy-dense blocks) ---------- */
-
-.proof-list { margin: 18px 0 0 4px; }
-.proof-list li { margin: 12px 0 12px 26px; color: var(--muted); overflow-wrap: break-word; }
-.proof-list li::marker { color: var(--ok); }
-.proof-list strong { color: var(--text); }
-
-.tablewrap { overflow-x: auto; margin: 22px 0; }
 table { width: 100%; border-collapse: collapse; font-size: 15px; }
 th, td { padding: 12px 14px; text-align: left; border: 1px solid var(--line); vertical-align: top; }
 th { color: var(--cyan); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; background: var(--bg2); }
@@ -756,11 +238,6 @@ th.right { text-align: right; }
 td:first-child { color: var(--white); font-weight: 600; white-space: normal; overflow-wrap: break-word; }
 td.warn { color: var(--amber); font-weight: 600; }
 tr.us td { color: var(--cyan); }
-.price-table { table-layout: fixed; }
-.price-table th:last-child,
-.price-table td:last-child { width: 30%; }
-.price-table td:last-child { text-align: right; color: var(--muted); white-space: normal; }
-.price-final td { color: var(--cyan) !important; font-size: 18px; font-weight: 800; }
 
 .guarantee {
   border: 1px solid color-mix(in srgb, var(--cyan) 38%, var(--line));
@@ -829,19 +306,6 @@ details[open] {
 details[open] summary::before { content: "− "; }
 details p { padding: 0 18px 16px; color: var(--muted); }
 
-/* ---------- final CTA ---------- */
-
-.seats { text-align: center; padding: 72px 24px 88px; }
-.seats__count {
-  font-size: 64px; font-weight: 800; color: var(--cyan);
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
-  text-shadow: 0 0 20px color-mix(in srgb, var(--cyan) 28%, transparent); line-height: 1;
-}
-.seats__label {
-  letter-spacing: .3em; font-size: 13px; color: var(--muted);
-  text-transform: uppercase; margin: 8px 0 30px;
-}
-
 footer { position: relative; padding: 34px 0; font-size: 13px; color: var(--muted); }
 footer::before {
   content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px;
@@ -857,91 +321,27 @@ footer p { margin-top: 8px; }
 .reveal.is-in { opacity: 1; transform: none; }
 
 /* ---------- responsive ---------- */
-
-@media (max-width: 720px) {
-  .hero__words {
-    left: 24px; right: 24px; top: auto;
-    bottom: calc(36px + env(safe-area-inset-bottom, 0px));
-    max-width: none;
-  }
-  .hero__words .enter {
-    min-height: 44px;
-    padding: 12px 0;
-    align-items: center;
-  }
-  .dock {
-    left: 24px; top: 26%; bottom: auto;
-  }
-  .hero--world h1 { font-size: 26px; }
-}
-@media (max-width: 1024px) {
-  .evidence__head {
-    flex-direction: column; align-items: flex-start; gap: 6px;
-  }
-  .evidence__meta { text-align: left; }
-}
 @media (max-width: 900px) {
   .nav__links { display: none; }
   .nav { gap: 12px; padding: 12px 16px; flex-wrap: nowrap; }
   .nav__actions { gap: 8px; }
   .nav__actions .btn--ghost { display: none; }
   .nav__name { letter-spacing: .16em; font-size: 12px; }
-  .board {
-    grid-template-columns: 1fr 1fr;
-    grid-template-areas:
-      "art art"
-      "left right";
-    gap: 18px 14px;
-  }
-  .board__art { height: min(38vw, 280px); }
 }
 @media (max-width: 420px) {
   .nav__name { display: none; }
   .nav .btn { padding: 8px 12px; font-size: 12.5px; }
 }
 @media (max-width: 600px) {
-  .ccvv { grid-template-columns: 1fr; }
-  .board {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "art"
-      "left"
-      "right";
-    gap: 14px;
-  }
-  .board__art { height: min(40vw, 160px); }
   .chip {
     letter-spacing: .1em;
     white-space: normal;
     line-height: 1.45;
   }
-  .evidence { padding: 14px 14px 12px; }
-  .evidence__rail {
-    flex-wrap: wrap;
-    overflow: visible;
-    gap: 6px 0;
-    row-gap: 6px;
-  }
-  .evidence__step { font-size: 9px; }
-  .evidence__sep { width: 8px; margin: 0 5px; }
-  .evidence__row {
-    grid-template-columns: 14px minmax(64px, 80px) 1fr;
-    grid-template-areas:
-      "dot label state"
-      "dot body body";
-  }
-  .evidence__dot { grid-area: dot; }
-  .evidence__label { grid-area: label; }
-  .evidence__body { grid-area: body; }
-  .evidence__state { grid-area: state; justify-self: end; }
   th, td { padding: 9px 8px; font-size: 13.5px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; }
   .reveal { opacity: 1; transform: none; }
-  .evidence__sep::after { display: none; }
-  /* Quiet hold only. No expand flash. */
-  .hero__boot-hold { opacity: 0.5; transform: none; }
-  .hero__boot-flash { display: none; }
 }

@@ -45,7 +45,7 @@ A record with those boxes filled in is level 2 evidence on the ladder from Evide
 
 You should know this going in, because knowing it is part of the training and because hiding it would be a kind of dishonesty this program does not practise.
 
-At points across the eight weeks, never on your first ticket, and always followed by a debrief, you will meet situations built to test whether you treat machine output as evidence or as authority. The kinds of thing to expect:
+At points across the year, never on your first ticket, and always followed by a debrief, you will meet situations built to test whether you treat machine output as evidence or as authority. The kinds of thing to expect:
 
 - An assistant given context that is stale or misleading, so its confident explanation is wrong.
 - A change where the obvious implementation is the wrong one.

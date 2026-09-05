@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GridSchool. You can already code. That used to be enough.</title>
-<meta name="description" content="You can already code. Employers still don't trust you. Five people. Eight weeks. I raise the odds you get trusted. After the lab, you can always reach me.">
-<meta property="og:title" content="GridSchool. You can already code. That used to be enough.">
-<meta property="og:description" content="Five people. Eight weeks. I raise the odds you get trusted. The door stays open after the lab.">
+<title>GridSchool Residency. You have the degree. Now get the job.</title>
+<meta name="description" content="A 12-month engineering residency for graduates who can code but can't get hired. Real systems, a senior engineer beside you every week, and a public portfolio nobody can fake.">
+<meta property="og:title" content="GridSchool Residency. You have the degree. Now get the job.">
+<meta property="og:description" content="A 12-month engineering residency for graduates who can code but can't get hired. Real systems, weekly senior review, a public portfolio nobody can fake.">
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <meta property="og:url" content="https://gridschool.org/">
 <meta property="og:type" content="website">
@@ -17,79 +17,15 @@
 <meta name="twitter:image" content="https://gridschool.org/assets/og.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="landing.css?v=37">
-<script type="importmap">
-{
-  "imports": {
-    "three": "./vendor/three/three.module.js",
-    "three/addons/": "./vendor/three/addons/"
-  }
-}
-</script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="landing.css?v=38">
+<link rel="stylesheet" href="home.css?v=10">
 </head>
-<body>
+<body class="home">
 
 <header class="nav">
  <a class="nav__brand" href="#top">
  <svg class="nav__logo" viewBox="0 0 36 36" aria-hidden="true">
- <g transform="translate(18 18) rotate(45) translate(-12.5 -12.5)">
- <!-- 25 squares. The lit ones draw the G. -->
- <g class="g-off">
- <rect x="5.4" y="5.4" width="4.2" height="4.2" rx="1.2"/>
- <rect x="10.4" y="5.4" width="4.2" height="4.2" rx="1.2"/>
- <rect x="15.4" y="5.4" width="4.2" height="4.2" rx="1.2"/>
- <rect x="20.4" y="5.4" width="4.2" height="4.2" rx="1.2"/>
- <rect x="5.4" y="10.4" width="4.2" height="4.2" rx="1.2"/>
- <rect x="10.4" y="10.4" width="4.2" height="4.2" rx="1.2"/>
- <rect x="5.4" y="15.4" width="4.2" height="4.2" rx="1.2"/>
- <rect x="10.4" y="15.4" width="4.2" height="4.2" rx="1.2"/>
- <rect x="15.4" y="15.4" width="4.2" height="4.2" rx="1.2"/>
- </g>
- <g class="g-on">
- <rect x="0.4" y="0.4" width="4.2" height="4.2" rx="1.2"/>
- <rect x="5.4" y="0.4" width="4.2" height="4.2" rx="1.2"/>
- <rect x="10.4" y="0.4" width="4.2" height="4.2" rx="1.2"/>
- <rect x="15.4" y="0.4" width="4.2" height="4.2" rx="1.2"/>
- <rect x="20.4" y="0.4" width="4.2" height="4.2" rx="1.2"/>
- <rect x="0.4" y="5.4" width="4.2" height="4.2" rx="1.2"/>
- <rect x="0.4" y="10.4" width="4.2" height="4.2" rx="1.2"/>
- <rect x="15.4" y="10.4" width="4.2" height="4.2" rx="1.2"/>
- <rect x="20.4" y="10.4" width="4.2" height="4.2" rx="1.2"/>
- <rect x="0.4" y="15.4" width="4.2" height="4.2" rx="1.2"/>
- <rect x="20.4" y="15.4" width="4.2" height="4.2" rx="1.2"/>
- <rect x="0.4" y="20.4" width="4.2" height="4.2" rx="1.2"/>
- <rect x="5.4" y="20.4" width="4.2" height="4.2" rx="1.2"/>
- <rect x="10.4" y="20.4" width="4.2" height="4.2" rx="1.2"/>
- <rect x="15.4" y="20.4" width="4.2" height="4.2" rx="1.2"/>
- <rect x="20.4" y="20.4" width="4.2" height="4.2" rx="1.2"/>
- </g>
- </g>
- </svg>
- <span class="nav__name">GRID<b>SCHOOL</b></span>
- </a>
- <nav class="nav__links" aria-label="Sections">
- <a href="#board">Evidence</a>
- <a href="#how">How it works</a>
- <a href="#offer">What you get</a>
- <a href="#faq">Questions</a>
- </nav>
- <div class="nav__actions">
- <a class="nav__quiet" href="app/?s=demo">Platform</a>
- <a class="enter enter--nav" href="apply/">APPLY FOR A SPOT<span class="enter-arrow" aria-hidden="true">→</span></a>
- </div>
-</header>
-
-<main id="top">
-
- <section class="hero hero--world is-booting" aria-label="The Living World">
- <canvas id="world" aria-label="The GridSchool G over a coordinate grid."></canvas>
- <div class="hero__boot" aria-hidden="true">
- <i class="hero__boot-hold"></i>
- <i class="hero__boot-flash"></i>
- </div>
- <div class="hero__fallback" aria-hidden="true">
- <svg class="hero__fallback-mark" viewBox="0 0 36 36">
  <g transform="translate(18 18) rotate(45) translate(-12.5 -12.5)">
  <g class="g-off">
  <rect x="5.4" y="5.4" width="4.2" height="4.2" rx="1.2"/><rect x="10.4" y="5.4" width="4.2" height="4.2" rx="1.2"/><rect x="15.4" y="5.4" width="4.2" height="4.2" rx="1.2"/><rect x="20.4" y="5.4" width="4.2" height="4.2" rx="1.2"/><rect x="5.4" y="10.4" width="4.2" height="4.2" rx="1.2"/><rect x="10.4" y="10.4" width="4.2" height="4.2" rx="1.2"/><rect x="5.4" y="15.4" width="4.2" height="4.2" rx="1.2"/><rect x="10.4" y="15.4" width="4.2" height="4.2" rx="1.2"/><rect x="15.4" y="15.4" width="4.2" height="4.2" rx="1.2"/>
@@ -99,205 +35,193 @@
  </g>
  </g>
  </svg>
+ <span class="nav__name">GRID<b>SCHOOL</b></span>
+ </a>
+ <nav class="nav__links" aria-label="Sections">
+ <a href="#who">Who it's for</a>
+ <a href="#year">The year</a>
+ <a href="#build">What you build</a>
+ <a href="#how">How it works</a>
+ <a href="#faq">Questions</a>
+ </nav>
+ <div class="nav__actions">
+ <a class="nav__quiet" href="app/?s=demo">Platform</a>
+ <a class="enter enter--nav" href="apply/">BOOK A FIT CALL<span class="enter-arrow" aria-hidden="true">→</span></a>
  </div>
- <aside class="dock" id="dock" aria-label="What you leave with">
- <div class="dock-state"><i class="dock-dot"></i>WHAT YOU LEAVE WITH</div>
- <ol class="dock-list">
- <li><b>01</b><span>A merged change to a live multiplayer system</span></li>
- <li><b>02</b><span>A written verdict from an engineer who did not help you</span></li>
- <li><b>03</b><span>A site in your own design system, one page per project</span></li>
- </ol>
- <p class="dock-foot">Founding rate for the first five · quoted on the call, before you pay anything</p>
- </aside>
+</header>
+
+<main id="top">
+
+ <section class="hero" aria-label="GridSchool Residency">
+ <canvas class="hero__grid" aria-hidden="true"></canvas>
+ <div class="hero__inner">
  <div class="hero__words">
- <h1>You can already code.<br>Employers still don't trust you.</h1>
- <p class="lede">Eight weeks inside one messy system: ship, get reviewed, defend live. I raise the odds you get trusted. After the lab, you can always reach me, including once you're hired.</p>
- <p class="offer">FOUNDING DEFENSE LAB · 5 SPOTS · 8 WEEKS</p>
- <a class="enter" href="apply/">APPLY FOR A SPOT<span class="enter-arrow" aria-hidden="true">→</span></a>
+ <p class="kicker">GridSchool Residency · 12 months · for graduates who can code</p>
+ <h1>You have the degree.<br>Now get the <em>job</em>.</h1>
+ <p class="lede">A 12-month engineering residency for CS and software engineering graduates who can code but can't get hired. Real systems every day. A senior engineer beside you every week. A public body of work nobody can fake, and a position to show for it.</p>
+ <div class="hero__cta">
+ <a class="enter enter--solid" href="apply/">BOOK A FIT CALL<span class="enter-arrow" aria-hidden="true">→</span></a>
+ <a class="enter enter--ghost" href="#year">See the year</a>
  </div>
- </section>
-
- <section class="wrap wrap--wide" id="board">
- <h2>The evidence a model cannot fake</h2>
- <p class="section-lede muted">One messy repo I give you. Three things a hiring manager can click. Then three stories you can defend in a room. That is how you stay ahead when AI made claims cheap. If a model could produce it for you in a weekend, it does not count. The week-by-week board is your Path. <a class="hero__alt" href="path/">See it empty.</a></p>
- <div class="board">
- <ol class="board__stack">
- <li class="bitem">
- <i class="bitem__node" aria-hidden="true"></i>
- <div>
- <small>The change</small>
- <h3>You change messy code</h3>
- <p>A pull request and a failure log on a repo I give you. Not a tutorial app. Not hunting GitHub for exposure.</p>
- <p class="bitem__why">The job is inherited systems. Greenfield portfolios all look the same.</p>
+ <p class="hero__fine">20-minute call. No pitch deck. If it isn't the right room, I'll say so and point you somewhere better.</p>
  </div>
- </li>
- <li class="bitem">
- <i class="bitem__node" aria-hidden="true"></i>
- <div>
- <small>The review</small>
- <h3>Someone else marked it up</h3>
- <p>That same change, reviewed by another person. A merge when the review earns one.</p>
- <p class="bitem__why">Solo homework is cheap. Teams hire people who can take a review.</p>
- </div>
- </li>
- </ol>
- <figure class="board__art" aria-hidden="true">
- <img src="assets/evidence-figure.jpg?v=23" width="864" height="1152" alt="">
+ <figure class="hero__shot">
+ <img src="assets/hero-meet.jpg" width="1024" height="874" alt="A graduate and a working engineer shaking hands in the studio.">
  </figure>
- <ol class="board__stack">
- <li class="bitem">
- <i class="bitem__node" aria-hidden="true"></i>
- <div>
- <small>The trail</small>
- <h3>How you used AI on it</h3>
- <p>The prompt and harness pack, used on that same change, checkable end to end.</p>
- <p class="bitem__why">Everyone has ChatGPT. Almost nobody can show how they checked it.</p>
- </div>
- </li>
- <li class="bitem">
- <i class="bitem__node" aria-hidden="true"></i>
- <div>
- <small>Then the stories</small>
- <h3>Three stories you can defend</h3>
- <p>One page, built from the three receipts above. If a vibe-coder could claim them, they do not count.</p>
- <p class="bitem__why">Interviews are “tell me about a time.” You need three that are yours.</p>
- </div>
- </li>
- </ol>
  </div>
  </section>
 
- <section class="wrap" id="how">
- <h2>One mission. You inherit it messy.</h2>
- <div class="loop" role="region" aria-label="The weekly loop: build, check, defend, publish. The output is proof a hiring manager can check.">
- <svg viewBox="0 0 640 600">
- <circle class="loop__ring" cx="320" cy="300" r="200"/>
- <path class="loop__arrow" transform="translate(461 159) rotate(45)" d="M -6 -4 L 5 0 L -6 4"/>
- <path class="loop__arrow" transform="translate(461 441) rotate(135)" d="M -6 -4 L 5 0 L -6 4"/>
- <path class="loop__arrow" transform="translate(179 441) rotate(225)" d="M -6 -4 L 5 0 L -6 4"/>
- <path class="loop__arrow" transform="translate(179 159) rotate(315)" d="M -6 -4 L 5 0 L -6 4"/>
-
- <g class="loop__center" data-phase="proof" tabindex="0" role="button" aria-label="Proof: what one week of the loop produces">
- <g transform="translate(320 300) rotate(45)"><rect x="-78" y="-78" width="156" height="156" rx="16"/></g>
- <text class="loop__proof" x="320" y="310">PROOF</text>
- </g>
-
- <g class="loop__node" data-phase="build" tabindex="0" role="button" aria-label="Build: ship a real change every week">
- <g transform="translate(320 100)">
- <g class="loop__box"><g transform="rotate(45)"><rect x="-52" y="-52" width="104" height="104" rx="14"/></g></g>
- <g class="loop__icon">
- <path d="M -16 -24 L -24 -15 L -16 -6"/>
- <path d="M 8 -24 L 16 -15 L 8 -6"/>
- <path d="M 0 -26 L -6 -4"/>
- </g>
- <text class="loop__word" y="26">BUILD</text>
- </g>
- </g>
-
- <g class="loop__node" data-phase="check" tabindex="0" role="button" aria-label="Check: show how you verified the model's work">
- <g transform="translate(540 300)">
- <g class="loop__box"><g transform="rotate(45)"><rect x="-52" y="-52" width="104" height="104" rx="14"/></g></g>
- <g class="loop__icon">
- <circle cx="0" cy="-15" r="11"/>
- <path d="M -5 -15 L -1 -10 L 6 -20"/>
- </g>
- <text class="loop__word" y="26">CHECK</text>
- </g>
- </g>
-
- <g class="loop__node" data-phase="defend" tabindex="0" role="button" aria-label="Defend: explain the change out loud">
- <g transform="translate(320 500)">
- <g class="loop__box"><g transform="rotate(45)"><rect x="-52" y="-52" width="104" height="104" rx="14"/></g></g>
- <g class="loop__icon">
- <rect x="-13" y="-27" width="26" height="17" rx="6"/>
- <path d="M -5 -10 L -9 -3 L 1 -10"/>
- <circle class="loop__fill" cx="-6" cy="-18.5" r="1.4"/>
- <circle class="loop__fill" cx="0" cy="-18.5" r="1.4"/>
- <circle class="loop__fill" cx="6" cy="-18.5" r="1.4"/>
- </g>
- <text class="loop__word" y="26">DEFEND</text>
- </g>
- </g>
-
- <g class="loop__node" data-phase="publish" tabindex="0" role="button" aria-label="Publish: put the work where a stranger can find it">
- <g transform="translate(100 300)">
- <g class="loop__box"><g transform="rotate(45)"><rect x="-52" y="-52" width="104" height="104" rx="14"/></g></g>
- <g class="loop__icon">
- <circle class="loop__fill" cx="0" cy="-8" r="2.6"/>
- <path d="M -8 -16 A 11 11 0 0 1 8 -16"/>
- <path d="M -13 -21 A 17.5 17.5 0 0 1 13 -21"/>
- </g>
- <text class="loop__word" y="26">PUBLISH</text>
- </g>
- </g>
- </svg>
- <p class="loop__read" aria-live="polite">This is the week, on repeat. Select a phase.</p>
+ <div class="lift">
+ <section class="proofs-band" aria-label="Check it yourself">
+ <div class="wrap wrap--wide">
+ <p class="proofs__lede">Everything on this page is checkable. Start with these three.</p>
+ <div class="proofs">
+ <a class="proof" href="https://world-staging.gridschool.org/health" target="_blank" rel="noopener">
+ <small>Live system</small>
+ <b>The multiplayer world you ship to is running now</b>
+ <span>world-staging.gridschool.org ↗</span>
+ </a>
+ <a class="proof" href="https://github.com/Grid-School" target="_blank" rel="noopener">
+ <small>Code, public</small>
+ <b>Every student change lands in a public repo with a real name on it</b>
+ <span>github.com/Grid-School ↗</span>
+ </a>
+ <a class="proof" href="app/?s=demo#/map">
+ <small>The platform</small>
+ <b>Walk the map before you apply. Nothing on it lights without a link.</b>
+ <span>Open the demo board →</span>
+ </a>
  </div>
-
- <ol class="mission">
- <li>
- <span class="mission__wk">Weeks 1-2</span>
- <div class="mission__body">
- <b>Read it.</b>
- <p>A real system that existed before you did lands on your machine. Make it boot, then trace one ticket through code you did not write and log everything that surprises you.</p>
+ <div class="strip" aria-label="Where it stands today">
+ <span><b>Founding cohort</b> open</span>
+ <span><b>4 systems</b> you ship into</span>
+ <span><b>1 senior engineer</b> per five residents</span>
+ <span><b>12 months</b>, at your pace, every day</span>
  </div>
- </li>
- <li>
- <span class="mission__wk">Weeks 3-7</span>
- <div class="mission__body">
- <b>Change it. Prove it. Survive review.</b>
- <p>Real tickets, real PRs. You write the contract before the change, every change ships with a check a stranger can run without you in the room, and you take written notes from a reviewer and change it again. The thread itself becomes evidence.</p>
  </div>
- </li>
- <li>
- <span class="mission__wk">Weeks 7-8</span>
- <div class="mission__body">
- <b>Defend it.</b>
- <p>Eight recorded minutes in front of a working engineer who did not help you. Hostile questions welcome. Their written verdict is the last page of your evidence.</p>
- </div>
- </li>
- <li>
- <span class="mission__wk">Week 8</span>
- <div class="mission__body">
- <b>Publish the trail.</b>
- <p>One public post that points at the receipts, after they exist. A stranger who searches you finds real work in under a minute.</p>
- </div>
- </li>
- </ol>
- <p class="mission__cadence">Carried by the weekly cadence: a Monday room of five, 75 minutes. A private 1:1, 45 minutes. Three written reviews a week. Plan for 10 to 15 hours a week, and know the board only lights on a URL. <a href="path/" class="hero__alt">See it empty.</a></p>
  </section>
 
- <section class="wrap" id="offer">
- <h2>Eight weeks.<br>Five spots.<br>Proof that moves the odds.</h2>
- <p class="muted">Bootcamps teach beginners and sell certificates. Mentors give advice and disappear. Cheap courses already teach the stack. Here you work inside a real, messy system: tickets, review, and proof on work AI made cheap to fake. You finish by defending live to a working engineer who didn't help you. Their written verdict is yours to show anyone. The lab is eight weeks. Access to me is not a countdown; founding five can always reach me, including after they're hired. The founding rate is quoted on the call, not printed here, because it will rise once five have defended and outside readers have scored them. The method is still being tuned on you, and in exchange you get me directly through all of it, at the lowest number anyone will ever pay.</p>
- <div class="tablewrap">
- <table class="price-table">
- <tr><th>You get</th><th class="right">Founding</th></tr>
- <tr><td>A private 45-minute 1:1 with me, every week for 8 weeks</td><td>included</td></tr>
- <tr><td>Written review on your real work, three times a week</td><td>included</td></tr>
- <tr><td>A real, messy codebase to own, plus a live multiplayer world your code ships into</td><td>included</td></tr>
- <tr><td>Your live defense, recorded, with a working engineer's written verdict on it</td><td>included</td></tr>
- <tr><td>Your progress board, my prompt + testing toolkit, and a five-person room that ships</td><td>included</td></tr>
- <tr><td>Career track: LinkedIn review, a design system we agree in a 1:1, your own site built in it with a page per project (the PR, your graph tool, the system you modeled), a simple system for posts, and help showing the work where employers and other builders look</td><td>included</td></tr>
- <tr><td>After the eight weeks: I keep working with you at your own pace for up to a year, on one condition, that you put work in every day</td><td>included</td></tr>
- <tr><td>Trust Gap scorecard</td><td>free</td></tr>
- <tr class="price-final"><td>What it costs</td><td>Founding rate for the first five, quoted on the call. The rate rises once they have defended.</td></tr>
- </table>
+ <section class="sec" id="who">
+ <div class="wrap wrap--wide">
+ <h2>Built for the graduate the market skipped</h2>
+ <p class="section-lede">You did the work. You can build software. The apprenticeship rung you were promised got thinner the year you needed it, and AI made every portfolio look the same. This is for three people, and the same room fixes all three.</p>
+ <div class="cards cards--3">
+ <div class="card">
+ <small>01</small>
+ <h3>CS grad, no offers</h3>
+ <p>Hundreds of applications, a handful of screens, no team that has ever seen you own a change. You need work that is yours, in a system that existed before you did.</p>
+ </div>
+ <div class="card">
+ <small>02</small>
+ <h3>Bootcamp or self-taught, tutorial portfolio</h3>
+ <p>Your repos run. They also look like everyone else's. You need a product with real users, a graph tool you built, and a reviewer who marked your code up.</p>
+ </div>
+ <div class="card">
+ <small>03</small>
+ <h3>0 to 3 years, stuck or laid off</h3>
+ <p>You have shipped, but nobody outside your old team can tell. You need public proof of ownership and the AI-era craft the next role expects.</p>
+ </div>
+ </div>
+ <p class="not-for"><b>Not for you if:</b> you can't yet build something that runs end to end (start with a free course and come back), you want a job-or-refund promise, or you won't have your work reviewed in front of other people.</p>
+ </div>
+ </section>
  </div>
 
- <div class="guarantee" id="diagnostic">
- <h3>What I will honor</h3>
- <ol class="proof-list">
- <li><strong>The week-2 exit.</strong> If either of us says wrong room by the end of week 2, your unused tuition comes back. No forms, no fight.</li>
- <li><strong>Score your trust gap, free.</strong> Rate yourself 1-5 on the four things hiring actually checks: proof you've worked in code you didn't write, a check a stranger can run, a defense you've given out loud, a public trail that points at real work. Under 12 out of 20? You're exactly who this was built for. <a class="hero__alt" href="diagnostic/">Score it now</a>, it costs nothing.</li>
- <li><strong>If you vanish, I pause.</strong> Miss three weeks and your spot is paused and I call you. This is not a library card, and that protects the four people who showed up.</li>
+ <section class="sec sec--tint" id="year">
+ <div class="wrap wrap--wide">
+ <h2>What the year looks like</h2>
+ <p class="section-lede">Not a cohort clock. A sequence you move through at your own pace, on the condition that you put work in every day. Most people take two to four months to reach the defense; the rest of the year is where the position comes from.</p>
+ <ol class="year">
+ <li>
+ <span class="year__when">Months 1 to 2</span>
+ <div>
+ <b>Read and change a live system</b>
+ <p>A multiplayer world with real users lands on your machine. You make it run, trace a ticket through code you did not write, then ship your first change through review and watch it deploy.</p>
+ </div>
+ </li>
+ <li>
+ <span class="year__when">Months 2 to 4</span>
+ <div>
+ <b>Your own product, shipped</b>
+ <p>You model a system, build it with the AI tooling working engineers use, put it in front of real users, and measure the outcome. I sign off on each stage in writing.</p>
+ </div>
+ </li>
+ <li>
+ <span class="year__when">Months 3 to 6</span>
+ <div>
+ <b>Graph tool, design system, public site</b>
+ <p>You build a tool that reads source code as a graph and use it to plan your own changes. We agree a design system in a 1:1 and you build your site in it, one page per project, and start publishing.</p>
+ </div>
+ </li>
+ <li>
+ <span class="year__when">Month 4 onward</span>
+ <div>
+ <b>The defense</b>
+ <p>Eight recorded minutes defending your strongest change to a working engineer who did not help you. Their written verdict is yours to show a hiring manager.</p>
+ </div>
+ </li>
+ <li>
+ <span class="year__when">Until you land</span>
+ <div>
+ <b>Interviews, and keeping up</b>
+ <p>The tech moves every quarter. We keep your projects current, absorb what's new, prepare for each interview from your own work, and adjust the search. I stay reachable after you are hired.</p>
+ </div>
+ </li>
  </ol>
- <p class="muted">A company's yes is still theirs. Your evidence won't be. I have no alumni wall yet, and that's why the founding rate exists: the first five carry the proof, so they pay the least anyone will ever pay. Once they've defended in front of outside engineers, the price goes up and the next door gets smaller. The founding door to me stays open.</p>
+ <p class="year__cadence">Every week: a private 45-minute 1:1, a live cohort call, and up to three written reviews on your real work. Plan for 10 to 15 hours a week. Discord in between.</p>
  </div>
+ </section>
 
+ <section class="sec" id="build">
+ <div class="wrap wrap--wide">
+ <h2>What you build, and what a hiring manager sees</h2>
+ <div class="cards cards--4">
+ <div class="card card--build">
+ <small>Project 01</small>
+ <h3>A merged change to a live multiplayer world</h3>
+ <p>PR, review thread, deploy, and a failure log, on a system that existed before you did.</p>
+ <em>They see: you can be trusted with code you didn't write.</em>
+ </div>
+ <div class="card card--build">
+ <small>Project 02</small>
+ <h3>Your own system, with users</h3>
+ <p>Modeled, built, deployed, observed, with a measured outcome and an honest causation note.</p>
+ <em>They see: you can take something from idea to people using it.</em>
+ </div>
+ <div class="card card--build">
+ <small>Project 03</small>
+ <h3>A graph tool you wrote</h3>
+ <p>Parses source into a call graph, answers "what breaks if I change this", and packs context for an AI assistant.</p>
+ <em>They see: you understand systems, and you use AI like an engineer.</em>
+ </div>
+ <div class="card card--build">
+ <small>Project 04</small>
+ <h3>Your site, in your own design system</h3>
+ <p>One page per project, your posts and research, a profile that reads as a working engineer's.</p>
+ <em>They see: a stranger finds real work in under a minute.</em>
+ </div>
+ </div>
+ </div>
+ </section>
+
+ <section class="sec sec--tint" id="how">
+ <div class="wrap wrap--wide">
+ <div class="split">
+ <div>
+ <h2>How I work with you</h2>
+ <p class="section-lede">Bootcamps have a curriculum and a cohort. You get a senior engineer who reads your code every week, for a year, and a room of five who notice when you go quiet.</p>
+ <ul class="how">
+ <li><b>Weekly 1:1, 45 minutes.</b> Your code, your plan, your blockers. Same slot every week.</li>
+ <li><b>Three written reviews a week.</b> On real work. Accepted, or sent back with the one thing to change first.</li>
+ <li><b>Sign-offs on every project.</b> Nothing counts as done because you said so.</li>
+ <li><b>A live cohort call.</b> Five people, one hour, what shipped and what broke.</li>
+ <li><b>The defense.</b> An outside engineer, on camera, filling in the form on the right.</li>
+ <li><b>Discord, daily.</b> Stuck for thirty honest minutes, you ask. I answer the same day.</li>
+ </ul>
+ </div>
  <div class="verdict" aria-label="The external reader's verdict form, empty until it is earned">
  <b class="verdict__eyebrow">The verdict form</b>
- <p class="verdict__lede">At your defense, a working engineer who did not help you fills this in, live, on the recording. It is the last page of your evidence and the first thing worth showing a hiring manager.</p>
+ <p class="verdict__lede">At your defense, a working engineer who did not help you fills this in, live, on the recording. It is the first thing worth showing a hiring manager.</p>
  <div class="verdict__form">
  <div class="verdict__q"><span>Would you interview this person now?</span><em class="verdict__blank"></em></div>
  <div class="verdict__q"><span>If not, what evidence is missing?</span><em class="verdict__blank"></em></div>
@@ -305,93 +229,100 @@
  </div>
  <p class="verdict__note">Shown empty on purpose. Nobody can buy this filled in.</p>
  </div>
-
- <a class="enter" href="apply/">APPLY FOR A SPOT<span class="enter-arrow" aria-hidden="true">→</span></a>
- <p class="cta-sub">Apply → 20-minute call → pay → start. Five founding spots, then the rate rises.</p>
- </section>
-
- <section class="wrap" id="who">
- <h2>This is not for everyone. That's the point.</h2>
- <div class="ccvv">
- <div class="ccvv__card ccvv__card--cyan">
- <div class="ccvv__mark">In</div>
- <h3>You can already code</h3>
- <p>A repo that runs. Degree, bootcamp, or self-taught. I don't care which door you used.</p>
- </div>
- <div class="ccvv__card ccvv__card--amber">
- <div class="ccvv__mark">In</div>
- <h3>You can't get trusted</h3>
- <p>Never hired, laid off, or 0-5 years and stuck. The search is failing. Not the syntax.</p>
- </div>
- <div class="ccvv__card ccvv__card--ok">
- <div class="ccvv__mark">In</div>
- <h3>You'll take the review</h3>
- <p>Ship every week. Defend the work live. Hide and I will end it.</p>
- </div>
- <div class="ccvv__card ccvv__card--out">
- <div class="ccvv__mark">Out</div>
- <h3>Who this is not for</h3>
- <p>Still learning to code. Want a job-or-refund promise. Want FAANG or nothing. Won't have their work reviewed.</p>
  </div>
  </div>
  </section>
 
- <section class="wrap" id="founder">
- <h2>I'm Aden. Don't take my word for any of this.</h2>
+ <div class="lift lift--late">
+ <section class="sec" id="platform">
+ <div class="wrap wrap--wide">
+ <div class="split split--media">
+ <figure class="shot">
+ <img src="assets/map-floor.jpg?v=1" width="1180" height="800" alt="The GridSchool map: a lit column marks the step to do next, green discs are done, dim discs are ahead.">
+ </figure>
+ <div>
+ <h2>Your progress is a map</h2>
+ <p class="section-lede">Every step on it is a thing you can point a stranger at. The tall column is what to do next. Green is done. A shorter amber column is waiting on my written verdict, or came back with changes. Nothing lights without a link, and I see the same board from my side.</p>
+ <a class="hero__alt" href="app/?s=demo#/map">Walk the demo board →</a>
+ </div>
+ </div>
+ </div>
+ </section>
+
+ <section class="sec" id="offer">
+ <div class="wrap">
+ <h2>Founding cohort</h2>
+ <p class="section-lede">The first five residents get me directly through all of it, at a founding rate that is quoted on the call and never printed here, because it will rise once they have defended in front of outside engineers.</p>
+ <ul class="terms">
+ <li><b>One payment, or a deposit and the balance after week 1.</b> Checkout shows the figure before you pay anything.</li>
+ <li><b>The week-2 exit.</b> If either of us says wrong room by the end of week 2, unused tuition comes back. No forms.</li>
+ <li><b>The one condition.</b> Work every day. Go quiet for three weeks and your spot pauses and I call you.</li>
+ <li><b>No job promise.</b> A company's yes is theirs. Your evidence, your site, your verdict, and my reference are yours.</li>
+ </ul>
+ <a class="enter enter--solid" href="apply/">BOOK A FIT CALL<span class="enter-arrow" aria-hidden="true">→</span></a>
+ <p class="cta-sub">Apply, a 20-minute call, then a decision on both sides. <a class="hero__alt" href="diagnostic/">Score your trust gap first</a>, it costs nothing.</p>
+ </div>
+ </section>
+ </div>
+
+ <section class="sec" id="founder">
+ <div class="wrap">
  <div class="founder">
- <p class="muted">I'm a working software engineer, not a placement shop. I paid twenty thousand dollars for a bootcamp on my way in, and I built this because I knew what that money should have bought. The industry filled with AI; the people who stay ahead can change a real system, check the model, and defend the result. Everything this page claims is checkable, so check it: the world server is live and deploys in public, the code is on GitHub, the platform is walkable right now, and every student PR will carry a real name. I don't have a wall of alumni yet. The founding five build it, they can always reach me after, and they'll be able to say they were first.</p>
+ <h2>I'm Aden. Check everything on this page.</h2>
+ <p>I'm a working software engineer, not a placement shop. I paid twenty thousand dollars for a bootcamp on my way in and built this because I knew what that money should have bought: a senior engineer who reads your code, real systems to break, and proof you can show. There is no alumni wall yet. The founding five build it, and they can always reach me after.</p>
  <ul class="founder__receipts">
  <li><a href="https://world-staging.gridschool.org/health" target="_blank" rel="noopener">The world server, live ↗</a></li>
  <li><a href="https://github.com/Grid-School" target="_blank" rel="noopener">The code, public ↗</a></li>
- <li><a href="app/?s=demo">The platform, walkable</a></li>
+ <li><a href="app/?s=demo#/map">The platform, walkable</a></li>
  <li><a href="path/">The full syllabus, unlit</a></li>
  </ul>
  </div>
+ </div>
  </section>
 
- <div class="seats">
- <div class="seats__count">5</div>
- <div class="seats__label">founding spots · founding rate until the first five defend</div>
- <a class="enter" href="apply/">APPLY FOR A SPOT<span class="enter-arrow" aria-hidden="true">→</span></a>
- </div>
-
- <section class="wrap" id="faq">
+ <section class="sec sec--tint" id="faq">
+ <div class="wrap">
  <h2>Straight answers</h2>
  <details><summary>Will you get me a job?</summary>
- <p>I raise the odds you get trusted: messy system, real review, live defense, outside verdict. Career guidance is included: LinkedIn review, a design system we agree together, your site built in it, a simple system for posts. A company's yes is still theirs. Your evidence won't be. After the lab, founding five can always reach me, including once they're hired.</p>
+ <p>I make you the candidate a team can evaluate and trust: real ownership on live systems, written review, a public site, an outside engineer's verdict, and my own reference. We prepare every interview from your own work and I keep working with you until you land. A company's yes is still theirs.</p>
+ </details>
+ <details><summary>Why 12 months?</summary>
+ <p>Because that is how long it actually takes to go from "I can code" to "a team hired me" in this market, and because the tech changes while you search. Short programs hand you a certificate and leave. Here the projects stay current and the mentor stays.</p>
  </details>
  <details><summary>Is this a bootcamp?</summary>
- <p>No. Bootcamps teach beginners and sell job-or-refund. Curriculum itself is cheap now. You already write programs. This room sells proof and an outside engineer's attestation, not another course.</p>
+ <p>No. Bootcamps teach beginners a stack. You already write programs. This is a residency: work on real systems with a senior engineer, sign-offs, and proof, for someone who already has the degree or the equivalent.</p>
  </details>
- <details><summary>Why not YouTube, ChatGPT, or a mentor?</summary>
- <p>Those are information. Information lost its moat. This is the AI-era craft on a messy system: check the model, own the blast radius, survive review, defend live. Five people notice when you go quiet. A verdict form gets filled by someone who did not help you. The door stays open after the lab.</p>
+ <details><summary>What if I'm slower or faster than the timeline?</summary>
+ <p>The timeline is a sequence, not a clock. The map opens the next step when you finish the one before it. Work every day and the pace is yours.</p>
  </details>
- <details><summary>I never got hired after COVID / the AI wave. Is that me?</summary>
- <p>If you cannot write a working program, learn that first. If you can already code: the apprenticeship rung got thinner while AI made claims and portfolios cheaper. The missing piece is usually proof someone else can trust, not another tutorial.</p>
+ <details><summary>I never got hired after the AI wave. Is that me?</summary>
+ <p>If you can't write a working program yet, learn that first; I'll point you at free material. If you can, the missing piece is almost never another tutorial. It is proof someone else can trust, and the craft of using AI in a way you can defend.</p>
  </details>
- <details><summary>I have 1-5 years and I still can't get trusted.</summary>
- <p>Same studio. Same defense. The job title is not the admission line. The missing evidence is.</p>
+ <details><summary>Why founding, with no placements yet?</summary>
+ <p>Because the first five get me at full attention while the method is tuned on them, at the lowest rate anyone will pay. Week 2 is the exit. Once they have defended in front of outside engineers, the rate rises and the room gets harder to get into.</p>
  </details>
- <details><summary>Do I intern on GridSeak?</summary>
- <p>Not until it's public with users. Until then you work on a messy studio repo I provide. I will not put “intern on my unpublished tool” on your resume.</p>
- </details>
- <details><summary>Why founding, with no placements?</summary>
- <p>Because you are helping invent the studio. Week 2 is the out. Once the first five have defended in front of outsiders, it gets harder to get in.</p>
- </details>
+ </div>
+ </section>
+
+ <section class="final">
+ <div class="wrap">
+ <h2>Five founding spots.<br>One 20&#8209;minute call to find out if it's you.</h2>
+ <a class="enter enter--solid" href="apply/">BOOK A FIT CALL<span class="enter-arrow" aria-hidden="true">→</span></a>
+ </div>
  </section>
 
 </main>
 
 <footer>
  <div class="wrap">
- GridSchool · for people who can already code. When that used to be enough. ·
+ GridSchool Residency · for graduates who can already code ·
  <a href="mailto:support@gridschool.org">support@gridschool.org</a>
  <p>© 2026 GRID SCHOOL LLC · Boise, Idaho · <a href="terms/">Terms</a> · <a href="privacy/">Privacy</a><br>
- I raise the odds. A company's yes is still theirs. Your evidence won't be.</p>
+ A company's yes is theirs. Your evidence won't be.</p>
  </div>
 </footer>
 
 <script type="module" src="landing.js"></script>
-<script type="module" src="js/landing-world.js"></script>
+<script type="module" src="js/hero-grid.js"></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 {
-  "version": "2026-08-28",
+  "version": "2026-09-04",
   "note": "Written from how the program actually runs. Every claim here has to match BREAK-IN-LOCK.md; if the offer changes, this file changes in the same commit.",
   "documents": {
     "terms": {
@@ -9,7 +9,7 @@
         {
           "heading": "What you are buying",
           "body": [
-            "The GridSchool Founding Defense Lab is an eight-week coaching program for people who can already write a working program and cannot get a team to trust them. It includes a weekly 45-minute one-to-one, a weekly cohort call, up to three written reviews per week, a board that tracks your evidence, a real system to work in, a recorded live defense read by an outside engineer, and a prompt pack you run in your own AI account.",
+            "The GridSchool Residency is a twelve-month coaching and review program for people who can already write a working program and cannot get a team to trust them. It includes a weekly 45-minute one-to-one, a weekly cohort call, up to three written reviews per week, written sign-offs on your projects, a board that tracks your evidence, real systems to work in, a recorded live defense read by an outside engineer, help building your public site and profile, interview preparation from your own work, and a prompt pack you run in your own AI account. It runs at your pace within the twelve months, on the condition that you put work in every day.",
             "It is coaching and review. It is not a bootcamp, not a degree, not accredited, and not a recruiting agency."
           ]
         },
@@ -23,7 +23,7 @@
         {
           "heading": "Who this is for",
           "body": [
-            "You must already be able to build something that runs end to end. If you cannot yet, the application will say so and turn you down, because taking your money would waste eight weeks of your life and earn a refund request."
+            "You must already be able to build something that runs end to end. If you cannot yet, the application will say so and turn you down, because taking your money would waste months of your life and earn a refund request."
           ]
         },
         {
@@ -37,15 +37,15 @@
         {
           "heading": "The week 2 exit",
           "body": [
-            "If either of us says this is the wrong room by the end of week 2, unused intensive tuition comes back. No essay required.",
+            "If either of us says this is the wrong room by the end of week 2, unused tuition comes back. No essay required.",
             "This is the only guarantee I make, and it is deliberate: it covers the risk you cannot judge yet, which is whether we work well together."
           ]
         },
         {
           "heading": "The quota, and what happens if it stops",
           "body": [
-            "The founding lab quota is a ship URL every week and the live sessions you booked. Application volume and LinkedIn posting are not founding requirements.",
-            "Miss three weeks of ship or three live sessions and your spot pauses and I call you. If we agree it is over, it ends; if not, it resumes at your pace. After the eight-week lab I keep working with you for up to a year at your own pace, on the condition that you put work in every day."
+            "The residency quota is work every day, a ship URL every week, and the live sessions you booked. Application volume and LinkedIn posting are not requirements.",
+            "Miss three weeks of ship or three live sessions and your spot pauses and I call you. If we agree it is over, it ends; if not, it resumes at your pace. The twelve months are a ceiling on what you have paid for, not a clock you are racing; once you have landed a position, I stay reachable."
           ]
         },
         {
@@ -72,7 +72,7 @@
         {
           "heading": "Ending it",
           "body": [
-            "You can stop at any time; after week 2 the intensive is non-refundable because the spot is one of five and I cannot resell it mid-cohort.",
+            "You can stop at any time; after week 2 tuition is non-refundable because the spot is one of five and I cannot resell it mid-year.",
             "I can end the program with a refund of unused tuition if you break the conduct rules above, or if I cannot deliver what I sold."
           ]
         },
@@ -99,7 +99,7 @@
         {
           "heading": "Why",
           "body": [
-            "To decide whether the program fits you, to run the eight weeks, and to know where you are so a review is useful. Your email is used to talk to you about your own program, not to run a newsletter."
+            "To decide whether the program fits you, to run the residency, and to know where you are so a review is useful. Your email is used to talk to you about your own program, not to run a newsletter."
           ]
         },
         {

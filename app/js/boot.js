@@ -26,6 +26,7 @@ import { renderLibrary } from "./views/library.js";
 import { renderFirstRun, shouldOpenFirstRun } from "./views/first-run.js";
 import { toggleDevUnlock, setDevUnlock } from "./dev-mode.js";
 import { startReminders } from "./reminders.js";
+import { watchReviewArrivals } from "./review-arrivals.js";
 
 const VIEWS = {
   today: { render: renderToday, persistent: true },
@@ -283,6 +284,9 @@ async function start() {
   store.subscribe(onStoreChange);
   // Meeting reminders: an hour and fifteen minutes before every live room.
   startReminders({ getState: () => store.state() });
+  // A verdict that lands while the board is open says so once. The instructor
+  // is the one returning it, so only the student's side listens.
+  if (role !== "admin") watchReviewArrivals(store);
 
   window.addEventListener("keydown", (event) => {
     if (event.target.matches("input, textarea, select")) return;

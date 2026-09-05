@@ -242,7 +242,7 @@ export function renderMap(ctx, initialArg) {
         el("b.hud__count", {}, `Required ${prog.spine.lit} of ${prog.spine.total}`),
         el("span.hud__depth", {}, depthLine(prog.depth))
       ),
-      el("div.hud__group", {}, ...LEGEND.map((standing) => legendKey(standing, STANDING_LABEL[standing])))
+      el("div.hud__group", {}, ...legendFor(graph).map((standing) => legendKey(standing, STANDING_LABEL[standing])))
     );
 
     mount(
@@ -270,6 +270,19 @@ export function renderMap(ctx, initialArg) {
     setStatus(isList() ? null : WALK_HINT);
   }
 
+  /**
+   * The legend explains what is on the floor, not every state that exists.
+   * "Do this next", "Done" and "Ahead" always read; the rest appear only once
+   * a node on this board stands that way, so a fresh board shows three keys
+   * and a laptop does not wrap eight.
+   */
+  function legendFor(graph) {
+    const nextId = nextUp(graph)?.id ?? null;
+    const present = new Set(graph.nodes.map((node) => standingOf(node, nextId)));
+    const always = new Set([STANDING.NEXT, STANDING.LIT, STANDING.LOCKED]);
+    return LEGEND.filter((standing) => always.has(standing) || present.has(standing));
+  }
+
   /** Depth is what you took on, then what is waiting to be picked. */
   function depthLine(depth) {
     const taken = depth.total ? `Depth ${depth.lit} of ${depth.total} picked` : "No depth picked yet";
@@ -294,6 +307,14 @@ export function renderMap(ctx, initialArg) {
     if (standing === STANDING.FUTURE) return parts.join(" · ");
     if (standing === STANDING.OFFERED) parts.push("open it to add it to your path");
     else parts.push(trackLabel(node.track));
+    // An open node far up the road is not a skip: say what opened it.
+    if (standing === STANDING.OPEN && node.n > (nextUp(graph)?.n ?? 0) + 1) {
+      const openers = (node.requires ?? [])
+        .map((rid) => graph.byId.get(rid))
+        .filter((item) => item && (item.status === STATUS.LIT || item.awaitingSignoff))
+        .map((item) => item.title);
+      if (openers.length) parts.push(`opened by ${openers.join(", ")}`);
+    }
     if (node.why) parts.push(node.why);
     const { done = 0, total = 0 } = node.taskProgress ?? {};
     if (total) parts.push(`${done}/${total} tasks`);

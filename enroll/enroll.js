@@ -15,7 +15,7 @@ const PLANS = [
     tag: "Most take this",
     best: true,
     price: PRICING.foundingLabel,
-    sub: "once, for the eight weeks, at the figure we agreed on your call. Checkout shows it before you pay.",
+    sub: "once, for the twelve months, at the figure we agreed on your call. Checkout shows it before you pay.",
     linkKey: "foundingCheckout",
     cta: "Take the spot",
     includes: [
