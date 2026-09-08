@@ -22,6 +22,8 @@ import { electiveBlock } from "./elective.js";
 import { signoffNotice, submitLabel, linkHint } from "./signoff.js";
 import { welcomeReadiness, welcomeSubmitWarn, isStepComplete } from "./welcome.js";
 import { registerLeaveGuard, clearLeaveGuard, isLeaveDirty } from "../leave-guard.js";
+import { isPreviewMedia } from "../preview-mode.js";
+import { siteOverridesDoc, dropSiteOverridesCache } from "../../../js/site-overrides.js";
 
 const FALLBACK_VIDEO = {
   title: "Lesson",
@@ -114,9 +116,11 @@ export function renderStep(ctx, nodeId, moduleId = null) {
     const count = isSpine(node)
       ? ` · ${prog.spine.lit} of ${prog.spine.total} required`
       : "";
+    /* Weeks are typical pace inside the intensive sequence, not a calendar
+       promise: the residency runs a year and nothing on the map expires. */
     const weeks =
       Array.isArray(node.weeks) && node.weeks.length
-        ? ` · week ${node.weeks[0] === node.weeks[1] ? node.weeks[0] : `${node.weeks[0]} to ${node.weeks[1]}`}`
+        ? ` · typical pace week ${node.weeks[0] === node.weeks[1] ? node.weeks[0] : `${node.weeks[0]} to ${node.weeks[1]}`}`
         : "";
     return `${track}${count} · ${family?.label ?? "Step"} · ${String(node.n).padStart(2, "0")} · ${statusLabel(node.status)}${weeks}`;
   }
@@ -126,10 +130,13 @@ export function renderStep(ctx, nodeId, moduleId = null) {
     const blockers = blockedBy(graph, node.id);
     const canTurnIn = node.status === STATUS.OPEN || node.status === STATUS.LIT;
     const welcome = node.id === "or.start";
-    // Every chapter has a player. If the lesson file is not on the CDN yet,
-    // the same player still opens so the page shape stays one film per step.
+    // A filmed chapter gets its player. An unfilmed one shows only "What the
+    // film covers" — no stand-in clip for students. Media preview (instructor
+    // rail switch, device-local) restores the test clip so the page shape can
+    // be judged before filming.
     const filmed = Boolean(node.video && resolveMedia(node.video));
-    const video = filmed ? node.video : node.video ? { ...FALLBACK_VIDEO, title: node.video.title || FALLBACK_VIDEO.title, mins: node.video.mins || FALLBACK_VIDEO.mins } : null;
+    const previewClip = !filmed && Boolean(node.video) && isPreviewMedia();
+    const video = filmed ? node.video : previewClip ? { ...FALLBACK_VIDEO, title: node.video.title || FALLBACK_VIDEO.title, mins: node.video.mins || FALLBACK_VIDEO.mins } : null;
     const card = video
       ? videoCard({
           title: video.title,
@@ -202,11 +209,11 @@ export function renderStep(ctx, nodeId, moduleId = null) {
         welcome ? null : modeLine(node)
       ),
       electiveBlock({ node, store: current.store }),
-      card
+      card || (!filmed && node.video?.summary)
         ? el(
             "section.step__video",
             {},
-            card.node,
+            card ? card.node : null,
             filmSummary({ summary: node.video?.summary, filmed })
           )
         : null,
@@ -594,8 +601,110 @@ export function renderStep(ctx, nodeId, moduleId = null) {
           return el("span.chip2", {}, req ? `${String(req.n).padStart(2, "0")} ${req.title}` : id);
         }),
         !(node.requires ?? []).length && el("span.muted", {}, "no prerequisites")
-      )
+      ),
+      copyEditor(node)
     );
+  }
+
+  /**
+   * Edit this step's display copy for every board: title, why, evidence,
+   * reading. Saves to the notebook's site overrides, so the change reaches
+   * all students on their next load without a deploy. Lesson prose is not
+   * editable here on purpose; it lives in git where it is reviewed as writing.
+   */
+  function copyEditor(node) {
+    const live = siteOverridesDoc()?.copy?.nodes?.[node.id] ?? null;
+    const body = el("div.room__copyedit", { hidden: true, style: "margin-top:10px;display:grid;gap:8px" });
+    const toggle = el(
+      "button.room__goto",
+      { type: "button" },
+      live ? "Edit step copy (live override on this step)" : "Edit step copy for all boards"
+    );
+    toggle.addEventListener("click", () => {
+      body.hidden = !body.hidden;
+      if (!body.hidden && !body.childElementCount) buildForm();
+    });
+
+    function buildForm() {
+      const fieldStyle =
+        "width:100%;font:inherit;font-size:13px;color:var(--text);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px 10px;";
+      const inputs = {
+        title: el("input", { value: node.title ?? "", "aria-label": "Step title", style: fieldStyle }),
+        why: el("textarea", { rows: 2, "aria-label": "Step why", style: fieldStyle }, node.why ?? ""),
+        evidence: el("textarea", { rows: 3, "aria-label": "Step evidence", style: fieldStyle }, node.evidence ?? ""),
+        reading: el("textarea", { rows: 2, "aria-label": "Step reading", style: fieldStyle }, node.reading ?? ""),
+      };
+      const note = el(
+        "p.room__hint",
+        {},
+        "Saves for every board on next load. Clearing all fields removes the override and the map falls back to the curriculum file. Lesson text is edited in the repo, not here."
+      );
+
+      async function save(entry) {
+        const { fetchSiteOverrides, saveSiteOverrides } = await import("../persist-admin.js");
+        const current = await fetchSiteOverrides().catch(() => ({ doc: {} }));
+        const doc = current.doc ?? {};
+        const nodes = { ...(doc.copy?.nodes ?? {}) };
+        if (entry) nodes[node.id] = entry;
+        else delete nodes[node.id];
+        await saveSiteOverrides({ ...doc, copy: { nodes } });
+        dropSiteOverridesCache();
+        toast("Saved for all boards. Reloading.");
+        setTimeout(() => location.reload(), 600);
+      }
+
+      body.append(
+        el("label.room__hint", {}, "Title"),
+        inputs.title,
+        el("label.room__hint", {}, "Why (the lead line)"),
+        inputs.why,
+        el("label.room__hint", {}, "Turn this in (evidence ask)"),
+        inputs.evidence,
+        el("label.room__hint", {}, "Reading line"),
+        inputs.reading,
+        note,
+        el(
+          "div.room__acts",
+          {},
+          btn({
+            label: "Save for all boards",
+            variant: "solid",
+            onclick: async (event) => {
+              event.target.disabled = true;
+              const entry = {};
+              for (const [key, input] of Object.entries(inputs)) {
+                const value = input.value.trim();
+                if (value) entry[key] = value;
+              }
+              try {
+                await save(Object.keys(entry).length ? entry : null);
+              } catch (error) {
+                event.target.disabled = false;
+                toast(`Save failed: ${error.message}. The notebook needs your ADMIN_TOKEN (admin console, Setup).`, "warn");
+              }
+            },
+          }),
+          live
+            ? btn({
+                label: "Remove override",
+                variant: "quiet",
+                onclick: async (event) => {
+                  event.preventDefault();
+                  event.target.disabled = true;
+                  try {
+                    await save(null);
+                  } catch (error) {
+                    event.target.disabled = false;
+                    toast(`Remove failed: ${error.message}`, "warn");
+                  }
+                },
+              })
+            : null
+        )
+      );
+    }
+
+    return el("div", {}, toggle, body);
   }
 
   function draftOpen() {

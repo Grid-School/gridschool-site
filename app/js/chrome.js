@@ -19,6 +19,8 @@ import { gmark, wordmark } from "../../js/brand.js";
 import { btn } from "./ui.js";
 import { signOut } from "./session.js";
 import { lock } from "./gate.js";
+import { isPreviewMedia } from "./preview-mode.js";
+import { isInstructorDevice, setInstructorDevice } from "./instructor-mode.js";
 import { returnedUnread } from "./tasks.js";
 import { progress } from "./graph/model.js";
 
@@ -35,6 +37,7 @@ export function createChrome({
   onReset,
   onExport,
   onToggleDev,
+  onTogglePreview,
   role: chromeRole = "student",
   showAdminConsole = false,
 }) {
@@ -128,7 +131,10 @@ export function createChrome({
         instructor && el("span.rail__role", {}, "Instructor view"),
         canDev &&
           state.unlockAll &&
-          el("span.rail__role.rail__role--dev", {}, "Dev unlock")
+          el("span.rail__role.rail__role--dev", {}, "Dev unlock"),
+        instructor &&
+          isPreviewMedia() &&
+          el("span.rail__role.rail__role--dev", {}, "Media preview")
       ),
       el(
         "div.rail__acts",
@@ -138,6 +144,26 @@ export function createChrome({
             label: state.unlockAll ? "Dev unlock: on" : "Dev unlock: off",
             variant: "quiet",
             onclick: onToggleDev,
+          }),
+        /* Instructor only, never the demo: students and the public tour must
+           see the honest "film in production" state, not the test clip. */
+        instructor &&
+          onTogglePreview &&
+          btn({
+            label: isPreviewMedia() ? "Media preview: on" : "Media preview: off",
+            variant: "quiet",
+            onclick: onTogglePreview,
+          }),
+        instructor &&
+          isInstructorDevice() &&
+          btn({
+            label: "Leave instructor view",
+            variant: "quiet",
+            title: "This device goes back to rendering the student view. Turn it on again from the admin console.",
+            onclick: () => {
+              setInstructorDevice(false);
+              location.reload();
+            },
           }),
         showAdminConsole && btn({ label: "Admin", variant: "quiet", href: "../admin/" }),
         btn({ label: "Export board", variant: "quiet", onclick: onExport }),

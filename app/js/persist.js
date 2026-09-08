@@ -29,6 +29,7 @@ export const INSTRUCTOR_KEYS = [
   "extraNodes",
   "nodeOverrides",
   "quotaLog",
+  "meetings",
 ];
 
 /** Kinds that Telegram Aden (email if Telegram is down). */
@@ -287,6 +288,7 @@ export function seedFromSnapshot(snap) {
     slug: snap?.slug,
     name: identity.name ?? snap?.slug,
     email: identity.email ?? "",
+    discord: identity.discord ?? "",
     cohort: identity.cohort ?? "founding-001",
     joined: identity.joined,
     public: identity.public === true,
@@ -308,6 +310,7 @@ export function mergeStudent(student, overlay) {
     stepFlags: { ...(student.stepFlags ?? {}), ...(overlay.stepFlags ?? {}) },
     extraNodes: overlay.extraNodes ?? student.extraNodes ?? [],
     reviews: overlay.reviews ?? student.reviews ?? [],
+    meetings: overlay.meetings ?? student.meetings ?? [],
     quotaLog: overlay.quotaLog ?? student.quotaLog ?? [],
     readReviews: overlay.readReviews ?? student.readReviews ?? [],
     chat: overlay.chat ?? student.chat ?? { turns: [] },

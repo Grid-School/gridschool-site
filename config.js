@@ -8,8 +8,8 @@
 
 export const LINKS = {
   application: "REPLACE_ME_TALLY_URL",
-  foundingCheckout: "REPLACE_ME_STRIPE_FOUNDING_500",
-  depositCheckout: "REPLACE_ME_STRIPE_DEPOSIT_100",
+  foundingCheckout: "REPLACE_ME_STRIPE_FOUNDING",
+  depositCheckout: "REPLACE_ME_STRIPE_DEPOSIT",
   fitCall: "REPLACE_ME_CALCOM_FIT_20MIN",
   oneOnOne: "REPLACE_ME_CALCOM_1ON1_45MIN",
   discord: "REPLACE_ME_DISCORD_INVITE",
@@ -88,13 +88,18 @@ export const PERSIST = {
 
 /**
  * No dollar figure is printed anywhere on the site. The rate is quoted on the
- * call and shown by Stripe at checkout, because it will move over the next
+ * call and shown on the checkout page, because it will move over the next
  * year and a stale number on a page is a lie the site tells for you. Copy
- * says "founding rate"; the numbers live in Stripe and in the sales script.
+ * says "founding rate"; the numbers live at checkout and in the sales script.
+ * Checkout runs through a financing partner (Klarna-class) rather than plain
+ * card processing, because these are $1k to $15k payments; the link keys stay
+ * provider-neutral so switching providers is one paste in the admin console.
  */
 export const PRICING = {
   spots: 5,
-  weeks: 8,
+  /** The residency runs a year at the student's pace; the intensive sequence
+      inside it is typically two to four months. Source: the offer lock §3. */
+  months: 12,
   foundingLabel: "Founding rate",
   depositLabel: "Deposit, then the balance",
 };

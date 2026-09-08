@@ -5,6 +5,7 @@
 
 import { link, LINKS } from "../config.js";
 import { getEnrollment, getApplication } from "../js/lead.js";
+import { applySiteOverrides } from "../js/site-overrides.js";
 
 const params = new URLSearchParams(location.search);
 const slug = params.get("s") || "demo";
@@ -44,6 +45,10 @@ const STEPS = [
 ];
 
 const list = document.getElementById("steps");
+
+/* Day one renders after the live overrides land, so the Discord invite and
+   the 1:1 link pasted in the console reach a new student without a deploy. */
+await applySiteOverrides().catch(() => {});
 
 STEPS.forEach((step, index) => {
   const li = document.createElement("li");

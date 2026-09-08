@@ -25,6 +25,8 @@ import { renderCalendar } from "./views/calendar.js";
 import { renderLibrary } from "./views/library.js";
 import { renderFirstRun, shouldOpenFirstRun } from "./views/first-run.js";
 import { toggleDevUnlock, setDevUnlock } from "./dev-mode.js";
+import { togglePreviewMedia, setPreviewMedia, isPreviewMedia } from "./preview-mode.js";
+import { isInstructorDevice } from "./instructor-mode.js";
 import { startReminders } from "./reminders.js";
 import { watchReviewArrivals } from "./review-arrivals.js";
 
@@ -55,6 +57,9 @@ let role = "student";
 function resolveRole() {
   const params = new URLSearchParams(location.search);
   if (params.get("admin") === "1" || params.get("dev") === "1") return "admin";
+  /* Switched on from the admin console, off from the rail. Chrome only:
+     writes still require the ADMIN_TOKEN either way. */
+  if (isInstructorDevice()) return "admin";
   return currentSession()?.role ?? "student";
 }
 
@@ -98,6 +103,7 @@ function syncChrome() {
     state.hasLocalEdits ? "1" : "0",
     state.persistStatus?.state ?? "off",
     role,
+    isPreviewMedia() ? "1" : "0",
   ].join("|");
   if (identityKey !== lastIdentityKey) {
     chrome.setIdentity(state, role);
@@ -205,6 +211,11 @@ async function start() {
      ?admin=1 or ?dev=1 so Dev unlock still works; only hide the console link. */
   const showAdminConsole = role === "admin" && (await adminSurfaceExists());
   if (wantsDevUnlock()) setDevUnlock(true);
+  /* ?preview=1 turns on the media preview for an instructor session, so a
+     testing link can carry the stand-in clips without touching the rail. */
+  if (role === "admin" && new URLSearchParams(location.search).get("preview") === "1") {
+    setPreviewMedia(true);
+  }
 
   try {
     await store.init(slug, { tour: !unlocked });
@@ -263,6 +274,16 @@ async function start() {
         store.state().unlockAll
           ? "Dev unlock on. All nodes open for reading."
           : "Dev unlock off. Prerequisites gate the map again.",
+        "ok"
+      );
+    },
+    onTogglePreview: () => {
+      const on = togglePreviewMedia();
+      store.refresh();
+      toast(
+        on
+          ? "Media preview on. Unfilmed steps show the test clip on this device."
+          : "Media preview off. Unfilmed steps show only what the film covers.",
         "ok"
       );
     },

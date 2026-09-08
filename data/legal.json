@@ -1,6 +1,6 @@
 {
   "version": "2026-09-04",
-  "note": "Written from how the program actually runs. Every claim here has to match BREAK-IN-LOCK.md; if the offer changes, this file changes in the same commit.",
+  "note": "Written from how the program actually runs. Every claim here has to match the offer lock in companies/gridschool-phase0; if the offer changes, this file changes in the same commit.",
   "documents": {
     "terms": {
       "title": "Terms",
@@ -29,9 +29,9 @@
         {
           "heading": "Price and payment",
           "body": [
-            "The founding rate is quoted on your call and shown in full at checkout before you pay; it is not printed on the site because it will change. It is one payment, or a deposit and the balance after week 1. The first five carry the proof while the method is still being tuned, and the rate rises once they have defended.",
+            "The founding rate is quoted on your call and shown in full at checkout before you pay; it is not printed on the site because it will change. It is one payment, or a deposit and the balance at day 15, after the exit window has passed. The first five carry the proof while the method is still being tuned, and the rate rises once they have defended.",
             "There is no subscription and no monthly product. What you pay is what it costs.",
-            "Payments are handled by Stripe. I never see or store your card details."
+            "Payments and any financing are handled by the checkout partner named on the checkout page before you pay. I never see or store your card details."
           ]
         },
         {
@@ -106,7 +106,7 @@
           "heading": "Where it lives",
           "body": [
             "While the platform is pre-backend, your board lives in your own browser's storage and in a file I keep in the project repository when you or I export it. Nothing about your board is sent to a third-party analytics service.",
-            "Payments go through Stripe, scheduling through Cal.com, the room through Discord, and email through my mail provider. Each of them sees only what it needs: Stripe sees the payment, Cal.com sees the booking, Discord sees what you post there."
+            "Payments go through the checkout partner named on the checkout page, scheduling through Cal.com, the room through Discord, and email through my mail provider. Each of them sees only what it needs: the checkout partner sees the payment, Cal.com sees the booking, Discord sees what you post there."
           ]
         },
         {

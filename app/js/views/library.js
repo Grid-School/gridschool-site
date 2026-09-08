@@ -7,6 +7,7 @@ import { el } from "../dom.js";
 import { panel, btn } from "../ui.js";
 import { loadLibrary } from "../api.js";
 import { videoCard } from "./video.js";
+import { isPreviewMedia } from "../preview-mode.js";
 
 export function renderLibrary(ctx) {
   const root = el("div.view.view--library", {}, el("p.muted", {}, "Loading the library."));
@@ -43,11 +44,15 @@ export function renderLibrary(ctx) {
             "ol.lib",
             {},
             track.items.map((item, index) => {
+              /* No stand-in clip for students: a row with no real film renders
+                 as "in production". Media preview (instructor switch) restores
+                 the test clip for layout work. */
+              const fallbackPath = isPreviewMedia() ? "test-bbb" : undefined;
               const player = videoCard({
                 title: item.title,
                 mins: item.mins,
                 youtube: item.youtube,
-                path: item.path || (item.youtube ? undefined : "test-bbb"),
+                path: item.path || (item.youtube ? undefined : fallbackPath),
                 thumb: item.thumb,
               });
               if (player) players.set(item.id, player);
@@ -78,7 +83,7 @@ export function renderLibrary(ctx) {
                   "div.lib__body",
                   {},
                   el("b", {}, item.title),
-                  el("span.lib__meta", {}, `${item.mins} min`),
+                  el("span.lib__meta", {}, player ? `${item.mins} min` : `${item.mins} min · film in production`),
                   player?.node
                 ),
                 watch

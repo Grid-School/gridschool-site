@@ -106,6 +106,13 @@
       "attachesTo": "or.start"
     },
     {
+      "id": "disciplines/14-containment-and-accountability",
+      "title": "14 · Containment and accountability",
+      "series": "disciplines",
+      "mins": 14,
+      "attachesTo": "cv.contain"
+    },
+    {
       "id": "nanograph/00-your-repo-is-a-graph",
       "title": "00 · Your repo is a graph",
       "series": "nanograph",

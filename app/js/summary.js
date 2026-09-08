@@ -65,9 +65,25 @@ function summarize({ slug, student, graph, curriculum, cohort, week, attention =
     queueLength: queue.length,
     nextNode: next,
     attention,
+    stage: stageFor(graph),
     /** The single line I need in a glance: is this person moving or stalled? */
     signal: signalFor({ prog, quota, waiting, student, week, attention }),
   };
+}
+
+/**
+ * Where a student stands, as a verb for the next live call: are they watching,
+ * driving a first ticket, shipping like a teammate, rehearsing the defense, or
+ * running the search. Derived from the map, never set by hand, so it can not
+ * drift from the evidence. Stage meanings: ops/weekly-call-template.md.
+ */
+export function stageFor(graph) {
+  const status = (id) => graph.byId.get(id)?.status;
+  if (status("cap.defend") === STATUS.LIT) return "searching";
+  if (status("cap.review") === STATUS.LIT) return "defending";
+  if (status("cap.change") === STATUS.LIT) return "participating";
+  if (status("cap.change") === STATUS.OPEN) return "first ticket";
+  return "shadowing";
 }
 
 function signalFor({ prog, quota, waiting, student, week, attention = [] }) {

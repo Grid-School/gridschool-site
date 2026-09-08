@@ -5,6 +5,7 @@
 
 import { getApplication, formatApplication, mailtoHref } from "../js/lead.js";
 import { link } from "../config.js";
+import { applySiteOverrides } from "../js/site-overrides.js";
 
 const application = getApplication();
 
@@ -16,26 +17,31 @@ if (new URLSearchParams(location.search).get("demo") === "1") {
   document.getElementById("demonote").hidden = false;
 }
 
-const bookMount = document.getElementById("book");
-const fitCall = link("fitCall");
-if (fitCall) {
-  bookMount.innerHTML = `<a class="btn btn--cta" href="${fitCall}" target="_blank" rel="noopener">Pick a slot</a>`;
-} else {
-  bookMount.innerHTML = `
-    <p class="muted" style="font-size:14px">I will email you two times. You do not need to write me first.</p>
-    <span class="wired">booking not connected yet</span>`;
-}
+/* Links render after the live overrides land, so a booking link pasted in the
+   console shows here without a deploy. If nothing is reachable, config.js
+   stands and the honest "not connected" state renders as before. */
+applySiteOverrides().then(() => {
+  const bookMount = document.getElementById("book");
+  const fitCall = link("fitCall");
+  if (fitCall) {
+    bookMount.innerHTML = `<a class="btn btn--cta" href="${fitCall}" target="_blank" rel="noopener">Pick a slot</a>`;
+  } else {
+    bookMount.innerHTML = `
+      <p class="muted" style="font-size:14px">I will email you two times. You do not need to write me first.</p>
+      <span class="wired">booking not connected yet</span>`;
+  }
 
-const studioRepo = link("studioRepo");
-const bootCard = document.getElementById("bootcard");
-const bootMount = document.getElementById("bootscreen");
-if (studioRepo) {
-  bootCard.hidden = false;
-  bootMount.innerHTML = `
-    <div class="fsubmit">
-      <a class="btn btn--solid" href="${studioRepo}" target="_blank" rel="noopener">Open the studio repo</a>
-    </div>`;
-}
+  const studioRepo = link("studioRepo");
+  const bootCard = document.getElementById("bootcard");
+  const bootMount = document.getElementById("bootscreen");
+  if (studioRepo) {
+    bootCard.hidden = false;
+    bootMount.innerHTML = `
+      <div class="fsubmit">
+        <a class="btn btn--solid" href="${studioRepo}" target="_blank" rel="noopener">Open the studio repo</a>
+      </div>`;
+  }
+});
 
 if (application) {
   const card = document.getElementById("receiptcard");

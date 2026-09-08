@@ -6,6 +6,7 @@
 import { loadPrivateJson } from "./gate.js";
 import { seedFromSnapshot } from "./persist.js";
 import { fetchSnapshot, remoteEnabled } from "./persist-remote.js";
+import { applySiteOverrides, applyCopyOverrides } from "../../js/site-overrides.js";
 
 const BASE = "../data/";
 const cache = new Map();
@@ -80,10 +81,13 @@ export function isValidSlug(slug) {
 
 /** Load everything one board needs, in parallel. */
 export async function loadBoard(slug, { tour = false } = {}) {
-  const [curriculum, cohort, student] = await Promise.all([
+  const [curriculum, cohort, student, overrides] = await Promise.all([
     loadCurriculum({ tour }),
     loadCohort(),
     loadStudent(slug),
+    // Live links and short copy edits from the console. Never blocks a board
+    // for long and never fails it: config.js and the repo mirror stand in.
+    applySiteOverrides(),
   ]);
-  return { curriculum, cohort, student };
+  return { curriculum: applyCopyOverrides(curriculum, overrides), cohort, student };
 }

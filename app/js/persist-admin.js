@@ -72,3 +72,18 @@ export function enrollLead(id, fields = {}) {
 export function rotateSeatToken(slug) {
   return request("POST", `/students/${slug}/rotate-token`, {});
 }
+
+/** Merge identity fields (e.g. the Discord ID) without minting invites or tokens. */
+export function updateIdentity(slug, fields) {
+  return request("PATCH", `/students/${slug}/identity`, fields);
+}
+
+/** The live overrides document, fresh (not the page cache). */
+export function fetchSiteOverrides() {
+  return request("GET", "/site");
+}
+
+/** Replace the live overrides document. Every board sees it on next load. */
+export function saveSiteOverrides(doc) {
+  return request("POST", "/site", { doc });
+}

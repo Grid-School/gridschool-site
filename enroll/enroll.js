@@ -1,13 +1,14 @@
 /**
  * Checkout. Plans are described here once and rendered from data. No dollar
- * figure is printed: the rate is quoted on the call and Stripe shows it at
- * checkout, so a price change happens in Stripe and the sales script, never
- * here. When a Stripe link exists the button goes to Stripe; until then it
- * walks the demo path to day one.
+ * figure is printed: the rate is quoted on the call and the checkout page
+ * shows it, so a price change happens at the payment provider and in the
+ * sales script, never here. When a checkout link exists the button goes
+ * there; until then it walks the demo path to day one.
  */
 
 import { link, PRICING } from "../config.js";
 import { saveEnrollment } from "../js/lead.js";
+import { applySiteOverrides } from "../js/site-overrides.js";
 
 const PLANS = [
   {
@@ -31,12 +32,12 @@ const PLANS = [
     id: "deposit",
     tag: "Same lab",
     price: PRICING.depositLabel,
-    sub: "deposit now, the rest after week 1, once you know exactly what you are paying for. Both figures are on checkout.",
+    sub: "deposit now, the balance at day 15, after the exit window has passed and you know exactly what you are paying for. Both figures are on checkout.",
     linkKey: "depositCheckout",
     cta: "Pay the deposit",
     includes: [
       "Everything in the single payment",
-      "Deposit today. Remainder after week 1.",
+      "Deposit today. The balance at day 15.",
       "Week 2 exit still applies to what you have not used",
     ],
   },
@@ -44,9 +45,13 @@ const PLANS = [
 
 const plans = document.getElementById("plans");
 
-document.getElementById("spots").textContent = `Founding · ${PRICING.spots} spots · ${PRICING.weeks} weeks`;
+document.getElementById("spots").textContent = `Founding · ${PRICING.spots} spots · ${PRICING.months} months`;
 
-/* The placeholder warning shows only while checkout is actually a placeholder. */
+/* Checkout renders after the live overrides land, so a checkout link pasted
+   in the console sells here without a deploy. The placeholder warning shows
+   only while checkout is actually a placeholder. */
+await applySiteOverrides().catch(() => {});
+
 const anyPlaceholder = PLANS.some((plan) => !link(plan.linkKey));
 document.getElementById("paynote").hidden = !anyPlaceholder;
 
