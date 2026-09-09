@@ -120,7 +120,10 @@ export const WORLD = {
   production: {
     label: "Production",
     note: "The public world at play.gridschool.org.",
-    play: LINKS.play,
+    // Becomes LINKS.play once play.gridschool.org resolves and a production
+    // world server exists (instructor-runbook §9). A placeholder keeps the
+    // door honest instead of linking students to a host with no DNS record.
+    play: "REPLACE_ME_PROD_PLAY_URL",
     presence: "REPLACE_ME_PROD_PRESENCE_URL",
   },
 };
