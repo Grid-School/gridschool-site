@@ -60,6 +60,8 @@ flowchart TB
 
 **Rollback.** Before the run, one sentence on how you undo everything it did. If the answer takes more than one sentence, the reach was too wide.
 
+Where the enforcement lives matters less than that it lives somewhere the agent is not, and you already own a place like that. The script you wrote in Agentic workflow engineering is code that runs before the agent, after the agent, and in between phases, which makes it the natural home for four of the six clauses. Budget and wall clock are a counter the script increments from the trace and a check before each phase. Reach is a `git diff --name-only` after each phase compared against the list you wrote, with the run halted on the first path outside it. The gate is the test phase you already made a subprocess, kept in a directory the agent's write permission does not include. Rollback is the branch the script created at the start, so undoing everything is one delete. Identity is the clause the script cannot enforce alone, because the credentials are already in the environment by the time it runs, and that is why it stays a separate line in the contract with a separate answer. Enforcement you wrote is enforcement you can explain in a defense, and a reconstruction from a trace you designed is a query rather than an act of memory.
+
 ## The failure with no error message
 
 The hardest thing to catch in unattended work is not the crash. It is the run that keeps completing tasks while quietly skipping validation, or reasoning forward from a premise it inferred and never checked. Surface metrics look healthy. Tasks close. The log is full of successes. Somewhere upstream a step was declared done that was not done, and everything after it inherits the flaw.
@@ -93,7 +95,7 @@ The point of the whole discipline is that accountability and observation came ap
 Take a real ticket, not a toy.
 
 1. Write the six-clause contract before you start. One or two lines per clause. The reach clause names paths; the identity clause names which credentials are present and which you removed or scoped down; the budget clause has two numbers; the stop conditions are rules, not hopes; the gate names a specific check the agent cannot edit; the rollback is one sentence.
-2. Enforce at least three clauses mechanically rather than by instruction. A branch it cannot leave, a hard spend cap, a check that runs outside its reach.
+2. Enforce at least three clauses mechanically rather than by instruction. A branch it cannot leave, a hard spend cap, a check that runs outside its reach. Put as many of them as you can into the script you wrote in Agentic workflow engineering, so the enforcement is code you can show.
 3. Run it unattended for a bounded window. Leave the room. An hour is enough for a first run.
 4. Come back and reconstruct: what it did, what it cost, what fired, what the gate said. Mark each claim you verified and each you accepted on its word.
 5. Write the two lines that matter. What the contract caught, and what it would not have caught.

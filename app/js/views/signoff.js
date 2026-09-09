@@ -54,11 +54,9 @@ export function signoffNotice(node) {
 export function submitLabel(node, lit) {
   if (lit) return "Update the link";
   if (node.needsFix) return "Resubmit for sign-off";
-  return node.signoff ? "Submit for sign-off" : "Mark this step done";
+  return node.signoff ? "Submit for sign-off" : "Save the link";
 }
 
 export function linkHint(node) {
-  return node.signoff
-    ? "Paste the link. It is your submission; the accepting review marks this step done."
-    : "Paste the link. That is what marks this step done.";
+  return node.signoff ? "Your submission. The accepting review lights the step." : "This is what lights the step.";
 }

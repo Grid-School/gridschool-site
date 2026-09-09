@@ -104,6 +104,27 @@ export const PRICING = {
   depositLabel: "Deposit, then the balance",
 };
 
+/**
+ * The world, as two doors from the rail. Stage is the default: it is where
+ * students' merged work lands first and where meeting up costs nothing.
+ * `presence` is a GET that answers `{ "online": n }`; until the server has
+ * it the door shows no count rather than a guessed one.
+ */
+export const WORLD = {
+  stage: {
+    label: "Stage",
+    note: "Where your merges land first. Meet here.",
+    play: "https://play-staging.gridschool.org",
+    presence: "REPLACE_ME_STAGE_PRESENCE_URL",
+  },
+  production: {
+    label: "Production",
+    note: "The public world at play.gridschool.org.",
+    play: LINKS.play,
+    presence: "REPLACE_ME_PROD_PRESENCE_URL",
+  },
+};
+
 /** True when a config value is still a placeholder. */
 export function isPlaceholder(value) {
   return typeof value !== "string" || value.startsWith("REPLACE_ME") || value === "";

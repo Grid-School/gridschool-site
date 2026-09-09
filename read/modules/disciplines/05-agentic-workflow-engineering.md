@@ -1,6 +1,6 @@
 # 05 · Agentic workflow engineering
 
-*Series: disciplines. Decomposing a change, choosing what runs in parallel, deciding where a human must stand, and recording every intervention. Read before You ran the agents. ~14 minutes.*
+*Series: disciplines. Decomposing a change, choosing what runs in parallel, deciding where a human must stand, recording every intervention, and writing the delegation as a program that owns its own loop. Read before You ran the agents. ~18 minutes.*
 
 ## What replaced "development workflow"
 
@@ -68,7 +68,25 @@ Sometimes the correct orchestration is one model call. Sometimes it is you, typi
 
 Token spend and wall-clock time are part of the specification whether you wrote them down or not. An agentic workflow that solves the task for forty dollars when a colleague solved it for two has failed a non-functional requirement. Record both. You will be asked for them.
 
-## Do this now (30 minutes)
+## Loops, graphs, factories: one problem
+
+You will hear this work sold under several names, and the people selling each one tend to say the others are wrong. Loop engineering means letting an agent run the same prompt against a task list until a judge says the work is done. Graph engineering, in the sense the industry usually means, is drawing the tasks and the order they run in as an explicit topology, the diagram at the top of this reading. A software factory, in the sense a few practitioners have revived it, is a script in an ordinary language that calls an agent for one bounded phase, checks what came back with code, and decides itself whether to continue, retry or stop. Harness engineering is the name for building the runtime all of those sit inside, the tools, the sandbox, the memory and the stop conditions around a model.
+
+Underneath the names there is one problem, and you can state it in a sentence: a non-deterministic worker is iterated until a judge outside it says done, under a budget, with its state kept somewhere that outlives the context window, leaving a trace a stranger can read. Every product in this space is an answer to that sentence, and the answers differ mainly in who owns the loop. A vendor's goal mode puts the judge inside their runtime and hands you a knob for the budget. A script you wrote puts the judge in your code and gives you every knob, at the cost of writing and maintaining the script. A topology diagram makes the order legible before anything runs, which matters exactly when tasks depend on each other and not at all when they do not.
+
+| Question | Vendor loop | Your script | Explicit graph |
+|---|---|---|---|
+| Who decides done | A judge model in their runtime | A predicate in your code, then a judge if no predicate exists | Whatever node you marked as the gate |
+| Who enforces budget | Their cap | Your cap | Yours, per node |
+| Where state lives | Their session | Files and a trace you own | The graph's edges plus files |
+| What you can change | The prompt and the knobs | Everything | Everything, at the cost of drawing it first |
+| What you can prove afterward | Their transcript | Your trace | Your trace, per node |
+
+Four rules fall out of the sentence, and they hold whichever packaging you are handed. A step whose command is known is code, not a prompt; running the test suite is a subprocess call, and asking a model to run it buys you nothing but a chance for it to lie about the result. Where a predicate exists, use it before a judge model, because a predicate is free, instant and cannot be persuaded. The thing that verifies must sit outside the thing that generates, which is why the gate in Containment is a check the agent cannot edit. And the stop conditions are written before the run, because a loop that does not know how to stop will spend your money looking busy, and the published data on unattended loops says a large share of that spend buys no improvement at all.
+
+So when you meet a published factory, and you should read at least one, the reading exercise is the same one you did on the world's test suite in You can prove it: find the gate that checks a file exists when it claims to check the file is right, find the test phase that is a placeholder, find the diff check that never reads the diff. Every published one so far has at least one of those, and the authors usually say so in the README. That is not a reason to dismiss them. It is the reason you write your own, small, for a ticket you already understand, so that when someone shows you theirs you can say in one breath what it enforces and what it merely asserts.
+
+## Do this now (45 minutes)
 
 Take the specification from Specification engineering.
 
@@ -77,10 +95,11 @@ Take the specification from Specification engineering.
 3. Write the human boundary table for this change.
 4. Execute the first task with an assistant. Keep a running note: every time you intervene, one line saying what and why.
 5. At the end, count the interventions and write one sentence about whether each was the spec's fault, the agent's fault, or yours.
+6. Then write the delegation down as a program, no more than a screen or two: a plan phase that calls an agent and must return a typed result, a build phase that calls an agent, a test phase that is a subprocess running the real test command, and a review phase with the rubric you wrote in step 1. Add a budget cap, a stop on the same error twice, and a line per phase appended to a trace file with tokens, cost and elapsed time. Run it once against the ticket.
 
 ## Done when
 
-Someone can read your decomposition and intervention log and reconstruct, without talking to you, what the machine did and what you did.
+Someone can read your decomposition and intervention log and reconstruct, without talking to you, what the machine did and what you did. And your script's trace shows at least one place where a check you wrote refused what the agent handed back.
 
 ## What's next
 

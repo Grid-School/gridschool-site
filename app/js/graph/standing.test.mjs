@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { STANDING, STANDING_LABEL, STANDING_TONE, LEGEND, standingOf, inSequence } from "./standing.js";
+import { STANDING, STANDING_LABEL, STANDING_TONE, LEGEND, legendKeyOf, standingOf, inSequence } from "./standing.js";
 
 test("standing reads the board, and the sign-off states win over plain status", () => {
   assert.equal(standingOf({ id: "a", status: "open" }, "a"), STANDING.NEXT);
@@ -13,12 +13,21 @@ test("standing reads the board, and the sign-off states win over plain status", 
   assert.equal(standingOf({ id: "h", status: "open", awaitingSignoff: true, needsFix: true }, "a"), STANDING.FIX);
 });
 
-test("every standing has a label and a palette tone, and the legend covers them all", () => {
+test("every standing has a label and a palette tone, and the legend covers each one under its key", () => {
   for (const standing of Object.values(STANDING)) {
     assert.ok(STANDING_LABEL[standing], `${standing} label`);
     assert.ok(STANDING_TONE[standing], `${standing} tone`);
-    assert.ok(LEGEND.includes(standing), `${standing} in legend`);
+    assert.ok(LEGEND.includes(legendKeyOf(standing)), `${standing} in legend`);
   }
+});
+
+test("Later reads as Ahead: same word, same tone, one legend key, so a student sees four states plus amber", () => {
+  assert.equal(STANDING_LABEL[STANDING.FUTURE], STANDING_LABEL[STANDING.LOCKED]);
+  assert.equal(STANDING_TONE[STANDING.FUTURE], STANDING_TONE[STANDING.LOCKED]);
+  assert.equal(legendKeyOf(STANDING.FUTURE), STANDING.LOCKED);
+  assert.ok(!LEGEND.includes(STANDING.FUTURE));
+  const words = new Set(LEGEND.map((s) => STANDING_LABEL[s]));
+  assert.equal(words.size, LEGEND.length, "no two legend keys share a word");
 });
 
 test("inSequence is n order and does not mutate", () => {

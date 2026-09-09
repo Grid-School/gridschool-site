@@ -2,9 +2,9 @@
 
 *Series: disciplines. How this program measures you: the six gates, the seven levels of evidence, the score vector, and the four metrics your log tracks from week one. Read in week one, and again before You defend it live. ~14 minutes.*
 
-## The program has to prove its own claims
+## Every step is a falsifiable claim
 
-A school that teaches falsification and then grades on attendance has failed its own test. So every step in this program carries a six-field contract, visible on the step page under "What this step proves," and it is written in the same shape as the checks you write for code.
+Every step carries a six-field contract, visible on the step page under "What this step proves," written in the same shape as the checks you write for code.
 
 | Field | The question |
 |---|---|

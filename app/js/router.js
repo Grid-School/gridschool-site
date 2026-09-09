@@ -43,6 +43,13 @@ export function createRouter({ routes, aliases = {}, fallback, onNavigate }) {
     permittedHash = null;
     lastHash = incoming;
     const route = parse();
+    // An alias lands somewhere true; the address bar should say where, so a
+    // copied link is the real route and not the retired name.
+    const canonical = `#/${[route.name, ...route.args].filter(Boolean).join("/")}`;
+    if (incoming !== canonical && incoming.replace(/^#\/?/, "").split("/")[0] in aliases) {
+      history.replaceState(null, "", `${location.pathname}${location.search}${canonical}`);
+      lastHash = canonical;
+    }
     onNavigate(route, routes[route.name]);
   }
 

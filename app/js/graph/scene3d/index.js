@@ -31,8 +31,12 @@ const BEAM_LIFT = 1.2;
 const TITLE_HEIGHT = 1500;
 /** Camera height when standing behind one node. */
 const FRAME_HEIGHT = 1100;
+/** Camera height when a node is opened: close enough that its ring fills the eye. */
+const APPROACH_HEIGHT = 420;
 const RISE_MS = 700;
 const GLIDE_MS = 900;
+const APPROACH_MS = 480;
+const RETURN_MS = 420;
 
 export async function createScene3d(container) {
   const THREE = await loadThree();
@@ -187,10 +191,20 @@ export async function createScene3d(container) {
   resize();
   loop();
 
-  function standBehind(id, { glide }) {
+  function standBehind(id, { glide, ms = GLIDE_MS }) {
     const at = state.plan?.at.get(id);
     if (!at) return;
-    whenMeasured(() => camera.frame(at, { height: FRAME_HEIGHT, glide: glide && !reducedMotion ? GLIDE_MS : 0 }));
+    whenMeasured(() => camera.frame(at, { height: FRAME_HEIGHT, glide: glide && !reducedMotion ? ms : 0 }));
+  }
+
+  /** Move onto a node: centre it and drop toward it. Resolves when the eye is there. */
+  function approach(id) {
+    const at = state.plan?.at.get(id);
+    if (!at || reducedMotion) return Promise.resolve();
+    return new Promise((resolve) => {
+      whenMeasured(() => camera.frame(at, { height: APPROACH_HEIGHT, anchor: 0.5, glide: APPROACH_MS }));
+      setTimeout(resolve, APPROACH_MS);
+    });
   }
 
   return {
@@ -237,6 +251,14 @@ export async function createScene3d(container) {
     /** Stand behind a node, looking ahead. */
     frame(node, { glide = false } = {}) {
       standBehind(node.id, { glide });
+    },
+    /** Open a node: the camera goes to it first. The view mounts when this resolves. */
+    approach(node) {
+      return approach(node.id);
+    },
+    /** Back from a node: pull out fast to stand behind it again. */
+    retreat(node) {
+      standBehind(node.id, { glide: true, ms: RETURN_MS });
     },
     /** The overview: the whole floor in one frame. */
     fit(opts) {

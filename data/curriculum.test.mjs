@@ -11,6 +11,7 @@ import { readFileSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { MODES } from "../app/js/modes.js";
+import { ARTIFACTS } from "../app/js/artifacts.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const site = join(here, "..");
@@ -70,7 +71,10 @@ test("every core node carries the per-node contract (why, evidence, ccvv, review
     assert.ok(node.evidence, `${node.id} evidence`);
     assert.ok(Array.isArray(node.ccvv) && node.ccvv.length, `${node.id} ccvv`);
     assert.ok(typeof node.reviewFor === "string" && node.reviewFor.trim(), `${node.id} reviewFor`);
-    assert.ok(Array.isArray(node.tasks) && node.tasks.length, `${node.id} tasks`);
+    // Welcome is the one step where the page is the work: read it, write the
+    // note, save the link. A checkbox there would be a checkbox for its own sake.
+    const pageIsTheWork = node.id === "or.start" && node.lesson?.length && node.modules?.length;
+    assert.ok(pageIsTheWork || (Array.isArray(node.tasks) && node.tasks.length), `${node.id} tasks`);
     for (const task of node.tasks) {
       assert.ok(task.done_when, `${node.id} task ${task.id ?? task.title} done_when`);
     }
@@ -133,25 +137,31 @@ test("catalog attachesTo names real nodes", () => {
   }
 });
 
-test("the spine is the six gates, the mission, the Career core with its design step, the owned-system model and the graph tool", () => {
+test("the spine is the six gates, the mission, the Career core with last-mile proofs, the owned system through users, and the graph tool", () => {
   const expected = [
-    "or.start", "ops.flow", "pf.runs", "cv.four", "cv.understand", "cv.frame", "cv.spec",
-    "cap.change", "cv.check", "cv.delegate", "cap.review", "cap.defend",
-    "sg.profile", "pf.style", "sg.site", "sg.show", "li.publish",
-    "pj.model", "gr.parse", "gr.query",
+    "or.start", "or.setup", "ops.flow", "pf.runs", "cv.four", "cv.understand", "cv.frame", "cv.spec",
+    "gr.parse", "gr.query", "cap.change", "cv.check", "cv.delegate", "cv.contain",
+    "sg.profile", "pf.style", "pj.model", "pj.ship", "pj.users", "wd.ticket", "sg.site", "cap.review",
+    "wd.deploy", "sg.show", "sg.scope", "li.close", "cap.outcome", "cap.defend", "li.publish",
   ];
   assert.deepEqual(spine.map((node) => node.id).sort(), [...expected].sort());
   assert.deepEqual(byId.get("cap.change").requires, ["cv.spec"]);
-  assert.deepEqual([...byId.get("cap.defend").requires].sort(), ["cap.review", "cv.check", "cv.delegate"]);
+  assert.deepEqual([...byId.get("cap.defend").requires].sort(), ["cap.review", "cv.check", "cv.contain", "cv.delegate"]);
+  // The owned system is required but never gates the defense clock.
+  for (const id of ["cap.defend", "li.publish"]) {
+    assert.ok(!byId.get(id).requires.some((r) => r.startsWith("pj.")), `${id} must not wait on the owned system`);
+  }
   assert.deepEqual(byId.get("sg.profile").requires, ["cap.change"]);
   assert.deepEqual(byId.get("pf.style").requires, ["sg.profile"]);
   assert.deepEqual(byId.get("sg.site").requires, ["pf.style"]);
+  assert.deepEqual(byId.get("sg.scope").requires, ["sg.show"]);
+  assert.deepEqual(byId.get("li.close").requires, ["sg.show"]);
   assert.deepEqual(byId.get("li.publish").requires, ["cap.defend"]);
 });
 
 test("Career expansion and the later project track never sit on the spine", () => {
   const depthOnly = ["sg.engine", "sg.post", "sg.habit", "sg.article", "sg.research", "sg.oss",
-    "pj.ship", "pj.users", "cap.outcome", "gr.structure", "gr.seam", "gr.pack", "gr.fork"];
+    "sg.resume", "sg.apply", "gr.structure", "gr.seam", "gr.pack", "gr.fork", "wd.mark"];
   for (const id of depthOnly) {
     assert.equal(trackOf(byId.get(id)), "depth", `${id} should be depth`);
   }
@@ -174,6 +184,15 @@ test("the spine can be worked in `n` order: no required node waits on an electiv
   }
 });
 
+test("the machine comes before the world: It runs and the weekly loop wait on Your machine", () => {
+  assert.deepEqual(byId.get("or.setup").requires, ["or.start"]);
+  assert.equal(byId.get("or.setup").n, 1);
+  for (const id of ["pf.runs", "ops.flow"]) {
+    assert.ok(byId.get(id).requires.includes("or.setup"), `${id} must wait on or.setup`);
+  }
+  assert.ok(byId.get("or.setup").modules?.some((m) => m.id === "readings/your-machine"), "the setup reading is attached");
+});
+
 test("a fresh board opens exactly one node, and it is 00: the map never starts with a gap", () => {
   const roots = core.filter((node) => !(node.requires ?? []).length);
   assert.deepEqual(
@@ -182,6 +201,41 @@ test("a fresh board opens exactly one node, and it is 00: the map never starts w
     "every other node must trace back to Welcome, or a new student sees 02 lit and 01 dark"
   );
   assert.equal(byId.get("or.start").n, 0);
+});
+
+test("no task names an AI vendor or agent product: the map teaches the capability, not the tool of the month", () => {
+  const vendor = /\b(Cursor|Claude|Codex|Copilot|OpenAI|Anthropic|Gemini|ChatGPT|LangChain|LangSmith|Langfuse|Devin|Windsurf)\b/;
+  for (const node of core) {
+    for (const task of node.tasks) {
+      const text = [task.title, task.done_when, ...(task.how ?? [])].join(" ");
+      assert.ok(!vendor.test(text), `${node.id} task ${task.id ?? task.title} names a vendor`);
+    }
+  }
+});
+
+test("artifact, when set, names one of the three things a student owns, and the three that create them carry it", () => {
+  for (const node of nodes) {
+    if (node.artifact !== undefined) assert.ok(ARTIFACTS[node.artifact], `${node.id} artifact ${node.artifact}`);
+  }
+  assert.equal(byId.get("cap.change").artifact, "ticket");
+  assert.equal(byId.get("gr.parse").artifact, "graph");
+  assert.equal(byId.get("cv.delegate").artifact, "script");
+  assert.equal(byId.get("cv.contain").artifact, "script");
+});
+
+test("free material: at most two refs per node, each https with a title and a why, and none once the film exists", () => {
+  for (const node of nodes) {
+    const refs = node.refs ?? [];
+    assert.ok(refs.length <= 2, `${node.id} has ${refs.length} refs; the rule is two`);
+    for (const ref of refs) {
+      assert.ok(ref.title?.trim(), `${node.id} ref title`);
+      assert.ok(ref.why?.trim(), `${node.id} ref why`);
+      assert.ok(/^https:\/\//.test(ref.href ?? ""), `${node.id} ref href ${ref.href}`);
+    }
+    if (node.video?.youtube) {
+      assert.equal(refs.length, 0, `${node.id} is filmed and still carries refs; delete them the day the film ships`);
+    }
+  }
 });
 
 test("a gate waits for the verdict on a sign-off it depends on; Publish is the only one", () => {

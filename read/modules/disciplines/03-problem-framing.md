@@ -58,6 +58,12 @@ Take one of these and walk the full chain in writing.
 
 Write three or more hypotheses. For each, write the single cheapest piece of evidence that would raise or lower your confidence in it. Pick the one you would gather first and say why. Do not write the fix.
 
+## Where this skill is paid
+
+The companies that still hire this profile sit on old systems, a compliance duty, and a failed agent pilot: banks, insurers, clinics, warehouses, factories, utilities, and the consultancies that serve them. They pay for someone who can walk from a messy observation to a cause they can defend, in that business's words. Big tech and funded startups are the default target a stuck builder brings in the door, and they are the weakest market for a first seat.
+
+On You found the real problem you pick one of those domains and write three words they use that the world does not. You reuse that sentence on the spec, on outreach, and on a stranger's problem. The world stays the arena. The domain is the translation.
+
 ## Done when
 
 Someone can read your framing, disagree with your chosen cause, and point to the exact evidence that would settle it. If they cannot disagree, you have not framed; you have decided.

@@ -7,8 +7,12 @@
  * back. The floor, the list, the HUD legend and the hover line all read this,
  * so "You are here" on the map is the same node the list marks "Do this next".
  *
- * Order matters for a reader: what to do next, what else you can do, what is
- * waiting on someone else, what is done, what is ahead.
+ * Eight standings exist because eight things can be true of a node. A reader
+ * sees four: Next (the beacon), Open (a stump), Done (green), Ahead (a flat
+ * dim disc). An elective on offer is Open with a dashed rim: a door, not a
+ * wall. Review and Sent back are amber and appear only when they are true.
+ * "Later" (kind: future) reads as Ahead; the distinction is the model's, not
+ * the student's.
  */
 
 export const STANDING = {
@@ -40,9 +44,9 @@ export const STANDING_LABEL = {
   [STANDING.FIX]: "Changes came back",
   [STANDING.REVIEW]: "In review",
   [STANDING.LIT]: "Done",
-  [STANDING.OFFERED]: "On offer",
+  [STANDING.OFFERED]: "Elective, open",
   [STANDING.LOCKED]: "Ahead",
-  [STANDING.FUTURE]: "Later",
+  [STANDING.FUTURE]: "Ahead",
 };
 
 /** Palette key per standing (scene3d/palette.js reads these tokens from app.css). */
@@ -54,19 +58,26 @@ export const STANDING_TONE = {
   [STANDING.LIT]: "lit",
   [STANDING.OFFERED]: "open",
   [STANDING.LOCKED]: "locked",
-  [STANDING.FUTURE]: "amber",
+  [STANDING.FUTURE]: "locked",
 };
 
-/** The legend, in reading order. */
+/**
+ * The key a standing is read under in the legend. Future folds into Ahead so
+ * the legend never shows two keys with the same word.
+ */
+export function legendKeyOf(standing) {
+  return standing === STANDING.FUTURE ? STANDING.LOCKED : standing;
+}
+
+/** The legend, in reading order: what to do, what else you can do, then the rest. */
 export const LEGEND = [
   STANDING.NEXT,
   STANDING.OPEN,
+  STANDING.OFFERED,
   STANDING.REVIEW,
   STANDING.FIX,
   STANDING.LIT,
-  STANDING.OFFERED,
   STANDING.LOCKED,
-  STANDING.FUTURE,
 ];
 
 /**

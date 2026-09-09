@@ -1,8 +1,11 @@
 /**
- * Full step page. Replaces the map modal: everything for one node lives here.
- * Optional long modules (nanograph, briefs) open as a subview under the same step.
+ * Full step page. Everything for one node lives here: lesson, required
+ * reading (opens in a modal over the page), tasks, the link. A thin column on
+ * the right (step-progress.js) shows the parts filling bottom-up; Save
+ * unlocks once the reading is done, Next once the link is saved.
  *
- * Route: #/map/<nodeId> or #/map/<nodeId>/m/<module/path/segments>
+ * Route: #/map/<nodeId> or #/map/<nodeId>/m/<module/path/segments> (the
+ * reading as a shareable page).
  */
 
 import { el, mount } from "../dom.js";
@@ -17,10 +20,14 @@ import { renderMarkdown, splitTitle } from "../markdown.js";
 import { hydrateMermaid, mermaidSource } from "../mermaid.js";
 import { provesBlock } from "./proves.js";
 import { modeLine } from "./mode.js";
+import { artifactLine } from "./artifact.js";
+import { refsBlock } from "./refs.js";
 import { lockNotice, shouldInterceptLock } from "./lock-notice.js";
 import { electiveBlock } from "./elective.js";
 import { signoffNotice, submitLabel, linkHint } from "./signoff.js";
-import { welcomeReadiness, welcomeSubmitWarn, isStepComplete } from "./welcome.js";
+import { stepSpine, isStepComplete, readyToSave, readFlag } from "./step-progress.js";
+import { createReadingModal } from "./reading-modal.js";
+import { bindDraft, clearDraft } from "../drafts.js";
 import { registerLeaveGuard, clearLeaveGuard, isLeaveDirty } from "../leave-guard.js";
 import { isPreviewMedia } from "../preview-mode.js";
 import { siteOverridesDoc, dropSiteOverridesCache } from "../../../js/site-overrides.js";
@@ -85,6 +92,9 @@ export function renderStep(ctx, nodeId, moduleId = null) {
   let current = ctx;
   let currentNodeId = nodeId;
   let currentModuleId = moduleId;
+  const reading = createReadingModal({
+    onDone: (module) => current.store.setStepFlag(currentNodeId, readFlag(module.id), true),
+  });
 
   function paint() {
     const { graph, student } = current.state;
@@ -102,27 +112,22 @@ export function renderStep(ctx, nodeId, moduleId = null) {
       loadModule(currentModuleId);
       return;
     }
-    mount(root, stepView(node, graph, student));
+    mount(root, stepView(node, graph, student), reading.layer);
     hydrateMermaid(root);
   }
 
   function stepEyebrow(node, graph) {
-    if (node.id === "or.start") {
-      return "Week 1 · Orientation · take your time";
-    }
+    if (node.id === "or.start") return "Week 1 · Orientation";
     const family = (graph.families ?? []).find((item) => item.id === node.family);
     const prog = progress(graph);
-    const track = trackLabel(node.track);
-    const count = isSpine(node)
-      ? ` · ${prog.spine.lit} of ${prog.spine.total} required`
-      : "";
+    const track = isSpine(node) ? `${trackLabel(node.track)} ${prog.spine.lit} of ${prog.spine.total}` : trackLabel(node.track);
     /* Weeks are typical pace inside the intensive sequence, not a calendar
        promise: the residency runs a year and nothing on the map expires. */
     const weeks =
       Array.isArray(node.weeks) && node.weeks.length
-        ? ` · typical pace week ${node.weeks[0] === node.weeks[1] ? node.weeks[0] : `${node.weeks[0]} to ${node.weeks[1]}`}`
+        ? ` · week ${node.weeks[0] === node.weeks[1] ? node.weeks[0] : `${node.weeks[0]} to ${node.weeks[1]}`}`
         : "";
-    return `${track}${count} · ${family?.label ?? "Step"} · ${String(node.n).padStart(2, "0")} · ${statusLabel(node.status)}${weeks}`;
+    return `${track} · ${family?.label ?? "Step"} · ${String(node.n).padStart(2, "0")} · ${statusLabel(node.status)}${weeks}`;
   }
 
   function stepView(node, graph, student) {
@@ -130,12 +135,13 @@ export function renderStep(ctx, nodeId, moduleId = null) {
     const blockers = blockedBy(graph, node.id);
     const canTurnIn = node.status === STATUS.OPEN || node.status === STATUS.LIT;
     const welcome = node.id === "or.start";
-    // A filmed chapter gets its player. An unfilmed one shows only "What the
-    // film covers" — no stand-in clip for students. Media preview (instructor
-    // rail switch, device-local) restores the test clip so the page shape can
-    // be judged before filming.
+    // A filmed chapter gets its player. An unfilmed one shows nothing about a
+    // film to a student. Media preview (instructor strip, device-local) shows
+    // the stand-in clip and the film's brief so the page can be judged before
+    // filming.
     const filmed = Boolean(node.video && resolveMedia(node.video));
-    const previewClip = !filmed && Boolean(node.video) && isPreviewMedia();
+    const preview = isAdmin && isPreviewMedia();
+    const previewClip = !filmed && Boolean(node.video) && preview;
     const video = filmed ? node.video : previewClip ? { ...FALLBACK_VIDEO, title: node.video.title || FALLBACK_VIDEO.title, mins: node.video.mins || FALLBACK_VIDEO.mins } : null;
     const card = video
       ? videoCard({
@@ -167,11 +173,8 @@ export function renderStep(ctx, nodeId, moduleId = null) {
           ),
           el("b.eyebrow", {}, statusLabel(node.status)),
           el("h1.step__title", {}, node.title),
-          el(
-            "p.step__lead",
-            {},
-            "This step opens after the ones before it. You are welcome to read ahead."
-          )
+          el("p.step__lead", {}, "Opens after the steps before it. Read ahead if you like."),
+          artifactLine(node)
         ),
         lockNotice({
           graph,
@@ -187,13 +190,17 @@ export function renderStep(ctx, nodeId, moduleId = null) {
               node.lesson.map((section) => lessonSection(section))
             )
           : null,
+        refsBlock(node, { filmed }),
         stepBar({ node, graph, student, locked: true })
       );
     }
 
+    const spine = stepSpine({ node, student, store: current.store, onChange: () => paint() });
+
     return el(
       "div.step",
       { class: welcome ? "step--welcome" : "" },
+      spine,
       el(
         "header.step__head",
         {},
@@ -206,15 +213,16 @@ export function renderStep(ctx, nodeId, moduleId = null) {
         el("b.eyebrow", {}, stepEyebrow(node, graph)),
         el("h1.step__title", {}, node.title),
         node.why ? el("p.step__lead", {}, node.why) : null,
-        welcome ? null : modeLine(node)
+        welcome ? null : modeLine(node),
+        welcome ? null : artifactLine(node)
       ),
       electiveBlock({ node, store: current.store }),
-      card || (!filmed && node.video?.summary)
+      card || (preview && !filmed && node.video?.summary)
         ? el(
             "section.step__video",
             {},
             card ? card.node : null,
-            filmSummary({ summary: node.video?.summary, filmed })
+            preview ? filmSummary({ summary: node.video?.summary, filmed }) : null
           )
         : null,
       node.lesson?.length
@@ -231,22 +239,12 @@ export function renderStep(ctx, nodeId, moduleId = null) {
               "section.step__lesson",
               {},
               el("b.eyebrow", {}, "Lesson"),
-              el(
-                "p.room__hint",
-                {},
-                "The full lesson text lives here. It unlocks with the access key you receive at enrollment. The tasks and the done-when below are real; only the teaching is held back."
-              )
+              el("p.room__hint", {}, "The lesson unlocks with the access key you receive at enrollment. The tasks below are real.")
             )
           : null,
       welcome ? null : provesBlock(node),
-      welcome
-        ? welcomeReadiness({
-            node,
-            student,
-            store: current.store,
-            onMarked: () => paint(),
-          })
-        : null,
+      readingBlock(node, student),
+      refsBlock(node, { filmed }),
       node.kind === "future"
         ? placeholder({
             title: "Not open yet",
@@ -258,14 +256,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
         ? el(
             "section.step__tasks",
             {},
-            el("b.eyebrow", {}, welcome ? "When you are ready" : "Do the work"),
-            el(
-              "p.room__hint",
-              {},
-              welcome
-                ? "Two short writes that go in one note. Check each box when its Done when line is true, then paste the note's link below."
-                : "Check a box when its Done when is true. Open Show steps only if you want the how-to."
-            ),
+            el("b.eyebrow", {}, "Do the work"),
             el(
               "div.tasks.tasks--tight",
               {},
@@ -322,46 +313,16 @@ export function renderStep(ctx, nodeId, moduleId = null) {
         canTurnIn ? signoffNotice(node) : null,
         canTurnIn && (node.status === STATUS.LIT || node.awaitingSignoff) ? litBlock(node) : null,
         canTurnIn ? evidenceForm(node) : null,
-        canTurnIn
+        // Nothing to review until there is a link; the disclosure waits for it.
+        canTurnIn && (node.proof?.url || reviewsFor(node))
           ? el(
               "div.room__handoff",
               {},
-              handoffDisclosure({ store: current.store, node, label: "Send for review" }),
+              node.proof?.url ? handoffDisclosure({ store: current.store, node, label: "Send for review" }) : null,
               reviewsFor(node)
             )
           : null
       ),
-      node.modules?.length
-        ? el(
-            "section.step__mods",
-            {},
-            el("b.eyebrow", {}, "Optional deeper reading"),
-            el(
-              "p.room__hint",
-              {},
-              "Optional reading that opens right here, under this step."
-            ),
-            el(
-              "div.step__modlist",
-              {},
-              node.modules.map((module) => {
-                const mid = module.id ?? moduleHrefToId(module.href);
-                return el(
-                  "button.step__mod",
-                  {
-                    type: "button",
-                    onclick: () => {
-                      if (!mid) return;
-                      current.navigate("map", node.id, "m", ...mid.split("/"));
-                    },
-                  },
-                  el("b", {}, module.title),
-                  el("span", {}, "Open on this step")
-                );
-              })
-            )
-          )
-        : null,
       stepBar({ node, graph, student, locked: false }),
       isAdmin ? adminBlock(node, graph) : null
     );
@@ -391,7 +352,6 @@ export function renderStep(ctx, nodeId, moduleId = null) {
         variant: "quiet",
         onclick: () => current.navigate("map"),
       }),
-      // The Coach has no door on the rail; a step is where you get stuck.
       btn({
         label: "Ask the Coach",
         variant: "quiet",
@@ -401,19 +361,48 @@ export function renderStep(ctx, nodeId, moduleId = null) {
       el(
         "div.step__bar-next",
         {},
-        !complete &&
-          !locked &&
-          el("span.step__bar-hint", {}, "Save your link below to unlock Next"),
         btn({
           label: nextLabel,
           variant: "solid",
           disabled: locked || !complete,
-          title: complete ? undefined : "Finish this step first",
+          title: complete ? undefined : "Opens when the link is saved",
           onclick: () => {
             if (!complete) return;
             if (advance) current.navigate("map", advance.id);
             else current.navigate("map");
           },
+        })
+      )
+    );
+  }
+
+  /**
+   * Required reading, before the work. Each opens over the page; "Done
+   * reading" marks it in the column. The Save button waits for these.
+   */
+  function readingBlock(node, student) {
+    if (!node.modules?.length) return null;
+    const flags = student.stepFlags?.[node.id] ?? {};
+    return el(
+      "section.step__mods",
+      {},
+      el("b.eyebrow", {}, "Read first"),
+      el(
+        "div.step__modlist",
+        {},
+        node.modules.map((module) => {
+          const mid = module.id ?? moduleHrefToId(module.href);
+          const read = Boolean(flags[readFlag(mid)]);
+          return el(
+            "button.step__mod",
+            {
+              type: "button",
+              class: read ? "is-read" : null,
+              onclick: () => mid && reading.open({ ...module, id: mid }, { read }),
+            },
+            el("b", {}, module.title),
+            el("span", {}, read ? "Read" : module.mins ? `${module.mins} min` : "Open")
+          );
         })
       )
     );
@@ -509,6 +498,8 @@ export function renderStep(ctx, nodeId, moduleId = null) {
   function evidenceForm(node) {
     const savedUrl = node.proof?.url ?? "";
     const savedNote = node.proof?.note ?? "";
+    const slug = current.state.slug;
+    const ready = readyToSave(node, current.state.student);
     const url = field({
       label: "The link",
       id: `ev-url-${node.id}`,
@@ -524,6 +515,9 @@ export function renderStep(ctx, nodeId, moduleId = null) {
       placeholder: "What should I look at hardest?",
       textarea: true,
     });
+    // Drafts outlive a re-render, a reading opened over the page, and a reload.
+    bindDraft(url.input, { slug, id: `ev-url-${node.id}`, saved: savedUrl });
+    bindDraft(note.input, { slug, id: `ev-note-${node.id}`, saved: savedNote });
 
     registerLeaveGuard(
       "evidence",
@@ -548,12 +542,13 @@ export function renderStep(ctx, nodeId, moduleId = null) {
             toast("That needs to be a URL a stranger can open.", "warn");
             return;
           }
-          const warn = welcomeSubmitWarn(node, current.state.student);
-          if (warn) {
-            toast(warn, "warn");
+          if (!readyToSave(node, current.state.student)) {
+            toast("Finish the reading first. It is short and it is the point.", "warn");
             return;
           }
           clearLeaveGuard("evidence");
+          clearDraft(slug, `ev-url-${node.id}`);
+          clearDraft(slug, `ev-note-${node.id}`);
           const nextState = current.store.submitEvidence(node.id, value, note.input.value.trim());
           const next = nextUp(nextState.graph);
           if (node.id === "or.start") {
@@ -572,7 +567,14 @@ export function renderStep(ctx, nodeId, moduleId = null) {
       el(
         "div.room__acts",
         {},
-        btn({ label: submitLabel(node, node.status === STATUS.LIT || node.awaitingSignoff), variant: "solid", type: "submit" }),
+        btn({
+          label: submitLabel(node, node.status === STATUS.LIT || node.awaitingSignoff),
+          variant: "solid",
+          type: "submit",
+          disabled: !ready,
+          title: ready ? undefined : "Finish the reading first",
+        }),
+        !ready && el("span.room__gate", {}, "Unlocks after the reading."),
         (node.status === STATUS.LIT || node.awaitingSignoff) &&
           btn({
             label: "Remove the link",
@@ -580,6 +582,8 @@ export function renderStep(ctx, nodeId, moduleId = null) {
             onclick: (event) => {
               event.preventDefault();
               clearLeaveGuard("evidence");
+              clearDraft(slug, `ev-url-${node.id}`);
+              clearDraft(slug, `ev-note-${node.id}`);
               current.store.clearEvidence(node.id);
               toast("Link removed.", "warn");
             },
@@ -707,6 +711,24 @@ export function renderStep(ctx, nodeId, moduleId = null) {
     return el("div", {}, toggle, body);
   }
 
+  /** Swap the column and the reading list in place; the form is left alone. */
+  function refreshProgress() {
+    const { graph, student } = current.state;
+    const node = graph.byId.get(currentNodeId);
+    if (!node || currentModuleId) return;
+    const spine = root.querySelector(".step__spine");
+    if (spine) spine.replaceWith(stepSpine({ node, student, store: current.store, onChange: () => paint() }));
+    const mods = root.querySelector(".step__mods");
+    const next = readingBlock(node, student);
+    if (mods && next) mods.replaceWith(next);
+    const submit = root.querySelector(".room__form button[type=submit]");
+    if (submit && readyToSave(node, student)) {
+      submit.disabled = false;
+      submit.removeAttribute("title");
+      root.querySelector(".room__gate")?.remove();
+    }
+  }
+
   function draftOpen() {
     if (isLeaveDirty()) return true;
     const node = current.state.graph.byId.get(currentNodeId);
@@ -730,12 +752,18 @@ export function renderStep(ctx, nodeId, moduleId = null) {
       current = nextCtx;
       currentNodeId = nextNodeId ?? currentNodeId;
       currentModuleId = nextModuleId ?? null;
-      if (same && draftOpen()) return;
+      // Typing in progress: the draft is safe on disk, but a full repaint would
+      // still drop the caret. Refresh only the parts that can change underneath.
+      if (same && draftOpen()) {
+        refreshProgress();
+        return;
+      }
       paint();
     },
     destroy() {
       clearLeaveGuard("evidence");
       if (currentNodeId) clearLeaveGuard(`review-${currentNodeId}`);
+      reading.destroy();
     },
   };
 }

@@ -8,8 +8,8 @@
  * short stump, so "should do" and "could do" are both visible at a glance and
  * never confused. A node **in review** keeps an amber column at a wait; one
  * sent back for **changes** is an amber stump with a dashed rim, the thing to
- * pick up. Offered depth is a hollow dashed rim (a door, not a wall); Later is
- * a dim amber dash.
+ * pick up. An elective on offer is a stump with a dashed rim (a door you can
+ * open now, not a wall); Later reads exactly like Ahead.
  *
  * `rise` (0..1, in group.userData) scales the column so a newly unlocked
  * node can grow out of the floor. The scene animates it; this file reads it.
@@ -27,13 +27,13 @@ const STUMP_HEIGHT = 48;
 const SEGMENTS = 40;
 
 /** Disc opacity by standing. */
-const DISC = { locked: 0.16, future: 0.12, offered: 0, open: 0.3, next: 0.42, lit: 0.55, review: 0.4, fix: 0.36 };
+const DISC = { locked: 0.16, future: 0.16, offered: 0.18, open: 0.3, next: 0.42, lit: 0.55, review: 0.4, fix: 0.36 };
 /** Rim opacity by standing. */
-const RIM = { locked: 0.35, future: 0.3, offered: 0.7, open: 0.85, next: 1, lit: 1, review: 1, fix: 1 };
+const RIM = { locked: 0.35, future: 0.35, offered: 0.8, open: 0.85, next: 1, lit: 1, review: 1, fix: 1 };
 /** Number and title opacity by standing. */
-const INK = { locked: 0.45, future: 0.35, offered: 0.7, open: 0.9, next: 1, lit: 0.95, review: 1, fix: 1 };
+const INK = { locked: 0.45, future: 0.45, offered: 0.8, open: 0.9, next: 1, lit: 0.95, review: 1, fix: 1 };
 /** Column height by standing. */
-const COLUMN = { next: FULL_HEIGHT, open: STUMP_HEIGHT, review: REVIEW_HEIGHT, fix: STUMP_HEIGHT };
+const COLUMN = { next: FULL_HEIGHT, open: STUMP_HEIGHT, offered: STUMP_HEIGHT, review: REVIEW_HEIGHT, fix: STUMP_HEIGHT };
 const DASHED = new Set([STANDING.OFFERED, STANDING.FUTURE, STANDING.LOCKED, STANDING.FIX]);
 
 const GLOW_SHADER = {

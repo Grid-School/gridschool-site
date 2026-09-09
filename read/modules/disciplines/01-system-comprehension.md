@@ -67,6 +67,8 @@ Three habits make the thin end survivable:
 
 After the map exists, use it. On You can read a system the rule is stricter than anywhere else in the program: no assistant until your paper map is drawn, because a fluent summary of code you have not read gives you the feeling of understanding without the substance, and you will act on the feeling. Once the map exists, ask it to list the files that touch a symbol, to summarise a module you have already skimmed, to propose invariants for you to check. Do not accept its explanation of what the system does as your model. Its explanation is a hypothesis you owe a test. When a reviewer asks how you know, "the assistant said so" is the answer that fails the step, and it fails for the right reason: nobody was in control.
 
+The useful form of this is a scorecard. Ask the assistant the same counterfactual questions you answered from your map, write its answers beside yours, and where you disagree, read the code and mark who was right. Three outcomes teach three different things. You were right and it was wrong: you have found where its confidence outruns its reading, and what kind of question does that. It was right and you were wrong: your model has a hole, in a place you now know exactly. You both agreed and were both wrong: the most dangerous case, and the reason the code, not the conversation, is the referee. Keep the scorecard; the step asks for it, and by the third ticket you will know your own error pattern and the machine's, which is the only basis on which trusting either one is engineering rather than hope.
+
 ## Do this now (25 minutes)
 
 Pick any codebase you have not read: a dependency you use, an open source project, the world repo if you have access. Set a 25 minute timer.
@@ -76,6 +78,7 @@ Pick any codebase you have not read: a dependency you use, an open source projec
 3. Write three invariants you believe hold.
 4. Write two counterfactual questions and your predicted answers, with confidence for each.
 5. Check one of the predictions against the code or by running it.
+6. Ask an assistant the same two questions, paste only the code they touch, and score its answers against yours.
 
 Keep the note. In You can read a system you will do this against the world map for real, and the first ten minutes will already feel familiar.
 

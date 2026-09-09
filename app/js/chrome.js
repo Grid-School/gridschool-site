@@ -1,36 +1,21 @@
 /**
- * The shell around every view: rail, identity, the demo banner.
- * Built once and updated, so navigation never repaints the whole page.
+ * The shell around every view: rail, banner, outlet, and the two things that
+ * hang off the rail (the profile sheet and, on an instructor's device, the
+ * instructor strip). Built once and updated, so navigation never repaints
+ * the whole page.
  *
- * The rail has one door and two drawers, on purpose. Eight items of equal
- * weight is not a menu, it is a decision, and the student paying for this is
- * already out of decisions. The Map answers both "where am I" and "what now":
- * the lit column is the step you are on, and Next opens it. Everything else is
- * either reached from the map or is a tool you go looking for by name, so it
- * sits below the line, quiet, and never competes. The Coach keeps its route
- * (#/coach) and is reached from the step page and the first run, not the rail.
- *
- * The door carries state. A label tells you where a link goes; a badge tells
- * you whether to go. That is the difference between navigation and a menu.
+ * Composition only. What each piece is lives in its own file:
+ *   rail.js              the doors and the avatar
+ *   instructor-strip.js  dev unlock, media preview, admin, leave
+ *   profile.js           the sheet behind the avatar
  */
 
 import { el, mount } from "./dom.js";
-import { gmark, wordmark } from "../../js/brand.js";
-import { btn } from "./ui.js";
 import { signOut } from "./session.js";
 import { lock } from "./gate.js";
-import { isPreviewMedia } from "./preview-mode.js";
-import { isInstructorDevice, setInstructorDevice } from "./instructor-mode.js";
-import { returnedUnread } from "./tasks.js";
-import { progress } from "./graph/model.js";
-
-/** One door. The map is where the student is, what is next, and the whole path. */
-const DOORS = [{ id: "map", label: "Map", hint: "Where you are. What is next." }];
-
-const TOOLS = [
-  { id: "tasks", label: "All tasks" },
-  { id: "calendar", label: "Calendar" },
-];
+import { createRail } from "./rail.js";
+import { createInstructorStrip } from "./instructor-strip.js";
+import { createProfile } from "./profile.js";
 
 export function createChrome({
   onNavigate,
@@ -38,151 +23,41 @@ export function createChrome({
   onExport,
   onToggleDev,
   onTogglePreview,
-  role: chromeRole = "student",
+  getState,
+  role = "student",
   showAdminConsole = false,
 }) {
-  const railNav = el("nav.rail__nav", { "aria-label": "Where to go" });
-  const railTools = el("nav.rail__tools", { "aria-label": "Tools" });
-  const identity = el("div.rail__id");
   const banner = el("div.demobar", { hidden: true, role: "status" });
   const outlet = el("main.outlet", { id: "outlet", tabindex: -1 });
-
-  const rail = el(
-    "aside.rail",
-    {},
-    el("a.rail__brand", { href: "../", "aria-label": "GridSchool home" }, gmark({ className: "rail__logo" }), wordmark()),
-    railNav,
-    el("div.rail__rule", { "aria-hidden": "true" }),
-    railTools,
-    identity
-  );
-
   const shellMain = el("div.shellmain", {}, banner, outlet);
-  const root = el("div.shell", {}, rail, shellMain);
 
-  const items = new Map();
-  const badges = new Map();
+  const profile = createProfile({
+    getState,
+    onExport,
+    onReset,
+    onNavigate,
+    onSignOut: () => {
+      signOut();
+      // Signing out also locks the platform: the access key is forgotten on
+      // this device, so the gate asks again on the next visit.
+      lock();
+      location.href = "./";
+    },
+  });
 
-  for (const door of DOORS) {
-    const badge = el("span.rail__badge", { hidden: true });
-    const link = el(
-      "a.rail__link",
-      {
-        href: `#/${door.id}`,
-        onclick: (event) => {
-          event.preventDefault();
-          onNavigate(door.id);
-        },
-      },
-      el("div.rail__linktext", {}, el("b", {}, door.label), el("span", {}, door.hint)),
-      badge
-    );
-    items.set(door.id, link);
-    badges.set(door.id, badge);
-    railNav.append(link);
-  }
+  const rail = createRail({
+    onNavigate,
+    onProfile: (event) => profile.open(event ? { x: event.clientX, y: event.clientY } : null),
+  });
 
-  for (const tool of TOOLS) {
-    const link = el(
-      "a.rail__tool",
-      {
-        href: `#/${tool.id}`,
-        onclick: (event) => {
-          event.preventDefault();
-          onNavigate(tool.id);
-        },
-      },
-      tool.label
-    );
-    items.set(tool.id, link);
-    railTools.append(link);
-  }
+  const instructor = role === "admin" ? createInstructorStrip({ onToggleDev, onTogglePreview, showAdminConsole }) : null;
+  if (instructor) rail.root.insertBefore(instructor.root, rail.root.lastElementChild);
 
-  function setActive(name) {
-    items.forEach((link, id) => link.classList.toggle("is-active", id === name));
-  }
+  const root = el("div.shell", {}, rail.root, shellMain, profile.layer);
 
-  /**
-   * The Map carries the count of lit nodes, a fact rather than an alarm, so it
-   * is styled as a count and not a dot. Reviews that came back and have not
-   * been read ride along in the title; the step page is where they are read.
-   */
-  function setSignals(state) {
-    const unread = returnedUnread(state.student).length;
-    const prog = progress(state.graph);
-    const mapBadge = badges.get("map");
-    mapBadge.hidden = false;
-    mapBadge.className = "rail__badge rail__badge--count";
-    mapBadge.textContent = `${prog.spine.lit}/${prog.spine.total}`;
-    const reviews = unread ? ` ${unread} review${unread === 1 ? "" : "s"} came back.` : "";
-    mapBadge.title = `Required ${prog.spine.lit} of ${prog.spine.total}. Depth ${prog.depth.lit} of ${prog.depth.total}.${reviews}`;
-  }
-
-  function setIdentity(state, role) {
-    const instructor = role === "admin" || chromeRole === "admin";
-    const canDev = instructor || state.slug === "demo";
-    mount(
-      identity,
-      el(
-        "div.rail__who",
-        {},
-        el("b", {}, state.student.name),
-        el("span", {}, `${state.cohort.name} · week ${Math.min(state.week, state.cohort.weeks)}`),
-        instructor && el("span.rail__role", {}, "Instructor view"),
-        canDev &&
-          state.unlockAll &&
-          el("span.rail__role.rail__role--dev", {}, "Dev unlock"),
-        instructor &&
-          isPreviewMedia() &&
-          el("span.rail__role.rail__role--dev", {}, "Media preview")
-      ),
-      el(
-        "div.rail__acts",
-        {},
-        canDev &&
-          btn({
-            label: state.unlockAll ? "Dev unlock: on" : "Dev unlock: off",
-            variant: "quiet",
-            onclick: onToggleDev,
-          }),
-        /* Instructor only, never the demo: students and the public tour must
-           see the honest "film in production" state, not the test clip. */
-        instructor &&
-          onTogglePreview &&
-          btn({
-            label: isPreviewMedia() ? "Media preview: on" : "Media preview: off",
-            variant: "quiet",
-            onclick: onTogglePreview,
-          }),
-        instructor &&
-          isInstructorDevice() &&
-          btn({
-            label: "Leave instructor view",
-            variant: "quiet",
-            title: "This device goes back to rendering the student view. Turn it on again from the admin console.",
-            onclick: () => {
-              setInstructorDevice(false);
-              location.reload();
-            },
-          }),
-        showAdminConsole && btn({ label: "Admin", variant: "quiet", href: "../admin/" }),
-        btn({ label: "Export board", variant: "quiet", onclick: onExport }),
-        state.slug === "demo" &&
-          state.hasLocalEdits &&
-          btn({ label: "Reset demo", variant: "quiet", onclick: onReset }),
-        btn({
-          label: "Sign out",
-          variant: "quiet",
-          onclick: () => {
-            signOut();
-            // Signing out also locks the platform: the access key is forgotten
-            // on this device, so the gate asks again on the next visit.
-            lock();
-            location.href = "./";
-          },
-        })
-      )
-    );
+  function setIdentity(state) {
+    rail.setIdentity(state);
+    instructor?.render(state);
   }
 
   /**
@@ -195,11 +70,7 @@ export function createChrome({
       mount(
         banner,
         el("b", {}, "Notebook unreachable."),
-        el(
-          "span",
-          {},
-          "This click is only on this machine. Later clicks retry. Another device will not see it until the notebook is up."
-        )
+        el("span", {}, "This click is only on this machine. Later clicks retry. Another device will not see it until the notebook is up.")
       );
       return;
     }
@@ -208,11 +79,7 @@ export function createChrome({
       mount(
         banner,
         el("b", {}, "Dev unlock on."),
-        el(
-          "span",
-          {},
-          "Every node is open for reading and turn-in. Lighting still requires a real URL. Use Dev unlock in the rail to restore gating."
-        )
+        el("span", {}, "Every node is open for reading and turn-in. Lighting still requires a real URL. The padlock in the rail restores gating.")
       );
       return;
     }
@@ -234,5 +101,14 @@ export function createChrome({
     banner.hidden = true;
   }
 
-  return { root, outlet, shellMain, setActive, setSignals, setIdentity, setBanner };
+  return {
+    root,
+    outlet,
+    shellMain,
+    setActive: rail.setActive,
+    setSignals: rail.setSignals,
+    setIdentity,
+    setBanner,
+    closeProfile: profile.close,
+  };
 }

@@ -24,6 +24,8 @@ You met the mechanics in the nanograph series, where you built a small typed gra
 
 Notice that the same system gives rise to all nine, and each one answers questions the others cannot. A call graph will not tell you who owns a player's position. An ownership graph will not tell you what breaks if you rename a function. Choosing the graph is choosing the question.
 
+One collision to know about before you use the phrase in a room. When the industry says graph engineering it almost always means the last row, the agent execution graph, drawing which agent runs after which and who reviews whom. When this program says it, it usually means the first two rows, the graph of the code itself, because that is the tool you build in the nanograph series. Both are real and they meet in You ran the agents, where the slice your code graph computes is what an agent in your execution graph receives. Say which one you mean.
+
 ```mermaid
 flowchart LR
   R[The system as it is] --> Q{What do I need to know?}

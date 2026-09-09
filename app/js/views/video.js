@@ -51,9 +51,9 @@ function absoluteUrl(value, root = "") {
 }
 
 /**
- * What the film covers, in text. Shown under the player while a step's film
- * is not yet recorded, so the concept reaches the student now and the film,
- * when it exists, adds a worked example rather than the only explanation.
+ * What the film covers, in text: the shooting brief for an unfilmed step.
+ * Rendered only for an instructor with Media preview on (step.js decides);
+ * a student never sees a description of a film that does not exist.
  */
 export function filmSummary({ summary, filmed = false } = {}) {
   if (!summary || filmed) return null;

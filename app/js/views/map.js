@@ -13,7 +13,7 @@ import { el, mount } from "../dom.js";
 import { btn, toast } from "../ui.js";
 import { createScene3d } from "../graph/scene3d/index.js";
 import { STATUS, nextUp, progress, visibleGraph } from "../graph/model.js";
-import { LEGEND, STANDING, STANDING_LABEL, standingOf } from "../graph/standing.js";
+import { LEGEND, STANDING, STANDING_LABEL, standingOf, legendKeyOf } from "../graph/standing.js";
 import { trackLabel } from "../copy.js";
 import { mapList } from "./map-list.js";
 import { createGridState, hashFor, RESERVED_ARGS, VIEW } from "./grid-state.js";
@@ -165,6 +165,9 @@ export function renderMap(ctx, initialArg) {
     else floor.fit({ insets: INSETS });
   }
 
+  /** The node the camera went into; on return it pulls back out from there. */
+  let openedId = null;
+
   function openNode(id) {
     const node = current.state.graph.byId.get(id);
     if (shouldInterceptLock(node)) {
@@ -173,7 +176,18 @@ export function renderMap(ctx, initialArg) {
     }
     dismissLockNotice();
     setStatus(null);
-    current.navigate("map", id);
+    openedId = id;
+    const go = () => current.navigate("map", id);
+    if (floor && !isList()) floor.approach(node).then(go);
+    else go();
+  }
+
+  /** Back on the floor after a step: the eye comes back out of the node it entered. */
+  function returnFromNode() {
+    if (!openedId) return;
+    const node = current.state.graph.byId.get(openedId);
+    openedId = null;
+    if (node && floor && !isList()) floor.retreat(node);
   }
 
   function dismissLockNotice() {
@@ -278,7 +292,7 @@ export function renderMap(ctx, initialArg) {
    */
   function legendFor(graph) {
     const nextId = nextUp(graph)?.id ?? null;
-    const present = new Set(graph.nodes.map((node) => standingOf(node, nextId)));
+    const present = new Set(graph.nodes.map((node) => legendKeyOf(standingOf(node, nextId))));
     const always = new Set([STANDING.NEXT, STANDING.LIT, STANDING.LOCKED]);
     return LEGEND.filter((standing) => always.has(standing) || present.has(standing));
   }
@@ -352,6 +366,7 @@ export function renderMap(ctx, initialArg) {
       if (ui.state !== before) return;
       syncHash();
       draw();
+      returnFromNode();
     },
     destroy() {
       window.removeEventListener("resize", onResize);

@@ -4,9 +4,10 @@
  * step. Views are plain functions except those three, which keep camera,
  * conversation, and a draft across a flush.
  *
- * There are two doors — Today and the Grid — plus two tools reached by name. The
- * routes that used to be surfaces of their own are kept as aliases so links
- * already in the wild still land somewhere true.
+ * The map is home. A fresh board opens on the floor with 00 lit as the beacon;
+ * the rule the board runs on is the first paragraph of 00, so there is no
+ * interstitial. Routes that used to be surfaces of their own are kept as
+ * aliases so links already in the wild still land somewhere true.
  */
 
 import { el, mount, download } from "./dom.js";
@@ -23,12 +24,12 @@ import { renderStep, isStepArgs, moduleIdFromArgs } from "./views/step.js";
 import { renderTasks } from "./views/tasks.js";
 import { renderCalendar } from "./views/calendar.js";
 import { renderLibrary } from "./views/library.js";
-import { renderFirstRun, shouldOpenFirstRun } from "./views/first-run.js";
 import { toggleDevUnlock, setDevUnlock } from "./dev-mode.js";
 import { togglePreviewMedia, setPreviewMedia, isPreviewMedia } from "./preview-mode.js";
 import { isInstructorDevice } from "./instructor-mode.js";
 import { startReminders } from "./reminders.js";
 import { watchReviewArrivals } from "./review-arrivals.js";
+import { enterView, leaveView } from "./transitions.js";
 
 const VIEWS = {
   today: { render: renderToday, persistent: true },
@@ -36,7 +37,6 @@ const VIEWS = {
   tasks: { render: renderTasks },
   calendar: { render: renderCalendar },
   library: { render: renderLibrary },
-  welcome: { render: renderFirstRun },
 };
 
 /** Old links keep working after surfaces folded. */
@@ -46,6 +46,7 @@ const ALIASES = {
   work: ["map", "list"],
   coach: ["today"],
   grid: ["map"],
+  welcome: ["map", "or.start"],
 };
 
 const app = document.getElementById("app");
@@ -88,11 +89,13 @@ function context() {
 
 let router = null;
 let lastIdentityKey = "";
+/** The step page on screen, if any, so leaving it can fade before the map returns. */
+let shownStep = null;
 
 function syncChrome() {
   const ctx = context();
   const state = ctx.state;
-  chrome.setActive(route.name === "map" ? "map" : route.name);
+  chrome.setActive(route.name);
   chrome.setBanner(state);
   chrome.setSignals(state);
   const identityKey = [
@@ -136,11 +139,29 @@ function renderRoute() {
     } else {
       instance.update(ctx, nodeId, moduleId);
     }
-    if (chrome.outlet.firstChild !== instance.node) mount(chrome.outlet, instance.node);
+    if (chrome.outlet.firstChild !== instance.node) {
+      mount(chrome.outlet, instance.node);
+      // The camera has already gone to the node (map.js); the page arrives over it.
+      enterView(instance.node);
+    }
+    shownStep = instance.node;
     document.title = `${ctx.state.graph.byId.get(nodeId)?.title ?? "Step"} · ${ctx.state.student.name} · GridSchool`;
     return;
   }
 
+  // Leaving a step for the floor: the page fades before the map comes back.
+  const leaving = shownStep;
+  shownStep = null;
+  if (leaving && route.name === "map") {
+    leaveView(leaving).then(() => {
+      if (shownStep === null && route.name === "map") mountRoute(view, ctx);
+    });
+    return;
+  }
+  mountRoute(view, ctx);
+}
+
+function mountRoute(view, ctx) {
   document.body.dataset.view = route.name;
 
   if (view.persistent) {
@@ -254,6 +275,7 @@ async function start() {
   chrome = createChrome({
     role,
     showAdminConsole,
+    getState: () => store.state(),
     onNavigate: (name) => router.go(name),
     onReset: () => {
       store.resetLocalEdits();
@@ -316,11 +338,7 @@ async function start() {
     if (shortcuts[event.key]) router.go(shortcuts[event.key]);
   });
 
-  // A first-time board opens on the first twenty minutes, not on a dashboard.
-  // Nobody's first question is "which of these five things should I click".
-  // Setting the hash is what starts the router in that case.
-  if (!location.hash && shouldOpenFirstRun(slug, store.state())) location.hash = "#/welcome";
-  else router.start();
+  router.start();
 }
 
 start();

@@ -1,5 +1,5 @@
 /**
- * The one next action. Today, the Coach, and the first-run screen all quote
+ * The one next action. Today and the Coach both quote
  * this so they cannot disagree. The board is the source of truth; this is
  * only the sentence we put at the top of the page.
  */

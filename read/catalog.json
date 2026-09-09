@@ -103,7 +103,7 @@
       "title": "13 · Evaluation modes and traps",
       "series": "disciplines",
       "mins": 10,
-      "attachesTo": "or.start"
+      "attachesTo": "cv.check"
     },
     {
       "id": "disciplines/14-containment-and-accountability",
@@ -207,6 +207,13 @@
       "series": "readings",
       "mins": 5,
       "attachesTo": "cap.change"
+    },
+    {
+      "id": "readings/your-machine",
+      "title": "Your machine, ready",
+      "series": "readings",
+      "mins": 8,
+      "attachesTo": "or.setup"
     }
   ]
 }

@@ -4,7 +4,7 @@
    reserved for state that matters: what is next, what is lit, what is blocked. */
 
 :root {
-  --rail: 244px;
+  --rail: 76px;
   --panelbg: rgba(9, 14, 24, 0.72);
   --locked: #3a4d6b;
   --warn: #ffb32b;
@@ -34,72 +34,137 @@ body[data-view="step"] .gridbg { display: none; }
 
 .rail {
   position: sticky; top: 0; align-self: start; height: 100vh;
-  display: flex; flex-direction: column; gap: 22px;
-  padding: 20px 16px; border-right: 1px solid var(--line);
+  display: flex; flex-direction: column; align-items: stretch; gap: 18px;
+  padding: 16px 8px 12px; border-right: 1px solid var(--line);
   background: rgba(5, 7, 12, .78); backdrop-filter: blur(8px);
 }
-.rail__brand { display: flex; align-items: center; gap: 10px; text-decoration: none; padding: 4px 6px; }
+.rail__brand { display: flex; justify-content: center; padding: 6px 0 2px; text-decoration: none; }
 .rail__logo { width: 26px; height: 26px; flex: none; display: block; }
 .rail__logo .g-on rect { fill: var(--cyan); }
 .rail__logo .g-off rect { fill: #14213a; }
 
-/* Two doors, then a hairline, then the tools. The rule is the whole point: it
-   says out loud that the things below it are not decisions you have to make. */
-.rail__nav { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.rail__link {
-  display: flex; align-items: center; gap: 10px; padding: 9px 11px;
-  border-radius: var(--radius-sm); text-decoration: none;
-  border: 1px solid transparent; position: relative;
+/* Doors: an icon, its word, and on the Map the one count. One width, so the
+   rail never asks the student to decide how wide their own shell is. */
+.rail__nav { display: flex; flex-direction: column; gap: 4px; }
+.rail__door, .rail__me {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 10px 4px 8px; border-radius: var(--radius-sm); text-decoration: none;
+  color: var(--muted); border: 1px solid transparent; background: none; cursor: pointer;
+  position: relative; font: inherit;
+  transition: color .14s, background .14s, border-color .14s;
 }
-.rail__linktext { min-width: 0; flex: 1; }
-.rail__link b { display: block; font-size: 14px; color: var(--text); font-weight: 600; }
-/* scoped to the text block on purpose: the badge is a span too, and a rule this
-   broad was quietly painting its digit the same colour as the hint under it */
-.rail__linktext span { display: block; font-size: 11.5px; color: var(--muted); }
-.rail__link:hover { background: var(--bg2); }
-.rail__link.is-active { background: var(--bg2); border-color: var(--hair-cyan); }
-.rail__link.is-active b { color: #fff; }
-.rail__link.is-active::before {
-  content: ""; position: absolute; left: -17px; top: 12px; bottom: 12px; width: 2px;
+.rail__glyph { display: flex; width: 22px; height: 22px; }
+.rail__glyph .icon { width: 22px; height: 22px; }
+.rail__word { font-size: 10.5px; letter-spacing: .04em; line-height: 1; }
+.rail__count {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 10px; letter-spacing: .06em;
+  color: var(--ghost); line-height: 1;
+}
+.rail__door:hover, .rail__me:hover { color: #fff; background: var(--bg2); }
+.rail__door.is-active { color: #fff; background: var(--bg2); border-color: var(--hair-cyan); }
+.rail__door.is-active .rail__glyph { color: var(--cyan); filter: drop-shadow(0 0 6px rgba(40, 225, 255, .55)); }
+.rail__door.is-active .rail__count { color: var(--text); }
+.rail__door.is-active::before {
+  content: ""; position: absolute; left: -9px; top: 12px; bottom: 12px; width: 2px;
   background: var(--cyan); box-shadow: 0 0 8px rgba(40, 225, 255, .5);
 }
+.rail__door:focus-visible, .rail__me:focus-visible { outline: 1px solid var(--cyan); outline-offset: 1px; }
 
-/* A badge is a reason to go, not decoration. The alarm colour is spent only on
-   what came back unread; the map's count is a fact and reads as one. */
-.rail__badge {
-  flex: none; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px;
+.rail__foot { margin-top: auto; display: flex; flex-direction: column; gap: 6px; }
+
+/* The world door: under a hairline because it leaves the board. The chooser
+   opens to the right so the rail itself never widens. */
+.rail__world { border-top: 1px solid var(--line); padding-top: 6px; }
+.wdoor { position: relative; }
+.wdoor .rail__door { width: 100%; }
+.wdoor__menu {
+  position: absolute; left: calc(100% + 10px); bottom: 0; z-index: 9; width: 260px;
+  padding: 12px; border: 1px solid var(--hair-cyan); border-radius: var(--radius);
+  background: linear-gradient(180deg, #0a1220 0%, #070b13 100%); box-shadow: 0 18px 50px rgba(0, 0, 0, .55);
+  display: flex; flex-direction: column; gap: 6px;
+}
+.wdoor__eyebrow { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); padding: 2px 4px 4px; }
+.wdoor__env {
+  display: block; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm);
+  background: var(--surface); color: inherit; text-decoration: none;
+}
+.wdoor__env.is-primary { border-color: var(--hair-cyan); }
+.wdoor__env:hover { border-color: var(--cyan); }
+.wdoor__env.is-off { opacity: .55; }
+.wdoor__env b { display: flex; align-items: center; gap: 8px; color: #fff; font-size: 13.5px; }
+.wdoor__env.is-off b { color: var(--muted); }
+.wdoor__default { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--cyan); }
+.wdoor__env span:not(.wdoor__default):not(.wdoor__count) { display: block; font-size: 12px; color: var(--muted); margin-top: 3px; }
+.wdoor__count { display: block; margin-top: 6px; font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11px; letter-spacing: .06em; color: var(--ghost); }
+.wdoor__count.is-live { color: var(--ok); }
+.wdoor__hint { font-size: 12px; color: var(--ghost); margin: 4px 4px 0; line-height: 1.45; }
+.rail__avatar {
   display: inline-flex; align-items: center; justify-content: center;
-  background: var(--cyan); color: #04121a; box-shadow: 0 0 10px rgba(40, 225, 255, .45);
-  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11px; font-weight: 700;
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 1px solid var(--hair-cyan); background: var(--bg2); color: var(--text);
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11px; letter-spacing: .04em;
 }
-.rail__badge--count {
-  background: none; box-shadow: none; color: var(--muted); font-weight: 400;
-  letter-spacing: .06em; font-size: 10.5px;
-}
+.rail__me.has-news .rail__avatar { box-shadow: 0 0 0 2px var(--bg), 0 0 0 3.5px var(--amber); }
 
-.rail__rule { height: 1px; background: var(--line); margin: 0 4px; }
-.rail__tools { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
-.rail__tool {
-  display: block; padding: 6px 11px; border-radius: var(--radius-sm);
-  text-decoration: none; color: var(--muted); font-size: 13px; white-space: nowrap;
+/* The instructor's strip: amber-edged so a screenshot says whose device this
+   is; never rendered on a student's or the demo's rail. */
+.istrip {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 8px 0 6px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
 }
-.rail__tool:hover { color: #fff; background: var(--bg2); }
-.rail__tool.is-active { color: #fff; }
+.istrip__tag {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 9px; letter-spacing: .16em;
+  color: var(--amber); margin-bottom: 4px;
+}
+.istrip__b {
+  display: flex; align-items: center; justify-content: center; width: 34px; height: 30px;
+  border-radius: var(--radius-sm); border: 1px solid transparent; background: none; color: var(--muted); cursor: pointer;
+}
+.istrip__b .icon { width: 18px; height: 18px; }
+.istrip__b:hover { color: #fff; background: var(--bg2); }
+.istrip__b.is-on { color: var(--amber); border-color: color-mix(in srgb, var(--amber) 45%, transparent); }
 
-.rail__id { margin-top: auto; border-top: 1px solid var(--line); padding-top: 14px; }
-.rail__who b { display: block; font-size: 13.5px; color: #fff; }
-.rail__who span { display: block; font-size: 11.5px; color: var(--muted); }
-.rail__role {
-  display: inline-block;
-  margin-top: 4px;
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 10px;
-  letter-spacing: .12em;
-  color: var(--ghost);
-  text-transform: uppercase;
+/* ---------- profile sheet ---------- */
+
+.profile { display: flex; flex-direction: column; gap: 22px; padding: 6px 4px; }
+.profile__head { display: flex; gap: 14px; align-items: center; }
+.profile__avatar {
+  display: inline-flex; align-items: center; justify-content: center; flex: none;
+  width: 48px; height: 48px; border-radius: 50%;
+  border: 1px solid var(--hair-cyan); background: var(--bg2); color: #fff;
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 15px; letter-spacing: .04em;
 }
-.rail__role--dev { color: var(--amber); }
-.rail__acts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.profile__name { font-size: 20px; color: #fff; margin: 0; }
+.profile__sub { color: var(--muted); font-size: 13px; margin-top: 3px; }
+.profile__block { display: flex; flex-direction: column; gap: 8px; }
+.profile__block .kv { display: grid; grid-template-columns: 110px 1fr; gap: 10px; font-size: 13.5px; }
+.profile__block .kv b { color: var(--muted); font-weight: 400; }
+.profile__block .kv span { color: var(--text); }
+.profile__note { color: var(--muted); font-size: 13.5px; margin: 0; }
+.profile__acts { display: flex; gap: 8px; flex-wrap: wrap; }
+.profile__links { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.profile__door {
+  display: block; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius);
+  text-decoration: none; background: var(--surface); color: inherit;
+  text-align: left; font: inherit; cursor: pointer; width: 100%;
+}
+.profile__door:hover { border-color: var(--cyan); }
+.profile__door b { display: flex; align-items: center; gap: 6px; color: var(--cyan); font-size: 13.5px; }
+.profile__door b .icon { width: 13px; height: 13px; opacity: .7; }
+.profile__door span { display: block; font-size: 12px; color: var(--muted); margin-top: 3px; }
+.profile__door.is-off { opacity: .55; }
+.profile__door.is-off b { color: var(--muted); }
+.profile__foot { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 14px; }
+.profile__hint { font-size: 12px; color: var(--ghost); }
+
+/* ---------- view transitions ---------- */
+
+/* A step arrives over the floor after the camera has gone to its node, and
+   leaves before the floor comes back. Reduced motion skips both (transitions.js). */
+.is-entering { animation: view-in .26s cubic-bezier(.2, .7, .3, 1) both; }
+.is-leaving { animation: view-out .18s ease-in both; pointer-events: none; }
+@keyframes view-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes view-out { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(6px); } }
 
 /* ---------- demo banner ---------- */
 
@@ -111,13 +176,13 @@ body[data-view="step"] .gridbg { display: none; }
 .demobar b { color: var(--amber); font-family: "IBM Plex Mono", ui-monospace, monospace; letter-spacing: .1em; font-size: 11px; }
 
 /* The outlet is the scroll host for document-like views (calendar, tasks,
-   library, first-run). Map and step manage their own scrolling. */
+   library). Map and step manage their own scrolling. */
 .outlet { flex: 1 1 auto; min-width: 0; min-height: 0; outline: none; overflow-y: auto; }
 body[data-view="map"] .outlet { overflow: hidden; }
 body[data-view="today"] .outlet { display: flex; flex-direction: column; overflow: hidden; }
 body[data-view="step"] .outlet { display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
 body[data-view="step"] .view--step { flex: 1 1 auto; min-height: 0; }
-.view { padding: 30px 26px 70px; max-width: 1240px; }
+.view { padding: 30px 26px 70px; max-width: 1240px; margin: 0 auto; width: 100%; box-sizing: border-box; }
 .view--map { padding: 0; max-width: none; }
 
 /* ---------- primitives ---------- */
@@ -182,7 +247,7 @@ body[data-view="step"] .view--step { flex: 1 1 auto; min-height: 0; }
 .dot--open { background: var(--cyan); box-shadow: 0 0 7px rgba(40, 225, 255, .55); }
 .dot--offered { background: transparent; box-shadow: inset 0 0 0 1px var(--cyan); }
 .dot--locked { background: transparent; box-shadow: inset 0 0 0 1px var(--locked); }
-.dot--future { background: transparent; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--amber) 45%, transparent); }
+.dot--future { background: transparent; box-shadow: inset 0 0 0 1px var(--locked); }
 .dot--next { background: var(--cyan); box-shadow: 0 0 0 3px color-mix(in srgb, var(--cyan) 30%, transparent), 0 0 10px var(--cyan); }
 .dot--review { background: var(--amber); box-shadow: 0 0 7px color-mix(in srgb, var(--amber) 55%, transparent); }
 .dot--fix { background: transparent; box-shadow: inset 0 0 0 2px var(--amber); }
@@ -250,6 +315,11 @@ body[data-view="step"] .view--step { flex: 1 1 auto; min-height: 0; }
 .nextbar {
   flex: none; padding: 18px 22px 16px; border-bottom: 1px solid var(--line);
 }
+/* The three bands run edge to edge (borders, scroll); their content sits in
+   one centred column so a wide screen does not push the conversation left. */
+.nextbar, .composer { display: grid; grid-template-columns: minmax(0, 980px); justify-content: center; }
+.thread { display: grid; grid-template-columns: minmax(0, 980px); justify-content: center; align-content: start; }
+.thread > .bubble--user { justify-self: end; }
 .nextbar__title { font-size: clamp(20px, 2.4vw, 28px); color: #fff; margin-top: 4px; }
 .nextbar__system {
   font-family: "IBM Plex Mono", ui-monospace, monospace;
@@ -261,7 +331,7 @@ body[data-view="step"] .view--step { flex: 1 1 auto; min-height: 0; }
 
 .thread {
   flex: 1 1 auto; min-height: 0; overflow-y: auto;
-  padding: 22px 22px 8px; display: flex; flex-direction: column; gap: 16px;
+  padding: 22px 22px 8px; gap: 16px;
 }
 .bubble { max-width: 68ch; }
 .bubble--user { margin-left: auto; text-align: right; }
@@ -377,14 +447,9 @@ body[data-view="step"] .view--step { flex: 1 1 auto; min-height: 0; }
 .task__dw { font-size: 13.5px; color: var(--text); margin-top: 6px; }
 .task__dw b { color: var(--ok); font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
 .task__why { font-size: 13px; color: var(--muted); margin-top: 6px; }
-.task__steps { margin-top: 8px; }
-.task__steps summary {
-  cursor: pointer; font-size: 13px; color: var(--cyan); list-style: none;
-}
-.task__steps summary::-webkit-details-marker { display: none; }
-.task__steps summary:hover { color: #fff; }
-.task__how { margin: 9px 0 0 17px; font-size: 13.5px; color: var(--muted); }
-.task__how li { margin-bottom: 4px; }
+.task__how { margin: 10px 0 2px; padding-left: 22px; font-size: 13.5px; line-height: 1.55; color: var(--muted); }
+.task__how li { margin-bottom: 5px; padding-left: 2px; }
+.task__how li::marker { color: var(--ghost); font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12px; }
 .task__acts { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
 .tasks--done { opacity: .72; }
 
@@ -416,7 +481,7 @@ body[data-view="step"] .view--step { flex: 1 1 auto; min-height: 0; }
 .lock-note p { color: var(--muted); font-size: 14px; line-height: 1.55; margin: 0; }
 .lock-note__acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .step--locked .lock-note { margin-top: 24px; max-width: 52ch; box-shadow: none; }
-.step__schedule, .step__ready {
+.step__schedule {
   margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--hair);
 }
 .welcome-sched { list-style: none; padding: 0; margin: 12px 0 0; display: flex; flex-direction: column; gap: 12px; max-width: 62ch; }
@@ -429,21 +494,6 @@ body[data-view="step"] .view--step { flex: 1 1 auto; min-height: 0; }
 .welcome-sched__item b { display: block; color: #fff; font-size: 14px; }
 .welcome-sched__item span { display: block; color: var(--muted); font-size: 12.5px; margin-top: 3px; }
 .welcome-sched__item p { color: var(--text); font-size: 13.5px; line-height: 1.5; margin: 8px 0 0; }
-.ready-list { list-style: none; padding: 0; margin: 12px 0 0; display: flex; flex-direction: column; gap: 8px; max-width: 62ch; }
-.ready-list__item {
-  display: grid;
-  grid-template-columns: 1.25rem 1fr auto;
-  gap: 10px;
-  align-items: center;
-  padding: 10px 12px;
-  border: 1px solid var(--hair);
-  border-radius: var(--radius);
-  color: var(--muted);
-  font-size: 14px;
-}
-.ready-list__item.is-ok { color: var(--text); border-color: color-mix(in srgb, var(--ok) 35%, var(--hair)); }
-.ready-list__mark { color: var(--cyan); font-weight: 700; }
-.ready-list__item.is-ok .ready-list__mark { color: var(--ok); }
 
 /* the graph/list switch */
 .seg {
@@ -576,6 +626,16 @@ body[data-view="step"] .view--step { flex: 1 1 auto; min-height: 0; }
   box-shadow: 0 0 12px var(--cyan);
 }
 .modal__panel:focus-visible { border-color: var(--cyan); }
+/* The sheet is a card, not a room: it sizes to its content and hangs off the
+   rail's corner instead of filling the screen. */
+.modal__panel--sheet {
+  inset: auto; left: calc(var(--rail) + 14px); bottom: 14px; top: auto;
+  width: min(520px, calc(100vw - var(--rail) - 28px)); max-height: calc(100vh - 28px);
+}
+.modal__panel--sheet .modal__body { min-height: 0; padding: 24px 26px 22px; }
+@media (max-width: 900px) {
+  .modal__panel--sheet { left: 12px; right: 12px; top: 74px; bottom: auto; width: auto; max-height: calc(100vh - 90px); }
+}
 .modal__body {
   --body-pad-x: 36px; --body-pad-top: 28px;
   padding: var(--body-pad-top) var(--body-pad-x) 36px; min-height: 100%; box-sizing: border-box;
@@ -771,8 +831,9 @@ html.vid-lock, html.vid-lock body { overflow: hidden; }
 .room__note { color: var(--muted); font-size: 13px; margin-top: 6px; }
 .room__at { display: block; margin-top: 5px; font-size: 11.5px; color: var(--muted); }
 .room__form { border-top: 1px solid var(--line); padding-top: 14px; }
-.room__acts { display: flex; gap: 8px; }
-.room__handoff { border-top: 1px solid var(--line); padding-top: 14px; }
+.room__acts { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 6px; }
+.room__handoff { border-top: 1px solid var(--line); margin-top: 22px; padding-top: 16px; }
+.room__gate { font-size: 12.5px; color: var(--muted); align-self: center; }
 .room__handoff .reveal { border-top: 0; padding-top: 0; }
 .room__rvs { margin-top: 14px; display: flex; flex-direction: column; gap: 11px; }
 .room__admin { border-color: color-mix(in srgb, var(--amber) 24%, var(--line)); }
@@ -878,52 +939,6 @@ html.vid-lock, html.vid-lock body { overflow: hidden; }
 .drill__dw { font-size: 12.5px; color: var(--muted); margin-bottom: 11px; }
 .drill__dw b { color: var(--ok); font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; }
 
-/* ---------- the first twenty minutes ---------- */
-
-.view--first { max-width: 900px; }
-.law {
-  border: 1px solid var(--hair-cyan); border-radius: var(--radius);
-  background: linear-gradient(180deg, #0b1524 0%, var(--panelbg) 100%);
-  padding: 18px 20px; margin-bottom: 22px;
-}
-.law__line { font-size: clamp(17px, 2.2vw, 21px); color: #fff; margin-top: 7px; }
-.law__sub { font-size: 14px; color: var(--muted); margin-top: 9px; max-width: 74ch; }
-.gloss {
-  margin: 18px 0 8px; padding: 14px 16px;
-  border: 1px solid var(--hair); border-radius: var(--radius); background: var(--surface);
-}
-.gloss__list {
-  list-style: none; margin: 10px 0 0; padding: 0;
-  display: flex; flex-direction: column; gap: 8px;
-}
-.gloss__list li { font-size: 14px; color: var(--muted); line-height: 1.45; }
-.gloss__list b { color: var(--cyan); margin-right: 6px; }
-
-.fsteps { list-style: none; display: flex; flex-direction: column; gap: 0; }
-.fstep { display: flex; gap: 16px; padding: 18px 0; border-bottom: 1px solid var(--hair); }
-.fstep:last-child { border-bottom: 0; }
-.fstep__n {
-  flex: none; width: 30px; height: 30px; border-radius: 50%;
-  display: grid; place-items: center; border: 1px solid var(--hair-cyan);
-  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12px; color: var(--cyan);
-}
-.fstep__body { min-width: 0; }
-.fstep__body h2 { font-size: 17px; color: #fff; }
-.fstep__body p { font-size: 14px; color: var(--muted); margin: 6px 0 12px; max-width: 70ch; }
-
-.doors { margin-top: 26px; }
-.doors__pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; margin-top: 12px; }
-.door {
-  text-align: left; cursor: pointer; font: inherit; color: var(--text);
-  background: var(--bg2); border: 1px solid var(--line);
-  border-radius: var(--radius); padding: 15px 16px;
-}
-.door:hover { border-color: var(--cyan); }
-.door b { display: block; font-size: 16px; color: #fff; }
-.door span { display: block; font-size: 13px; color: var(--muted); margin-top: 5px; }
-.doors__note { font-size: 13px; color: var(--muted); margin-top: 12px; max-width: 74ch; }
-.frun__acts { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 28px; }
-
 /* ---------- gate ---------- */
 
 .gate { min-height: 100vh; display: grid; place-items: center; padding: 40px 24px; }
@@ -970,37 +985,24 @@ html.vid-lock, html.vid-lock body { overflow: hidden; }
      still ask for full height. minmax(0, …) keeps the nav strip from pushing the
      page sideways. */
   .shell { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); }
+  /* The rail lies down: brand left, doors across, avatar right. Words stay;
+     a row of bare glyphs on a phone is a guessing game. */
   .rail {
     position: static; height: auto; flex-direction: row; align-items: center;
-    flex-wrap: wrap; gap: 12px; border-right: 0; border-bottom: 1px solid var(--line);
-    min-width: 0;
+    gap: 6px; padding: 6px 8px; border-right: 0; border-bottom: 1px solid var(--line); min-width: 0;
   }
-  .rail__nav {
-    flex-direction: row; overflow-x: auto; gap: 4px; flex: 1 1 100%; order: 3;
-    min-width: 0; scrollbar-width: none;
-  }
+  .rail__brand { padding: 0 6px; }
+  .rail__nav { flex-direction: row; flex: 1 1 auto; overflow-x: auto; scrollbar-width: none; min-width: 0; }
   .rail__nav::-webkit-scrollbar { display: none; }
-  .rail__link { white-space: nowrap; }
-  /* the hint drops, the badge does not: the badge is the reason to tap */
-  .rail__linktext span { display: none; }
-  .rail__link.is-active::before { left: 10px; right: 10px; top: auto; bottom: -1px; width: auto; height: 2px; }
-  /* on a phone the tools sit in the same strip, still quieter, and the hairline
-     between them becomes vertical rather than a full-width rule */
-  .rail__rule { width: 1px; height: 22px; margin: 0 2px; order: 3; }
-  .rail__tools { flex-direction: row; gap: 2px; order: 3; }
-  .rail__tool { white-space: nowrap; font-size: 12.5px; }
-  /* Identity shares the first row with the brand: name left, actions right.
-     The cohort line drops (Today says it); the role tags stay because they
-     change what the board does. Actions shrink so four still fit. */
-  .rail__id {
-    margin: 0; border-top: 0; padding-top: 0; display: flex; gap: 10px;
-    align-items: center; justify-content: space-between; flex: 1 1 auto; order: 1; min-width: 0;
-  }
-  .rail__who { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; min-width: 0; }
-  .rail__who b { white-space: nowrap; }
-  .rail__who span:not(.rail__role) { display: none; }
-  .rail__acts { margin-top: 0; gap: 4px; justify-content: flex-end; }
-  .rail__acts .b { padding: 8px 9px; font-size: 12px; }
+  .rail__door, .rail__me { padding: 6px 8px 5px; flex: none; }
+  .rail__word { font-size: 10px; letter-spacing: .02em; }
+  .rail__door.is-active::before { left: 10px; right: 10px; top: auto; bottom: -1px; width: auto; height: 2px; }
+  .rail__foot { margin-top: 0; flex-direction: row; }
+  .rail__world { border-top: 0; padding-top: 0; }
+  .wdoor__menu { left: auto; right: 0; bottom: auto; top: calc(100% + 8px); }
+  .istrip { flex-direction: row; border: 0; padding: 0; border-left: 1px solid var(--line); padding-left: 6px; }
+  .istrip__tag { display: none; }
+  .profile__links { grid-template-columns: 1fr; }
   /* a thumb is not a cursor: every control clears the 40px tap floor */
   .b { padding: 10px 15px; }
   .b--quiet { padding: 10px 12px; }
@@ -1077,6 +1079,74 @@ html.vid-lock, html.vid-lock body { overflow: hidden; }
   opacity: 0.42;
   cursor: not-allowed;
 }
+
+/* The step is a column of text with a thin column of state beside it. The
+   spine is sticky and reads bottom-up: the first thing to do sits lowest, the
+   link on top, so a step fills the way a node does on the floor. */
+.view--step > .step:not(.step--module) {
+  max-width: none; width: 100%;
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 46rem) minmax(0, 1fr); column-gap: 24px;
+  align-items: start;
+}
+.view--step > .step:not(.step--module) > * { grid-column: 2; min-width: 0; }
+.view--step > .step:not(.step--module) > .step__spine {
+  grid-column: 3; grid-row: 1 / span 40; justify-self: center;
+  position: sticky; top: 50%; transform: translateY(-50%);
+  display: flex; flex-direction: column; align-items: flex-start; gap: 14px;
+  width: 168px; margin: 0;
+}
+.step__spine-count {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11px; letter-spacing: .08em; color: var(--muted);
+  padding-left: 22px;
+}
+.spine { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0; position: relative; }
+.spine::before {
+  content: ""; position: absolute; left: 6px; top: 14px; bottom: 14px; width: 1px;
+  background: var(--line);
+}
+.spine__row { position: relative; display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; min-height: 48px; }
+.spine__dot {
+  flex: none; width: 13px; height: 13px; border-radius: 50%; margin-top: 2px;
+  border: 1px solid var(--locked); background: var(--bg); position: relative; z-index: 1;
+  transition: border-color .2s, background .2s, box-shadow .2s;
+}
+.spine__row--link .spine__dot { width: 15px; height: 15px; margin-left: -1px; margin-top: 1px; }
+.spine__row.is-ok .spine__dot { border-color: var(--ok); background: var(--ok); box-shadow: 0 0 10px color-mix(in srgb, var(--ok) 60%, transparent); }
+/* the one to do now: first undone row, cyan like Next on the floor */
+.spine__row:first-child:not(.is-ok) .spine__dot,
+.spine__row.is-ok + .spine__row:not(.is-ok) .spine__dot { border-color: var(--cyan); box-shadow: 0 0 8px rgba(40, 225, 255, .45); }
+.spine__row:first-child:not(.is-ok) .spine__label,
+.spine__row.is-ok + .spine__row:not(.is-ok) .spine__label { color: var(--text); }
+.spine__label { font-size: 12.5px; line-height: 1.35; color: var(--muted); }
+.spine__row.is-ok .spine__label { color: var(--text); }
+.spine__act {
+  font: inherit; font-size: 11.5px; color: var(--cyan); background: none; border: 1px solid var(--hair-cyan);
+  border-radius: 999px; padding: 2px 9px; cursor: pointer; margin-left: auto; flex: none; margin-top: 1px;
+}
+.spine__act:hover { border-color: var(--cyan); }
+@media (max-width: 900px) {
+  /* On a phone the column lies down under the banner: a row of dots, first
+     thing first, so it still reads left to right as the page fills. */
+  .view--step > .step:not(.step--module) { grid-template-columns: minmax(0, 1fr); }
+  .view--step > .step:not(.step--module) > * { grid-column: 1; }
+  .view--step > .step:not(.step--module) > .step__spine { grid-column: 1; grid-row: auto; position: static; transform: none; width: auto; margin: 0 0 14px; flex-direction: row; align-items: center; gap: 14px; }
+  .spine { flex-direction: row; flex-wrap: wrap; gap: 4px 14px; }
+  .spine::before { display: none; }
+  .spine__row { min-height: 0; padding: 2px 0; align-items: center; }
+  .spine__dot { margin-top: 0; }
+  .step__spine-count { padding-left: 0; }
+}
+
+/* A reading over the step. Fixed, so it covers the viewport and not the
+   scroll box it was appended to; the page under it keeps its scroll and its drafts. */
+.modal--fixed { position: fixed; z-index: 30; }
+.modal__panel--reading { inset: clamp(12px, 3vh, 32px) auto; left: 50%; transform: translate(-50%, 0) scale(.12); width: min(56rem, calc(100vw - 32px)); }
+.modal.is-open .modal__panel--reading { transform: translate(-50%, 0); }
+.modal__panel--reading .modal__body { min-height: 0; }
+.reading { display: flex; flex-direction: column; gap: 10px; }
+.reading__title { font-size: clamp(22px, 3vw, 28px); color: #fff; margin: 0; }
+.reading__foot { display: flex; gap: 10px; align-items: center; margin-top: 26px; padding-top: 16px; border-top: 1px solid var(--line); }
+.reading__done { color: var(--ok); font-size: 13px; }
 .step__head { margin-bottom: 28px; }
 .step__nav {
   display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
@@ -1101,6 +1171,19 @@ html.vid-lock, html.vid-lock body { overflow: hidden; }
 }
 .step__mode--incident { border-left-color: var(--warn); }
 
+/* Which of the three owned artifacts this step edits. Same shape as the mode
+   line, hairline only: it is context, not a rule. */
+.step__artifact {
+  display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: baseline;
+  margin-top: 10px; padding: 8px 14px; max-width: 70ch;
+  border: 1px solid var(--hair); border-radius: var(--radius);
+  color: var(--muted); font-size: 13.5px; line-height: 1.55;
+}
+.step__artifact b {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--text);
+}
+
 /* Electives and sign-off share the mode line's shape: one bordered aside,
    colour on the left edge saying what kind of decision it is. */
 .elective, .signoff {
@@ -1121,12 +1204,11 @@ html.vid-lock, html.vid-lock body { overflow: hidden; }
   border: 1px solid var(--hair);
   border-radius: var(--radius);
   background: color-mix(in srgb, var(--surface) 88%, transparent);
-  max-width: 62ch;
 }
 .step--welcome .lesson__sec--letter h2 { margin-bottom: 10px; }
 .step--welcome .lesson__sec--letter p { color: var(--text); font-size: 15.5px; line-height: 1.75; }
 .step--welcome .step__video { margin-top: 22px; }
-.step__do, .step__why, .step__video, .step__lesson, .step__tasks, .step__out, .step__mods, .step__schedule, .step__ready {
+.step__do, .step__why, .step__video, .step__lesson, .step__tasks, .step__out, .step__mods, .step__refs, .step__schedule {
   margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--hair);
 }
 .step__lesson h2 { font-size: 16px; color: #fff; margin: 0 0 6px; }
@@ -1160,6 +1242,10 @@ html.vid-lock, html.vid-lock body { overflow: hidden; }
   background: var(--surface); color: inherit; padding: 14px 16px;
 }
 .step__mod:hover { border-color: var(--cyan); }
+.step__mod.is-read { border-color: color-mix(in srgb, var(--ok) 35%, var(--line)); }
+.step__mod.is-read b { color: var(--muted); }
+.step__mod.is-read span { color: var(--ok); }
+a.step__mod { display: block; text-decoration: none; }
 .step__mod b { display: block; color: var(--cyan); margin-bottom: 4px; }
 .step__mod span { font-size: 13px; color: var(--muted); }
 .step__prose { margin-top: 18px; max-width: 72ch; }

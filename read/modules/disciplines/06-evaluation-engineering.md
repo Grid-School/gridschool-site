@@ -61,6 +61,14 @@ At some point you will be handed several systems and told: all of these pass the
 
 An agent's output arrives with the confidence of a senior engineer and the track record of a stranger. Treat it as evidence to be evaluated, never as a result to be accepted. Concretely: before reading the diff, write down what you would expect to see and what would worry you. Then read. Where the diff surprised you, that is either your model wrong or the agent wrong, and you owe both a test. The program will sometimes hand you agent output that is subtly wrong on purpose, with green tests. You are being trained to notice, and the noticing is graded.
 
+## The eval set: a test suite for a prompt
+
+Everything above applies to code, and a prompt is not code. Change a word in a system prompt and nothing compiles differently, no test goes red, and the only way to know whether the change helped is to run the prompt against cases you already know the answer to and count. That is an eval set, and it is the smallest unit of evaluation engineering that the postings for this work ask for by name. It does not need a platform. It needs five to ten inputs with the outcome you expect from each, written down before you touch the prompt, so that the prompt cannot be edited to fit the cases after the fact.
+
+The review phase in your delegation script is the first place you need one. You gave a model a rubric and asked it to say whether the build matched the plan, and at the moment you have no idea how often it is right, which means the reviewer is theatre until you check it. Take five diffs you know are correct and five you know are not, some with a subtle break, some with a loud one, and run the reviewer over all ten. Then change one thing about the rubric and run it again. The table that comes out, case by case, before and after, is the evidence. The part that turns it from a score into engineering is the error analysis underneath: for each case the reviewer got wrong, one line on why, because a reviewer that misses every off-by-one is a different problem from one that misses every missing test, and the fix for each is different.
+
+Two habits carry over from the rest of this reading. Judge the outputs before you know which prompt produced them, or you will grade the one you prefer. And keep the cases that lost. An eval set with a perfect score is a set that is too easy, not a prompt that is finished.
+
 ## Observability is evaluation that runs forever
 
 Tests run once. Telemetry runs while people are using the thing, which is where the layers above simulation live. A change that ships without a way to see whether it is working has not finished being evaluated; it has stopped being evaluated. For the founding weeks this can be as small as a counter and a log line. The habit is what matters: before you claim success, ask what number you would look at tomorrow to know you were wrong.
@@ -73,10 +81,11 @@ Take the task you executed in Agentic workflow engineering, or any change you sh
 2. Pick the highest layer that is cheap enough to build now. Build it.
 3. Try to make it fail. Construct an input, a sequence, or an interruption. Spend at least ten minutes on this.
 4. Write down what you found, including "nothing, and here is what I tried."
+5. If the task used a prompt you wrote, a reviewer rubric or a planner instruction, write five cases with expected outcomes now, before changing the prompt. Run them, change one thing, run them again, and keep the table.
 
 ## Done when
 
-You can name the result that would have made you revert, and you looked for it.
+You can name the result that would have made you revert, and you looked for it. For any prompt you are relying on, you can say how often it is right, on what, and you found out by counting.
 
 ## What's next
 

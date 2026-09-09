@@ -2,8 +2,8 @@
  * Rows that appear on more than one surface. A task looks and behaves the same
  * whether you meet it on Today, on Tasks, or inside a step.
  *
- * The title is not a secret button. Done-when is always visible. Extra how-to
- * is a normal disclosure labelled Show steps / Hide steps. Actions sit in the
+ * The title is not a secret button. Done-when is always visible, and so are
+ * the how-to steps: nothing on a task is behind a click. Actions sit in the
  * open, and they say what they do.
  */
 
@@ -23,20 +23,7 @@ export function taskRow(task, { store, navigate, showGo = false } = {}) {
   const waiting = state === TASK_STATE.WAITING;
   const how = task.how ?? [];
 
-  const steps = how.length
-    ? el(
-        "details.task__steps",
-        {},
-        el("summary", {}, "Show steps"),
-        el("ol.task__how", {}, how.map((step) => el("li", {}, step)))
-      )
-    : null;
-
-  if (steps) {
-    steps.addEventListener("toggle", () => {
-      steps.querySelector("summary").textContent = steps.open ? "Hide steps" : "Show steps";
-    });
-  }
+  const steps = how.length ? el("ol.task__how", {}, how.map((step) => el("li", {}, step))) : null;
 
   const acts = [];
   if (waiting) {
