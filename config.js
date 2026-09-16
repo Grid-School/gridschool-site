@@ -15,7 +15,7 @@ export const LINKS = {
   discord: "REPLACE_ME_DISCORD_INVITE",
   toolPack: "REPLACE_ME_GITHUB_TOOLPACK_INVITE",
   studioRepo: "REPLACE_ME_GITHUB_STUDIO_REPO",
-  jira: "REPLACE_ME_JIRA_BOARD_URL",
+  jira: "https://github.com/orgs/Grid-School/projects/1",
   worldServer: "https://github.com/Grid-School/gridschool-world-server",
   worldClient: "https://github.com/Grid-School/gridschool-world-client",
   play: "https://play.gridschool.org",
@@ -92,14 +92,13 @@ export const PERSIST = {
  * year and a stale number on a page is a lie the site tells for you. Copy
  * says "founding rate"; the numbers live at checkout and in the sales script.
  * Checkout runs through a financing partner (Klarna-class) rather than plain
- * card processing, because these are $1k to $15k payments; the link keys stay
- * provider-neutral so switching providers is one paste in the admin console.
+ * card processing. The link keys stay provider-neutral so switching
+ * providers is one paste in the admin console.
  */
 export const PRICING = {
   spots: 5,
-  /** The residency runs a year at the student's pace; the intensive sequence
-      inside it is typically two to four months. Source: the offer lock §3. */
-  months: 12,
+  /** Eight weeks of the intensive, then stay until hired. Source: the offer lock §3. */
+  weeks: 8,
   foundingLabel: "Founding rate",
   depositLabel: "Deposit, then the balance",
 };

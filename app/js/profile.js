@@ -109,9 +109,11 @@ export function createProfile({ getState, onExport, onReset, onSignOut, onNaviga
 }
 
 function clockLine(clock) {
-  if (!clock) return "Twelve months. Nothing on the map expires.";
-  const months = clock.months ?? 12;
-  return `${months} months, ${clock.kind === "get-in" ? "get in, then stay as long as you ship" : clock.kind}. Nothing on the map expires.`;
+  if (!clock) return "Eight weeks, then I stay. Nothing on the map expires.";
+  const after = clock.kind === "get-in" ? "then I stay until you're hired" : (clock.kind || "then I stay until you're hired");
+  if (clock.weeks) return `${clock.weeks} weeks, ${after}. Nothing on the map expires.`;
+  if (clock.months) return `${clock.months} months, ${after}. Nothing on the map expires.`;
+  return "Eight weeks, then I stay. Nothing on the map expires.";
 }
 
 function oneOnOneLine(oneone) {

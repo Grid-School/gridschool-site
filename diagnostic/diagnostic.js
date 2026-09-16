@@ -65,7 +65,7 @@ form.addEventListener("submit", (event) => {
 function verdictFor(total) {
   if (total <= 11) {
     return {
-      line: "This is exactly the gap the residency exists to close. Not a skill gap: an evidence gap. The year turns each of these four numbers into a link.",
+      line: "This is exactly the gap the residency exists to close. Not a skill gap: an evidence gap. The eight weeks turn each of these four numbers into a link.",
       note: "Bring this score to the fit call. It becomes the baseline your board is measured against.",
       cta: "Apply for a spot",
     };

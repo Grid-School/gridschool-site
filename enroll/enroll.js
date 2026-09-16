@@ -16,7 +16,7 @@ const PLANS = [
     tag: "Most take this",
     best: true,
     price: PRICING.foundingLabel,
-    sub: "once, for the twelve months, at the figure we agreed on your call. Checkout shows it before you pay.",
+    sub: "once, for the eight weeks and the search after, at the figure we agreed on your call. Checkout shows it before you pay.",
     linkKey: "foundingCheckout",
     cta: "Take the spot",
     includes: [
@@ -45,7 +45,7 @@ const PLANS = [
 
 const plans = document.getElementById("plans");
 
-document.getElementById("spots").textContent = `Founding · ${PRICING.spots} spots · ${PRICING.months} months`;
+document.getElementById("spots").textContent = `Founding · ${PRICING.spots} spots · ${PRICING.weeks} weeks`;
 
 /* Checkout renders after the live overrides land, so a checkout link pasted
    in the console sells here without a deploy. The placeholder warning shows

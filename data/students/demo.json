@@ -6,7 +6,7 @@
   "joined": "2026-08-24",
   "clock": {
     "kind": "get-in",
-    "months": 12
+    "weeks": 8
   },
   "oneone": {
     "weekday": 3,

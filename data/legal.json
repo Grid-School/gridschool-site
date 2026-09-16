@@ -1,5 +1,5 @@
 {
-  "version": "2026-09-04",
+  "version": "2026-09-15",
   "note": "Written from how the program actually runs. Every claim here has to match the offer lock in companies/gridschool-phase0; if the offer changes, this file changes in the same commit.",
   "documents": {
     "terms": {
@@ -9,14 +9,14 @@
         {
           "heading": "What you are buying",
           "body": [
-            "The GridSchool Residency is a twelve-month coaching and review program for people who can already write a working program and cannot get a team to trust them. It includes a weekly 45-minute one-to-one, a weekly cohort call, up to three written reviews per week, written sign-offs on your projects, a board that tracks your evidence, real systems to work in, a recorded live defense read by an outside engineer, help building your public site and profile, interview preparation from your own work, and a prompt pack you run in your own AI account. It runs at your pace within the twelve months, on the condition that you put work in every day.",
+            "The GridSchool Residency is an eight-week coaching and review intensive for people who can already write a working program and cannot get a team to trust them, plus continued review after week 8 until a company hires you. It includes a weekly 45-minute one-to-one, a weekly cohort call, up to three written reviews per week, written sign-offs on your projects, a board that tracks your evidence, real systems to work in, a recorded live defense read by an outside engineer, help building your public site and profile, interview preparation from your own work, and a prompt pack you run in your own AI account. The intensive runs on the condition that you put work in every day.",
             "It is coaching and review. It is not a bootcamp, not a degree, not accredited, and not a recruiting agency."
           ]
         },
         {
           "heading": "What I do not promise",
           "body": [
-            "I do not promise that a company hires you. Nobody honest can. I do not offer a job-or-refund, an income share agreement, or a guaranteed interview.",
+            "I do not promise that a company hires you. Nobody honest can. I do not offer a job-or-refund, an income share agreement, or a guaranteed interview. After week 8 I keep the weekly one-to-one, interview preparation from your own work, and help getting eyes on the evidence, at no extra tuition, until a company hires you or you end the arrangement. That is a service I keep providing. It is not a promise that a company says yes.",
             "I do not give legal, immigration, visa, or tax advice."
           ]
         },
@@ -45,7 +45,7 @@
           "heading": "The quota, and what happens if it stops",
           "body": [
             "The residency quota is work every day, a ship URL every week, and the live sessions you booked. Application volume and LinkedIn posting are not requirements.",
-            "Miss three weeks of ship or three live sessions and your spot pauses and I call you. If we agree it is over, it ends; if not, it resumes at your pace. The twelve months are a ceiling on what you have paid for, not a clock you are racing; once you have landed a position, I stay reachable."
+            "Miss three weeks of ship or three live sessions and your spot pauses and I call you. If we agree it is over, it ends; if not, it resumes at your pace. Eight weeks is the intensive, not a hire-by date. After week 8 the same weekly review continues until a company hires you or you end it; once you have landed a position, I stay reachable."
           ]
         },
         {
@@ -119,7 +119,7 @@
         {
           "heading": "How long I keep it",
           "body": [
-            "Applications I turn down are deleted within ninety days. If you enrol, your board and review history are kept while you are in the program and for twelve months after it ends, because a reference request a year later is common and the record is what makes it credible.",
+            "Applications I turn down are deleted within ninety days. If you enrol, your board and review history are kept while you are in the program and for a year after it ends, because a reference request later is common and the record is what makes it credible.",
             "Ask me to delete any of it earlier and I will, except for what I am required to keep for payment records."
           ]
         },
