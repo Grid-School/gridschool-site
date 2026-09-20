@@ -103,4 +103,4 @@ Blast radius matches your paper or you can explain the difference, and `--hops` 
 ## Sources
 
 - Breadth-first search: CLRS ch. 22.2, or any algorithms notes that draw the queue.
-- Upstream vs downstream: the school's production tool names the same distinction; you just built the nano version.
+- Upstream vs downstream: walking edges backward measures fear; walking forward measures reach. You just built both.

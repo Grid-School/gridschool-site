@@ -55,7 +55,7 @@ export function mapList({ state, onOpenNode }) {
           el("div.rvs", {}, loose.map((review) => reviewLine(review)))
         )
       : null,
-    panel({ eyebrow: "The shared codebases", title: "The world, and GridSeak" }, studioBlock())
+    panel({ eyebrow: "The shared codebases", title: "The world, and the graph tool" }, studioBlock())
   );
 }
 
@@ -146,7 +146,7 @@ function studioBlock() {
     el(
       "p.muted",
       {},
-      "The world is the live game. Features you ship stay there with a maker's mark, and anyone you send the link to can walk in. GridSeak is the graph engine. How much you take on there follows your goals, and I review that work the same way. Daily stories live on the ticket board."
+      "The world is the live game. Features you ship stay there with a maker's mark, and anyone you send the link to can walk in. The graph tool is the one you build: who calls what, and what a change reaches. How far you go there follows your goals, and I review that work the same way. Daily stories live on the ticket board."
     ),
     el(
       "div.room__acts",

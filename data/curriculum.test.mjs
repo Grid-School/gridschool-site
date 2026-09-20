@@ -137,15 +137,18 @@ test("catalog attachesTo names real nodes", () => {
   }
 });
 
-test("the spine is the six gates, the mission, the Career core with last-mile proofs, the owned system through users, and the graph tool", () => {
+test("the spine is the six gates, the foundations series, the mission, the Career core with last-mile proofs, the owned system through users, and the graph tool", () => {
   const expected = [
-    "or.start", "or.setup", "ops.flow", "pf.runs", "cv.four", "cv.understand", "cv.frame", "cv.spec",
-    "gr.parse", "gr.query", "cap.change", "cv.check", "cv.delegate", "cv.contain",
-    "sg.profile", "pf.style", "pj.model", "pj.ship", "pj.users", "wd.ticket", "sg.site", "cap.review",
-    "wd.deploy", "sg.show", "sg.scope", "li.close", "cap.outcome", "cap.defend", "li.publish",
+    "cap.change", "cap.defend", "cap.outcome", "cap.review", "cv.check", "cv.contain", "cv.delegate", "cv.four", "cv.frame", "cv.spec", "cv.understand", "fs.api", "fs.back", "fs.choose", "fs.data", "fs.front", "fs.map", "fs.observe", "fs.principles", "fs.ship", "gr.parse", "gr.query", "li.close", "li.publish", "ops.flow", "or.setup", "or.start", "pf.runs", "pf.style", "pj.model", "pj.ship", "pj.users", "sg.profile", "sg.scope", "sg.show", "sg.site", "wd.deploy", "wd.ticket",
   ];
   assert.deepEqual(spine.map((node) => node.id).sort(), [...expected].sort());
   assert.deepEqual(byId.get("cap.change").requires, ["cv.spec"]);
+  // Foundations hang off the machine and feed only the owned system; the gates never wait on them.
+  for (const node of spine.filter((n) => n.family === "foundations")) {
+    assert.deepEqual(node.requires, ["or.setup"], `${node.id} must require only or.setup`);
+  }
+  assert.deepEqual([...byId.get("pj.model").requires].sort(), ["cv.spec", "fs.choose"]);
+  assert.deepEqual([...byId.get("pj.ship").requires].sort(), ["fs.ship", "pj.model"]);
   assert.deepEqual([...byId.get("cap.defend").requires].sort(), ["cap.review", "cv.check", "cv.contain", "cv.delegate"]);
   // The owned system is required but never gates the defense clock.
   for (const id of ["cap.defend", "li.publish"]) {

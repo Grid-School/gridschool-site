@@ -128,4 +128,5 @@ of guessing: when a short name has two owners, emit the edge to a node called
 - Adjacency lists: any algorithms text; CLRS ch. 22 intro if you want depth.
 - `pathlib.rglob`, `ast`: Python docs.
 - The "evidence tier" idea (say how you know, not just what you know) is the
- same doctrine the production-grade tool (GridSeak) carries in every response.
+ same doctrine this series carries in every response. A parse hit is not a
+ grep hit. Say the tier.

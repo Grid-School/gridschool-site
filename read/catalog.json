@@ -2,7 +2,7 @@
   "title": "Reading",
   "note": "These modules are the textbook. The board is the sequence. Type the code. Do not paste it.",
   "seriesNotes": {
-    "disciplines": "The eight kinds of work an engineer does when implementation is cheap, how the program measures them, and the thread that carries the evidence into public. Read each one just before the step that uses it.",
+    "disciplines": "The eight kinds of work an engineer does when implementation is cheap, the full-stack systems foundations (15–23), and the thread that carries the evidence into public. Read each one just before the step that uses it.",
     "nanograph": "Build a code graph from nothing, one module at a time. The Graph track on the board.",
     "student-zero": "The founder's own path through the map, kept honest."
   },
@@ -111,6 +111,69 @@
       "series": "disciplines",
       "mins": 14,
       "attachesTo": "cv.contain"
+    },
+    {
+      "id": "disciplines/15-how-a-system-runs",
+      "title": "15 · How a system runs, end to end",
+      "series": "disciplines",
+      "mins": 12,
+      "attachesTo": "fs.map"
+    },
+    {
+      "id": "disciplines/16-front-end-foundations",
+      "title": "16 · Front-end foundations, framework-agnostic",
+      "series": "disciplines",
+      "mins": 12,
+      "attachesTo": "fs.front"
+    },
+    {
+      "id": "disciplines/17-back-end-foundations",
+      "title": "17 · Back-end foundations, framework-agnostic",
+      "series": "disciplines",
+      "mins": 12,
+      "attachesTo": "fs.back"
+    },
+    {
+      "id": "disciplines/18-data-what-you-keep",
+      "title": "18 · Data: what you keep and how it moves",
+      "series": "disciplines",
+      "mins": 12,
+      "attachesTo": "fs.data"
+    },
+    {
+      "id": "disciplines/19-contracts-and-trust",
+      "title": "19 · Contracts and trust boundaries",
+      "series": "disciplines",
+      "mins": 13,
+      "attachesTo": "fs.api"
+    },
+    {
+      "id": "disciplines/20-ship-and-host",
+      "title": "20 · CI/CD, environments, and where to host",
+      "series": "disciplines",
+      "mins": 12,
+      "attachesTo": "fs.ship"
+    },
+    {
+      "id": "disciplines/21-observability-and-incidents",
+      "title": "21 · Observability and incidents",
+      "series": "disciplines",
+      "mins": 12,
+      "attachesTo": "fs.observe"
+    },
+    {
+      "id": "disciplines/22-principles-as-vocabulary",
+      "title": "22 · Engineering principles as a suspicion vocabulary",
+      "series": "disciplines",
+      "mins": 13,
+      "attachesTo": "fs.principles"
+    },
+    {
+      "id": "disciplines/23-choosing-technology",
+      "title": "23 · Choosing technology for the goal",
+      "series": "disciplines",
+      "mins": 12,
+      "attachesTo": "fs.choose"
     },
     {
       "id": "nanograph/00-your-repo-is-a-graph",

@@ -38,4 +38,4 @@ A stranger can install your fork, run it on a repo, read your numbers, and see o
 ## Sources
 
 - Your own earlier episodes. The series was the scaffold; this is the fork.
-- GridSeak, if you are curious what the grown-up version looks like after alumni keep going.
+- Your own earlier episodes. The grown-up version of this tool is the one you keep extending.

@@ -69,6 +69,16 @@ The review phase in your delegation script is the first place you need one. You 
 
 Two habits carry over from the rest of this reading. Judge the outputs before you know which prompt produced them, or you will grade the one you prefer. And keep the cases that lost. An eval set with a perfect score is a set that is too easy, not a prompt that is finished.
 
+## Tests are weak oracles; grade them
+
+A suite that is green is a claim about the cases someone thought of. The honest way to find out what it cannot catch is to inject a known-bad edit and watch which layer notices.
+
+The exercise on You can prove it is `cv.check.inject`. Delete a function that still has callers, or delete it and then delete the failing test. Run the project's own layers: build, tests, lint, your nanograph claim check, any reviewer you use. Record which layer caught it and which let it through. Put the code back. One line of error analysis per escape.
+
+If the AI reviewer missed it and the test you deleted was the sole cover of the changed symbol, that is the finding. If every layer caught it, say so. Either result is evidence. "The suite is green" is not.
+
+The weekly Coach drill is the same skill without the delete: given an agent PR, list three things it does not test, timed.
+
 ## Observability is evaluation that runs forever
 
 Tests run once. Telemetry runs while people are using the thing, which is where the layers above simulation live. A change that ships without a way to see whether it is working has not finished being evaluated; it has stopped being evaluated. For the founding weeks this can be as small as a counter and a log line. The habit is what matters: before you claim success, ask what number you would look at tomorrow to know you were wrong.

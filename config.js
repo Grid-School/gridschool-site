@@ -8,8 +8,8 @@
 
 export const LINKS = {
   application: "REPLACE_ME_TALLY_URL",
-  foundingCheckout: "REPLACE_ME_STRIPE_FOUNDING",
-  depositCheckout: "REPLACE_ME_STRIPE_DEPOSIT",
+  foundingCheckout: "REPLACE_ME_CHECKOUT_FOUNDING",
+  depositCheckout: "REPLACE_ME_CHECKOUT_DEPOSIT",
   fitCall: "REPLACE_ME_CALCOM_FIT_20MIN",
   oneOnOne: "REPLACE_ME_CALCOM_1ON1_45MIN",
   discord: "REPLACE_ME_DISCORD_INVITE",
@@ -91,9 +91,8 @@ export const PERSIST = {
  * call and shown on the checkout page, because it will move over the next
  * year and a stale number on a page is a lie the site tells for you. Copy
  * says "founding rate"; the numbers live at checkout and in the sales script.
- * Checkout runs through a financing partner (Klarna-class) rather than plain
- * card processing. The link keys stay provider-neutral so switching
- * providers is one paste in the admin console.
+ * Checkout is Aden's processor, outside this repo. Paste the URL he issues.
+ * Do not add Stripe or any other named vendor here.
  */
 export const PRICING = {
   spots: 5,
