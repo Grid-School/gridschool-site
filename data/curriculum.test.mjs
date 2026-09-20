@@ -71,10 +71,7 @@ test("every core node carries the per-node contract (why, evidence, ccvv, review
     assert.ok(node.evidence, `${node.id} evidence`);
     assert.ok(Array.isArray(node.ccvv) && node.ccvv.length, `${node.id} ccvv`);
     assert.ok(typeof node.reviewFor === "string" && node.reviewFor.trim(), `${node.id} reviewFor`);
-    // Welcome is the one step where the page is the work: read it, write the
-    // note, save the link. A checkbox there would be a checkbox for its own sake.
-    const pageIsTheWork = node.id === "or.start" && node.lesson?.length && node.modules?.length;
-    assert.ok(pageIsTheWork || (Array.isArray(node.tasks) && node.tasks.length), `${node.id} tasks`);
+    assert.ok(Array.isArray(node.tasks) && node.tasks.length, `${node.id} tasks`);
     for (const task of node.tasks) {
       assert.ok(task.done_when, `${node.id} task ${task.id ?? task.title} done_when`);
     }
