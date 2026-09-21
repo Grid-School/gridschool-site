@@ -97,7 +97,12 @@ export function createProfile({ getState, onExport, onReset, onSignOut, onNaviga
   function door(label, href, note, onclick) {
     const external = href && /^https?:/.test(href);
     const missing = href === null && !onclick;
-    if (missing) return el("span.profile__door.is-off", {}, el("b", {}, label), el("span", {}, "not connected yet"));
+    if (missing) {
+      const note = label === "Discord"
+        ? "Opens after you sign in on a paid seat"
+        : "not connected yet";
+      return el("span.profile__door.is-off", {}, el("b", {}, label), el("span", {}, note));
+    }
     const body = [el("b", {}, label, external ? icon("external") : null), el("span", {}, note)];
     if (!href) {
       return el("button.profile__door", { type: "button", onclick: act(onclick) }, ...body);

@@ -6,7 +6,8 @@
 import { loadPrivateJson } from "./gate.js";
 import { seedFromSnapshot } from "./persist.js";
 import { fetchSnapshot, remoteEnabled } from "./persist-remote.js";
-import { applySiteOverrides, applyCopyOverrides } from "../../js/site-overrides.js";
+import { applySiteOverrides, applyPrivateLinks, applyCopyOverrides } from "../../js/site-overrides.js";
+import { revealMemberInvite } from "../../js/member-invite.js";
 
 const BASE = "../data/";
 const cache = new Map();
@@ -89,5 +90,7 @@ export async function loadBoard(slug, { tour = false } = {}) {
     // for long and never fails it: config.js and the repo mirror stand in.
     applySiteOverrides(),
   ]);
+  await applyPrivateLinks();
+  revealMemberInvite({ slug });
   return { curriculum: applyCopyOverrides(curriculum, overrides), cohort, student };
 }

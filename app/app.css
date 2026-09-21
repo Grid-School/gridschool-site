@@ -415,27 +415,45 @@ body[data-view="step"] .view--step { flex: 1 1 auto; min-height: 0; }
 
 /* ---------- tasks ---------- */
 
-.tasks { display: flex; flex-direction: column; }
+.tasks { display: flex; flex-direction: column; gap: 10px; }
 .task {
-  display: flex; gap: 11px; align-items: flex-start;
-  padding: 11px 2px; border-bottom: 1px solid var(--hair);
+  display: flex; gap: 14px; align-items: flex-start;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--surface) 88%, #000);
+  scroll-margin-block: 90px;
 }
-.task:last-child { border-bottom: 0; }
-.tasks--tight .task { padding: 8px 2px; }
+.tasks--tight .task { padding: 10px 12px; }
 .task__mark {
-  width: 17px; height: 17px; flex: none; margin-top: 3px; cursor: pointer;
-  border-radius: 50%; border: 1px solid var(--line); background: none;
+  width: 22px; height: 22px; flex: none; margin-top: 2px; cursor: pointer;
+  border-radius: 5px; border: 1.5px solid var(--cyan); background: none;
+  position: relative;
   transition: border-color .14s, background .14s, box-shadow .14s;
 }
-.task__mark:hover { border-color: var(--cyan); }
-.task.is-done .task__mark {
-  border-color: var(--ok); background: color-mix(in srgb, var(--ok) 70%, transparent);
-  box-shadow: 0 0 8px color-mix(in srgb, var(--ok) 45%, transparent);
+.task__mark::after {
+  content: "";
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  color: #041018;
+  font-size: 15px; font-weight: 700; line-height: 1;
 }
+.task__mark:hover { border-color: #fff; box-shadow: 0 0 0 1px color-mix(in srgb, var(--cyan) 45%, transparent); }
+.task.is-done .task__mark {
+  border-color: var(--ok); background: color-mix(in srgb, var(--ok) 85%, #041018);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--ok) 40%, transparent);
+}
+.task.is-done .task__mark::after { content: "✓"; }
 .task.is-waiting .task__mark { border-color: var(--amber); border-style: dashed; }
 .task__main { min-width: 0; flex: 1; }
 .task__title {
-  margin: 0; font-size: 14.5px; color: var(--text); line-height: 1.45; font-weight: 600;
+  margin: 0; font-size: 15px; color: var(--text); line-height: 1.45; font-weight: 600;
+}
+.task__n {
+  display: inline-block; min-width: 1.4em;
+  margin-right: 4px;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-weight: 600; color: var(--cyan); letter-spacing: 0;
 }
 .task.is-done .task__title { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--line); }
 .task__meta { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 3px; font-size: 11.5px; color: var(--muted); }
@@ -450,6 +468,25 @@ body[data-view="step"] .view--step { flex: 1 1 auto; min-height: 0; }
 .task__how { margin: 10px 0 2px; padding-left: 22px; font-size: 13.5px; line-height: 1.55; color: var(--muted); }
 .task__how li { margin-bottom: 5px; padding-left: 2px; }
 .task__how li::marker { color: var(--ghost); font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12px; }
+.task__fields { display: grid; gap: 12px; margin-top: 14px; }
+.task__field { display: grid; gap: 6px; }
+.task__field > span { color: var(--text); font-size: 13.5px; font-weight: 600; line-height: 1.45; }
+.task__field input, .task__field textarea {
+  width: 100%; box-sizing: border-box;
+  border: 1px solid var(--line); border-radius: 7px;
+  background: color-mix(in srgb, var(--bg) 82%, var(--surface));
+  color: var(--text); padding: 10px 11px;
+  font: inherit; font-size: 14px; line-height: 1.5;
+  resize: vertical;
+}
+.task__field input:focus, .task__field textarea:focus {
+  outline: 1px solid var(--cyan); border-color: var(--cyan);
+}
+.task__field small { color: var(--muted); font-size: 12px; line-height: 1.45; }
+.task__mark:disabled {
+  cursor: not-allowed; border-color: var(--ghost); opacity: .55;
+}
+.task__undo { margin: 10px 0 0; color: var(--muted); font-size: 12px; }
 .task__acts { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
 .tasks--done { opacity: .72; }
 
@@ -939,6 +976,21 @@ html.vid-lock, html.vid-lock body { overflow: hidden; }
 .drill__dw { font-size: 12.5px; color: var(--muted); margin-bottom: 11px; }
 .drill__dw b { color: var(--ok); font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; }
 
+/* ---------- boot ---------- */
+
+.boot { min-height: 100vh; display: grid; place-items: center; padding: 40px 24px; text-align: center; }
+.boot__inner { width: min(360px, 100%); }
+.boot__kicker { margin: 0 0 10px; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--ghost); }
+.boot__title { margin: 0; font-size: 22px; font-weight: 400; letter-spacing: 0; color: #fff; line-height: 1.3; }
+.boot__bar {
+  display: block; height: 1px; margin: 22px auto 0; width: 72px;
+  background: var(--cyan); transform-origin: center;
+  animation: boot-pulse 1.2s ease-in-out infinite;
+}
+.boot__fail { margin: 18px 0 0; font-size: 14px; line-height: 1.55; color: var(--text); }
+.boot__fail a { color: var(--cyan); }
+@keyframes boot-pulse { 50% { opacity: .25; transform: scaleX(.55); } }
+
 /* ---------- gate ---------- */
 
 .gate { min-height: 100vh; display: grid; place-items: center; padding: 40px 24px; }
@@ -1050,8 +1102,7 @@ html.vid-lock, html.vid-lock body { overflow: hidden; }
   box-sizing: border-box;
 }
 .step__bar {
-  position: sticky;
-  bottom: 0;
+  position: static;
   z-index: 8;
   display: flex;
   flex-wrap: wrap;
@@ -1198,7 +1249,17 @@ html.vid-lock, html.vid-lock body { overflow: hidden; }
 .signoff { border-left-color: var(--amber); }
 .signoff--waiting p { margin-bottom: 0; }
 .step__evidence { color: var(--text); font-size: 16px; line-height: 1.55; margin-top: 8px; max-width: 70ch; }
-.step--welcome .step__lead { font-size: 17px; line-height: 1.6; max-width: 62ch; }
+.step__tasks-title {
+  margin: 0 0 6px;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 12px; font-weight: 600; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--cyan);
+}
+.step__tasks-lead {
+  margin: 0 0 16px; max-width: 62ch;
+  color: var(--muted); font-size: 15px; line-height: 1.6;
+}
+.step--welcome .step__lead { font-size: 17px; line-height: 1.7; max-width: 62ch; }
 .step--welcome .lesson__sec--letter {
   padding: 18px 20px;
   border: 1px solid var(--hair);

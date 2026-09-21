@@ -1,22 +1,25 @@
-# Start here: the rule, in Aden's words
+# Start here: the first four tasks
 
-Student zero · node `or.start` · 2026-08-29
+Student zero · Welcome · 2026-08-29
 
-## The rule
+## Describe your starting point and goal
 
-A step on this board lights when it has a URL: a link to work a stranger can open and check. Effort does not light anything. Hours do not light anything. A checkbox does not light anything. The unit of progress is something someone else can inspect.
+In the first field, describe what you are doing now and what is making progress difficult. In the second field, name a result another person could see or verify by the end of the eight-week intensive. GridSchool saves both answers in this step, and you can revise them later.
 
-That rule exists because real teams work the same way. Your report that you tried is not evidence. The artifact is.
+## Join the cohort
 
-## Parallel pair this week
+Open Discord with the button on the Join Discord task. Read the pinned message in the Asks channel. Post your name, city or time zone, the last thing you built, and the eight-week result from the first task.
 
-Two steps are open with no line between them, so they can run in the same week:
+## Explore Stage
 
-1. **It runs (`pf.runs`)**: clone the studio repo, boot Northline Desk, paste the status output that shows T-1842 on Support. That is the next required step after this note.
-2. **The four skills (`cv.four`)**: write CCVV in my own words with one honest example each. Independent of the boot; I can draft it while a long install runs, or after.
+Open World from the left-hand menu and choose Stage. Move your avatar with the W A S D keys or the arrow keys. Open Stage in a second browser tab, move one player, resize the window, refresh, and leave one tab idle for a minute.
 
-How I split the week: boot first until the status command is green and the gist exists, then the four-skills page before Monday. World and graph stay off until those two are lit. Depth waits.
+Return to the Welcome step. In the first observation field, describe one behavior a developer could investigate. In the second, describe one useful addition and name its intended user. Record only the behavior you observed; a later lesson investigates possible causes.
 
-## Done when (this step)
+## Check the first-week schedule
 
-This page is the evidence URL. The rule is above, in my words, with no appeal to effort or hours. The parallel pair is named.
+Open Calendar from the left-hand menu and check the cohort call and weekly meeting in your own time zone. Post any work or family conflict in the Asks channel before the week begins.
+
+## Done when
+
+you have answered both goal fields, posted the complete introduction in the Asks channel, saved two specific Stage observations, checked both meeting times in Calendar, and posted any schedule conflict in the Asks channel.

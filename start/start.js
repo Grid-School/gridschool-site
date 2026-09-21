@@ -29,13 +29,13 @@ const STEPS = [
   {
     title: "Open your board",
     now: true,
-    body: `Today answers what to do next. The map is the whole path. A step lights only when a URL exists.`,
+    body: `Today answers what to do next. The map shows the complete path. Each step states how to finish: answer in GridSchool, save one link, or receive an accepted review. Future steps stay unavailable until they open.`,
     action: { label: "Open my board", href: `../app/?s=${encodeURIComponent(slug)}`, variant: "cta" },
   },
   {
     title: "Join Discord",
-    body: `<code>#ship</code> needs a URL from the last seven days. <code>#asks</code> is where you request reviews. Introduce yourself with a link, not a bio.`,
-    action: { label: "Join Discord", linkKey: "discord" },
+    body: `The Discord invite is on the Welcome step of your board after you sign in. It is not on this page. <code>#asks</code> is where you introduce yourself and request reviews. <code>#ship</code> needs a URL from the last seven days.`,
+    action: { label: "Open my board to join", href: `../app/?s=${encodeURIComponent(slug)}` },
   },
   {
     title: "Book your weekly 1:1",
@@ -46,8 +46,8 @@ const STEPS = [
 
 const list = document.getElementById("steps");
 
-/* Day one renders after the live overrides land, so the Discord invite and
-   the 1:1 link pasted in the console reach a new student without a deploy. */
+/* Day one renders after the live public overrides land. Discord stays off
+   this page; the invite is granted only on a paid board after sign-in. */
 await applySiteOverrides().catch(() => {});
 
 STEPS.forEach((step, index) => {

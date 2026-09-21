@@ -19,7 +19,7 @@ export function nextAction(state) {
     return {
       kind: "review",
       title: `${review.title} came back`,
-      why: review.verdict ?? "Read the verdict, then keep moving.",
+      why: review.verdict ?? "Read the reviewer's verdict before you continue.",
       review,
       node,
       task: queue[0] ?? null,
@@ -40,8 +40,8 @@ export function nextAction(state) {
   if (waiting.reviews.length) {
     return {
       kind: "wait",
-      title: `${waiting.reviews.length} waiting for review. Notes come back Sunday evening.`,
-      why: "Nothing here is on you. Do a different step, or rest.",
+      title: `${waiting.reviews.length} ${waiting.reviews.length === 1 ? "item is" : "items are"} waiting for review. Notes come back Sunday evening.`,
+      why: "Continue with another open step while you wait.",
       node,
       task: null,
     };
@@ -49,8 +49,8 @@ export function nextAction(state) {
 
   return {
     kind: "open",
-    title: student.next || "Open the Grid and pick the next step",
-    why: node?.evidence ?? "This gets set on Monday after your review comes back.",
+    title: student.next || "Open the Board and choose the next step",
+    why: node?.evidence ?? "Your next step will be set on Monday after your review comes back.",
     node,
     task: null,
   };

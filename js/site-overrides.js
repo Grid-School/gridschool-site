@@ -8,11 +8,16 @@
  * The mirror is what a local agent reads, and it keeps the published static
  * site truthful when the API is briefly unreachable.
  *
+ * Discord invite keys never come from the public document. Paid seats and
+ * the admin console fetch them from /site/member. Localhost can also load
+ * data/site-overrides.local.json (gitignored).
+ *
  * Deep content (lesson prose, read/ modules) is deliberately not editable
  * here; that lives in git where it is reviewed as writing.
  */
 
-import { LINKS, PERSIST, isPlaceholder } from "../config.js";
+import { LINKS, PERSIST, PRIVATE_LINK_KEYS, isPlaceholder, isPrivateLinkKey } from "../config.js";
+import { persistToken } from "../app/js/session.js";
 
 /** config.js values as shipped, captured before any mutation. */
 const CONFIG_DEFAULTS = Object.freeze({ ...LINKS });
@@ -23,14 +28,37 @@ const FETCH_TIMEOUT_MS = 2500;
 
 let currentDoc = { links: {}, copy: { nodes: {} } };
 let loaded = null;
+let privateLoaded = null;
 
-function normalize(doc) {
-  const links = doc && typeof doc.links === "object" && doc.links ? doc.links : {};
+export function isLocalHost(hostname = globalThis.location?.hostname || "") {
+  return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "[::1]" || hostname === "::1";
+}
+
+export function redactPrivateLinks(doc) {
+  const links = doc && typeof doc.links === "object" && doc.links ? { ...doc.links } : {};
+  for (const key of PRIVATE_LINK_KEYS) delete links[key];
   const nodes =
     doc && typeof doc.copy === "object" && doc.copy && typeof doc.copy.nodes === "object" && doc.copy.nodes
       ? doc.copy.nodes
       : {};
-  return { links, copy: { nodes } };
+  /* Spread public links onto the document so applySiteOverrides can keep
+     passing the whole doc to mutateLinks. Discord keys are already gone. */
+  return { ...links, links, copy: { nodes } };
+}
+
+export function selectPrivateLinks(links) {
+  const selected = {};
+  if (!links || typeof links !== "object") return selected;
+  for (const [key, value] of Object.entries(links)) {
+    if (isPrivateLinkKey(key) && typeof value === "string" && value && !isPlaceholder(value)) {
+      selected[key] = value;
+    }
+  }
+  return selected;
+}
+
+function normalize(doc) {
+  return redactPrivateLinks(doc);
 }
 
 function readCache() {
@@ -47,7 +75,7 @@ function readCache() {
 
 function writeCache(doc) {
   try {
-    sessionStorage.setItem(CACHE_KEY, JSON.stringify({ at: Date.now(), doc }));
+    sessionStorage.setItem(CACHE_KEY, JSON.stringify({ at: Date.now(), doc: normalize(doc) }));
   } catch {
     /* private mode */
   }
@@ -79,9 +107,28 @@ async function fetchMirror() {
   return normalize(await res.json());
 }
 
-function mutateLinks(doc) {
-  for (const [key, value] of Object.entries(doc.links)) {
-    if (key in CONFIG_DEFAULTS && typeof value === "string" && value) {
+async function fetchMember(token) {
+  if (!token || isPlaceholder(PERSIST.endpoint)) return null;
+  const base = String(PERSIST.endpoint).replace(/\/$/, "");
+  const res = await fetchWithTimeout(`${base}/site/member`, {
+    cache: "no-store",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) return null;
+  return res.json();
+}
+
+async function fetchLocalPrivate() {
+  const url = new URL("../data/site-overrides.local.json", import.meta.url);
+  const res = await fetchWithTimeout(url, { cache: "no-store" });
+  if (!res.ok) return null;
+  return res.json();
+}
+
+function mutateLinks(links, { privateOnly = false } = {}) {
+  for (const [key, value] of Object.entries(links || {})) {
+    if (privateOnly && !isPrivateLinkKey(key)) continue;
+    if (key in CONFIG_DEFAULTS && typeof value === "string" && value && !isPlaceholder(value)) {
       LINKS[key] = value;
     }
   }
@@ -98,7 +145,7 @@ export function applySiteOverrides() {
     const cached = readCache();
     if (cached) {
       currentDoc = cached;
-      mutateLinks(cached);
+      mutateLinks(cached.links);
       return currentDoc;
     }
     let doc = null;
@@ -122,7 +169,42 @@ export function applySiteOverrides() {
   return loaded;
 }
 
-/** The overrides document as loaded on this page. */
+/**
+ * Fold Discord invites into LINKS after a paid sign-in, or on localhost from
+ * the gitignored local file. Public pages should not call this.
+ */
+export function applyPrivateLinks({ token, hostname } = {}) {
+  if (privateLoaded) return privateLoaded;
+  privateLoaded = (async () => {
+    const auth = token ?? persistToken();
+    if (auth) {
+      try {
+        const member = await fetchMember(auth);
+        if (member?.granted) {
+          const links = selectPrivateLinks(member.links);
+          mutateLinks(links, { privateOnly: true });
+          return { source: "member", links };
+        }
+      } catch {
+        /* fall through to localhost */
+      }
+    }
+    if (isLocalHost(hostname)) {
+      try {
+        const local = await fetchLocalPrivate();
+        const links = selectPrivateLinks(local?.links);
+        mutateLinks(links, { privateOnly: true });
+        return { source: "local", links };
+      } catch {
+        return { source: "none", links: {} };
+      }
+    }
+    return { source: "none", links: {} };
+  })();
+  return privateLoaded;
+}
+
+/** The public overrides document as loaded on this page. */
 export function siteOverridesDoc() {
   return currentDoc;
 }
@@ -140,6 +222,7 @@ export function dropSiteOverridesCache() {
     /* private mode */
   }
   loaded = null;
+  privateLoaded = null;
 }
 
 /**

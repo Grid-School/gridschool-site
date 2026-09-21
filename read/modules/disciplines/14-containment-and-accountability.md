@@ -4,31 +4,29 @@
 
 ## The question this discipline asks
 
-Agentic workflow engineering asked where a human must stand. It gave you a boundary table and an intervention log, and both assume you are there, watching, ready to stop the thing. That assumption is now the exception rather than the rule. Frontier agents run for hours. They wait on external processes, resume, retry, and keep going after you have gone to bed. The operator who ran one overnight and woke up to three finished game scenes was not supervising anything. He was asleep.
+Agentic workflow engineering asked where a human must stand. It gave you a boundary table and an intervention log, and both assume you are there, watching, ready to stop the agent. Many current agent runs continue without direct supervision. **Frontier agents**, which use the most capable models currently available, can run for hours. They wait on external processes, resume, retry, and keep going after you have gone to bed. The operator who ran one overnight and woke up to three finished game scenes was not supervising anything. He was asleep.
 
-So the question changes. Not "where do I stand," but **"what holds when nobody is standing there."** That is containment, and the reason it is a separate discipline is that the answer is not vigilance. Vigilance does not scale past one agent and does not survive sleep. The answer is a set of constraints you build before the run, which hold whether or not you are conscious, plus a record afterward that lets somebody reconstruct what happened. Every part of that is engineering, and almost nobody is being taught it.
+Containment asks what safeguards remain active when nobody is watching the agent. Direct supervision cannot cover several agents or continue while you sleep. Before the run, you therefore build constraints that remain active without you. Afterward, you keep a record that another person can use to reconstruct what happened.
 
 ## Why this is the paid work
 
-Two numbers, held together.
+METR's Time Horizon 1.1 reports continued rapid growth in the length of software and research tasks that capable models can complete at a fifty-percent success rate. METR also warns that this measure is imprecise and does not describe how long an agent can work independently.
 
-Model capability roughly doubles on task length every three to four months. The share of enterprises that get an agent pilot into production sits around eleven percent. The failures are not model failures. When people who study the abandoned projects list the causes, they name legacy integration, data that was never ready, no evaluation harness, no tracing, and no agent identity governance. Twenty-three percent of enterprises have any strategy for the last one. Eighty-seven percent report delaying a deployment because they could not answer what data the thing could reach, who owned its actions, and whether anyone could audit it afterward.
+OpenAI's GPT-6 Astra launch says that Enterprise administrators can enable Astra and that access was **off by default at launch**. IBM describes a related access-control failure: an agent's tool server may use a different identity from the person making the request. If the system fails to carry the person's identity through the full tool chain, the agent can retrieve data that person could not access directly. IBM recommends carrying identity end to end and enforcing authorization through a database or policy engine outside the model.
 
-The clearest single expression of this: the most capable model released to date shipped with its enterprise setting **off by default**, requiring an administrator to turn it on. The capability was never the blocker. Permission was.
-
-That gap is your job. Not because agents are weak, but because an organisation cannot let a strong one near its systems until somebody has built the thing that catches it. The people who can build that are called harness engineers, agent platform engineers, or nothing at all, because the title has not settled. The capability is the durable part.
+Building controls for capable agents is paid engineering work. An organisation needs limits on access, spending, execution, and release before it can let an agent work against sensitive systems. The people who build those controls may be called harness engineers or agent platform engineers. The title is still unsettled, while the underlying capability transfers between roles.
 
 ## The reliability arithmetic you are containing against
 
-The number quoted in the announcements is the fifty percent number: the task length an agent finishes half the time. The number that decides whether you can leave the room is the eighty percent number, and it has consistently been roughly an order of magnitude shorter.
+METR defines a model's time horizon as the amount of serial human work it can replace at a fifty-percent success rate. Its limitations note says this measure does not establish that a model can work independently for that duration. It also says reliability-critical tasks may require success rates above ninety-eight percent and that higher-reliability horizon estimates need more data.
 
-Think about what a coin flip at twelve hours actually produces. Not a failure you can see. A twelve-hour run that goes wrong at hour three and spends nine more hours building confidently on top of the wrong thing, leaving you a large, coherent, finished-looking artifact with a fault buried near the bottom. This is worse than a crash. A crash tells you where it stopped.
+A fifty-percent success rate means that half of comparable runs fail. During a long run, an early error can remain hidden while the agent continues to build on the faulty result. You may receive a large, coherent artifact with the error buried inside it. A crash is easier to diagnose because it shows where execution stopped.
 
-Containment is the practice of making that outcome cheap: bounded in what it could touch, bounded in what it could spend, stopped at the first check that failed, and reconstructible afterward.
+Containment limits the cost of that failure. It restricts what the run can touch and spend, stops execution when a check fails, and preserves enough evidence to reconstruct the run.
 
 ## The containment contract
 
-Six clauses. Write them before the run, not after. Each one has to be enforced by something other than your intention, because your intention is asleep.
+The containment contract has six clauses. Write them before the run begins and enforce each clause through the harness, permissions, or another control that remains active without you.
 
 ```mermaid
 flowchart TB
@@ -48,62 +46,67 @@ flowchart TB
   L --> RB
 ```
 
-**Reach.** Name the files, directories, services and network destinations the run may touch, and make the ones outside that list unreachable rather than merely discouraged. A branch it cannot push past, a directory it cannot leave, a network it cannot call out from. "I told it not to" is not reach control. It is a wish with a paper trail.
+**Reach.** Name every file, directory, service, and network destination the run may touch. Use permissions or isolation to block everything outside the list. For example, restrict the run to a branch, a working directory, and an approved set of network destinations.
 
-**Identity.** The run executes as something. Find out what. Which credentials are in that shell's environment, which tokens are in that browser profile, what those tokens can do, and what they can do that this task does not need. The correct identity for a run is the narrowest one that completes the task, created for it, and revocable afterward. The operator in the overnight demo deleted browser profiles before going to bed, which is the crude version of this instinct and worth respecting: he understood that the agent's reach was the union of every credential sitting on that machine. The engineering version is to give the run its own identity instead of removing things from a shared one, because removal is a checklist you will eventually forget an item on.
+**Identity.** Determine which account runs the agent, which credentials exist in the shell environment, which tokens exist in the browser profile, and what each credential permits. Create a revocable identity with only the permissions the task needs. In the overnight demo, the operator deleted browser profiles before going to bed because every credential on the machine expanded the agent's reach. A dedicated identity enforces the same principle without relying on a checklist of credentials to remove.
 
-**Budget.** Two numbers, both enforced by the harness rather than by the prompt: money and wall clock. An agent asked to stay under budget will estimate its own spend, and it will be wrong. A run that stops at forty dollars stops at forty dollars. Record what it actually cost, because cost per outcome is a non-functional requirement you will be asked for and, in a job, will be judged on.
+**Budget.** Set limits for money and elapsed time, and enforce both through the harness. The agent's estimate of its own spending is insufficient. If the limit is forty dollars, the harness must stop the run at forty dollars. Record the actual cost because cost per outcome is a non-functional requirement that employers evaluate.
 
-**Stop conditions.** What makes the run halt rather than continue. The obvious one is a failing check. The ones people miss: the same error twice in a row, an edit outside the reach list, a diff larger than a threshold you set, and a period of activity with no measurable progress. Write these as rules the harness applies, and know the difference between a stop and a pause. A stop ends the run. A pause holds and waits for you, which is only useful if the thing knows how to wait, and it is worth knowing that modern agents wait quite well.
+**Stop conditions.** Define the events that halt or pause the run. Include a failing check, the same error twice in a row, an edit outside the reach list, a diff above a chosen size, and a period with no measurable progress. A stop ends the run. A pause preserves the current state until you return, which modern agents can usually handle.
 
-**The gate.** Nothing lands because the agent believes it is finished. Something lands because a check the agent did not write passed. This is where evaluation engineering does its real work: the gate is the check, running in a place the agent could not edit, on a criterion set before the run. An agent that can modify its own gate has no gate.
+**The gate.** A check outside the agent's write access decides whether the work can land. Define the criterion before the run and execute the check in a location the agent cannot edit. Allowing the agent to modify the gate would remove the independent control.
 
-**Rollback.** Before the run, one sentence on how you undo everything it did. If the answer takes more than one sentence, the reach was too wide.
+**Rollback.** Before the run, write one sentence that explains how to undo every change. A longer rollback procedure indicates that the run may have too much reach.
 
-Where the enforcement lives matters less than that it lives somewhere the agent is not, and you already own a place like that. The script you wrote in Agentic workflow engineering is code that runs before the agent, after the agent, and in between phases, which makes it the natural home for four of the six clauses. Budget and wall clock are a counter the script increments from the trace and a check before each phase. Reach is a `git diff --name-only` after each phase compared against the list you wrote, with the run halted on the first path outside it. The gate is the test phase you already made a subprocess, kept in a directory the agent's write permission does not include. Rollback is the branch the script created at the start, so undoing everything is one delete. Identity is the clause the script cannot enforce alone, because the credentials are already in the environment by the time it runs, and that is why it stays a separate line in the contract with a separate answer. Enforcement you wrote is enforcement you can explain in a defense, and a reconstruction from a trace you designed is a query rather than an act of memory.
+Keep enforcement outside the agent's write access. The script from Agentic workflow engineering is a suitable place for four clauses because it runs before, between, and after agent phases. It can track money and elapsed time from the trace, check `git diff --name-only` against the reach list after each phase, run the gate as a protected subprocess, and create the branch used for rollback. Identity still needs a separate control because credentials already exist in the environment when the script starts. Controls you wrote are easier to explain during a defense, and a structured trace lets you reconstruct the run from recorded data.
 
 ## The failure with no error message
 
-The hardest thing to catch in unattended work is not the crash. It is the run that keeps completing tasks while quietly skipping validation, or reasoning forward from a premise it inferred and never checked. Surface metrics look healthy. Tasks close. The log is full of successes. Somewhere upstream a step was declared done that was not done, and everything after it inherits the flaw.
+A difficult unattended failure occurs when the run keeps completing tasks while quietly skipping validation or reasoning from an unchecked premise. Surface metrics look healthy. Tasks close. The log is full of successes. Somewhere upstream a step was declared done that was not done, and everything after it inherits the flaw.
 
 You have already met the small version of this: a test suite that passes while the code lies. The unattended version is the same failure with hours of confident work stacked on top.
 
-Three defences, and none of them is reading the transcript.
+Use three controls that rely on direct evidence from the run:
 
-- **Check the invariant, not the step.** Steps report themselves. Invariants do not. If the thing that must remain true is asserted independently and continuously, a skipped validation shows up as a violated invariant rather than as a missing line in a log.
-- **Make progress measurable, not narrated.** "Working on the parser" is narration. Tests passing, count of open findings, a benchmark number: those are progress. A run that produces narration and no measurable movement for an hour has stalled and does not know it.
-- **Distrust the summary.** The end-of-run report is written by the thing being audited. Read it for hypotheses, then verify each claim against something the agent did not produce. When you write your own record, mark which lines you verified and which you took its word for. The second category is your risk register.
+- **Check the invariant independently.** Assert the required system property continuously through a check outside the agent. A skipped validation then appears as an invariant violation.
+- **Measure progress directly.** Use passing-test counts, open-finding counts, or benchmark values. If those measures remain unchanged for an hour, treat the run as stalled.
+- **Verify the summary.** Treat the end-of-run report as a set of hypotheses because the agent being audited wrote it. Check each claim against independent evidence. In your own record, mark which claims you verified and which claims still depend on the agent's account. The unverified claims form your risk register.
 
 ## Reconstruction beats observation
 
-You could not watch it, so the standard is not "I saw what it did." The standard is **"a stranger can reconstruct what it did."** That is a different artifact and it has to be designed in.
+Because you could not watch the run, design the record so that a stranger can reconstruct what the agent did.
 
 What a reconstruction needs: the contract as written before the run, the full log of actions with timestamps, every diff, the cost and elapsed time, each stop condition that fired and why, the gate result, and your afterward note separating what you verified from what you accepted. A team without this spends weeks after any incident trying to work out whether the fault was the prompt, the model, the tool integration or the orchestration, and that archaeology destroys trust faster than the original fault.
 
-The habit is also the thing that makes you employable in a room that has been burned. When somebody asks how you would let an agent near their systems, the answer is not a claim about your carefulness. It is this document, from a run you already did.
+This record demonstrates the skill to an employer whose systems have already been harmed by an agent. When asked how you would let an agent access their systems, show the containment contract and reconstruction from a run you completed.
 
 ## What you are actually signing
 
-A model cannot be sued, fired, licensed, indemnified or subpoenaed. When work reaches production, a person is answerable for it, and that does not change as the models improve. If anything it sharpens: as volume rises, the value of a signature that means something rises with it.
+A model cannot be sued, fired, licensed, indemnified, or subpoenaed. A person remains answerable when work reaches production. As the volume of machine-produced work rises, a well-supported human sign-off becomes more valuable.
 
-So the last clause of containment is not technical. Having read the record, you either sign for the run or you do not. Signing means you are prepared to be asked, in public, why you believed it was correct, and to answer with the artifacts rather than with your feelings about the model. Declining to sign is a legitimate outcome and a valuable one. A person who says "I ran this, here is what it did, and I am not willing to put my name on this part yet" is describing exactly the judgment the market cannot get anywhere else.
+The last clause of containment concerns personal accountability. After reading the record, decide whether you can sign for the run. Signing means you can explain why you believed the result was correct and support the explanation with artifacts. When the record leaves an important claim unverified, decline to sign that part and state the missing evidence. Employers need this judgment because a model cannot accept responsibility for production work.
 
-The point of the whole discipline is that accountability and observation came apart. You are answerable for work you did not watch. Everything above exists so that this is a defensible position rather than a reckless one.
+Unattended work separates accountability from direct observation. You remain answerable for the result, so the controls and record must support your decision.
 
 ## Do this now (45 minutes)
 
-Take a real ticket, not a toy.
+Take a real ticket from your work.
 
-1. Write the six-clause contract before you start. One or two lines per clause. The reach clause names paths; the identity clause names which credentials are present and which you removed or scoped down; the budget clause has two numbers; the stop conditions are rules, not hopes; the gate names a specific check the agent cannot edit; the rollback is one sentence.
-2. Enforce at least three clauses mechanically rather than by instruction. A branch it cannot leave, a hard spend cap, a check that runs outside its reach. Put as many of them as you can into the script you wrote in Agentic workflow engineering, so the enforcement is code you can show.
+1. Write the six-clause contract before you start. One or two lines per clause. The reach clause names paths; the identity clause names which credentials are present and which you removed or scoped down; the budget clause has two numbers; the stop conditions are enforceable rules; the gate names a specific check the agent cannot edit; the rollback is one sentence.
+2. Enforce at least three clauses mechanically. Examples include a branch restriction, a hard spending cap, and a check outside the agent's write access. Put as many controls as possible into the script you wrote in Agentic workflow engineering so you can show the enforcement code.
 3. Run it unattended for a bounded window. Leave the room. An hour is enough for a first run.
 4. Come back and reconstruct: what it did, what it cost, what fired, what the gate said. Mark each claim you verified and each you accepted on its word.
-5. Write the two lines that matter. What the contract caught, and what it would not have caught.
+5. Write two lines that state what the contract caught and which failure it would still miss.
 
-## Done when
+**Done when** somebody who was absent can use your contract and record to explain the agent's allowed reach, actual actions, cost, stopping reason, and gate result, and you can state which part of the run you are willing to sign for.
 
-Somebody who was not there can read your contract and your record and say what the agent was allowed to do, what it actually did, what it cost, why it stopped, and on what evidence it landed or did not. And you can say, in one sentence, which part you are willing to sign for.
+## Sources
+
+- [METR, "Time Horizon 1.1"](https://metr.org/blog/2026-1-29-time-horizon-1-1/)
+- [METR, "Clarifying limitations of time horizon"](https://metr.org/notes/2026-01-22-time-horizon-limitations/)
+- [OpenAI, "Introducing GPT-6 Astra"](https://openai.com/index/gpt-6-astra/)
+- [IBM, "Every AI agent followed the rules, and the data still leaked"](https://www.ibm.com/think/perspectives/every-ai-agent-followed-rules-data-still-leaked)
 
 ## What's next
 
-Back to 06 · Evaluation engineering, and read it again with the gate in mind. The check you write there is the thing standing between an unattended run and production, which is a heavier job than it looked the first time.
+Return to 06 · Evaluation engineering and read it again with the gate in mind. The check you write there controls whether an unattended run can reach production.

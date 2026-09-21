@@ -1,19 +1,20 @@
 # 01 · Parse one file
 
-*You need: Python 3.9+ and a terminal. Nothing to install; the whole episode
-is the standard library. ~45 minutes.*
+*You need Python 3.9 or later and a terminal. This episode uses only the
+Python standard library, so you do not need to install a package. Allow about
+45 minutes.*
 
 ## The idea, before any code
 
-Source code is text you *run*. To a parser, the same text is data you *read*, like a CSV. Python ships its own reader: the `ast` module ("abstract syntax tree") turns a `.py` file into a tree of typed nodes, where a function definition, a call, and a name are distinct kinds of node. Instead of grepping for patterns and hoping, you walk a structure the language itself guarantees.
+You usually run source code. A parser reads the same source code as data, much as another program might read a CSV file. Python includes the `ast` module. AST stands for **abstract syntax tree**, a tree of typed nodes that represents the structure of a `.py` file. A function definition, a function call, and a name become different kinds of nodes. You can inspect those nodes instead of relying on text patterns.
 
-That tree is the raw material for everything in this series. Today's slice of it is narrow on purpose: **which functions exist in one file, and what does each one call.**
+The abstract syntax tree provides the data for the rest of this series. In this episode, you will answer two questions: **Which functions exist in one file, and what does each function call?**
 
-## Build it (type it, don't paste it)
+## Build the parser
 
-Make a folder, create `nanograph.py`, and build it in the order below. Each piece runs before the next exists. Typing it matters: the goal is that no line survives that you cannot explain.
+Create a folder, then create `nanograph.py` inside the folder. Type each version below in order and run it before continuing. By typing the code, you can stop at any line you cannot explain.
 
-**1. The skeleton: prove the tree exists.**
+**1. Confirm that the tree exists.**
 
 ```python
 """nanograph, episode 01: read one Python file and list its functions and calls."""
@@ -25,20 +26,19 @@ tree = ast.parse(source, filename=sys.argv[1])
 print(ast.dump(tree)[:300])
 ```
 
-Run it on itself: `python3 nanograph.py nanograph.py`. That wall of text is the tree. You never need to read it raw again, but see it once so the rest of the episode is demystified rather than magic.
+Run the parser on its own source code with `python3 nanograph.py nanograph.py`. The command prints the first 300 characters of the abstract syntax tree. This first run confirms that `ast.parse` created the tree. You will not need to read the raw tree again.
 
-**2. Find the functions.** Replace the last line:
+**2. Find the functions.** Replace the final line with:
 
 ```python
 for node in ast.walk(tree):
- if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
- print(node.name)
+    if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+        print(node.name)
 ```
 
-`ast.walk` visits every node in the tree; `isinstance` filters for the type we care about. Run it. It prints nothing, which is correct: the file has no functions yet. First lesson in trusting a tool: empty output is an answer, not a bug.
+`ast.walk` visits every node in the tree. `isinstance` keeps only `FunctionDef` and `AsyncFunctionDef` nodes, which represent regular and asynchronous function definitions. Run the command again. The program prints nothing because the file does not define a function yet. The empty output accurately describes the file.
 
-**3. Now the real shape.** Rewrite the file as functions and make it report
-calls too:
+**3. Report functions and calls.** Replace the complete file with:
 
 ```python
 """nanograph, episode 01: read one Python file and list its functions and calls."""
@@ -47,44 +47,44 @@ import sys
 
 
 def parse_file(path):
- """One file in, one report out: which functions exist, what each one calls."""
- source = open(path).read()
- tree = ast.parse(source, filename=path)
+    """One file in, one report out: which functions exist, what each one calls."""
+    source = open(path).read()
+    tree = ast.parse(source, filename=path)
 
- functions = {}
- for node in ast.walk(tree):
- if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
- functions[node.name] = sorted(set(calls_inside(node)))
- return functions
+    functions = {}
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            functions[node.name] = sorted(set(calls_inside(node)))
+    return functions
 
 
 def calls_inside(fn_node):
- """Every name that gets called inside this function's body."""
- for node in ast.walk(fn_node):
- if isinstance(node, ast.Call):
- yield call_name(node.func)
+    """Every name that gets called inside this function's body."""
+    for node in ast.walk(fn_node):
+        if isinstance(node, ast.Call):
+            yield call_name(node.func)
 
 
 def call_name(func):
- """The readable name of a call target: foo() -> 'foo', obj.method() -> 'obj.method'."""
- if isinstance(func, ast.Name):
- return func.id
- if isinstance(func, ast.Attribute):
- return f"{call_name(func.value)}.{func.attr}"
- return "<dynamic>"
+    """The readable name of a call target: foo() -> 'foo', obj.method() -> 'obj.method'."""
+    if isinstance(func, ast.Name):
+        return func.id
+    if isinstance(func, ast.Attribute):
+        return f"{call_name(func.value)}.{func.attr}"
+    return "<dynamic>"
 
 
 def main():
- path = sys.argv[1] if len(sys.argv) > 1 else __file__
- for name, calls in parse_file(path).items():
- print(f"{name} -> {', '.join(calls) or '(calls nothing)'}")
+    path = sys.argv[1] if len(sys.argv) > 1 else __file__
+    for name, calls in parse_file(path).items():
+        print(f"{name} -> {', '.join(calls) or '(calls nothing)'}")
 
 
 if __name__ == "__main__":
- main()
+    main()
 ```
 
-**4. The moment.** Run it with no arguments. It parses *itself*:
+**4. Run the completed parser.** Run it without arguments so that it parses its own source code:
 
 ```
 parse_file -> <dynamic>.read, ast.parse, ast.walk, calls_inside, isinstance, open, set, sorted
@@ -93,37 +93,38 @@ call_name -> call_name, isinstance
 main -> <dynamic>.items, <dynamic>.join, len, parse_file, print
 ```
 
-Read that output slowly. Your tool just told you three true things about its own structure:
+The output shows three facts about the parser's structure:
 
-- `call_name -> call_name`: it found its own recursion (an attribute chain
- like `a.b.c` needs the inner name first). You wrote a recursive function and
- the graph caught it.
+- `call_name -> call_name` shows **recursion**, which occurs when a function
+ calls itself. An attribute chain such as `a.b.c` requires `call_name` to
+ resolve the inner name first.
 - `<dynamic>.read`: `open(path).read()` calls `.read` on a value with no
- name. The tool does not guess; it says `<dynamic>`. **When your tool does not
- know, it must say so.** That rule is worth more than any feature, and it is
- the difference between an instrument and a horoscope.
+ name. The tool reports `<dynamic>` because it cannot identify that value.
+ When the tool cannot identify a call target, it must report the uncertainty.
 - `main -> parse_file` but nothing points at `main`: from inside one file,
- nobody calls main. Whether that means "dead code" or "entry point" needs
- more than one file to answer. That is exactly episode 02's problem.
+ nobody calls `main`. One file cannot show whether `main` is unused code or
+ an entry point called from outside the file. Episode 02 addresses calls
+ across files.
 
 ## Exercise (not shown in any video)
 
-`calls_inside` currently walks *everything* inside a function, including
-functions nested within it, whose calls get wrongly credited to the parent.
-Prove the bug: write a file where an inner function calls something the outer
-one never does, and show the report is wrong. Then fix it (hint: stop the walk
-when you meet a new `FunctionDef` that isn't the one you started at). Commit
-the failing example *and* the fix. The pair is the artifact.
+`calls_inside` currently visits every node inside a function, including
+functions defined inside it. The report therefore credits a nested function's
+calls to the parent function. Create a file where an inner function calls
+something that the outer function never calls, then run the parser to show the
+incorrect report. Fix the bug by stopping the walk when you reach a new
+`FunctionDef` other than the starting function. Commit the failing example and
+the fix. Together, those commits are the exercise artifact.
 
-## Done when
-
-Your `nanograph.py` parses itself and one real file from a repo you care
-about, and you can explain every line out loud without reading comments. Lab
-students: push the repo with the exercise commits and drop the URL in #ship.
+**Done when** your `nanograph.py` parses itself and one real file from a
+repository you care about, and you can explain every line aloud without
+reading the comments. If you are a Lab student, push the repository with the
+exercise commits and post the URL in `#ship`.
 
 ## Sources
 
-- Python `ast` docs: docs.python.org/3/library/ast.html. Skim `walk`, `Call`,
- `FunctionDef`; ignore the rest for now.
-- The pattern of building in runnable steps is stolen deliberately from
- Karpathy's build-nanogpt, where the commit history is the textbook.
+- Python `ast` documentation: docs.python.org/3/library/ast.html. Read the
+ sections on `walk`, `Call`, and `FunctionDef`. You can leave the rest for
+ later.
+- The pattern of building in runnable steps comes from Karpathy's
+ build-nanogpt, where the commit history serves as the textbook.

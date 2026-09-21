@@ -1,37 +1,58 @@
 # 21 · Observability and incidents
 
-*Series: disciplines. Logs, metrics, and traces as three different questions, alerting and SLOs as promises with a budget, and the postmortem as an artifact every project is required to carry. ~12 minutes.*
+*Series: disciplines. Use logs, metrics, and traces to investigate a supplied incident, then write its incident report. About 12 minutes.*
 
-## A live system you cannot see has not finished shipping
+## Observability completes the live system
 
-The world's first inherited ticket is a health endpoint that reports the server dead whenever nobody is playing, which meant that for months the process was restarted every quiet night by a health check that believed it. Nobody noticed because nobody was looking, and that is the whole argument for observability in one incident: a system that is live and silent is a system you will learn about from a user or from a restart loop in a log nobody reads. Instrumentation is how you learn about it first, and the reason this reading treats an incident as a required artifact rather than a misfortune is that an engineer who has never watched their own system fail has not yet verified it.
+World’s first inherited ticket concerns a health endpoint that reports the server as dead whenever no players are connected. An automated health check restarted the process during quiet nights. **Observability** means collecting enough information to understand a running system’s behavior. Instrumentation produces that information so you can find a failure before a user reports it. This reading treats an incident report as required project evidence because observing a failure tests your understanding of the live system.
+
+Use that ticket as the assigned incident. Base every statement in the report on the supplied signals.
 
 ## Three signals, three questions
 
-Logs answer what happened and in what order, with whatever context you thought to attach, and when they are the only signal you have you end up with a wall of text that nobody reads and, often, personal data you should never have written down. Metrics answer how much, how often, and how slow, and when they are the only signal a green average will hide a red tail until a user finds it. Traces answer what happened to this one request as it crossed the boxes from reading 15, and when they are your only signal you discover that you traced the happy path and nothing else. The three are not redundant. A latency metric tells you something is slow, a trace tells you which hop, and a log line at that hop tells you why, and a project that has one of the three is answering one question out of three.
+Logs record events in order with attached context. Too many unstructured logs become difficult to read, and careless logs may expose personal data. Metrics measure amounts, frequency, and duration, but an average can hide slow requests. Traces follow one request across the machines from reading 15, but incomplete tracing may cover only successful requests. Use the three signals together: a latency metric shows that requests are slow, a trace locates the slow step, and a log at that step may explain the cause.
 
 ## Alerts, SLOs, and who is woken up
 
-An alert is the sentence "wake a human when this is true," and its two failure modes are an alert with no owner, which is noise, and an alert that fires on every deploy, which is noise that has trained everyone to ignore it. A service level objective is the number you have promised, availability or latency at a percentile, together with the error budget you are allowed to burn before you stop shipping features and spend the time on reliability instead. For a student project the SLO can be one sentence and the budget can be a paragraph, but writing them down is what turns "it is usually up" into a claim that can be checked.
+An **alert** tells a named person to respond when a condition becomes true. An alert with no owner or one that fires during every deployment becomes noise. A **service level objective**, or SLO, states a measurable availability or latency target. An **error budget** states how much failure the service may have before feature work pauses for reliability work. For a student project, write the SLO in one sentence and explain the error budget in one paragraph.
 
 ## Incidents when the team is you
 
-When it breaks, one person owns the clock, one person changes things, and one person writes the timeline, and when the team is a single student the discipline is to write the timeline first anyway, because reverting is a change and a change made without a timestamp is how an incident becomes folklore instead of evidence. The postmortem that follows is not an apology. It records what you believed was happening, what the signals show was actually happening, what you changed, and the check you added so that this class of failure cannot hide again. Blameless means you describe the system and not the person. It does not mean nothing changes.
+During an incident, one role tracks time, one changes the system, and one records the timeline. When you fill all three roles, record timestamps before making changes, including a rollback. The postmortem records what you first believed, what the signals showed, what changed, and which check will expose the same failure in the future. A blameless report focuses on system conditions and still requires corrective action.
 
-The kit's `INCIDENT.md` has a table for the timeline with a column for what you thought and a column for what the signals showed, and the gap between those two columns is the most instructive thing you will write this month.
+The `INCIDENT.md` timeline has separate columns for your belief at the time and the evidence from system signals. Use the difference between those columns to explain how the investigation changed your understanding.
 
-## The first incident is assigned
+## The assigned incident
 
-Every project on this program carries an incident report, and if the system has not failed on its own yet you break it on purpose: kill the process, let a certificate expire in a test environment, send a malformed payload, unplug a dependency the code assumes is there. Then write the report from the logs and metrics rather than from memory, because the exercise is not the breaking, it is discovering whether your instrumentation could have told you what happened if you had not already known.
+`WebSocketHandler` sets `_isHealthy` from whether any sockets are connected. `/health` returns 503 whenever the world has zero players. The Docker health check curls `/health` every thirty seconds. In Development the same endpoint says OK, which is why a laptop run hides the lie. In Production an empty world looks dead, and the process is restarted all night. **Liveness** means that the server process is running and able to continue its work.
+
+The packet below describes the staged incident. The timestamps show the restart loop and do not claim that you were on call that night.
+
+| Time (UTC) | Signal | Value |
+|---|---|---|
+| 02:14:01 | docker healthcheck | `GET /health` → 503 |
+| 02:14:02 | docker | restarting `world-server` |
+| 02:14:18 | log | `[WebSocketHandler] Handler initialized.` |
+| 02:14:19 | metric | `connected_sockets=0` |
+| 02:14:20 | `/health` | 503 |
+| 02:14:50 | docker healthcheck | `GET /health` → 503 |
+| 02:14:51 | docker | restarting `world-server` |
+| 09:02:11 | metric | `connected_sockets=1` |
+| 09:02:12 | `/health` | 200 |
+| 09:02:12 | metric | process uptime reset repeatedly from 02:14 until the first connection |
+
+While players are connected, the averages appear healthy. Operations records show a nightly restart loop. The ticket first assumes the process is crashing, but the evidence shows a healthy empty server returning an unhealthy status.
 
 ## Do this now (50 minutes)
 
-Instrument the project with at least one log line on the request path, one metric you would actually look at tomorrow, and one way to see that the process is alive. Break it on purpose and watch the signals. Then write `INCIDENT.md` from the kit: timeline with timestamps drawn from the signals, root cause stated as a condition rather than a last change, the fix, and a regression check that would fail if the break came back.
+Open the incident template from the task. Complete its timeline, root-cause, and fix sections from the supplied signals. In the task fields, paste the timestamped timeline, the root cause stated as the condition that allowed the failure, and a regression check that fails if the defect returns. The check may use `curl` against an empty server and require a 200 response in Production mode.
+
+Base the report on the supplied signals from World’s incorrect health endpoint. Leave your own running processes unchanged.
 
 ## Done when
 
-The incident file has a timestamped timeline that came from logs or metrics, and the regression check has been seen to fail with the break reintroduced and pass with it fixed.
+the incident template names the fix, the timeline field uses timestamps from the supplied signals, the root-cause field explains that the server confused liveness with a connected player, and the regression-check field proves that an empty World in Production returns 200.
 
 ## What's next
 
-22 · Engineering principles as a suspicion vocabulary: the words you need to review an agent's pull request by name.
+22 · Engineering principles as a suspicion vocabulary: a provided agent pull request, reviewed by name.

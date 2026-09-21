@@ -1,35 +1,58 @@
 # 18 · Data: what you keep and how it moves
 
-*Series: disciplines. Relational, document, and key-value stores as answers to one question, migrations as writes you can undo, and why "eventual" is a sentence and not a mood. ~12 minutes.*
+*Series: disciplines. Compare relational, document, and key-value stores, then write and reverse a data migration. About 12 minutes.*
 
 ## The question under the database question
 
-People argue about which database to use as though it were a matter of taste, and it becomes much simpler when you notice that every store is an answer to the same two questions: what must still be true after a write, and who else needs to read it. A relational database is the right answer when rows have relationships you will actually query and when several of them have to change together or not at all, which is what a transaction buys you and what you pay for in schema work and joins you must understand. A document store is right when the record really is a blob you load and save whole, and it charges you the moment you need to ask a question across many blobs or change the shape of all of them. A key-value store is right when you have a key and want the value quickly, and it charges you by removing the ability to search, so that any query you later need has to be built as a second index somewhere else.
+Choose a database by asking what must remain true after a write and who needs to read the result. A relational database fits data with relationships you will query or records that must change together in a transaction. You pay for that guarantee by defining a schema and understanding joins. A document store fits a record that you load and save as a whole document. Questions across many documents and changes to every document become more expensive. A key-value store quickly retrieves a value from a known key, but it does not support general searches. Any later search requires a separate index.
 
-SQLite is enough for a first project and this program already uses it in the graph track. Postgres is the default once the system leaves your laptop and more than one process wants to write. A hosted document store is fine when the record is genuinely a document. "We used NoSQL because it is modern" is not a reason, and the review will ask for one.
+SQLite is sufficient for a first project, and the graph track already uses it. PostgreSQL is the default after a system leaves your laptop and several processes need to write. A hosted document store is suitable when each record is genuinely a document. The review will ask you to justify the database according to the project’s data and access needs.
 
 ## The write you can take back
 
-A migration is a program that changes the shape of stored data, and the most important line in it is the one that puts the shape back. Without a rollback a migration is a one-way door, and one-way doors get walked through at eleven at night by someone who has just discovered that the deploy was wrong. The minimum you owe a migration is a statement of what the schema is now, what it becomes, how the rows that already exist survive the change, how you would reverse it if the deploy is bad, and a check that a row you care about is still there after both directions have run. The check is the part people skip, and it is the part that turns a hopeful migration into a verified one.
+A **migration** is a program that changes the shape of stored data. A **rollback** reverses that migration. Before running a migration, state the current schema, the new schema, how existing rows survive, and how to reverse the change after a bad deployment. Add a check that confirms an important row still exists after the migration and after the rollback.
 
-Take the world, which today has no database at all. The first persistent fact anyone adds will probably be a player's position or name, and the first migration is the one that creates that table. The second migration, the one that adds a column or renames one, is where the rollback plan earns its keep, because by then there are real rows in the table and "drop and recreate" is no longer free. Writing the second migration's rollback before the first one ships is the habit this reading is asking for.
+World currently has no database. Its first persistent fact may be a player’s position or name, and the first migration would create the corresponding table. A later migration might add or rename a column after the table contains real rows. At that point, dropping and recreating the table would lose data. Write the rollback for a future migration before shipping it. Practice that sequence on the provided toy database. You will design a project schema after choosing a project.
 
-## Idempotency, discovered rather than defined
+## Idempotency begins with retries
 
-A server can send a write without learning whether it landed, because sending the request and receiving the response are separate events and the connection can fail between them. Once you see that, a retry stops being a harmless reflex, because repeating the write is only safe when the write is safe to repeat, and "create a user" or "charge this card" or "apply this migration" are not. That is where idempotency comes from: not a vocabulary word but the property that running the same write twice leaves one truth rather than two, and the practical rule that if you cannot say what happens on a retry you have not finished specifying the write.
+A connection can fail after a server writes data but before the client receives the response. The client may then retry without knowing whether the first write succeeded. **Idempotency** means repeating the same operation leaves the same result as running it once. Operations such as creating a user, charging a card, or applying a migration need an explicit retry design. A write specification is incomplete until it explains what happens after a retry.
 
 ## Why "eventual" exists
 
-Two machines cannot agree on a fact instantly without paying for it, either with a lock, a single writer, or a transaction that both must complete. Sometimes you pay that price because the fact is money. Sometimes you decide that replica B may lag replica A by a second, and you design the read so that a second of staleness cannot invent gold or lose an order. Eventual consistency is therefore not a vibe about modern systems. It is a specific sentence about which reader is allowed to be wrong, about which fact, for how long, and a system that cannot state that sentence has not chosen eventual consistency; it has stumbled into it.
+Two machines need a lock, a single writer, or a shared transaction to agree on a fact immediately. That coordination has a cost. For money, the cost may be necessary. For other data, one replica may be allowed to lag another by one second. **Eventual consistency** allows readers to see older data for a defined period. State which reader may see an old value, which fact may be old, and for how long. Design the read so that the allowed delay cannot invent gold or lose an order.
+
+## The toy file for this reading
+
+Create a local SQLite file named `toy-shop.sqlite` and load the starting schema below. Use the toy shop from reading 15 for this exercise. You will create a separate schema for a menu project later.
+
+```sql
+CREATE TABLE items (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL
+);
+
+CREATE TABLE stock (
+  item_id INTEGER NOT NULL REFERENCES items(id),
+  qty INTEGER NOT NULL
+);
+
+INSERT INTO items (id, name) VALUES (1, 'red mug');
+INSERT INTO stock (item_id, qty) VALUES (1, 4);
+```
+
+Write a migration that adds a `sku` column to `items`. Backfill the existing row so the record with `id = 1` keeps its name and gains a SKU. Include a down migration that restores the original table. After the up migration and again after the down migration, run a check that finds a row with `id = 1` and the name `red mug`.
 
 ## Do this now (40 minutes)
 
-Write one migration for the project you will ship, with the up, the down, and a check that a row you care about survived both directions. If the project is still a drawing, do it against a toy SQLite file with two related tables. The artifact the review reads is the rollback plan and the check, not the table definitions.
+Write the up migration, down migration, and verification check for `toy-shop.sqlite`. Run the up migration and confirm the mug still exists with a SKU. Run the rollback and confirm the mug still exists in the restored two-column `items` table. Paste the migrations and check output into the task field.
+
+Use the supplied toy database and mug row for this assignment. You will design a project schema later.
 
 ## Done when
 
-The migration file exists at a public URL, you ran the rollback and not only the forward step, and the check passed in both directions or you wrote down why it cannot.
+you have pasted the up migration, down migration, and check output into the first field; the check proves the red mug row survived both directions after `sku` was added; and the retry field explains what happens when the write runs twice.
 
 ## What's next
 
-19 · Contracts and trust: HTTP, WebSockets, OpenAPI, and what each auth choice leaks.
+19 · Contracts and trust: a tiny items API written before any handler, and a command that notices a rename.

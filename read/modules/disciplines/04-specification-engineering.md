@@ -4,7 +4,7 @@
 
 ## The economics that make this matter now
 
-A vague ticket used to waste some of one engineer's day. The engineer would read it, guess, ask a question in chat, wait, guess again, and eventually ship something close to what was meant. The cost was annoying and bounded. Hand the same ticket to thirty agents and the cost is neither. They will not ask. They will each pick a plausible reading and execute it with total confidence, and you will spend the week discovering which of thirty wrong things you now own. Microsoft's developer platform team wrote this up as spec-driven development in 2026: when implementation is cheap, translation loss between intent and code becomes the dominant failure, and the specification has to become the shared source of truth that requirements, design, implementation and validation all point at.
+A vague ticket once wasted part of one engineer's day. The engineer might guess, ask a question in chat, wait for an answer, and eventually ship something close to the intended change. Giving the same ticket to thirty agents multiplies the ambiguity. Each agent can choose a plausible interpretation and execute it confidently, leaving you to identify many incorrect results. Microsoft's developer platform team described this problem as spec-driven development in 2026. When implementation is cheap, errors in translating intent into code become a dominant failure. The specification must therefore be the shared source of truth for requirements, design, implementation, and validation.
 
 That is why this is one of the largest disciplines in the program, and why the pass condition is unusual: your specification passes when someone who cannot talk to you executes it and does not need to.
 
@@ -14,7 +14,7 @@ That is why this is one of the largest disciplines in the program, and why the p
 
 > Allow two authenticated players within interaction distance to exchange mutually accepted inventory items atomically, with no duplication or loss, even if either client disconnects during confirmation.
 
-The second sentence is not longer for the sake of length. Every clause closes a door that the first sentence left open, and each open door is a place an executor would have had to guess. Authenticated: no trading from a spoofed session. Within interaction distance: no cross-map trades. Mutually accepted: both confirm. Atomically: both sides move or neither does. No duplication or loss: the invariant. Even if a client disconnects: the failure case that will otherwise be discovered in production.
+The added length settles decisions that the first sentence left open, and each open door is a place an executor would have had to guess. Authenticated: no trading from a spoofed session. Within interaction distance: no cross-map trades. Mutually accepted: both confirm. Atomically: both sides move or neither does. No duplication or loss: the invariant. Even if a client disconnects: the failure case that will otherwise be discovered in production.
 
 ## The parts of a specification
 
@@ -40,19 +40,19 @@ flowchart TB
   UK -.->|resolve before or during| X
 ```
 
-Acceptance criteria are where most specifications fail. "Trading works" is not observable. "Given, when, then" is, and it is also the sentence a test will be written from, which means writing it well does half of Evaluation engineering before you start.
+Acceptance criteria are where most specifications fail. "Trading works" gives a reviewer nothing observable to check. A "given, when, then" statement names observable conditions and can become the basis of a test, which means writing it well does half of Evaluation engineering before you start.
 
 ## Invariants are the load-bearing part
 
 A functional requirement says what should happen on the good path. An invariant says what must stay true on every path, including the ones nobody thought of. Executors, human or machine, will implement the good path you described and improvise the rest. The invariant is the only thing standing between their improvisation and a duplicated item. Write invariants as sentences a test could check, and write them before the requirement if you can, because the requirement often changes once you see what it must not break.
 
-## Unknowns are not weakness
+## Record the unknowns
 
-A specification with an empty unknowns section was written by someone who did not look. Listing what you have not confirmed is what lets an executor stop at the right moment and ask, instead of guessing past it. It is also where your Comprehension calibration shows: an unknown you named and later resolved is evidence you knew the edge of your own model.
+A careful specification usually contains unknowns. An empty section often means the author stopped investigating too early. Listing what you have not confirmed is what lets an executor stop at the right moment and ask, instead of guessing past it. It is also where your Comprehension calibration shows: an unknown you named and later resolved is evidence you knew the edge of your own model.
 
 ## The test
 
-Founding runs the same test on your spec that the world will run on your work. Another student, or an agent, receives your specification without access to you. They attempt to execute it. Every time they need to ask something, that is a clarification, and the count is recorded. Two clarifications on a real specification is excellent. Fourteen means the document was a wish. Over the program you will see your own number fall, and that falling number is the metric the review sheet calls clarification debt.
+The eight-week intensive runs the same test on your spec that the world will run on your work. Another student, or an agent, receives your specification without access to you. They attempt to execute it. Every time they need to ask something, that is a clarification, and the count is recorded. Two clarifications on a real specification are excellent. Fourteen clarifications show that the specification left many decisions to the executor. Over the program you will see your own number fall, and that falling number is the metric the review sheet calls clarification debt.
 
 Before you hand a spec over, run the test on yourself. Read it as a stranger. At every sentence ask: could I execute this without asking? If the answer is "I would assume," write down the assumption as a requirement or as an unknown. Assumptions that stay in your head are the ones that get executed wrong.
 
@@ -69,9 +69,7 @@ Take the framing from Problem framing, or "make search better" if you skipped it
 3. Hand it to an assistant with the instruction: "List every decision you would have to make to implement this that the document does not settle. Do not implement." Count the list.
 4. Revise until the list is under three, or until the remaining items are honestly in Unknowns.
 
-## Done when
-
-A stranger, or a model, can produce the acceptance tests from your document alone, and they match the tests you had in mind.
+**Done when** a stranger, or a model, can produce the acceptance tests from your document alone, and they match the tests you had in mind.
 
 ## What's next
 

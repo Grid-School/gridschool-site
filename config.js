@@ -13,9 +13,14 @@ export const LINKS = {
   fitCall: "REPLACE_ME_CALCOM_FIT_20MIN",
   oneOnOne: "REPLACE_ME_CALCOM_1ON1_45MIN",
   discord: "REPLACE_ME_DISCORD_INVITE",
+  discordAsks: "REPLACE_ME_DISCORD_ASKS",
+  discordShip: "REPLACE_ME_DISCORD_SHIP",
+  discordBugs: "REPLACE_ME_DISCORD_BUGS",
+  discordWorld: "REPLACE_ME_DISCORD_WORLD",
   toolPack: "REPLACE_ME_GITHUB_TOOLPACK_INVITE",
   studioRepo: "REPLACE_ME_GITHUB_STUDIO_REPO",
   jira: "https://github.com/orgs/Grid-School/projects/1",
+  ticketBoard: "https://github.com/orgs/Grid-School/projects/1",
   worldServer: "https://github.com/Grid-School/gridschool-world-server",
   worldClient: "https://github.com/Grid-School/gridschool-world-client",
   play: "https://play.gridschool.org",
@@ -125,6 +130,34 @@ export const WORLD = {
     presence: "REPLACE_ME_PROD_PRESENCE_URL",
   },
 };
+
+/**
+ * Discord rooms named once so later steps can point at a purpose instead of
+ * inventing a new channel. Links stay placeholders until the invite exists.
+ */
+export const CHANNELS = {
+  asks: { name: "#asks", purpose: "Questions and anything that is blocking you", linkKey: "discordAsks" },
+  ship: { name: "#ship", purpose: "Finished work with a URL", linkKey: "discordShip" },
+  bugs: { name: "#bugs", purpose: "Something you saw in the live world that looks wrong", linkKey: "discordBugs" },
+  world: { name: "#world", purpose: "Notes from running or deploying the live world", linkKey: "discordWorld" },
+};
+
+/**
+ * Discord invites never ship in public config, public /site, or the committed
+ * overrides mirror. Paid seats fetch them after sign-in. Localhost can load
+ * site-overrides.local.json.
+ */
+export const PRIVATE_LINK_KEYS = Object.freeze([
+  "discord",
+  "discordAsks",
+  "discordShip",
+  "discordBugs",
+  "discordWorld",
+]);
+
+export function isPrivateLinkKey(key) {
+  return PRIVATE_LINK_KEYS.includes(key);
+}
 
 /** True when a config value is still a placeholder. */
 export function isPlaceholder(value) {

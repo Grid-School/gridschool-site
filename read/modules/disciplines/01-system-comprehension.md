@@ -2,11 +2,11 @@
 
 *Series: disciplines. How to enter software you did not write and come out with a model that predicts its behaviour. Read before You can read a system. ~14 minutes.*
 
-## The first artifact is not code
+## Build a system model first
 
 When an engineer joins a system, the instinct is to open the editor and start changing things, because changing things feels like progress and reading feels like delay. Every discipline in this series depends on you reversing that instinct once. Your first artifact in any unfamiliar system is a model: a description of what exists, where authority lives, how state moves, and what must stay true. Code comes after, and only after, because a change made without a model is a guess with a commit message.
 
-This is the discipline the review scores as Comprehension, and it is the one an assistant can fake most convincingly. Ask a model to explain a codebase and it will produce a fluent, confident, structured explanation in eight seconds. Some of it will be right. You will not be able to tell which parts, and neither will the person reading your pull request, until something breaks. That is why the pass condition for this discipline is never "wrote a clear explanation." It is "the model predicts what the system does."
+This is the discipline the review scores as Comprehension, and it is the one an assistant can fake most convincingly. Ask a model to explain a codebase and it will produce a fluent, confident, structured explanation in eight seconds. The explanation will mix accurate claims with unsupported ones. Until you verify those claims, neither you nor the person reading your pull request can tell which parts are reliable. The pass condition requires your model to predict what the system does. A clear explanation alone cannot establish that result.
 
 ## What a system model contains
 
@@ -55,7 +55,7 @@ Write your answer before you look. Then look. Where you were wrong, your model w
 
 ## Progressively less documentation
 
-Founding gives you a documented map of the world for your first change. The documentation gets thinner on purpose as you go. By the time you reach an owned system, you have the code and the logs. In the live world you may have a bug report and a stranger's commit history. The thinning is the training. Comprehension only grows when the thing in front of you does not explain itself.
+The eight-week intensive gives you a documented map of the world for your first change. The documentation gets thinner on purpose as you go. By the time you reach an owned system, you have the code and the logs. In the live world you may have a bug report and a stranger's commit history. The thinning is the training. Comprehension grows when the system in front of you does not explain itself.
 
 Three habits make the thin end survivable:
 
@@ -65,9 +65,9 @@ Three habits make the thin end survivable:
 
 ## Where the assistant belongs
 
-After the map exists, use it. On You can read a system the rule is stricter than anywhere else in the program: no assistant until your paper map is drawn, because a fluent summary of code you have not read gives you the feeling of understanding without the substance, and you will act on the feeling. Once the map exists, ask it to list the files that touch a symbol, to summarise a module you have already skimmed, to propose invariants for you to check. Do not accept its explanation of what the system does as your model. Its explanation is a hypothesis you owe a test. When a reviewer asks how you know, "the assistant said so" is the answer that fails the step, and it fails for the right reason: nobody was in control.
+After the map exists, use it. On You can read a system, draw your paper map before using an assistant. A fluent summary of code you have not read can create confidence without understanding, and you may act on that confidence. Once the map exists, ask it to list the files that touch a symbol, to summarise a module you have already skimmed, to propose invariants for you to check. Treat its explanation of the system as a hypothesis that you still need to test. When a reviewer asks how you know, "the assistant said so" is the answer that fails the step, and it fails for the right reason: nobody was in control.
 
-The useful form of this is a scorecard. Ask the assistant the same counterfactual questions you answered from your map, write its answers beside yours, and where you disagree, read the code and mark who was right. Three outcomes teach three different things. You were right and it was wrong: you have found where its confidence outruns its reading, and what kind of question does that. It was right and you were wrong: your model has a hole, in a place you now know exactly. You both agreed and were both wrong: the most dangerous case, and the reason the code, not the conversation, is the referee. Keep the scorecard; the step asks for it, and by the third ticket you will know your own error pattern and the machine's, which is the only basis on which trusting either one is engineering rather than hope.
+Use a scorecard to compare your model with the assistant. Ask the assistant the same counterfactual questions you answered from your map, write both sets of answers, and check every disagreement against the code. When your answer is correct, record where the assistant's confidence exceeded its evidence. When the assistant is correct, update the gap in your model. When both answers are wrong, identify the shared assumption that caused the error. Keep the scorecard because the step requires it. By the third ticket, the record should show your recurring errors and the assistant's, which gives you evidence for deciding when to trust either one.
 
 ## Do this now (25 minutes)
 
@@ -82,9 +82,7 @@ Pick any codebase you have not read: a dependency you use, an open source projec
 
 Keep the note. In You can read a system you will do this against the world map for real, and the first ten minutes will already feel familiar.
 
-## Done when
-
-You can hand your note to someone who has never seen the system and they can predict, from your note alone, what happens in one failure case you did not write down.
+**Done when** you can hand your note to someone who has never seen the system and they can predict, from your note alone, what happens in one failure case you did not write down.
 
 ## What's next
 

@@ -18,11 +18,11 @@ You met the mechanics in the nanograph series, where you built a small typed gra
 | Ownership graph | components, data | A is authoritative for B | Concurrency and authority bugs |
 | Causal graph | observations, causes | A produces B | Debugging, product experiments |
 | Knowledge graph | claims, entities | A supports, contradicts, cites B | Research, provenance, keeping an assistant honest |
-| User journey graph | screens, moments | user moves from A to B | Onboarding, retention work |
+| User path graph | screens, moments | user moves from A to B | Onboarding, retention work |
 | Requirement dependency graph | requirements | A must be true before B | Specification and sequencing |
 | Agent execution graph | tasks | A must finish before B, or A reviews B | Orchestrating machine work |
 
-Notice that the same system gives rise to all nine, and each one answers questions the others cannot. A call graph will not tell you who owns a player's position. An ownership graph will not tell you what breaks if you rename a function. Choosing the graph is choosing the question.
+Notice that the same system gives rise to all nine, and each one answers questions the others cannot. A call graph will not tell you who owns a player's position. An ownership graph will not tell you what breaks if you rename a function. Choose the graph type according to the question you need to answer.
 
 One collision to know about before you use the phrase in a room. When the industry says graph engineering it almost always means the last row, the agent execution graph, drawing which agent runs after which and who reviews whom. When this program says it, it usually means the first two rows, the graph of the code itself, because that is the tool you build in the nanograph series. Both are real and they meet in You ran the agents, where the slice your code graph computes is what an agent in your execution graph receives. Say which one you mean.
 
@@ -48,11 +48,11 @@ The graph tool you meet in Who calls what labels every edge with its tier and it
 
 ## Context is a graph you hand to a model
 
-When you paste files into an assistant's window, you are constructing a graph and not saying so: this file is relevant, this one is not, these are related. Most bad assistant output is a bad graph. Too much context and the model averages over noise; too little and it invents the missing piece; the wrong slice and it reasons perfectly about a system that does not exist.
+When you paste files into an assistant's window, you are constructing an implicit graph: this file is relevant, this one is not, these are related. Most bad assistant output is a bad graph. Too much context and the model averages over noise; too little and it invents the missing piece; the wrong slice and it reasons perfectly about a system that does not exist.
 
 Context engineering is doing that construction deliberately:
 
-- **Start from the question**, then pull the neighbourhood the question touches, not the whole repository.
+- **Start from the question**, then pull only the part of the repository that the question touches.
 - **Include the invariants** the model must not violate, stated as sentences, near the top.
 - **Include the provenance** of anything uncertain. "This may retry; I have not confirmed" is a sentence the model can reason with. Silence is a sentence it will fill in.
 - **Exclude what you have not verified** unless you label it. Contaminated context produces confident wrongness.
@@ -60,9 +60,9 @@ Context engineering is doing that construction deliberately:
 
 The hiring market names this explicitly. GitLab's 2026 Forward Deployed Engineer posting lists graph-based retrieval, repository understanding and context optimisation alongside agent orchestration. That is this reading, as a job.
 
-## When a graph does not help
+## When to skip a graph
 
-A graph is worth building when the questions are structural and repeated. It is not worth building when you will ask once, when the system is small enough to hold in your head, or when the relation you care about is fuzzy enough that any edge would be a guess dressed as a fact. Part of this discipline is declining to draw the graph and saying why.
+A graph is worth building for repeated structural questions. Skip the graph for a one-time question, a system small enough to hold in your head, or a relation too uncertain to represent as a factual edge. Part of this discipline is declining to draw the graph and saying why.
 
 ## Do this now (20 minutes)
 
@@ -74,10 +74,8 @@ Take the note from System comprehension.
 4. For three edges, write down the provenance: read it, grepped it, guessed it.
 5. Paste the graph and the question into an assistant and ask the question. Note where its answer depended on an edge you had marked as a guess.
 
-## Done when
-
-You can look at a wrong assistant answer and point at the edge that was missing, stale or untyped.
+**Done when** you can look at a wrong assistant answer and point at the edge that was missing, stale or untyped.
 
 ## What's next
 
-03 · Problem framing: before you specify anything, be sure you have the problem and not the symptom.
+03 · Problem framing: before you specify anything, distinguish the underlying problem from its symptom.

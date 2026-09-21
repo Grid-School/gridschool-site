@@ -1,41 +1,42 @@
 # 11 · Make it yours
 
-*You need: episode 10 shipped. ~half a day. Full ceremony.*
+*You need the shipped tool from episode 10. Allow about half a day. Complete
+the full engineering ceremony described below.*
 
 ## The claim
 
-Courses end with completion. This ends with divergence. You point nanograph at a repo you personally care about, and you build one analysis nobody asked for. That unasked analysis is the difference between "I finished the modules" and "I own an instrument."
+Choose a repository you care about and run nanograph against it. Then build one analysis that the earlier episodes did not require. Your choice of analysis should answer a question you genuinely have about the repository.
 
-## What you ship
+## What you will ship
 
 1. A fork (or your main repo) installable by a stranger.
-2. README numbers from *your* chosen repo, not the lab fixture.
+2. README numbers from *your* chosen repo. Numbers from the lab fixture do
+ not satisfy this requirement.
 3. One new query or view that exists only because you wanted the answer.
-4. Full ceremony: engineering contract, failure log, written review request.
+4. The full engineering ceremony: an engineering contract, a failure log, and a written review request.
 
 ## The unasked analysis
 
-Examples that count:
+The new analysis can answer a question such as:
 
 - "Show me every function that both touches the database and formats HTML."
 - "Rank files by how often they appear in blast radii of payment code."
 - "List modules that are only coupled through `utils`."
 
-Examples that do not count: renaming a flag, restyling `--serve`, or rephrasing the README. The review will ask why this analysis had to exist. Have an answer.
+Renaming a flag, restyling `--serve`, or rephrasing the README does not add an analysis. During review, you will need to explain why you wanted the answer your analysis provides.
 
 ## Defense feed
 
-This fork feeds your live defense. Be ready to walk: what the system does, what you measured, what you refused to build, and how a stranger verifies it. "I do not know, and here is how I would find out" still beats fiction.
+You will use this fork in your live defense. Prepare to explain what the system does, what you measured, what you chose not to build, and how a stranger can verify the result. If you do not know an answer, state how you would find it.
 
 ## Exercise (the whole node)
 
-There is no hidden side quest. The unasked analysis *is* the exercise. Commit it with a one-paragraph defense of why you wanted it.
+The new analysis is the complete exercise. Commit it with one paragraph explaining why you wanted the answer.
 
-## Done when
-
-A stranger can install your fork, run it on a repo, read your numbers, and see one analysis that exists only because you asked. Lab students: PR or repo URL for review, same ceremony as the studio mission.
+**Done when** a stranger can install your fork, run it on a repository, reproduce your measurements, and use the new analysis you chose to build. If you are a Lab student, submit the pull request or repository URL for review by following the same engineering ceremony as the studio mission.
 
 ## Sources
 
-- Your own earlier episodes. The series was the scaffold; this is the fork.
-- Your own earlier episodes. The grown-up version of this tool is the one you keep extending.
+- Your earlier episodes provide the starting implementation for the fork.
+- Continue extending the tool after the series when you have another question
+ the graph can answer.

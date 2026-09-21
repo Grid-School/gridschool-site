@@ -1,12 +1,12 @@
 # 15 · How a system runs, end to end
 
-*Series: disciplines. Where code actually runs, what a request costs, and why the first thing you draw for any project is the map of its machines. Read before you pick a project. ~12 minutes.*
+*Series: disciplines. Learn where code runs, what a request costs, and how to map the machines in an existing system. Read this before choosing a project. About 12 minutes.*
 
 ## What a tap actually is
 
-When a player taps a button in the world, the thing that happens is not "the app does something." A packet leaves a device you do not control, crosses a network you do not control, and arrives at a machine you rent by the hour, which may in turn ask another machine for a fact before it can answer. The tap feels like one event to the player, and it is five or six to you, each with its own latency, its own bill, and its own way of failing. Until you can name those machines you cannot specify a change to them, you cannot verify one, and you cannot honestly choose the stack that runs them, which is why this reading comes before the project and not after it.
+When a player taps a button in World, a data packet leaves the player’s device, crosses a network, and reaches a rented machine. That machine may ask another machine for data before answering. The player experiences one tap, while you must account for five or six separate events. Each event adds waiting time, cost, and a possible failure. You need to name the machines before you can specify or verify a change and choose the technology that runs them. For that reason, complete this reading before choosing a project.
 
-Draw the path left to right and you will see the shape every web system shares, whatever the logos on it.
+Draw the request path from left to right. A content delivery network, or CDN, serves content near the user. An application programming interface, or API, defines how one program asks another for data or work. The same general shape appears in every web system:
 
 ```mermaid
 flowchart LR
@@ -19,36 +19,40 @@ flowchart LR
   A --> U
 ```
 
-Each box is a place where code runs, or where state lives, or both, and each arrow is a place where time is spent and things go wrong. The habit this reading is trying to install is that a box you cannot name is a box you cannot own, and the review will ask you to name every one on your own project.
+Each box represents a place where code runs, stored information lives, or both. Each arrow represents communication that takes time and can fail. To take responsibility for a system, you must be able to name every box.
 
-## Four places code runs, and why they are not interchangeable
+## Four places where code runs
 
-Code on the **client** runs on the user's machine, which means it costs you nothing and can be trusted with nothing. The user can read every byte you send, change any value before it comes back, and lie to you about their position, their inventory, or whether they paid, so the client is where you put rendering and responsiveness and never where you put the rule that says money changed hands. The world today believes whatever position a client reports, and that is one of the inherited defects on the ticket board precisely because it violates this line.
+Code on the **client** runs on the user’s machine, so the user supplies the computing power and can inspect or change the data. Put rendering and responsive interaction on the client. Keep authoritative rules, such as whether money changed hands, on the server. World currently accepts every position reported by a client. The ticket board lists that behavior as an inherited defect because a user controls the client.
 
-Code at the **edge**, on a CDN or a worker near the user, is cheap and fast and sees only the request in front of it plus whatever it has cached. It is a good place to serve a file or check a token and a bad place to decide who owns an item, because a cache is by definition an old answer that you have agreed to believe for a while.
+Code at the **edge** runs on a content delivery network, or CDN, or on a worker near the user. Edge code is fast and inexpensive, but it sees only the current request and cached data. A cache stores a previous answer for reuse. Use edge code to serve a file or check a token. Keep authoritative facts, such as who owns an item, on the server.
 
-Code on the **server** is the code you pay for by the hour or by the request, and it is the only code that can see the database, the secrets, and the other services, which is why every authoritative decision has to end up there whether or not that is convenient. Code in **batch**, a cron job or a queue consumer, is the same as the server but later, and the thing people forget about later is that you have to go back and check that it happened.
+Code on the **server** costs money by the hour or by the request. Server code can access the database, secrets, and other services, so every authoritative decision must reach the server. **Batch** code runs server work later through a scheduled job or a program that consumes queued tasks. Because batch work finishes after the original request, you must check that it actually completed.
 
-The world you will join makes all of this unusually visible because it is so small: a Unity WebGL client served from CloudFront, a WebSocket server on a Lightsail box, and no database at all. That is a complete system. It is also a system that forgets every player the moment the process restarts, and when you draw it the missing database should appear on the page as loudly as the boxes that exist, because absence is the part of a map that agents and new engineers most reliably skip.
+The live World at `play.gridschool.org`, which you opened as Stage, is small enough to show the full path. CloudFront serves a Unity WebGL client. A WebSocket server runs on an Amazon Lightsail machine. The system has no database, so restarting the server process removes every player from memory. Include the missing database in your drawing because a useful system map records missing parts as well as existing machines.
 
 ## Cost, latency, and the question of what breaks first
 
-Two sentences decide more architecture than any framework comparison: client compute is free to you, and server compute is yours. Every design pressure follows from them. Latency is the time the user spends waiting on the arrows, and a cache exists because an answer that might be slightly wrong can be returned faster than an answer that is definitely right, so choosing a cache is choosing how much staleness a given fact can tolerate, which is a very different question for a player's display name than for their gold balance. Load is what happens when ten players become a hundred, and the first thing that gives way is almost never the programming language; it is the connection table on the single process, the file that everyone writes to, the query that was fine when the table was small, or the host that was described as "fine for a demo" by someone who has left.
+The user supplies client computing power, while you pay for server computing power. **Latency** is the time a user waits while data crosses the arrows. A cache returns a stored answer faster than the system can produce a current answer, so using a cache requires deciding how old each fact may be. A player’s display name may tolerate old data, while a gold balance may not. **Load** describes the work created as the number of users grows. When ten players become one hundred, likely bottlenecks include the connection table in one process, a shared file, a slow database query, or a host sized only for a demonstration. The programming language is rarely the first bottleneck.
 
-If you cannot say which of those breaks first at ten times the users, you do not yet have a map. You have a drawing of the happy path, and the happy path is the one part of a system that never needs an engineer.
+Your map is incomplete until it predicts which part will fail first with ten times as many users. A request-path drawing alone describes only normal operation.
 
 ## The suspicion threshold
 
-You are not being asked to become a cloud architect this week. You are being asked to reach the point where you can look at a running system, or an agent's proposal for one, and say which box each piece of code runs in, which box holds the truth, which trust boundary you would attack first, and which box sends you a bill. That is enough to write a spec that names the right machine, to review a pull request that quietly moved authority to the client, and to refuse a stack you could not explain to the person paying for it.
+This week, learn to inspect a running system or an agent’s proposal and identify where each piece of code runs, where authoritative data lives, which boundary an attacker would test first, and which machine creates cost. With that knowledge, you can write a specification for the correct machine, detect a pull request that moved authority to the client, and explain a technology choice to the person paying for it.
 
 ## Do this now (40 minutes)
 
-Draw the world as it actually runs: client, CDN, WebSocket server, and the database that is not there, with the host of each named and one sentence on what dies when the process restarts. Then draw the menu project you expect to pick, even if you have not committed to it, using the boxes you expect to need and at least one you will pay for. On both drawings write the first thing that breaks at ten times the users, and make the sentence specific enough that someone could prove you wrong.
+Draw World as it currently runs. Include the Unity WebGL client, CloudFront, the WebSocket server on Lightsail, and the database that does not exist. For each existing box, name its host. Write one sentence explaining what disappears when the server process restarts. On the same page, predict the first bottleneck at ten times the current number of users. Make the prediction specific enough for another person to test.
+
+For the second drawing, use the provided toy-shop starter. The toy shop has a browser page, a CDN serving static files, one application programming interface process, and a SQLite file on the same host as that process. Draw those four boxes, state where the code and stored information live, and name at least one paid service.
+
+Wait until reading 23 to use the project menu. For this assignment, draw machines that already run.
 
 ## Done when
 
-A stranger can open the two drawings and point at where code runs, where state lives, and what you pay for, and your 10x sentence names a bottleneck rather than a technology.
+the World fields name the Unity WebGL client, CloudFront, the WebSocket server on Lightsail, the missing database, and the state lost during a restart; the toy-shop field names its browser, CDN, API, SQLite file, code location, stored information, and one paid service; and both ten-times fields name a specific bottleneck and explain why it would fail first.
 
 ## What's next
 
-16 · Front-end foundations: the same five ideas under every UI framework, so the name on the repo stops being a barrier.
+Next, reading 16 introduces five ideas shared by user-interface frameworks and asks you to find them in a component you did not write.

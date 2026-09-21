@@ -8,20 +8,49 @@
  */
 
 import { el } from "../dom.js";
-import { btn } from "../ui.js";
+import { btn, toast } from "../ui.js";
 import { KIND_LABEL, TASK_STATE, formatEstimate } from "../tasks.js";
+import { taskIsComplete } from "../task-state.js";
 import { fmtDay, fmtTime, relativeDay } from "../time.js";
-import { link } from "../../../config.js";
+import { isPrivateLinkKey, link } from "../../../config.js";
 export { statusLabel } from "../copy.js";
 
 export const stateIdOf = (task) => task.weekKey ?? task.id;
 
+function taskOpen(task, { navigate } = {}) {
+  const open = task.open;
+  if (!open) return null;
+  if (open.route) {
+    return btn({
+      label: open.label || "Open task",
+      variant: "quiet",
+      onclick: () => navigate?.(open.route, ...(open.args ?? [])),
+    });
+  }
+  if (open.key) {
+    const href = link(open.key);
+    if (href) {
+      return btn({ label: open.label || "Open task", variant: "quiet", href, target: "_blank" });
+    }
+    return isPrivateLinkKey(open.key) ? null : el("span.notwired", {}, "Link unavailable");
+  }
+  if (open.href) {
+    return btn({ label: open.label || "Open task", variant: "quiet", href: open.href, target: "_blank" });
+  }
+  return null;
+}
+
 export function taskRow(task, { store, navigate, showGo = false } = {}) {
   const id = stateIdOf(task);
   const state = task.state ?? TASK_STATE.TODO;
-  const done = state === TASK_STATE.DONE;
+  const fields = task.fields ?? [];
+  const answers = task.answers ?? {};
+  const saved = { state, answers };
+  const done = taskIsComplete(task, saved);
   const waiting = state === TASK_STATE.WAITING;
   const how = task.how ?? [];
+  const number = Number.isInteger(task.index) && task.index > 0 ? task.index : null;
+  const hideKind = Boolean(task.hideKind);
 
   const steps = how.length ? el("ol.task__how", {}, how.map((step) => el("li", {}, step))) : null;
 
@@ -47,21 +76,42 @@ export function taskRow(task, { store, navigate, showGo = false } = {}) {
 
   const row = el(
     "div.task",
-    { class: `is-${state}` },
+    { class: `is-${done ? TASK_STATE.DONE : state === TASK_STATE.DONE ? TASK_STATE.TODO : state}` },
     el("button.task__mark", {
       type: "button",
       "aria-pressed": String(done),
       "aria-label": done ? `Mark ${task.title} not done` : `Mark ${task.title} done`,
-      onclick: () => store.setTaskState(id, done ? TASK_STATE.TODO : TASK_STATE.DONE),
+      title: done ? "Uncheck to change this task" : "Check this box when the work is finished",
+      onclick: () => {
+        if (done) {
+          store.setTaskState(id, TASK_STATE.TODO);
+          return;
+        }
+        const nextAnswers = Object.fromEntries(
+          fields.map((item) => [item.id, document.getElementById(`task-${id}-${item.id}`)?.value.trim() ?? ""])
+        );
+        const missing = fields.find((item) => item.required && !nextAnswers[item.id]);
+        if (missing) {
+          toast(`Answer “${missing.label}” before you check this box.`, "warn");
+          document.getElementById(`task-${id}-${missing.id}`)?.focus();
+          return;
+        }
+        store.setTaskState(id, TASK_STATE.DONE, nextAnswers);
+      },
     }),
     el(
       "div.task__main",
       {},
-      el("p.task__title", {}, task.title),
+      el(
+        "p.task__title",
+        {},
+        number ? el("span.task__n", {}, `${number}.`) : null,
+        task.title
+      ),
       el(
         "div.task__meta",
         {},
-        el("span.task__kind", {}, KIND_LABEL[task.kind] ?? task.kind),
+        !hideKind && el("span.task__kind", {}, KIND_LABEL[task.kind] ?? task.kind),
         task.est && el("span", {}, formatEstimate(task.est)),
         showGo && task.nodeTitle && el("span", {}, `step ${String(task.nodeN).padStart(2, "0")}`),
         task.recurring && el("span", {}, "every week"),
@@ -70,6 +120,32 @@ export function taskRow(task, { store, navigate, showGo = false } = {}) {
       task.done_when && el("p.task__dw", {}, el("b", {}, "Done when "), task.done_when),
       task.why && el("p.task__why", {}, task.why),
       steps,
+      fields.length
+        ? el(
+            "div.task__fields",
+            {},
+            fields.map((item) => {
+              const inputId = `task-${id}-${item.id}`;
+              const props = {
+                id: inputId,
+                placeholder: item.placeholder ?? "",
+                disabled: done,
+              };
+              const input = item.textarea
+                ? el("textarea", { ...props, rows: item.rows ?? 3 }, answers[item.id] ?? "")
+                : el("input", { ...props, type: "text", value: answers[item.id] ?? "" });
+              return el(
+                "label.task__field",
+                { for: inputId },
+                el("span", {}, item.label),
+                input,
+                item.hint ? el("small", {}, item.hint) : null
+              );
+            })
+          )
+        : null,
+      taskOpen(task, { navigate }),
+      done ? el("p.task__undo", {}, "Task complete. Uncheck the box if you need to change an answer.") : null,
       acts.length ? el("div.task__acts", {}, acts) : null
     )
   );
@@ -81,8 +157,8 @@ export function eventRow(event, { now = new Date() } = {}) {
   const href = event.room ? link(event.room) : null;
   const go = event.room
     ? href
-      ? btn({ label: event.open ?? "Open", variant: "quiet", href, target: "_blank" })
-      : el("span.notwired", {}, "not connected yet")
+      ? btn({ label: event.open ?? "Open event", variant: "quiet", href, target: "_blank" })
+      : el("span.notwired", {}, "Event link unavailable")
     : null;
 
   return el(
@@ -149,7 +225,7 @@ export function reviewRow(review, { store, isAdmin = false } = {}) {
     reviewScores(review),
     !returned &&
       !isAdmin &&
-      el("p.rv__hint", {}, "Notes come back Sunday evening. Do something else while you wait."),
+      el("p.rv__hint", {}, "Notes come back Sunday evening. Continue with another open step while you wait."),
     isAdmin &&
       !returned &&
       el(

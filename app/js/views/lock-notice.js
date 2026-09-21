@@ -31,10 +31,10 @@ export function lockNotice({ graph, node, onGo, onDismiss }) {
   const names = blockers.map((item) => item.title);
   const list =
     names.length === 0
-      ? "A prior step still needs its link."
-      : names.length === 1
-        ? `${names[0]} still needs its link.`
-        : `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]} still need their links.`;
+      ? "A prior step still needs to be finished."
+        : names.length === 1
+        ? `${names[0]} still needs to be finished.`
+        : `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]} still need to be finished.`;
 
   return el(
     "div.lock-note",

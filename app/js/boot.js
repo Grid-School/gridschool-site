@@ -205,12 +205,17 @@ function onStoreChange() {
   if (view) mount(chrome.outlet, view.render(ctx, ...route.args));
 }
 
+function markReady() {
+  window.__gsReady = true;
+}
+
 async function start() {
   /* Invite or return login injects both secrets. The student never types them.
      Demo stays the public tour: no account, no lesson text on the live site. */
   const invite = inviteFromUrl();
   if (invite) {
     renderLogin(app, { invite });
+    markReady();
     return;
   }
 
@@ -219,11 +224,13 @@ async function start() {
 
   if (slug !== "demo" && (!unlocked || !persistToken())) {
     renderLogin(app, { email: "" });
+    markReady();
     return;
   }
 
   if (!slug) {
     renderLogin(app);
+    markReady();
     return;
   }
 
@@ -244,6 +251,7 @@ async function start() {
     if (error?.code === "BAD_TOKEN") {
       setPersistToken("");
       renderLogin(app);
+      markReady();
       return;
     }
     /* A stored session can outlive its board: signed in on a machine that has
@@ -253,6 +261,7 @@ async function start() {
     if (!slugFromUrl()) {
       signOut();
       renderLogin(app);
+      markReady();
       return;
     }
     mount(
@@ -269,6 +278,7 @@ async function start() {
         )
       )
     );
+    markReady();
     return;
   }
 
@@ -339,6 +349,10 @@ async function start() {
   });
 
   router.start();
+  markReady();
 }
 
-start();
+start().catch((error) => {
+  console.error(error);
+  window.showBootFailure?.(error);
+});

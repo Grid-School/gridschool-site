@@ -79,7 +79,7 @@ export function createChrome({
       mount(
         banner,
         el("b", {}, "Dev unlock on."),
-        el("span", {}, "Every node is open for reading and turn-in. Lighting still requires a real URL. The padlock in the rail restores gating.")
+        el("span", {}, "Every node is open for reading and turn-in. Completion still requires the work named on each step. The padlock in the rail restores gating.")
       );
       return;
     }

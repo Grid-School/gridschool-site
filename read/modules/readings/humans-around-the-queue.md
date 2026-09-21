@@ -1,15 +1,15 @@
 # Humans around the ticket
 
-*Short reading for `cap.change`. Linked from the first-ticket lesson.*
+*Short reading linked from Your first ticket.*
 
-Every ticket is a code fact and a people fact at the same time.
+Every ticket describes both a code change and the people affected by it.
 
-Someone wanted the change. Someone else's system receives it. Someone else will live with it. Each of those people has a different picture of what "done" means: filed, acknowledged, fixed, shipped, closed. If you invent a process without asking, you will optimize the code for a definition of done that nobody who owns the outcome would sign.
+One person requested the change, another person’s system receives it, and someone must live with the result. Those people may use “done” to mean filed, acknowledged, fixed, shipped, or closed. Ask before choosing a process, or you may optimize the code for a completion condition that the person responsible for the result would reject.
 
-Before the engineering contract:
+Before you write the engineering contract:
 
 1. Name who wants the change, who receives it, and who owns the outcome.
 2. Write one sentence for what that owner would call done.
-3. If you cannot name them, you do not yet know what the change is for. Ask before inventing process.
+3. If you cannot name those people, ask who they are before choosing a process.
 
-Vision here is broader than taste in diffs. It is choosing the change that repairs the actual failure, in language a person who owns the outcome could accept.
+In this work, vision means choosing a change that repairs the actual failure and describing it in terms the person responsible for the result can accept.

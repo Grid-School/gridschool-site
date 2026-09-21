@@ -11,7 +11,7 @@
  */
 
 import { el } from "../dom.js";
-import { TASK_STATE } from "../tasks.js";
+import { taskIsComplete } from "../task-state.js";
 
 export const ROW = { READ: "read", LESSON: "lesson", TASK: "task", LINK: "link" };
 
@@ -20,6 +20,7 @@ export function readFlag(moduleId) {
 }
 
 export function stepRows(node, student) {
+  if (node?.kind === "future") return [];
   const flags = student?.stepFlags?.[node.id] ?? {};
   const readings = node.modules ?? [];
   const tasks = node.tasks ?? [];
@@ -33,14 +34,30 @@ export function stepRows(node, student) {
     rows.push({ kind: ROW.LESSON, id: "lesson", label: "The lesson", ok: Boolean(flags.read) });
   }
   for (const task of tasks) {
-    rows.push({ kind: ROW.TASK, id: task.id, label: task.title, ok: student?.tasks?.[task.id]?.state === TASK_STATE.DONE });
+    const saved = student?.tasks?.[task.id] ?? {};
+    rows.push({
+      kind: ROW.TASK,
+      id: task.id,
+      label: task.title,
+      ok: taskIsComplete(task, saved),
+    });
   }
-  rows.push({
-    kind: ROW.LINK,
-    id: "link",
-    label: node.signoff ? "Link sent for sign-off" : "Link saved",
-    ok: Boolean(node.proof?.url || student?.evidence?.[node.id]?.url),
-  });
+  if (node.completion !== "tasks") {
+    const submitted = Boolean(node.proof?.url || student?.evidence?.[node.id]?.url);
+    const accepted = Boolean(node.signoff && node.status === "lit");
+    rows.push({
+      kind: ROW.LINK,
+      id: "link",
+      label: node.signoff
+        ? accepted
+          ? "Accepted"
+          : node.awaitingSignoff
+            ? "Submitted · in review"
+            : "Link sent for sign-off"
+        : "Link saved",
+      ok: node.signoff ? accepted : submitted,
+    });
+  }
   return rows;
 }
 
@@ -51,10 +68,21 @@ export function readyToSave(node, student) {
     .every((row) => row.ok);
 }
 
-/** True when this step is finished enough to enable Next. */
+/** True when this step is actually finished. A submitted sign-off is not finished. */
 export function isStepComplete(node, student) {
-  if (!node) return false;
+  if (!node || node.kind === "future") return false;
+  if (node.signoff && node.awaitingSignoff) return false;
   return stepRows(node, student).every((row) => row.ok);
+}
+
+/** True when the student can leave this step for the next open piece of work. */
+export function canAdvance(node, student) {
+  if (!node || node.kind === "future") return false;
+  const rows = stepRows(node, student);
+  if (node.signoff && (node.proof?.url || student?.evidence?.[node.id]?.url)) {
+    return rows.filter((row) => row.kind !== ROW.LINK).every((row) => row.ok);
+  }
+  return rows.every((row) => row.ok);
 }
 
 /**

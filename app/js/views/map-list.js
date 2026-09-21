@@ -1,11 +1,10 @@
 /**
  * The map, as a list.
  *
- * The graph answers "where am I"; this answers "what have I actually got". They
- * are the same nodes and the same one invariant, a node lights only when a
- * URL exists, so this is a projection, not a second page. That is why Work
- * stopped being its own surface: a page listing your links, sitting next to a
- * map whose whole meaning is your links, was the same data twice.
+ * The graph answers "where am I"; this answers "what have I actually got".
+ * Both views project the same node state, including in-app answers, saved
+ * links, and accepted reviews. That is why Work stopped being a separate
+ * surface: it repeated the evidence already available from the map.
  *
  * This is also the list a student pastes into a message, which is why copying
  * every link at once is the loudest thing on it.

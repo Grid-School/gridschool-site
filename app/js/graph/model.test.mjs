@@ -49,6 +49,37 @@ test("nextUp may pick depth only when no spine node is open", () => {
   assert.equal(nextUp(graph).id, "wd.local");
 });
 
+test("an in-app onboarding node lights only when every task and required answer is complete", () => {
+  const nodes = [
+    {
+      id: "or.start",
+      n: 0,
+      family: "ccvv",
+      completion: "tasks",
+      requires: [],
+      tasks: [
+        { id: "goal", fields: [{ id: "answer", required: true }] },
+        { id: "room" },
+      ],
+    },
+    { id: "or.setup", n: 1, family: "ccvv", requires: ["or.start"] },
+  ];
+  const incomplete = buildGraph(curriculum(nodes), {
+    evidence: {},
+    tasks: { goal: { state: "done", answers: { answer: "" } }, room: { state: "done" } },
+  });
+  assert.equal(incomplete.byId.get("or.start").status, STATUS.OPEN);
+  assert.equal(incomplete.byId.get("or.setup").status, STATUS.LOCKED);
+
+  const complete = buildGraph(curriculum(nodes), {
+    evidence: {},
+    tasks: { goal: { state: "done", answers: { answer: "A specific goal" } }, room: { state: "done" } },
+  });
+  assert.equal(complete.byId.get("or.start").status, STATUS.LIT);
+  assert.equal(complete.byId.get("or.setup").status, STATUS.OPEN);
+  assert.equal(complete.byId.get("or.start").proof, null, "in-app completion does not invent an evidence URL");
+});
+
 test("progress splits spine from depth and ignores future nodes", () => {
   const graph = buildGraph(
     curriculum([

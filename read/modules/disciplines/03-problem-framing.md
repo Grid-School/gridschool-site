@@ -2,7 +2,7 @@
 
 *Series: disciplines. Observation, symptom, hypothesis, cause, opportunity, intervention, in that order, and why skipping one costs you the week. Read before You found the real problem. ~11 minutes.*
 
-## The chain you are not allowed to skip
+## Follow the full chain
 
 A player writes "movement feels laggy." A product owner writes "add trading." A dashboard shows new players not returning after their first session. All three arrive as requests for action, and the untrained response to all three is to act. The trained response is to walk a chain, one link at a time, and refuse to move to the next link until the current one is written down.
 
@@ -13,11 +13,11 @@ flowchart LR
 
 **Observation** is the raw fact. Three players used the word "laggy" in chat on Tuesday. Retention at day seven is eighteen percent. Nobody has traded because there is no trading. An observation is something you could show to a stranger and they would agree it happened.
 
-**Symptom** is what the observer experienced, in their words, without your interpretation. "Movement feels laggy" is a symptom. It is not a cause and it is not a ticket.
+**Symptom** is what the observer experienced, in their words, without your interpretation. "Movement feels laggy" is a symptom. You still need evidence before naming a cause or writing a ticket.
 
-**Hypotheses**, plural, are the explanations that could produce the symptom. Laggy movement could be network round trip, server tick rate, client interpolation, a garbage collection pause, an overloaded region, or a keyboard handler that fires late. You are required to write more than one. A single hypothesis is a conclusion wearing a disguise.
+**Hypotheses**, plural, are the explanations that could produce the symptom. Laggy movement could be network round trip, server tick rate, client interpolation, a garbage collection pause, an overloaded region, or a keyboard handler that fires late. You are required to write more than one. Writing several hypotheses prevents you from treating your first explanation as established fact.
 
-**Cause** is the hypothesis that survives the evidence. You get here by gathering something: a log, a trace, a measurement, a question to a user, a reproduction. You do not get here by preferring the hypothesis you already know how to fix.
+**Cause** is the hypothesis that survives the evidence. You get here by gathering something: a log, a trace, a measurement, a question to a user, a reproduction. Choose the cause from the evidence, even when another hypothesis is easier for you to fix.
 
 **Opportunity** is what changes for the user or the system if the cause is removed. Sometimes the honest answer is "very little," and then the intervention is to do nothing and say so.
 
@@ -25,11 +25,11 @@ flowchart LR
 
 ## Why immediate coding is penalised
 
-In the founding review sheet, a change that skips from symptom to intervention loses Vision points even if the code works, because the review is scoring whether you were in control, and a person who fixed the first thing they thought of was not. This is deliberate training against the strongest habit engineers have, and it is the habit that assistants amplify most: give a model a symptom and it will propose an intervention in one breath, fluent and plausible and untested. Your job is to insert the four links it skipped.
+In the eight-week review sheet, a change that skips from symptom to intervention loses Vision points even if the code works, because the review measures whether evidence guided your decision. Fixing the first idea provides no such evidence. This is deliberate training against the strongest habit engineers have, and it is the habit that assistants amplify most: give a model a symptom and it will propose an intervention in one breath, fluent and plausible and untested. Your job is to insert the four links it skipped.
 
-## The request that is not the problem
+## Work backward from a requested solution
 
-"Add trading" is the hardest case because it arrives as an intervention with no observation attached. When a request arrives at the wrong end of the chain, walk it backward. Why trading? Because players say the game is lonely. Is that observed, or assumed? Three said it in chat; nobody asked the others. What else could produce "lonely"? Empty spawn areas, no way to find other players, no reason to interact. Now trading is one hypothesis among four, and you can compare them on evidence and cost instead of building the one that was shouted loudest.
+"Add trading" is the hardest case because it arrives as an intervention with no observation attached. When a request arrives at the wrong end of the chain, walk it backward. Why trading? Because players say the game is lonely. Is that observed, or assumed? Three said it in chat; nobody asked the others. What else could produce "lonely"? Empty spawn areas, no way to find other players, no reason to interact. Now trading is one hypothesis among four, and you can compare them on evidence and cost before choosing an intervention.
 
 The framing that comes out of this is a short document, and it is the artifact the You found the real problem step asks you to link:
 
@@ -41,12 +41,12 @@ The framing that comes out of this is a short document, and it is the artifact t
 | Evidence gathered | What you looked at and what it showed |
 | Cause | The surviving hypothesis, with confidence |
 | Opportunity | What changes if it is fixed, for whom, how you would know |
-| Proposed intervention | The smallest test, not the full solution |
+| Proposed intervention | The smallest test that can examine the cause |
 | Not doing | The hypotheses you set aside and why |
 
 ## Framing on a live world
 
-The world you work in ships with problems that were never written down. That is the point. When a step says "find the highest-value problem," the deliverable is the table above, and the judgment being tested is whether you can tell an annoyance from an opportunity. A stuck door that one player hit once is an observation. Forty percent of first sessions ending inside three minutes is a symptom with a business attached to it. Learn to tell the size of the thing before you decide how much of your week it deserves.
+The world you work in ships with problems that were never written down. That is the point. When a step says "find the highest-value problem," the deliverable is the table above, and the judgment being tested is whether you can tell an annoyance from an opportunity. A stuck door that one player hit once is an observation. Forty percent of first sessions ending inside three minutes is a symptom with a business attached to it. Learn to estimate the size of the problem before you decide how much of your week it deserves.
 
 ## Do this now (20 minutes)
 
@@ -64,9 +64,7 @@ The companies that still hire this profile sit on old systems, a compliance duty
 
 On You found the real problem you pick one of those domains and write three words they use that the world does not. You reuse that sentence on the spec, on outreach, and on a stranger's problem. The world stays the arena. The domain is the translation.
 
-## Done when
-
-Someone can read your framing, disagree with your chosen cause, and point to the exact evidence that would settle it. If they cannot disagree, you have not framed; you have decided.
+**Done when** someone can read your framing, disagree with your chosen cause, and point to the exact evidence that would settle it. If they cannot disagree, you have not framed; you have decided.
 
 ## What's next
 

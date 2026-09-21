@@ -4,7 +4,7 @@
 
 ## Banning the assistant tests the wrong thing
 
-A program that forbids AI to prove you can code is testing you for an environment that no longer exists. You will be employed in rooms where every model is available, and the question your employer cannot yet answer is not whether you can work without them but whether what happens when you work with them can be trusted. So this program does not ban the assistant. It varies the conditions, says which condition a step is in, and watches.
+Most engineering workplaces allow access to AI models. Employers therefore need to know whether they can trust the work you produce with those models. This program allows the assistant under several named conditions. Each step states its condition so reviewers can evaluate the relevant skill.
 
 ## The five modes
 
@@ -12,7 +12,7 @@ A program that forbids AI to prove you can code is testing you for an environmen
 |---|---|---|---|
 | Open | Every model, agent, search and tool you can reach | Employment. How you actually work | Every ticket, the owned system, the career steps |
 | Constrained | A fixed budget: a dollar figure of inference, or one model only | Efficiency. Whether more machine was more progress | The measurement in Feed the model less, get more; optionally a second ticket |
-| Degraded | Your favourite tool removed | Principles over interface. Whether you understood or memorised a UI | A Coach drill; one review question on Your first ticket |
+| Degraded | Your favourite tool removed | Principles over interface. Whether you understood or memorised a UI | The timed Coach prompt What the PR does not test; one review question on Your first ticket |
 | Defense | AI allowed before, silent during oral questioning | Transfer. Whether the knowledge reached your head | You defend it live; the counterfactuals on You can read a system |
 | Incident | A production problem, a clock, AI allowed | Prioritisation under pressure | The overnight watch on Staging to live |
 
@@ -25,13 +25,13 @@ flowchart LR
   Q -->|whether you can prioritise| I[Incident]
 ```
 
-Each step's page says which mode it runs in. If it says nothing, it is Open. Defense mode is the one people find hardest, and it is hardest for the right reason: an assistant can write your specification and your check and your PR description, and none of that is cheating, and none of it will be in the room when an engineer changes one fact and asks what follows.
+Each step's page says which mode it runs in. If it says nothing, it is Open. Defense mode is often the hardest. You may use an assistant beforehand to write a specification, check, or pull request description. During oral questioning, you must answer from your own understanding when an engineer changes one fact and asks what follows.
 
 ## One constraint holds in every mode
 
-**Your use of AI has to be observable.** Not because using it is suspect; the opposite. Operating the machine is part of what is being evaluated, and a reviewer cannot evaluate what they cannot see. The agent log on your PR, the failure log, the intervention record from You ran the agents: these exist so someone can reconstruct the one thing employers are starting to ask and cannot yet answer, which is **what did the human contribute?**
+**Your use of AI has to be observable.** Operating the machine is part of what the program evaluates, so the reviewer needs a record of your actions. The agent log on your PR, the failure log, the intervention record from You ran the agents: these exist so someone can reconstruct the one thing employers are starting to ask and cannot yet answer, which is **what did the human contribute?**
 
-You do not need every token forever. You need enough that a reader can trace:
+Keep enough of the record for a reader to trace:
 
 ```mermaid
 flowchart TB
@@ -39,13 +39,13 @@ flowchart TB
   IN --> A[What the agent did] --> T[Tool calls and results] --> IV[Where you intervened] --> E[Checks you ran] --> D[Accept or reject, and why]
 ```
 
-A record with those boxes filled in is level 2 evidence on the ladder from Evidence, gates and the ledger. A green PR with no record is level 1, and it is level 1 no matter how good the code is.
+A record with those boxes filled in is level 2 evidence on the ladder from Evidence, gates and the evidence record. A green PR with no record is level 1, and it is level 1 no matter how good the code is.
 
 ## Some of what you are handed is wrong on purpose
 
-You should know this going in, because knowing it is part of the training and because hiding it would be a kind of dishonesty this program does not practise.
+The program discloses these exercises in advance so you know that some supplied output may contain deliberate defects.
 
-At points across the year, never on your first ticket, and always followed by a debrief, you will meet situations built to test whether you treat machine output as evidence or as authority. The kinds of thing to expect:
+At selected points across the year, after your first ticket and with a debrief afterward, you will meet situations built to test how you evaluate machine output. The kinds of thing to expect:
 
 - An assistant given context that is stale or misleading, so its confident explanation is wrong.
 - A change where the obvious implementation is the wrong one.
@@ -54,17 +54,17 @@ At points across the year, never on your first ticket, and always followed by a 
 - A problem where a complicated multi-agent arrangement loses to one well-contexted call.
 - A ticket where the correct answer, argued with evidence, is "do not build this."
 
-You will not be told which steps carry these. That is the point. The two lessons every trap teaches are the same two lessons, and once they are reflexes the traps stop being traps:
+The program does not identify the affected steps in advance. Apply these two rules to every step:
 
-> **AI output is evidence, not authority.**
+> **Treat AI output as evidence that requires verification.**
 
-> **Complexity is not sophistication.**
+> **Additional complexity must justify its cost.**
 
-A student who runs the checks before trusting the output, who asks what the cheapest sufficient tool is before reaching for the largest, and who is willing to say "this should not be built" with the numbers attached has stopped being catchable, and that is the state the program is trying to produce.
+The program expects you to run checks before trusting output, choose the least expensive tool that can do the work, and use evidence to recommend against building a request when appropriate.
 
 ## What this means for how you work
 
-Three habits, from week one:
+Practice these three habits from week one:
 
 1. **Write what you expect before you read what the machine produced.** A prediction made first cannot be contaminated by a fluent answer.
 2. **Write the check before you trust the green.** A passing suite is a claim about the cases someone thought of; ask which cases nobody did.
@@ -74,12 +74,10 @@ Three habits, from week one:
 
 1. Open the step you are on. Find its mode. If it is Open, write one sentence on what you would do differently if it were Defense.
 2. Look at your last PR or task. Could a stranger reconstruct, from what is attached to it, what you did and what the machine did? If not, write down the one artifact that would have made it possible.
-3. Write the sentence "AI output is evidence, not authority" at the top of your log, and under it the last time you treated it as authority anyway.
+3. Write the sentence "Treat AI output as evidence that requires verification" at the top of your log, and under it the last time you treated it as authority anyway.
 
-## Done when
+**Done when** you can say, for every step on the Map, which mode it is in and what a record of your machine use would need to contain for a reviewer to trust it.
 
-You can say, for every step on your map, which mode it is in and what a record of your machine use would need to contain for a reviewer to trust it.
+## What's next
 
-## Series end
-
-You have the eight disciplines, the ladder they are measured on, the thread that carries the evidence into public, the model of work that replaces the sprint, and the conditions under which you will be watched. Everything else is doing it. Go back to the step you are on.
+14 · Containment and accountability: the controls and records required when an agent runs without direct supervision.

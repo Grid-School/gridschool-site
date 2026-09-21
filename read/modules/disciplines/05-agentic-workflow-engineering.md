@@ -4,7 +4,7 @@
 
 ## What replaced "development workflow"
 
-The old workflow module taught you to branch, commit, open a pull request and merge. Those mechanics still exist and you used them on Your first ticket. What they no longer describe is the shape of the work, because you are no longer the only thing executing. Cisco engineering leads in 2026 describe managing ten to twenty agents at once, and describe their own job as architecture, orchestration and asynchronous review. That is the workflow this discipline teaches, and it starts with a chain that looks nothing like a commit log.
+The old workflow module taught you to branch, commit, open a pull request and merge. Those mechanics still exist and you used them on Your first ticket. Those mechanics describe version control, while today's workflow also includes work executed by agents. Cisco engineering leads in 2026 describe managing ten to twenty agents at once, and describe their own job as architecture, orchestration and asynchronous review. That is the workflow this discipline teaches, and it starts with a chain that looks nothing like a commit log.
 
 ```mermaid
 flowchart TB
@@ -60,9 +60,9 @@ Every time you step in, you write it down. What the agent did, why you stopped i
 
 The record also answers the question employers are beginning to ask and cannot yet answer: what did the human contribute? Your intervention log is that answer, per task, with timestamps.
 
-## When not to use another agent
+## Choose the smallest useful workflow
 
-Sometimes the correct orchestration is one model call. Sometimes it is you, typing, for eleven minutes. A five-agent graph that produces a worse result than a single well-contexted prompt is cost wearing the look of sophistication. Part of this discipline is running the same specification through one agent and through several, measuring completion, correctness, cost, elapsed time, interventions, context consumed and regressions, and discovering that more machine was not more progress. Founding does this once on purpose, in You ran the agents, so you have the experience before a job asks you to have the opinion.
+Sometimes the correct orchestration is one model call. Sometimes it is you, typing, for eleven minutes. A five-agent graph that produces a worse result than one well-contexted prompt adds cost without improving the outcome. Part of this discipline is running the same specification through one agent and through several, measuring completion, correctness, cost, elapsed time, interventions, context consumed and regressions, and comparing whether the additional agents produced more useful progress. The eight-week intensive does this once on purpose, in You ran the agents, so you have the experience before a job asks you to have the opinion.
 
 ## Cost and latency are requirements
 
@@ -70,9 +70,11 @@ Token spend and wall-clock time are part of the specification whether you wrote 
 
 ## Loops, graphs, factories: one problem
 
-You will hear this work sold under several names, and the people selling each one tend to say the others are wrong. Loop engineering means letting an agent run the same prompt against a task list until a judge says the work is done. Graph engineering, in the sense the industry usually means, is drawing the tasks and the order they run in as an explicit topology, the diagram at the top of this reading. A software factory, in the sense a few practitioners have revived it, is a script in an ordinary language that calls an agent for one bounded phase, checks what came back with code, and decides itself whether to continue, retry or stop. Harness engineering is the name for building the runtime all of those sit inside, the tools, the sandbox, the memory and the stop conditions around a model.
+You will encounter several names for this work. Each name emphasizes a different implementation. Loop engineering means letting an agent run the same prompt against a task list until a judge says the work is done. Graph engineering, in the sense the industry usually means, draws the tasks and their execution order as an explicit topology, like the diagram at the top of this reading.
 
-Underneath the names there is one problem, and you can state it in a sentence: a non-deterministic worker is iterated until a judge outside it says done, under a budget, with its state kept somewhere that outlives the context window, leaving a trace a stranger can read. Every product in this space is an answer to that sentence, and the answers differ mainly in who owns the loop. A vendor's goal mode puts the judge inside their runtime and hands you a knob for the budget. A script you wrote puts the judge in your code and gives you every knob, at the cost of writing and maintaining the script. A topology diagram makes the order legible before anything runs, which matters exactly when tasks depend on each other and not at all when they do not.
+A software factory, in the sense a few practitioners have revived it, is a script in an ordinary language that calls an agent for one bounded phase, checks what came back with code, and decides itself whether to continue, retry or stop. Harness engineering is the name for building the runtime all of those sit inside, the tools, the sandbox, the memory and the stop conditions around a model.
+
+All of these approaches address the same problem. A non-deterministic worker repeats tasks until an external judge accepts the result. The workflow has a budget, stores state beyond the context window, and leaves a trace another person can read. Products differ mainly in which component owns that loop. A vendor's goal mode puts the judge inside their runtime and hands you a knob for the budget. A script you wrote puts the judge in your code and gives you every knob, at the cost of writing and maintaining the script. A topology diagram makes the order legible before anything runs, which matters exactly when tasks depend on each other and not at all when they do not.
 
 | Question | Vendor loop | Your script | Explicit graph |
 |---|---|---|---|
@@ -82,9 +84,9 @@ Underneath the names there is one problem, and you can state it in a sentence: a
 | What you can change | The prompt and the knobs | Everything | Everything, at the cost of drawing it first |
 | What you can prove afterward | Their transcript | Your trace | Your trace, per node |
 
-Four rules fall out of the sentence, and they hold whichever packaging you are handed. A step whose command is known is code, not a prompt; running the test suite is a subprocess call, and asking a model to run it buys you nothing but a chance for it to lie about the result. Where a predicate exists, use it before a judge model, because a predicate is free, instant and cannot be persuaded. The thing that verifies must sit outside the thing that generates, which is why the gate in Containment is a check the agent cannot edit. And the stop conditions are written before the run, because a loop that does not know how to stop will spend your money looking busy, and the published data on unattended loops says a large share of that spend buys no improvement at all.
+Four rules apply to every version. Use code for a step with a known command; for example, run the test suite directly as a subprocess. Check a deterministic predicate before calling a judge model because the predicate is fast, inexpensive, and consistent. Keep the verifier outside the generator so the agent cannot edit its own gate. Define stop conditions before execution because published data on unattended loops shows that continued spending often produces no further improvement.
 
-So when you meet a published factory, and you should read at least one, the reading exercise is the same one you did on the world's test suite in You can prove it: find the gate that checks a file exists when it claims to check the file is right, find the test phase that is a placeholder, find the diff check that never reads the diff. Every published one so far has at least one of those, and the authors usually say so in the README. That is not a reason to dismiss them. It is the reason you write your own, small, for a ticket you already understand, so that when someone shows you theirs you can say in one breath what it enforces and what it merely asserts.
+Read at least one published factory using the same method you applied to the world's test suite in You can prove it. Look for a gate that checks only whether a file exists, a placeholder test phase, or a diff check that never reads the diff. Every published one so far has at least one of those, and the authors usually say so in the README. Their admitted gaps are a reason to write your own small factory for a ticket you already understand. The experience should let you explain which conditions another factory enforces and which conditions it only asserts.
 
 ## Do this now (45 minutes)
 
@@ -97,10 +99,8 @@ Take the specification from Specification engineering.
 5. At the end, count the interventions and write one sentence about whether each was the spec's fault, the agent's fault, or yours.
 6. Then write the delegation down as a program, no more than a screen or two: a plan phase that calls an agent and must return a typed result, a build phase that calls an agent, a test phase that is a subprocess running the real test command, and a review phase with the rubric you wrote in step 1. Add a budget cap, a stop on the same error twice, and a line per phase appended to a trace file with tokens, cost and elapsed time. Run it once against the ticket.
 
-## Done when
-
-Someone can read your decomposition and intervention log and reconstruct, without talking to you, what the machine did and what you did. And your script's trace shows at least one place where a check you wrote refused what the agent handed back.
+**Done when** someone can use your decomposition and intervention log to reconstruct what the machine did and what you did, and your script's trace shows at least one place where a check rejected the agent's output.
 
 ## What's next
 
-06 · Evaluation engineering: "tests passed" is not "correct," and what to build instead.
+06 · Evaluation engineering: what passing tests establish, what they leave uncertain, and which evidence to add.

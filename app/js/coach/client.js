@@ -33,17 +33,17 @@ function localReply(pack, userText) {
   const { next } = pack;
   const opener =
     next.kind === "review"
-      ? `Read this first: ${next.title}. ${next.why}`
+      ? `Read the returned review first: ${next.title}. ${next.why}`
       : next.kind === "wait"
-        ? `Nothing is on you. ${next.title}.`
-        : `Do this next: ${next.title}.`;
+        ? `${next.title} Continue with another open step while you wait.`
+        : `Your next action is: ${next.title}.`;
 
   const asked = /how|what|why|where|stuck|review|help|don't|dont|can't|cant/i.test(userText);
   const closer = asked
-    ? "What did you actually check, in order? Start with the last thing you opened."
+    ? "List the checks you ran in order, starting with the most recent file, page, or command you opened."
     : next.task
       ? `Done when ${next.task.done_when ?? "a stranger can open a URL"}. What is the first thing you will check?`
-      : "Open the step on the Grid, attach the URL, or tell me the last thing you tried.";
+      : "Open the step on the Board, save the required URL, or describe the most recent action you tried.";
 
   return `${opener} ${closer}`;
 }
@@ -77,7 +77,7 @@ export async function sendTurn({ state, userText, files = [] }) {
     return {
       ok: false,
       reason: "credits",
-      text: `This month's ${COACH.monthlyUsd} dollars of Grok are spent. The meter resets on the first of the month. Work the next action without me until then.`,
+      text: `You have used this month's ${COACH.monthlyUsd}-dollar Coach budget. The budget resets on the first day of the month. Continue with the next action shown on the Board.`,
       usage: null,
       live: false,
       next: pack.next,

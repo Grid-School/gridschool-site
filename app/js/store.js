@@ -128,11 +128,24 @@ function commitInstructor(mutate, event = null) {
 
 /* ---------- tasks ---------- */
 
-export function setTaskState(id, taskState) {
+export function setTaskState(id, taskState, answers = null) {
   return commitStudent(() => {
     overlay.tasks = { ...(overlay.tasks ?? {}) };
-    if (taskState === "todo") delete overlay.tasks[id];
-    else overlay.tasks[id] = { state: taskState, at: new Date().toISOString().slice(0, 10) };
+    const previous = overlay.tasks[id] ?? mergedStudent().tasks?.[id] ?? {};
+    if (taskState === "todo") {
+      const next = { ...previous };
+      delete next.state;
+      delete next.at;
+      if (Object.keys(next).length) overlay.tasks[id] = next;
+      else delete overlay.tasks[id];
+    } else {
+      overlay.tasks[id] = {
+        ...previous,
+        ...(answers ? { answers } : {}),
+        state: taskState,
+        at: new Date().toISOString().slice(0, 10),
+      };
+    }
   }, { kind: "task.toggled", payload: { taskId: id, state: taskState } });
 }
 

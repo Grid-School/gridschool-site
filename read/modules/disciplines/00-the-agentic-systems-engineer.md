@@ -4,17 +4,17 @@
 
 ## What changed
 
-For most of the history of software the expensive part was typing the program. A team that could turn a requirement into working code faster than another team won, so hiring selected for people who could implement, and the junior rung existed because implementing simple things was how you learned to implement hard ones. Models that write code changed the economics of that rung before anyone changed the ladder. The routine layer that used to be a first job is now something a senior engineer does in an afternoon with an assistant, which is why firms stopped hiring for it, and why you can already build working programs and still be told nobody has a place for you.
+For most of software history, writing the program took much of the time. Teams valued engineers who could turn requirements into working code quickly. Junior engineers learned by implementing simple changes before taking on harder ones. Code-writing models reduced the cost of that routine work before companies changed their career paths. A senior engineer can now complete some former entry-level tasks in an afternoon with an assistant. As a result, you may be able to build working programs and still find few roles that hire for implementation alone.
 
-What did not get cheaper is responsibility. Somebody still has to know what the system is for, decide what should change, describe that change precisely enough that a machine or a person can execute it, check whether the result is actually right, and answer for it when it is not. Every one of those acts got more valuable as implementation got cheaper, because a vague instruction that used to waste one engineer's afternoon can now be executed wrong by thirty agents before lunch.
+Responsibility still requires human judgment. Somebody has to know what the system is for, decide what should change, describe that change precisely enough for a machine or person to execute it, verify the result, and answer for failures. Every one of those acts got more valuable as implementation got cheaper, because a vague instruction that used to waste one engineer's afternoon can now be executed wrong by thirty agents before lunch.
 
-The job postings already say this. Forward Deployed Engineer roles at GitLab and Google in 2026 ask for agent orchestration, context and retrieval systems, evaluation pipelines, observability, ambiguous problem solving, production delivery, and measurable outcomes. Amazon writes "agentic and spec-driven development" into requirements. Microsoft's developer blog argues that the specification, not the code, has to become the shared source of truth. Cisco engineering leads describe managing ten to twenty agents at once and say the work has moved to architecture, orchestration and asynchronous review. Nobody in those postings is asking for faster typing.
+The job postings already say this. Forward Deployed Engineer roles at GitLab and Google in 2026 ask for agent orchestration, context and retrieval systems, evaluation pipelines, observability, ambiguous problem solving, production delivery, and measurable outcomes. Amazon writes "agentic and spec-driven development" into requirements. Microsoft's developer blog argues that the specification has to become the shared source of truth for the code. Cisco engineering leads describe managing ten to twenty agents at once and say the work has moved to architecture, orchestration and asynchronous review. These postings emphasize decisions, coordination, verification, and outcomes.
 
 ## The name for it
 
-We call the person those postings describe an **Agentic Systems Engineer**: someone who can understand a complex system, define the outcomes and constraints that matter, organize machine and human work around those outcomes, and establish evidence that the result deserves trust. The title on your first offer will probably say something else, and that is fine. Titles churn; the capability is what transfers.
+An **Agentic Systems Engineer** can understand a complex system, define the outcomes and constraints that matter, organize machine and human work around those outcomes, and establish evidence that the result deserves trust. Your first role may use a different title. The capabilities transfer even when employers use different names.
 
-Everything this program grades reduces to four skills, and you will meet them in the next step: Comprehension, Vision, Communication, Verification. Those four are the control surface. Underneath them sit eight disciplines, which are the actual work you will do to exercise them.
+Everything this program grades reduces to four skills, and you will meet them in the next step: Comprehension, Vision, Communication, Verification. Those four skills organize every review. The eight disciplines below describe the work you will do to practice them. The **Map** is the curriculum view that shows your steps, their order, and their prerequisites.
 
 | Discipline | The question it answers | What you will prove |
 |---|---|---|
@@ -27,13 +27,15 @@ Everything this program grades reduces to four skills, and you will meet them in
 | Product and value engineering | Was this worth building? | You can connect a change to an outcome a user or a business cares about |
 | Technical communication and defense | Can others trust the reasoning? | You can explain, be challenged, and defend a decision |
 
+Problem framing has its own reading between comprehension and specification. It practices Vision across these eight disciplines, so the discipline count remains eight.
+
 ```mermaid
 flowchart LR
   subgraph skills["Four skills, graded on every review"]
     direction LR
     Cm[Comprehension] ~~~ V[Vision] ~~~ Co[Communication] ~~~ Ve[Verification]
   end
-  subgraph work["Eight disciplines, practiced on the map"]
+  subgraph work["Eight disciplines, practiced on the Map"]
     direction LR
     D1[Comprehension] --> D2[Context and graphs] --> D3[Specification] --> D4[Agentic workflow] --> D5[Evaluation] --> D6[Reliability] --> D7[Value] --> D8[Defense]
   end
@@ -42,11 +44,13 @@ flowchart LR
 
 ## Why a live world instead of exercises
 
-Coding exercises test whether you can produce a known answer under a clock, which is precisely the thing that got cheap. A live multiplayer system that other people are standing in tests something else: whether you can enter code you did not write, form an honest model of it, choose a change that matters, describe it so it can be executed, direct the tools, prove the result, and explain yourself to a stranger afterward. The world this program runs has real state, real regressions, dependencies that bite, bugs that were never documented, and consequences when someone misunderstands it. Those properties are the curriculum. Every week you should meet something you do not understand, something an assistant gets wrong, something the team specified poorly, and something that works technically and nobody cares about, because each of those is one of the eight disciplines being trained on you.
+Coding exercises test whether you can produce a known answer under a clock, which is work that became cheap. A live multiplayer system tests whether you can enter code you did not write, form an honest model of it, choose a useful change, describe it for another executor, direct the tools, prove the result, and explain your reasoning to a stranger. The program's world has real state, regressions, consequential dependencies, undocumented bugs, and visible effects when someone misunderstands the system. Those properties create the conditions for practice.
+
+Each week should expose a different gap: a system you do not yet understand, an assistant error, a weak specification, or a technically correct change that users do not value. Each gap gives you a place to practice one or more of the eight disciplines.
 
 ## The loop you are in
 
-A film gives you a concept. A small challenge asks you to use it. You prove it with a link. Then you take it into the live system, where it fails in a messier form, and you get reviewed, and you go again, until you can defend the whole thing live in front of an engineer who did not help you. You are not done with a step because you watched something. You are done when a stranger can open a URL and see the capability.
+A film introduces a concept, and a small challenge asks you to apply it and provide a link as evidence. You then use the concept in the live system, receive a review, and revise your work. The cycle continues until you can defend the work to an engineer who did not help you. Watching introduces the concept. You complete a step when a stranger can open a URL and see the capability.
 
 ```mermaid
 flowchart LR
@@ -56,11 +60,13 @@ flowchart LR
 
 ## What you can say about yourself afterward
 
-Not "completed a program." Not "built a multiplayer game." The sentence that will be true is closer to this: you contributed to a continuously operating multiplayer system, mapped a subsystem you had never seen and had the map checked, wrote specifications other people executed without needing you in the room, completed production tasks with agents while recording every intervention, wrote checks that caught real regressions, and defended a change under questioning from an engineer who owed you nothing. Each clause points at a link. That is the credential, and the rest of this series is about earning each clause.
+A useful account of your work will be more specific than "completed a program" or "built a multiplayer game." The sentence you can support will be closer to this: you contributed to a continuously operating multiplayer system, mapped a subsystem you had never seen and had the map checked, wrote specifications other people executed without needing you in the room, completed production tasks with agents while recording every intervention, wrote checks that caught real regressions, and defended a change under questioning from an engineer who owed you nothing. Each clause points at a link. That is the credential, and the rest of this series is about earning each clause.
 
 ## Do this now (10 minutes)
 
 Open a note. For each of the eight disciplines, write one sentence about the last time you needed it and did not have it. "I shipped a fix I never checked" counts. "I built a feature nobody used" counts. You will reuse this in The four skills, where the same honesty about misses is what makes your examples worth reading.
+
+**Done when** your note contains one specific sentence for each of the eight disciplines.
 
 ## What's next
 

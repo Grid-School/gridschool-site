@@ -71,6 +71,66 @@ test("patch sets pending; markFlushed clears it", () => {
   assert.equal(pendingOf(slug).instructor, false);
 });
 
+test("task answers persist beside reversible task state", () => {
+  const slug = "t-task-answers";
+  clear(slug);
+  patchStudent(slug, {
+    tasks: {
+      "or.start.goal": {
+        state: "done",
+        answers: { starting: "New graduate", goal: "Defend a live system" },
+        at: "2026-09-20",
+      },
+    },
+  });
+  const saved = read(slug).tasks["or.start.goal"];
+  assert.equal(saved.state, "done");
+  assert.deepEqual(saved.answers, {
+    starting: "New graduate",
+    goal: "Defend a live system",
+  });
+  patchStudent(slug, {
+    tasks: {
+      "or.start.goal": {
+        state: "todo",
+        answers: { starting: "Changed later", goal: "Defend a live system" },
+        at: "2026-09-20",
+      },
+    },
+  });
+  const undone = read(slug).tasks["or.start.goal"];
+  assert.equal(undone.state, "todo");
+  assert.equal(undone.answers.starting, "Changed later");
+});
+
+test("signoff review states persist without inventing a second evidence checkbox", () => {
+  const slug = "t-signoff-states";
+  clear(slug);
+  patchStudent(slug, {
+    evidence: { "pj.model": { url: "https://example.test/model", at: "2026-09-20" } },
+  });
+  patchInstructor(slug, {
+    reviews: [
+      { id: "rv-1", nodeId: "pj.model", state: "in-review", link: "https://example.test/model" },
+    ],
+  });
+  const submitted = read(slug);
+  assert.equal(submitted.evidence["pj.model"].url, "https://example.test/model");
+  assert.equal(submitted.reviews[0].state, "in-review");
+  patchInstructor(slug, {
+    reviews: [
+      {
+        id: "rv-1",
+        nodeId: "pj.model",
+        state: "returned",
+        outcome: "accepted",
+        link: "https://example.test/model",
+      },
+    ],
+  });
+  assert.equal(read(slug).reviews[0].outcome, "accepted");
+});
+
 test("replace refuses to overwrite a pending domain", () => {
   const slug = "t-pending-replace";
   clear(slug);

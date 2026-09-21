@@ -1,10 +1,10 @@
 # 17 · Back-end foundations, framework-agnostic
 
-*Series: disciplines. The request lifecycle is one shape in .NET, Spring, Express, FastAPI, and Rails. Learn the shape and the brands become dialects. ~12 minutes.*
+*Series: disciplines. Follow one request lifecycle through .NET, Spring, Express, FastAPI, and Rails. About 12 minutes.*
 
 ## The other end of the packet
 
-The front end sent a request, and now a program on a machine you pay for has to decide what that request is allowed to do, which means finding the code that handles this path, running whatever checks apply to every request before it, validating the input, touching the data, possibly scheduling work that should not hold the response, and answering. Every mature server framework implements that sequence, and once you can walk a request through it on a system you did not write you can walk it through the next one, because the sequence is the thing and the framework is the accent.
+After the front end sends a request, a server program decides what the request may do. The server finds the code assigned to the path, runs checks shared by many requests, validates the input, reads or changes data, schedules any work that should happen later, and sends a response. Mature server frameworks implement this sequence under different names. Once you can trace the sequence through an unfamiliar system, you can transfer that skill to another framework.
 
 ```mermaid
 flowchart LR
@@ -19,7 +19,9 @@ flowchart LR
 
 ## One shape in five dialects
 
-You do not memorise this table. You keep it so that when an agent hands you a Spring controller and everything you have shipped was Express, you can still find where validation happens, where the transaction boundary is, and what the framework does when the handler throws.
+Use this table as a reference. If an agent gives you a Spring controller after you have worked only with Express, the table helps you find validation, where a database transaction begins and ends, and the framework’s error behavior.
+
+An object-relational mapper, or ORM, converts between database rows and program objects. Structured Query Language, or SQL, is the language used to query a relational database. The table also uses common framework names that you can look up when you encounter them.
 
 | Box | .NET | Spring | Express / Fastify | FastAPI / Django | Rails |
 |---|---|---|---|---|---|
@@ -30,26 +32,30 @@ You do not memorise this table. You keep it so that when an agent hands you a Sp
 | Data | EF / Dapper | JPA / JDBC | any client | ORM or SQL | ActiveRecord |
 | Jobs | hosted service / hangfire | `@Scheduled` / queue | worker process | celery / rq | ActiveJob |
 
-The row that teaches the most is usually the one where a framework has no clean counterpart. Express has no dependency injection because it expects you to pass things in by hand, and Rails has so much implicit wiring that the question "where is this coming from" is the first thing a newcomer learns to ask. Neither of those is a flaw you need to fix. They are facts you need to be able to find.
+Rows with no direct counterpart often reveal the most. Express expects you to pass dependencies directly and provides no built-in dependency-injection system. Rails connects many parts implicitly, so a newcomer must learn where each value comes from. Treat these as framework behavior you need to locate.
 
 ## The world's request, walked once
 
-The world server does not speak HTTP for gameplay, and that makes it a better first trace, not a worse one, because the boxes are still there without the familiar names. A WebSocket is accepted, which is routing in the sense that this connection now belongs to this handler. A message arrives and is decoded by type, which is the router's second job. The handler for that type runs, and here the world is missing a box: there is no validation, so the server writes whatever position the client sent into its state, which is the inherited defect the ticket board calls trusting the client. The state mutation is the data access step, in memory because there is no database, and the broadcast to other clients is the response. When you write those boxes down for the world and then for a hello-world in a framework you have never used, the mapping table falls out of the comparison, and the missing validation box is the kind of row that ends up in a spec.
+The World server uses WebSockets for gameplay, and the same request lifecycle still applies. Accepting a WebSocket routes the connection to a handler. The server decodes each incoming message by type and runs the matching handler. World has no validation step for player position, so the server stores any position sent by the client. The ticket board calls this inherited defect “trusting the client.” Updating in-memory state is the data-access step because World has no database. Broadcasting the new position to other clients is the response. Record these steps for World and for a starter application in an unfamiliar framework. Your comparison should make the missing validation step visible.
+
+Stage is the shared client. The packet you are tracing leaves that client, crosses CloudFront, and lands on the Lightsail process. You do not need your own server to walk that path.
 
 ## ORMs, SQL, and work that should not block the answer
 
-An object-relational mapper is a convenience that will eventually hide a join you needed to see, and raw SQL is a power that will eventually hide a mapping you needed to keep consistent across three call sites. Neither is the right answer in general. The skill is knowing which of those two lies you are living with on the query in front of you and being able to ask for the other one when the query becomes the problem, which is exactly the kind of request you will make to an agent by name once you have the vocabulary from reading 22.
+An ORM can hide a database join that you need to inspect. Raw SQL exposes the query but can duplicate object mapping across several call sites. Choose based on the query in front of you, and switch approaches when the hidden cost becomes a problem. Reading 22 provides vocabulary for making that request precisely.
 
-Background jobs exist because some work should not sit on the request path. Sending an email, generating a thumbnail, notifying another team's service: if your handler does those inline, the user waits for them and your response time inherits their failures, so a handler that does that work inline is a load decision wearing a feature's clothes, and it belongs in the spec as one.
+A background job performs work after the server sends its response. Sending email, generating a thumbnail, or notifying another service inside the request handler makes the user wait and lets those operations delay or fail the response. Record the choice to run such work inside the handler as a load decision in the specification.
 
 ## Do this now (45 minutes)
 
-Trace one request through the world server from socket accept to broadcast and write the boxes, including the one that is missing. Then open a hello-world in a server framework you have not shipped and trace `GET /` through the same names. Write the mapping table from world box to foreign box, and make sure the row with no counterpart is on it rather than quietly dropped.
+Trace one request through the World server from WebSocket acceptance to broadcast. Record every lifecycle step, including the missing validation step. Then open a starter application in a server framework you have never shipped and trace `GET /` through the same lifecycle. Create a table that maps each World step to the corresponding step in the unfamiliar framework. Include a row when one system has no counterpart.
+
+Choose a starter application from any server framework you have never shipped. A single `GET /` route is enough for mapping the framework’s lifecycle names.
 
 ## Done when
 
-The mapping table exists at a public URL and a stranger could follow one world request and one foreign request through the same lifecycle names, including the box the world does not have.
+the World field traces socket acceptance, message type, handler, state mutation, and broadcast; the unfamiliar-framework field traces `GET /` through the same lifecycle; and the final field explains which row has no counterpart.
 
 ## What's next
 
-18 · Data: what you keep, how it moves, and why the rollback is part of the write.
+18 · Data: a toy migration you can undo, with a row that has to survive both directions.

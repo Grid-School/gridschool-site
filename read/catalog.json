@@ -3,6 +3,8 @@
   "note": "These modules are the textbook. The board is the sequence. Type the code. Do not paste it.",
   "seriesNotes": {
     "disciplines": "The eight kinds of work an engineer does when implementation is cheap, the full-stack systems foundations (15–23), and the thread that carries the evidence into public. Read each one just before the step that uses it.",
+    "projects": "The eight systems you may choose to own. Read the menu after the foundations, then write the stack decision for one row.",
+    "kit": "Templates that open inside GridSchool when you model and ship your own system: spec, verify, live, incident, and the rest.",
     "nanograph": "Build a code graph from nothing, one module at a time. The Graph track on the board.",
     "student-zero": "The founder's own path through the map, kept honest."
   },
@@ -79,7 +81,7 @@
     },
     {
       "id": "disciplines/10-evidence-gates-and-the-ledger",
-      "title": "10 · Evidence, gates and the ledger",
+      "title": "10 · Evidence, gates and the evidence record",
       "series": "disciplines",
       "mins": 14,
       "attachesTo": "or.start"
@@ -149,7 +151,7 @@
     },
     {
       "id": "disciplines/20-ship-and-host",
-      "title": "20 · CI/CD, environments, and where to host",
+      "title": "20 · Delivery pipelines, environments, and where to host",
       "series": "disciplines",
       "mins": 12,
       "attachesTo": "fs.ship"
@@ -174,6 +176,68 @@
       "series": "disciplines",
       "mins": 12,
       "attachesTo": "fs.choose"
+    },
+    {
+      "id": "projects/menu",
+      "title": "Project menu",
+      "series": "projects",
+      "mins": 10,
+      "attachesTo": "fs.choose"
+    },
+    {
+      "id": "kit/README",
+      "title": "Project templates",
+      "series": "kit",
+      "mins": 5,
+      "attachesTo": "fs.choose"
+    },
+    {
+      "id": "kit/SPEC",
+      "title": "SPEC",
+      "series": "kit",
+      "mins": 3
+    },
+    {
+      "id": "kit/VERIFY",
+      "title": "VERIFY",
+      "series": "kit",
+      "mins": 3
+    },
+    {
+      "id": "kit/INCIDENT",
+      "title": "INCIDENT",
+      "series": "kit",
+      "mins": 3
+    },
+    {
+      "id": "kit/DECISION",
+      "title": "DECISION",
+      "series": "kit",
+      "mins": 3
+    },
+    {
+      "id": "kit/DEMO",
+      "title": "DEMO",
+      "series": "kit",
+      "mins": 3
+    },
+    {
+      "id": "kit/LIVE",
+      "title": "LIVE",
+      "series": "kit",
+      "mins": 3
+    },
+    {
+      "id": "kit/AGENT-LOG",
+      "title": "AGENT-LOG",
+      "series": "kit",
+      "mins": 3
+    },
+    {
+      "id": "kit/STACK-ADR",
+      "title": "STACK-ADR",
+      "series": "kit",
+      "mins": 3
     },
     {
       "id": "nanograph/00-your-repo-is-a-graph",
@@ -249,7 +313,7 @@
     },
     {
       "id": "student-zero/or-start",
-      "title": "Student zero · Start here",
+      "title": "Start here: the first four tasks",
       "series": "student-zero",
       "mins": 10
     }
@@ -266,7 +330,7 @@
   "readings": [
     {
       "id": "readings/humans-around-the-queue",
-      "title": "Humans around the queue",
+      "title": "Humans around the ticket",
       "series": "readings",
       "mins": 5,
       "attachesTo": "cap.change"

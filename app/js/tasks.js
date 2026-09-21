@@ -37,7 +37,8 @@ export function taskState(student, id) {
 }
 
 function withState(task, student) {
-  return { ...task, state: taskState(student, task.id) };
+  const saved = student?.tasks?.[task.id] ?? {};
+  return { ...task, state: saved.state ?? TASK_STATE.TODO, answers: saved.answers ?? {} };
 }
 
 /**

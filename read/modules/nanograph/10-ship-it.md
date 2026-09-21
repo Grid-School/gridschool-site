@@ -1,14 +1,15 @@
 # 10 · Ship it
 
-*You need: a tool that parses, queries, and packs. ~60 minutes.*
+*You need a tool that parses, queries, and packs context. Allow about 60
+minutes.*
 
 ## The claim
 
-A tool nobody can use is a diary. Packaging is respect for the reader. Today you ship: a README with real numbers from a real repo, an install path a stranger can follow, and a tiny `--serve` view so someone can see the graph without reading JSON.
+In this episode, you will package the tool so another person can use it. You will write a README with measurements from a real repository, provide installation instructions a stranger can follow, and add a small `--serve` view that displays the graph without requiring the reader to inspect JSON.
 
 ## What the README must carry
 
-Not marketing. Numbers:
+Include these measurements and instructions:
 
 - Repo analyzed (name + approximate line count).
 - Functions and edges counted.
@@ -16,7 +17,7 @@ Not marketing. Numbers:
 - One rank or coupling finding in a sentence.
 - How to install and run the three most useful commands.
 
-If a stranger cannot reproduce a number in five minutes, the README is unfinished.
+Ask a stranger to follow the README. Revise the instructions until they can reproduce one of the measurements within five minutes.
 
 ## Build a tiny serve
 
@@ -40,42 +41,42 @@ fetch('graph.json').then(r=>r.json()).then(g=>{
 
 
 def serve(graph_path="graph.json", port=8765):
- data = Path(graph_path).read_bytes()
+    data = Path(graph_path).read_bytes()
 
- class Handler(BaseHTTPRequestHandler):
- def do_GET(self):
- if self.path in ("/", "/index.html"):
- body = HTML.encode()
- ctype = "text/html"
- elif self.path.endswith("graph.json"):
- body = data
- ctype = "application/json"
- else:
- self.send_error(404)
- return
- self.send_response(200)
- self.send_header("Content-Type", ctype)
- self.send_header("Content-Length", str(len(body)))
- self.end_headers()
- self.wfile.write(body)
+    class Handler(BaseHTTPRequestHandler):
+        def do_GET(self):
+            if self.path in ("/", "/index.html"):
+                body = HTML.encode()
+                ctype = "text/html"
+            elif self.path.endswith("graph.json"):
+                body = data
+                ctype = "application/json"
+            else:
+                self.send_error(404)
+                return
+            self.send_response(200)
+            self.send_header("Content-Type", ctype)
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
 
- def log_message(self, *args):
- pass
+        def log_message(self, *args):
+            pass
 
- HTTPServer(("127.0.0.1", port), Handler).serve_forever()
+    HTTPServer(("127.0.0.1", port), Handler).serve_forever()
 ```
 
-Wire `nanograph.py --serve`. Open the page. Confirm a stranger on your machine could follow the README to the same screen.
+Connect the server to `nanograph.py --serve`, then run the command and open the page. Follow the README from the beginning on your machine and confirm that it leads to the same screen.
 
 ## Exercise (not shown)
 
-Add a `/blast?fn=..&hops=2` endpoint that returns plain text. Commit it. Packaging includes the boring paths.
+Add a `/blast?fn=..&hops=2` endpoint that returns plain text, then commit it. The endpoint is part of the packaged interface.
 
-## Done when
-
-A stranger can install it, run it on their repo, and read your numbers in the README. Lab students: public repo URL in #ship.
+**Done when** a stranger can install the tool, run it on their repository, and reproduce the numbers in the README. If you are a Lab student, post the public repository URL in `#ship`.
 
 ## Sources
 
-- README as interface: any tool you already installed from GitHub this year.
-- `--serve` as respect: seeing beats downloading JSON into a void.
+- For an example of a README as an interface, review a tool you installed
+ from GitHub this year.
+- `--serve` gives the reader a visible graph without requiring them to
+ download and inspect the JSON file.

@@ -22,7 +22,7 @@ function escapeHtml(text) {
 }
 
 function modulePath(id) {
-  if (!/^[a-z0-9][a-z0-9/-]*[a-z0-9]$/.test(id)) return null;
+  if (!/^[A-Za-z0-9][A-Za-z0-9/-]*[A-Za-z0-9]$/.test(id)) return null;
   return new URL(`${id}.md`, MODULES);
 }
 

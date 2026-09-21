@@ -1,33 +1,37 @@
 # 23 · Choosing technology for the goal
 
-*Series: disciplines. Monolith against services, build against buy against managed, reversibility, and the decision record you will defend with the assistant silent. ~12 minutes.*
+*Series: disciplines. Choose between a monolith and services, decide what to build or buy, and defend a reversible technology decision. About 12 minutes.*
 
 ## The skill whose price is rising
 
-Expertise in one framework is losing value and the ability to look at a goal and pick a stack you can defend is gaining it, because the first can now be bought by the hour and the second is the thing the person paying for the system actually needs from you. This is architect-level work at student scale, and it is not "I like this library." It is a written argument that this goal, under these constraints, is best served by this choice, that these two alternatives were considered and lost for these reasons, and that this specific condition would make you revisit it. The kit gives that argument two filenames, `DECISION.md` and `STACK-ADR.md`, so that you can find the general form and the stack-shaped form when you need them, and the review treats them as one artifact.
+Framework-specific implementation is easier to obtain, which increases the value of choosing technology according to a system’s goal. Write an argument that connects the goal and constraints to one choice, explains why two alternatives lost, and names the condition that would make you reconsider. Use `DECISION.md` for a general decision or `STACK-ADR.md` for a technology-stack decision. Both templates open in GridSchool, and the review accepts either as the same type of evidence.
 
 ## The questions, in the order they resolve each other
 
-Start with the goal, because a live system that a stranger will use and a number you intend to move is a different target from a library other engineers will import, and most stack arguments are two people optimising for different goals without noticing. Then decide between one deployable and several: default to a monolith and split only when a team boundary, a scale limit, or a failure domain forces it, because a student project with four services and one user is a costume, and the review will say so.
+Start with the goal. A live system for outside users has different needs from a library other engineers will import. Then decide whether to create one deployable program or several services. Begin with a **monolith**, which is one deployable application. Split it into services only when a team boundary, scale limit, or failure boundary requires separate deployment. A student project with four services and one user adds operational cost before separate deployment is justified.
 
-Then build, buy, or managed. Build when the thing is the product. Buy when it is a commodity such as auth, email, or payments and the vendor failing is something you could survive. Take the managed version when the alternative is becoming the operator of a database you do not yet understand. Price it in monthly dollars and count the moving parts, and if you cannot say either number you have not chosen the stack, you have admired it. Ask what is reversible: data in a proprietary store or a framework that owns your models is a one-way door and needs a better reason than a container you can move next month. Finally, ask who else can run it. A clever stack that only you can stand up is a liability you are choosing on behalf of the next engineer, who may be you in six months.
+Build a capability when it is central to the product. Buy a commodity such as authentication, email, or payments when the system can survive a vendor failure. Choose a managed service when operating the underlying database or service would create work you cannot yet support. State what you pay for and count the running parts. Evaluate reversibility: data in a proprietary store or models owned by a framework may be difficult to move, while a container can often move to another host. Confirm that another engineer can start and operate the stack from the repository.
 
 ## What the memo contains
 
-Context: the goal, the constraints, the users or data or partner. Decision: the stack, named without hedging. Alternatives: at least two, each with the reason it lost. Consequences: what this makes easy, what it makes expensive, and the condition that would trigger a revisit. Cost: the monthly number and the unit you will watch. The world's own decision is a useful example to argue with, because a .NET WebSocket server on a single Lightsail box with no database is defensible for a classroom world with a handful of players and becomes indefensible at some player count you should be able to estimate, and the memo that says where that line is beats the memo that says the stack is good.
+In the context section, state the goal, constraints, and relevant users, data, or partner. In the decision section, name the stack directly. Describe at least two alternatives and why each lost. Record what the decision makes easier, what it makes expensive, and the condition that would trigger a review. State the cost and the unit you will monitor. World provides an example: a .NET WebSocket server on one Lightsail machine with no database can support a classroom with a handful of players. Your memo should estimate the player count at which that decision stops working.
 
-## Defended, not read
+## Defend the decision
 
-You bring the memo to the 1:1 in Defense mode, which means the assistant helped you write it and is silent while you talk. If you cannot explain the choice without reading the note, the note is not yet yours. A memo that survives the hardest question in the room is evidence. A memo that names the condition under which you would have picked the rejected option is better evidence, because it shows the choice was a judgment and not a loyalty.
+Bring the memo to the one-to-one review in Defense mode. The assistant may help you write the memo but remains silent while you explain it. Explain the choice from your own understanding. Record the hardest question and the condition under which you would choose a rejected alternative.
+
+## The menu is the input
+
+Readings 15 through 22 used World and supplied examples so you could practice before choosing a project. Open the project menu in GridSchool and choose one of its eight published projects. Write the technology decision for that chosen project.
 
 ## Do this now (45 minutes)
 
-Write the stack decision for the menu project using `STACK-ADR.md` from the kit, with two rejected alternatives, a monthly cost, a reversibility note, and a revisit condition. Bring it to the 1:1 and be ready to lose an argument on camera; record the hardest question and whether the memo survived it.
+Open [the project menu](?m=projects/menu) and choose one project. In the first field, name the project and explain why it fits what you want to show. Open the stack template from the next task. Fill the stack field with the chosen technologies, monthly cost, and what can be reversed. Fill the alternatives field with two rejected choices and why they lost. Fill the final field with the condition that would change your choice. Bring the decision to the one-to-one review, explain it with the assistant silent, and record the hardest question and whether the decision survived.
 
 ## Done when
 
-The record has two rejected alternatives, a cost, and a revisit condition, and you defended it in the 1:1 with the assistant off. `pj.model` does not open until this link exists.
+the project field names one published project and why it fits; the stack decision names the technologies, two rejected alternatives, a monthly cost you can explain, what is reversible, and the condition that would change the choice; and the one-to-one field records the hardest question and whether the decision survived while the assistant was silent.
 
 ## What's next
 
-`pj.model`: the model and first specification for the system this memo just chose.
+Next, use the project templates in GridSchool to create the system model and first specification for your chosen project.

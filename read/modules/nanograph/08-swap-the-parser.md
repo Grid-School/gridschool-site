@@ -1,34 +1,36 @@
 # 08 · Swap the parser
 
-*You need: episodes 03-07 working against `graph.json`. ~90 minutes. First real dependency: tree-sitter.*
+*You need the commands from episodes 03 through 07 working with `graph.json`.
+Allow about 90 minutes. This episode adds the first external dependency,
+tree-sitter.*
 
 ## The claim
 
-Your queries never cared that the code was Python. They work on nodes and edges. Only the parser knew the language. That boundary is a seam: a line where one part can be swapped without the rest noticing. Today you put tree-sitter behind the same interface and keep every query unchanged.
+The query commands work with graph nodes and edges, regardless of the source language. Only the parser depends on Python. The boundary around the parser is a **seam**, a place where you can replace one implementation without changing the rest of the system. In this episode, you will put tree-sitter behind the existing parser interface and keep every query unchanged.
 
-Seams are what people mean when they say "good architecture." Systems with seams evolve. Systems without them get rewritten.
+This seam allows the tool to support another language without rewriting its query commands.
 
 ## The interface, frozen
 
-Whatever language you parse, the output is still:
+For every source language, the parser must still produce:
 
 ```json
 { "module.fn": ["other.fn", ".."] }
 ```
 
-Callers, blast, cycles, rank, and coupling read that shape and nothing else. If you find yourself editing a query because the parser changed, the seam leaked.
+The `callers`, `blast`, `cycles`, `rank`, and `coupling` commands read only this adjacency-list shape. If changing the parser requires a query change, parser-specific behavior has crossed the seam.
 
 ## Build it
 
-Install once:
+Install the dependencies once:
 
 ```
 pip install tree-sitter tree-sitter-python tree-sitter-c-sharp
 ```
 
-(Use the grammars you need. Lab students mapping the world server need C#.)
+Install only the language grammars you need. Lab students mapping the world server need the C# grammar.
 
-Sketch the seam:
+Create the parser interface:
 
 ```python
 """nanograph, episode 08: parser plugins behind one graph shape."""
@@ -36,40 +38,40 @@ from pathlib import Path
 
 
 class PythonAstParser:
- """Your episode-02 parser, wrapped."""
- def parse_folder(self, root: Path) -> dict:
- # return adjacency list {qualified: [callees]}
- ..
+    """Your episode-02 parser, wrapped."""
+
+    def parse_folder(self, root: Path) -> dict:
+        # return adjacency list {qualified: [callees]}
+        ...
 
 
 class TreeSitterParser:
- """Same method name. Different language. Same output shape."""
- def __init__(self, language):
- self.language = language
+    """Same method name. Different language. Same output shape."""
 
- def parse_folder(self, root: Path) -> dict:
- # walk files, query function defs + calls via tree-sitter,
- # emit the same adjacency list
- ..
+    def __init__(self, language):
+        self.language = language
+
+    def parse_folder(self, root: Path) -> dict:
+        # walk files, query function defs + calls via tree-sitter,
+        # emit the same adjacency list
+        ...
 
 
 def build_graph(root, parser) -> dict:
- return parser.parse_folder(Path(root))
+    return parser.parse_folder(Path(root))
 ```
 
-Wire your CLI so `nanograph.py parse <root> --lang python|csharp` chooses a parser, writes `graph.json`, and leaves every other command untouched.
+Connect the CLI so that `nanograph.py parse <root> --lang python|csharp` selects a parser and writes `graph.json`. Keep every query command unchanged.
 
-## Then map the world
+## Lab students: map the world
 
-Point the C# parser at the world server repo. Run blast on the function your next world ticket will touch. Post the blast radius in #world. This is the moment the tracks fuse: an instrument you built, analyzing a live system you are about to change.
+If you are a Lab student, run the C# parser on the world server repository. Then run `blast` on the function that your next world ticket will change. Post the blast radius in `#world`. The result applies the tool you built to the live system you are preparing to change.
 
 ## Exercise (not shown)
 
-Parse a tiny JS or Go fixture with a third grammar. Prove `callers` still works with zero query changes. Commit the fixture and the one-line CLI addition.
+Create a small JavaScript or Go fixture and parse it with a third grammar. Run `callers` without changing the query code. Commit the fixture and the one-line CLI addition.
 
-## Done when
-
-`graph.json` builds from a non-Python repo, queries are unchanged, and you have a blast radius for a world-server function. Lab students: URL + blast output in #ship.
+**Done when** `graph.json` builds from a non-Python repository, all query commands remain unchanged, and you have a blast radius for one function in that repository. If you are a Lab student, use a world-server function and post the URL and blast output in `#ship`.
 
 ## Sources
 

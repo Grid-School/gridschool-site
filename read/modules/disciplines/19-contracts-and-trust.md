@@ -1,43 +1,61 @@
 # 19 · Contracts and trust boundaries
 
-*Series: disciplines. HTTP and WebSockets, contract-first with OpenAPI, sessions against JWTs against OAuth at the level of what each leaks, and the five OWASP mistakes that keep shipping. ~13 minutes.*
+*Series: disciplines. Define HTTP and WebSocket contracts with OpenAPI, compare three authentication methods, and review five common security failures. About 13 minutes.*
 
 ## A contract is a promise another program can fail you on
 
-An API is not a list of URLs. It is a promise that, given this request, the caller gets this shape or this error and nothing else, and the reason that promise matters more now than it did five years ago is that agents break it constantly without anyone noticing. Rename a response field and the code still compiles, the tests that mock the response still pass, and the mobile client that reads the old name finds out in production. The only honest defense is a contract the pipeline can fail, which means writing the OpenAPI document before the handler exists and adding a check that goes red when the implementation drifts from it. The verification conversation this series grew out of put the rule bluntly: the agent must not be able to break the contract. On this node that sentence is the grade.
+An application programming interface, or API, defines how one program asks another for data or work. Its contract states the response shape and possible errors for each request. If an agent renames a response field, the code may still compile and tests using a matching mock may still pass while the mobile client fails in production. Write an OpenAPI document before the request handler. OpenAPI is a machine-readable description of requests, responses, and errors. Add a pipeline check that fails when the implementation differs from the document. The check must prevent an agent from silently breaking the contract.
 
 ## HTTP, WebSockets, and which facts travel on which
 
-HTTP is request and response. The client asks, the server answers, and the conversation is over, which is why REST as a style works: resources with stable names, verbs that mean what they say, status codes a stranger can interpret, and payloads that do not surprise the next caller. A WebSocket is a pipe that stays open, and the world uses one because a multiplayer tick cannot wait for the next request to arrive. A pipe that stays open is also a pipe that dies in the middle of a sentence, so a socket contract has to say what happens on reconnect, who is allowed to send which message types, and what the server does when the payload is garbage.
+With HTTP, a client sends a request and the server sends one response. Representational State Transfer, or REST, organizes HTTP around resources with stable names, meaningful methods, standard status codes, and predictable response bodies. A WebSocket keeps a two-way connection open. World uses one because multiplayer updates must arrive without waiting for a new HTTP request. A WebSocket contract must define reconnection behavior, which users may send each message type, and how the server handles invalid data.
 
-If your project exposes both, the contract has to say which facts travel on which channel. A system where "the socket is the source of truth for position" and "the REST cache is the source of truth for position" are both true has two worlds, and players will find the seam between them before you do.
+If a system uses both HTTP and WebSockets, its contract must assign each fact to one channel and one authoritative source. If both a socket and a REST cache claim authority over player position, users can observe conflicting positions.
 
-## Sessions, JWTs, and OAuth, at the level that matters
+## Compare three authentication methods
 
-You do not need a tutorial on any of these this week. You need to be able to say what each one protects and what each one leaks, because that is the level at which you will review an agent's implementation and defend your choice.
+This week, learn what each authentication method protects and what risk or cost it introduces. Use that information to review an agent’s implementation and defend your choice.
+
+A server session stores login state on the server and identifies it with a browser cookie. A JSON Web Token, or JWT, stores signed claims in a token the client carries. OAuth lets another provider confirm a user’s identity without giving your system the user’s password.
 
 | Choice | What it protects | What it leaks or costs you |
 |---|---|---|
-| Server session and cookie | The server holds the truth about who is logged in, so revoking is a delete | You need a shared session store or sticky routing, and you inherit CSRF if you are careless with the cookie |
+| Server session and cookie | The server holds the truth about who is logged in, so revoking is a delete | You need a shared session store or sticky routing, and careless cookie handling can allow cross-site request forgery, or CSRF, in which another site causes the browser to send an unwanted request |
 | JWT | The client carries a signed claim, so the API can be stateless and scale sideways | Revoking is hard, the token is the secret once issued, and an expiry you forget to set is a permanent key |
 | OAuth | Another party vouches for who the user is and you never see the password | You now depend on that party, and scopes you did not read carefully will surprise you later |
 
-Pick one and write down why. "We used JWT because the tutorial did" is the sentence the review is listening for, and it fails.
+Choose one method and justify it according to the API’s needs. A tutorial’s choice alone is not sufficient evidence.
 
 ## The five that keep shipping
 
-The OWASP list is long and you do not need all of it this week. Five items account for most of what an agent will hand you: untrusted input reaching an interpreter, which is injection in all its forms; an authentication check that is missing or lives on the client; an access check that confirms the user is logged in and never asks whether they may read this particular record; a configuration left in its debug or default state; and a secret committed to the repository or bundled into the client where anyone can read it. When you review a pull request the two questions that catch most of these are where untrusted input enters and who is allowed to do this, and once those are habits the rest of the list is a reference rather than a curriculum.
+The Open Worldwide Application Security Project, or OWASP, catalogs common security failures. Focus on five: untrusted input reaching an interpreter; missing authentication or authentication enforced only by the client; an access check that confirms login without checking permission for a specific record; debug or default configuration left enabled; and a secret committed to the repository or bundled into the client. During review, ask where untrusted input enters and who may perform each action.
 
-Secrets live in the environment, not in files you commit. If the browser can see it, it is not a secret, whatever the variable is called.
+Store secrets only in the server environment. Treat committed files and every value sent to the browser as public.
+
+## The toy contract for this reading
+
+Write the OpenAPI document for this items API before creating a handler. Use the shop from the earlier readings. The menu-project contract comes later, after you choose and specify that project.
+
+| Method | Path | Request | 200 body | Errors |
+|---|---|---|---|---|
+| GET | `/items` | none | `{ "items": [Item] }` | 500 |
+| POST | `/items` | `{ "name": string }` | `Item` | 400, 500 |
+| GET | `/items/{id}` | path `id` | `Item` | 404, 500 |
+
+`Item` is `{ "id": integer, "name": string, "sku": string }`. `sku` is assigned by the server. A 400 names the field that failed. A 404 is `{ "error": "not_found" }`.
+
+A **drift check** detects a difference between a contract and an implementation. Write a script that loads the OpenAPI file and an example response, then fails if `sku` is missing or renamed. Create a stub handler or example response that matches the contract and run the check successfully. Rename `sku` to `code` only in the stub, run the check again, and confirm that it fails.
 
 ## Do this now (50 minutes)
 
-Write the OpenAPI contract for your menu project before any handler exists, with paths, methods, request and response shapes, and the error codes each path can return. Add a command to the project's pipeline, or a script you will put in the pipeline, that fails when the implementation does not match the contract, and prove it by renaming one field and watching it go red. Then write one paragraph naming the auth choice, what it protects, and what it leaks.
+Write the contract before the handler. Add the drift check and prove that it fails after one field is renamed. Then write one paragraph naming the authentication method you would use for the items API, what it protects, and what risk or cost it introduces.
+
+When you later own a system, write its contract before its implementation and include a command that can fail. Use only the items API for this assignment.
 
 ## Done when
 
-The contract file exists, the drift command has been seen to fail on a renamed field, and the auth paragraph names a leak rather than a feature.
+you have pasted the items API contract, pasted the drift command and its failing output after renaming `sku`, and written one paragraph that names the authentication choice, what it protects, and one cost or exposure.
 
 ## What's next
 
-20 · CI/CD and where to host: a pipeline you can explain, and a host you can defend.
+20 · CI/CD and where to host: a pipeline already written for you, and a host decision for a starter URL.

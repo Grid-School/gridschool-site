@@ -2,9 +2,12 @@
  * The graph, derived. Nothing here is stored: node status comes from whether an
  * evidence URL exists, and openness comes from whether prerequisites are lit.
  *
- * The one invariant the whole product rests on:
- *   a node lights only when a URL exists. Tasks are guidance.
+ * Most nodes light when a URL exists. A first-run node may explicitly use
+ * `completion: "tasks"` when its work belongs inside GridSchool instead of in
+ * a fake external artifact.
  */
+
+import { taskIsComplete } from "../task-state.js";
 
 export const STATUS = {
   LIT: "lit",
@@ -55,13 +58,20 @@ export function buildGraph(curriculum, student, { unlockAll = false } = {}) {
   // `node.proof` is the record the student attached. Keeping them apart matters:
   // one is the requirement, the other is whether it has been met.
   const evidence = student?.evidence ?? {};
+  const taskState = student?.tasks ?? {};
+  const completionEvidence = { ...evidence };
+  for (const node of nodes) {
+    if (node.completion !== "tasks" || !(node.tasks ?? []).length) continue;
+    const complete = node.tasks.every((task) => taskIsComplete(task, taskState[task.id] ?? {}));
+    if (complete) completionEvidence[node.id] = { url: `gridschool:tasks/${node.id}`, internal: true };
+  }
   const reviews = student?.reviews ?? [];
   for (const node of nodes) {
     node.proof = evidence[node.id] ?? null;
     const latest = latestReview(node, reviews);
     node.reviewState = latest?.state ?? null;
     node.reviewOutcome = latest?.state === "returned" ? latest.outcome ?? OUTCOME.ACCEPTED : null;
-    const lit = isLit(node, evidence, reviews);
+    const lit = isLit(node, completionEvidence, reviews);
     // Submitted and not yet accepted: in review, or sent back for changes.
     node.awaitingSignoff = Boolean(node.signoff && node.proof?.url && !lit);
     // Sent back, and the link has not moved since: the fix is the next task.
@@ -74,7 +84,7 @@ export function buildGraph(curriculum, student, { unlockAll = false } = {}) {
     if (node.needsFix) node.tasks = [...(node.tasks ?? []), fixTask(node, latest)];
   }
   for (const node of nodes) {
-    node.status = statusOf(node, byId, evidence, reviews);
+    node.status = statusOf(node, byId, completionEvidence, reviews);
     if (
       unlockAll &&
       (node.status === STATUS.LOCKED || node.status === STATUS.FUTURE)
@@ -95,7 +105,6 @@ export function buildGraph(curriculum, student, { unlockAll = false } = {}) {
 
   // Depth the map renders instead of hiding: how far into a node's tasks the
   // student is. Derived here like status, never stored.
-  const taskState = student?.tasks ?? {};
   for (const node of nodes) {
     const tasks = node.tasks ?? [];
     node.taskProgress = {

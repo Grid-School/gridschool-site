@@ -15,11 +15,11 @@ export function signoffNotice(node) {
     return el(
       "aside.signoff.signoff--fix",
       {},
-      el("b.eyebrow", {}, "Changes came back"),
+      el("b.eyebrow", {}, "Changes requested"),
       el(
         "p",
         {},
-        "The review asked for changes; the ask is now a task above. Make the change, update the link if it moved, and send it for review again. Nothing that opened while this was in review has closed."
+        "The review asked for changes. That ask is now a task above. Make the change, update the link if it moved, and send it for review again. Other open steps stay open."
       )
     );
   }
@@ -28,24 +28,32 @@ export function signoffNotice(node) {
     return el(
       "aside.signoff.signoff--waiting",
       {},
-      el("b.eyebrow", {}, "Submitted · awaiting sign-off"),
+      el("b.eyebrow", {}, out ? "In review" : "Submitted"),
       el(
         "p",
         {},
         out
-          ? "Your link is in and the review is out. The steps that build on this are open; keep moving. This step lights when the verdict comes back."
-          : "Your link is in. Send it for review below. The steps that build on this are already open; this one lights when the verdict comes back, not when the link is saved."
+          ? "Your link is in review. You can keep working on the next open step. This step is accepted when the review comes back, not while it is waiting."
+          : "Your link is submitted. Send it for review below. The next steps are already open. This one is accepted only when the review comes back."
       )
+    );
+  }
+  if (node.status === "lit") {
+    return el(
+      "aside.signoff.signoff--accepted",
+      {},
+      el("b.eyebrow", {}, "Accepted"),
+      el("p", {}, "The review accepted this link. You can still replace it if the work moved.")
     );
   }
   return el(
     "aside.signoff",
     {},
-    el("b.eyebrow", {}, "Project assignment · final sign-off"),
+    el("b.eyebrow", {}, "Ends in a review"),
     el(
       "p",
       {},
-      "This step ends in a verdict. Save your link, then send it for review. Submitting opens what builds on this; the returned verdict is what lights it. Only the defense waits for verdicts."
+      "Save the link, then send it for review. Submitting opens the next work. This step is accepted only when the review comes back."
     )
   );
 }
