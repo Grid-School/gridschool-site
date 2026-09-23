@@ -1,81 +1,47 @@
 # 02 · Context and graph engineering
 
-*Series: disciplines. How to represent a system so that a person or a model can reason over it without rediscovering it. Read alongside the nanograph series. ~12 minutes.*
+*How to represent a system so that a person or a model can reason over it without rediscovering it. About 11 minutes.*
 
-## The question underneath graphs
+## Context is not free
 
-A graph is nodes and edges, and if you stop there you have learned a data structure. The discipline is the question the data structure answers: **how do you represent reality so that intelligence, yours or a machine's, can reason over it efficiently and be right?** Every context window, every retrieval index, every architecture diagram, and every ticket board is an answer to that question, and most of them are bad answers because nobody asked it out loud.
+Paste an entire repository into an assistant and the first draft often looks thoughtful. Then the model cites a function that was renamed last month, obeys a comment that contradicts the code, and calls a tool that has nothing to do with the ticket. Drew Breunig's name for this work is context engineering. The older slice of the same job was prompt engineering: choosing the words in one message. The larger job is choosing every token the model is allowed to see, because every token influences the next one.
 
-You met the mechanics in the nanograph series, where you built a small typed graph and asked it questions. This reading is about what to put in one and why, so that when an assistant reads your world and produces nonsense, you can say exactly which edge was missing.
+Breunig lists failure modes that show up once the window is long. Poisoning is a wrong claim that enters the context and gets reused. Distraction is a model that leans on the pile of past tokens instead of looking again. Confusion is irrelevant tools or files pulling the answer off course. Clash is two instructions in the same window that disagree. The common cause is treating a large window as permission to be sloppy.
 
-## The graphs an engineer actually draws
+The useful question underneath the jargon is simple. How do you represent reality so that intelligence, yours or a machine's, can reason over it and be right? Every context window, every retrieval index, every architecture diagram, and every ticket board is an answer to that question.
 
-| Graph | Nodes | Edges mean | When it earns its keep |
-|---|---|---|---|
-| Call graph | functions | A calls B | Blast radius before a change |
-| Dependency graph | modules, packages | A imports or needs B | Build order, coupling, cycles |
-| State transition graph | states | event moves A to B | Anything with a lifecycle: orders, sessions, tickets |
-| Ownership graph | components, data | A is authoritative for B | Concurrency and authority bugs |
-| Causal graph | observations, causes | A produces B | Debugging, product experiments |
-| Knowledge graph | claims, entities | A supports, contradicts, cites B | Research, provenance, keeping an assistant honest |
-| User path graph | screens, moments | user moves from A to B | Onboarding, retention work |
-| Requirement dependency graph | requirements | A must be true before B | Specification and sequencing |
-| Agent execution graph | tasks | A must finish before B, or A reviews B | Orchestrating machine work |
+## Two graphs, two questions
 
-Notice that the same system gives rise to all nine, and each one answers questions the others cannot. A call graph will not tell you who owns a player's position. An ownership graph will not tell you what breaks if you rename a function. Choose the graph type according to the question you need to answer.
+A **call graph** answers “what breaks if I change this function?” The nodes are functions. An edge means A calls B. Before you rename a helper that writes inventory, you want the list of callers. A small parser can usually tell you that it saw a call written in the source. That is already useful. A language server that resolved the exact symbol is stronger evidence than a search that merely matched the same name. Treat those two results as different kinds of evidence.
 
-One collision to know about before you use the phrase in a room. When the industry says graph engineering it almost always means the last row, the agent execution graph, drawing which agent runs after which and who reviews whom. When this program says it, it usually means the first two rows, the graph of the code itself, because that is the tool you build in the nanograph series. Both are real and they meet in You ran the agents, where the slice your code graph computes is what an agent in your execution graph receives. Say which one you mean.
+A different graph answers “what is this model allowed to see?” The nodes are files, tool definitions, notes, and invariants. The edges are the ones you chose when you assembled the window. Most bad assistant output is a bad graph of this second kind. Too much context and the model averages over noise. Too little and it invents the missing piece. The wrong slice and it reasons perfectly about a system that does not exist.
 
-```mermaid
-flowchart LR
-  R[The system as it is] --> Q{What do I need to know?}
-  Q -->|what breaks if I change this| CG[Call and dependency graph]
-  Q -->|who may change this state| OG[Ownership graph]
-  Q -->|what is the lifecycle| SG[State transition graph]
-  Q -->|why did this happen| CA[Causal graph]
-  Q -->|what do we actually know| KG[Knowledge graph with provenance]
-```
+Industry language collides here. When people say graph engineering they often mean the order of agent tasks: which agent runs after which, and who reviews whom. A code-graph tool usually means the call graph and the import graph. Both are real. They meet when the slice your call graph computes is what an agent receives. Say which one you mean.
+
+Other graphs exist and earn their keep for other questions. A dependency graph tells you build order and cycles. An ownership graph tells you who may change a player's position. A knowledge graph records claims with sources so an assistant cannot treat a guess as a fact. Build the graph that answers the question in front of you. Skip the graph for a one-time question, a system small enough to hold in your head, or a relation too uncertain to represent as a factual edge.
 
 ## What an edge is worth
 
-Every edge carries three things or it is decoration:
+Every useful edge carries three things.
 
-1. **A type.** "Depends on" and "calls" and "owns" are different relations and a graph that flattens them lies.
-2. **Provenance.** Where did this edge come from? A parser that read the code is one tier of evidence; a grep that matched a string is a weaker tier; a language server that resolved the symbol is a stronger one; a human who typed it in is whatever that human is worth. When you cannot say where an edge came from, you cannot say how much to trust a conclusion drawn through it.
-3. **Freshness.** Code moves. An edge that was true in March and nobody re-derived is a rumour. Stale knowledge does not degrade gracefully; it corrupts reasoning silently, because the reasoning is still valid and only the premises are wrong.
+A type. “Depends on,” “calls,” and “owns” are different relations. A graph that flattens them lies.
 
-The graph tool you meet in Who calls what labels every edge with its tier and its scan age for exactly this reason. Read those labels. A "possibly affected" from a grep hit and a "definitely affected" from a resolved symbol should change what you do next.
+**Provenance.** Where did this edge come from? A parser that read the code is one tier of evidence. A search that matched a string is a weaker tier. A language server that resolved the symbol is a stronger one. A human who typed the edge in is worth whatever that human is worth. When you cannot say where an edge came from, you cannot say how much to trust a conclusion drawn through it.
 
-## Context is a graph you hand to a model
+**Freshness.** Code moves. An edge that was true in March and nobody re-derived is a rumour. Stale knowledge does not degrade gracefully. It corrupts reasoning silently, because the reasoning is still valid and only the premises are wrong.
 
-When you paste files into an assistant's window, you are constructing an implicit graph: this file is relevant, this one is not, these are related. Most bad assistant output is a bad graph. Too much context and the model averages over noise; too little and it invents the missing piece; the wrong slice and it reasons perfectly about a system that does not exist.
+Some code-graph tools record how each edge was found and how old the scan is. They may label a name match as weaker than a symbol a language server resolved. Read those labels. Yesterday's slice is a rumour.
 
-Context engineering is doing that construction deliberately:
+## How to fix a window
 
-- **Start from the question**, then pull only the part of the repository that the question touches.
-- **Include the invariants** the model must not violate, stated as sentences, near the top.
-- **Include the provenance** of anything uncertain. "This may retry; I have not confirmed" is a sentence the model can reason with. Silence is a sentence it will fill in.
-- **Exclude what you have not verified** unless you label it. Contaminated context produces confident wrongness.
-- **Refresh** when the code moved. Yesterday's slice is a rumour.
+Breunig's remedies follow directly from poisoning, distraction, confusion, and clash. Offload means store notes outside the window and fetch them when needed. Summarize means boil a long trace down before you continue. Prune means delete files and tool definitions that this question does not touch. Quarantine means give a subtask its own thread so a poisoned claim cannot spread. Tool loadout means attach only the tools this step needs. Retrieval means add a document because it answers this question.
 
-The hiring market names this explicitly. GitLab's 2026 Forward Deployed Engineer posting lists graph-based retrieval, repository understanding and context optimisation alongside agent orchestration. That is this reading, as a job.
+Start from the question, then pull only the part of the repository that the question touches. Include the invariants the model must not violate, stated as sentences, near the top. Include the provenance of anything uncertain: “This may retry; I have not confirmed” is a sentence the model can reason with, and silence is a sentence it will fill in. Exclude what you have not verified unless you label it. Refresh the slice when the code moved.
 
-## When to skip a graph
+## The model can only reason over what you gave it
 
-A graph is worth building for repeated structural questions. Skip the graph for a one-time question, a system small enough to hold in your head, or a relation too uncertain to represent as a factual edge. Part of this discipline is declining to draw the graph and saying why.
+Context engineering is easy to mistake for collecting information. The harder skill is exclusion. A useful context contains the smallest set of current, sourced facts that can answer the question, plus the boundaries the answer must respect.
 
-## Do this now (20 minutes)
+Graphs make those choices visible. They show which relationship you believe exists, where that belief came from, and when it was last checked. The graph may be a call graph in a tool or an implicit set of files in a model window. In both cases, the quality of the answer depends on the quality of the edges.
 
-Take the note from System comprehension.
-
-1. Pick the one question you most wanted answered about that system.
-2. Choose the graph type from the table that answers it. Write one sentence justifying the choice.
-3. Draw it, in Mermaid or on paper, with no more than twelve nodes. Type every edge.
-4. For three edges, write down the provenance: read it, grepped it, guessed it.
-5. Paste the graph and the question into an assistant and ask the question. Note where its answer depended on an edge you had marked as a guess.
-
-**Done when** you can look at a wrong assistant answer and point at the edge that was missing, stale or untyped.
-
-## What's next
-
-03 · Problem framing: before you specify anything, distinguish the underlying problem from its symptom.
+A larger window cannot repair a false premise. A clever agent cannot recover an invariant nobody gave it. Better reasoning begins before the model runs, with a careful account of what belongs in the room.

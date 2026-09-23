@@ -7,6 +7,7 @@
 
 import { renderMarkdown, splitTitle } from "../app/js/markdown.js";
 import { hydrateMermaid } from "../app/js/mermaid.js";
+import { bareReadingTitle } from "../app/js/reading-order.js";
 
 const CATALOG = new URL("./catalog.json", import.meta.url);
 const MODULES = new URL("./modules/", import.meta.url);
@@ -40,6 +41,20 @@ function catalogItems(catalog) {
   ];
 }
 
+function displayTitle(item) {
+  const title = bareReadingTitle(item.title);
+  return item.walk ? `${String(item.walk).padStart(2, "0")} · ${title}` : title;
+}
+
+function walkSort(items) {
+  return [...items].sort((a, b) => {
+    const left = a.walk ?? 1000;
+    const right = b.walk ?? 1000;
+    if (left !== right) return left - right;
+    return String(a.title).localeCompare(String(b.title));
+  });
+}
+
 function link(item, meta) {
   const a = document.createElement("a");
   a.href = `?m=${encodeURIComponent(item.id)}`;
@@ -63,19 +78,17 @@ function renderIndex(catalog) {
   $("h1").textContent = catalog.title ?? "Reading";
   $(".lede").textContent = catalog.note ?? "";
   const list = $("nav.mods");
-  const notes = catalog.seriesNotes ?? {};
   list.replaceChildren(
-    ...[...seriesGroups(catalog.modules ?? [])].flatMap(([series, mods]) => {
-      const head = document.createElement("p");
-      head.className = "mods__series";
-      head.innerHTML = `<b>${escapeHtml(series)}</b>${notes[series] ? `<span>${escapeHtml(notes[series])}</span>` : ""}`;
-      return [head, ...mods.map((mod) => link(mod, `${mod.series ?? ""}${mod.mins ? ` · ${mod.mins} min` : ""}`))];
-    })
+    ...walkSort(catalog.modules ?? []).map((mod) =>
+      link({ ...mod, title: displayTitle(mod) }, `${mod.series ?? ""}${mod.mins ? ` · ${mod.mins} min` : ""}`)
+    )
   );
   if (catalog.briefs?.length) {
     const briefNav = $("nav.briefs");
     briefNav.hidden = false;
-    briefNav.replaceChildren(...catalog.briefs.map((brief) => link(brief, brief.date ?? "This month")));
+    briefNav.replaceChildren(
+      ...walkSort(catalog.briefs).map((brief) => link({ ...brief, title: displayTitle(brief) }, brief.date ?? "This month"))
+    );
   }
   if (catalog.readings?.length) {
     let readNav = $("nav.readings");
@@ -85,7 +98,11 @@ function renderIndex(catalog) {
       $("nav.briefs").after(readNav);
     }
     readNav.hidden = false;
-    readNav.replaceChildren(...catalog.readings.map((item) => link(item, item.series ?? "reading")));
+    readNav.replaceChildren(
+      ...walkSort(catalog.readings).map((item) =>
+        link({ ...item, title: displayTitle(item) }, item.series ?? "reading")
+      )
+    );
   }
 }
 
@@ -101,8 +118,8 @@ async function renderModule(catalog, id) {
     $("article").innerHTML = "<p>The file is listed and not on disk yet.</p>";
     return;
   }
-  document.title = `${meta.title}. GridSchool`;
-  $("h1").textContent = meta.title;
+  document.title = `${displayTitle(meta)}. GridSchool`;
+  $("h1").textContent = displayTitle(meta);
   $(".lede").textContent = meta.series ? `${meta.series}${meta.mins ? ` · ${meta.mins} min` : ""}` : meta.date ?? "";
   const article = $("article");
   // The page header owns the title; the file's own H1 would print it twice.

@@ -15,7 +15,9 @@ When you paste a whole repository into an AI assistant, you pay for tokens from 
 
 A **context slice** is the part of the codebase relevant to one question. A call graph can identify that slice. By the end of the series, your tool will assemble a small context slice for a question. You will measure its token cost and the quality of the resulting answer. Those measurements turn token use into an engineering decision.
 
-## Do this now (paper, 15 minutes)
+## A paper trace
+
+The rest of this series builds a machine that answers one question: if this function changes, what breaks? Before writing that machine, it helps to do the work by hand once so you know what the machine is supposed to report.
 
 Choose a repository from work or a medium-sized open-source project. Then choose one function that looks important. On paper:
 
@@ -24,10 +26,6 @@ Choose a repository from work or a medium-sized open-source project. Then choose
 3. Choose the two most interesting callers and find the functions that call each of them. This gives you two **hops**, or two steps through the graph.
 4. Ask which functions would be affected by a subtle change in the chosen function's behavior. Circle this **blast radius**, the set of functions that the change could affect.
 
-As you work, record how often a search result refers to a different object with the same name, how many nodes appear within two hops, and how confident you feel in your answer after tracing the calls. A search can match the wrong object, and a two-hop graph often contains a dozen nodes. Later episodes address both problems.
-
-**Done when** your paper shows one function, two hops, and a circled blast radius, followed by one sentence: "if this changes, X and Y break because Z." Keep the paper. In episode 04, your tool will produce the same graph in milliseconds. You will compare the tool's result with your drawing and investigate every difference.
-
-## What's next
+A finished page shows one function, two hops, and a circled blast radius, plus one sentence: "if this changes, X and Y break because Z." As you work, record how often a search result refers to a different object with the same name, how many nodes appear within two hops, and how confident you feel after tracing the calls. A search can match the wrong object, and a two-hop graph often contains a dozen nodes. Later episodes address both problems. Episode 04's tool will draw the same graph in milliseconds. Keep the paper so you can compare the two.
 
 Episode 01 builds the smallest possible parser: one Python file that reads source code as data and lists every function and every call. The parser begins by reading its own source code.

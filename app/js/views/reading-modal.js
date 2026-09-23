@@ -48,7 +48,6 @@ export function createReadingModal({ onDone }) {
       const res = await fetch(new URL(`../../../read/modules/${module.id}.md`, import.meta.url), { cache: "no-store" });
       if (!res.ok) throw new Error("missing");
       const parsed = splitTitle(await res.text());
-      if (parsed.title) title.textContent = parsed.title;
       article.innerHTML = renderMarkdown(parsed.body);
       hydrateMermaid(article);
     } catch {

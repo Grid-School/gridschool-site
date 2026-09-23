@@ -1,12 +1,14 @@
 # 04 · Specification engineering
 
-*Series: disciplines. How to write a change so that another person or an agent can execute it without asking you anything. Read before Someone else can build it. ~13 minutes.*
+*How to write a change so that another person or an agent can execute it without asking you anything. About 11 minutes.*
 
-## The economics that make this matter now
+## No code without a spec
 
-A vague ticket once wasted part of one engineer's day. The engineer might guess, ask a question in chat, wait for an answer, and eventually ship something close to the intended change. Giving the same ticket to thirty agents multiplies the ambiguity. Each agent can choose a plausible interpretation and execute it confidently, leaving you to identify many incorrect results. Microsoft's developer platform team described this problem as spec-driven development in 2026. When implementation is cheap, errors in translating intent into code become a dominant failure. The specification must therefore be the shared source of truth for requirements, design, implementation, and validation.
+Joel Spolsky's rule at Fog Creek was short: no code without a spec. His reason was practical. Writing how the product will behave from the user's point of view finds the holes while the document is still cheap to change. A vague ticket once wasted part of one engineer's day. The engineer might guess, ask a question in chat, wait for an answer, and eventually ship something close to the intended change.
 
-That is why this is one of the largest disciplines in the program, and why the pass condition is unusual: your specification passes when someone who cannot talk to you executes it and does not need to.
+Giving the same ticket to many agents multiplies the ambiguity. Each agent can choose a plausible interpretation and execute it confidently, leaving you to identify many incorrect results. When implementation is cheap, errors in translating intent into code become a dominant failure. The specification has to be the shared source of truth for requirements, design, implementation, and validation. It is also the prompt and the acceptance check: the observable result an agent must produce.
+
+A specification is finished when someone who cannot talk to you can execute it and does not need to.
 
 ## Two sentences
 
@@ -14,63 +16,38 @@ That is why this is one of the largest disciplines in the program, and why the p
 
 > Allow two authenticated players within interaction distance to exchange mutually accepted inventory items atomically, with no duplication or loss, even if either client disconnects during confirmation.
 
-The added length settles decisions that the first sentence left open, and each open door is a place an executor would have had to guess. Authenticated: no trading from a spoofed session. Within interaction distance: no cross-map trades. Mutually accepted: both confirm. Atomically: both sides move or neither does. No duplication or loss: the invariant. Even if a client disconnects: the failure case that will otherwise be discovered in production.
+The added length settles decisions that the first sentence left open, and each open door is a place an executor would have had to guess. Authenticated: no trading from a spoofed session. Within interaction distance: no cross-map trades. Mutually accepted: both confirm. Atomically: both sides move or neither does. No duplication or loss: the **invariant**. Even if a client disconnects: the failure case that will otherwise be discovered in production.
 
-## The parts of a specification
+Spolsky called this a functional specification: how the product works from the user's view, without saying how the internals are implemented. The trading sentence is that kind of writing. It does not name a database table. It names what a player can do, what must stay true, and what happens when the network drops.
 
-| Part | The question it answers | Trading example |
-|---|---|---|
-| Functional requirement | What should happen? | Two players can propose, review and confirm an exchange of items |
-| Invariants | What must always remain true? | Total item count across both inventories is unchanged by any trade; an item has exactly one owner at any instant |
-| Non-functional requirements | How well? | Confirmation round trip under 300 ms at the 95th percentile; works on mobile viewport |
-| Acceptance criteria | What observable conditions establish success? | Given A and B adjacent, when both confirm, then both inventories reflect the swap after a server restart |
-| Unknowns | What still needs investigation? | Whether the current inventory write is transactional; how "adjacent" is computed today |
-| Out of scope | What are we deliberately not solving? | Currency, trade history UI, trading with offline players |
+## The decisions the short sentence hid
 
-```mermaid
-flowchart TB
-  F[Framing: the surviving cause] --> FR[Functional requirement]
-  FR --> IN[Invariants]
-  FR --> NF[Non-functional]
-  IN --> AC[Acceptance criteria]
-  NF --> AC
-  FR --> UK[Unknowns]
-  FR --> OS[Out of scope]
-  AC --> X[Execution by someone else]
-  UK -.->|resolve before or during| X
-```
+A useful specification answers a handful of questions in ordinary sentences.
 
-Acceptance criteria are where most specifications fail. "Trading works" gives a reviewer nothing observable to check. A "given, when, then" statement names observable conditions and can become the basis of a test, which means writing it well does half of Evaluation engineering before you start.
+What should happen on the good path? Two players can propose, review, and confirm an exchange of items.
 
-## Invariants are the load-bearing part
+What must always remain true? Total item count across both inventories is unchanged by any trade. An item has exactly one owner at any instant. Those sentences are invariants. Executors, human or machine, will implement the good path you described and improvise the rest. The invariant is the only thing standing between their improvisation and a duplicated item. Write invariants as sentences a test could check, and write them before the requirement if you can, because the requirement often changes once you see what it must not break.
 
-A functional requirement says what should happen on the good path. An invariant says what must stay true on every path, including the ones nobody thought of. Executors, human or machine, will implement the good path you described and improvise the rest. The invariant is the only thing standing between their improvisation and a duplicated item. Write invariants as sentences a test could check, and write them before the requirement if you can, because the requirement often changes once you see what it must not break.
+How well? Confirmation round trip under 300 ms at the 95th percentile. The feature works on a mobile viewport.
 
-## Record the unknowns
+What observable conditions establish success? Given A and B adjacent, when both confirm, then both inventories reflect the swap after a server restart. That “given, when, then” statement is an acceptance criterion. “Trading works” gives a reviewer nothing observable to check. Writing the acceptance sentence well does half the work of proving the change behaved as intended.
 
-A careful specification usually contains unknowns. An empty section often means the author stopped investigating too early. Listing what you have not confirmed is what lets an executor stop at the right moment and ask, instead of guessing past it. It is also where your Comprehension calibration shows: an unknown you named and later resolved is evidence you knew the edge of your own model.
+What still needs investigation? Whether the current inventory write is transactional. How “adjacent” is computed today. A careful specification usually contains unknowns. An empty section often means the author stopped investigating too early. Listing what you have not confirmed is what lets an executor stop at the right moment and ask, instead of guessing past it.
 
-## The test
+What are we deliberately not solving? Currency. Trade history UI. Trading with offline players. Out of scope is useful information when somebody else must decide what to build.
 
-The eight-week intensive runs the same test on your spec that the world will run on your work. Another student, or an agent, receives your specification without access to you. They attempt to execute it. Every time they need to ask something, that is a clarification, and the count is recorded. Two clarifications on a real specification are excellent. Fourteen clarifications show that the specification left many decisions to the executor. Over the program you will see your own number fall, and that falling number is the metric the review sheet calls clarification debt.
+## The handoff test
 
-Before you hand a spec over, run the test on yourself. Read it as a stranger. At every sentence ask: could I execute this without asking? If the answer is "I would assume," write down the assumption as a requirement or as an unknown. Assumptions that stay in your head are the ones that get executed wrong.
+The next person or agent to receive the specification will run this test whether you plan for it or not. They attempt to execute the document without access to the thoughts you left out. Every time they need to ask something, that is a clarification. Two clarifications on a real specification is a strong result. Fourteen clarifications show that the specification left many decisions to the executor. Watch your own number. A falling count with a working result means the writing improved.
 
-## Specifications for agents specifically
+Before you hand a spec over, run the test on yourself. Read it as a stranger. At every sentence ask whether you could execute this without asking. If the answer is “I would assume,” write down the assumption as a requirement or as an unknown. Assumptions that stay in your head are the ones that get executed wrong.
 
-Agents read exactly what you wrote and nothing you meant. This is a gift, because it makes the test above cheap to run. Give an assistant your spec and the invariants and ask it to list every decision it would have to make that the document does not settle. It will find your gaps faster than a colleague will, and it will not be polite about it.
+Agents read exactly what you wrote and nothing you meant. That property makes the handoff test cheap to run. Give an assistant your spec and the invariants and ask it to list every decision it would have to make that the document does not settle. It will find your gaps faster than a colleague will, and it will not be polite about it.
 
-## Do this now (30 minutes)
+## The code begins in the reader's head
 
-Take the framing from Problem framing, or "make search better" if you skipped it.
+A specification is often described as paperwork that happens before the real work. In practice, it is the first implementation. It assembles the behaviour in language while the design is still inexpensive to change. Missing cases appear as unanswered questions instead of production incidents.
 
-1. Write the six parts. Be strict about acceptance criteria: given, when, then.
-2. Write at least two invariants as testable sentences.
-3. Hand it to an assistant with the instruction: "List every decision you would have to make to implement this that the document does not settle. Do not implement." Count the list.
-4. Revise until the list is under three, or until the remaining items are honestly in Unknowns.
+That is why specification matters more as execution gets faster. An agent can turn ambiguity into code at great speed. A good specification slows the decision down once, where thought is cheap, so every later executor can move quickly in the same direction.
 
-**Done when** a stranger, or a model, can produce the acceptance tests from your document alone, and they match the tests you had in mind.
-
-## What's next
-
-05 · Agentic workflow engineering: now that the contract is precise, who and what executes it, in what order, with what checkpoints.
+The document does not need to predict every line of code. It needs to make the intended behaviour, the invariants, the unknowns, and the boundary of the change clear enough that guessing is no longer part of implementation.

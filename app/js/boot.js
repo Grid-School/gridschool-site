@@ -24,6 +24,7 @@ import { renderStep, isStepArgs, moduleIdFromArgs } from "./views/step.js";
 import { renderTasks } from "./views/tasks.js";
 import { renderCalendar } from "./views/calendar.js";
 import { renderLibrary } from "./views/library.js";
+import { renderPosts } from "./views/posts.js";
 import { toggleDevUnlock, setDevUnlock } from "./dev-mode.js";
 import { togglePreviewMedia, setPreviewMedia, isPreviewMedia } from "./preview-mode.js";
 import { isInstructorDevice } from "./instructor-mode.js";
@@ -37,6 +38,7 @@ const VIEWS = {
   tasks: { render: renderTasks },
   calendar: { render: renderCalendar },
   library: { render: renderLibrary },
+  posts: { render: renderPosts },
 };
 
 /** Old links keep working after surfaces folded. */

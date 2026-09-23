@@ -12,6 +12,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { MODES } from "../app/js/modes.js";
 import { ARTIFACTS } from "../app/js/artifacts.js";
+import { walkReadings } from "../app/js/reading-order.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const site = join(here, "..");
@@ -168,6 +169,19 @@ test("catalog attachesTo names real nodes", () => {
   }
 });
 
+test("catalog walk numbers follow the board", () => {
+  const { indexById } = walkReadings(cur);
+  const all = [...(catalog.modules ?? []), ...(catalog.briefs ?? []), ...(catalog.readings ?? [])];
+  for (const mod of all) {
+    const row = indexById.get(mod.id);
+    if (!row) {
+      assert.equal(mod.walk, undefined, `${mod.id} is not on the board and should not carry a walk number`);
+      continue;
+    }
+    assert.equal(mod.walk, row.n, `${mod.id} walk ${mod.walk} != board ${row.n}`);
+  }
+});
+
 test("catalog titles match the source reading headings", () => {
   const all = [...(catalog.modules ?? []), ...(catalog.briefs ?? []), ...(catalog.readings ?? [])];
   for (const mod of all) {
@@ -178,7 +192,8 @@ test("catalog titles match the source reading headings", () => {
     const source = existsSync(authored) ? authored : included;
     assert.ok(existsSync(source), `${mod.id} has no source reading`);
     const heading = readFileSync(source, "utf8").match(/^#\s+(.+)$/m)?.[1];
-    assert.equal(mod.title, heading, `${mod.id} title differs from its source heading`);
+    const bare = (title) => String(title ?? "").replace(/^\d{2}\s*·\s*/, "").trim();
+    assert.equal(bare(mod.title), bare(heading), `${mod.id} title differs from its source heading`);
   }
 });
 

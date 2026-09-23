@@ -46,7 +46,7 @@ OpenTelemetry is a standard for recording traces, which follow a request through
 
 **Cost model:** Storage per session hour and the retention policy.
 
-**Later use:** Turns evidence into World tickets and supports a later outcome claim.
+**Later use:** Turns evidence into GridGlade tickets and supports a later outcome claim.
 
 **Evidence:** Deciding what to build and owning the number.
 

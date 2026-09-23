@@ -1,73 +1,37 @@
-# 00 · The engineer this program is building
+# 00 · The Agentic Systems Engineer
 
-*Series: disciplines. The eight kinds of work an engineer does when implementation is cheap. Read this once before The four skills; come back to it when a review confuses you. ~12 minutes.*
+*How the job moved when a first draft of the code became cheap. About 10 minutes.*
 
-## What changed
+## The last thirty percent
 
-For most of software history, writing the program took much of the time. Teams valued engineers who could turn requirements into working code quickly. Junior engineers learned by implementing simple changes before taking on harder ones. Code-writing models reduced the cost of that routine work before companies changed their career paths. A senior engineer can now complete some former entry-level tasks in an afternoon with an assistant. As a result, you may be able to build working programs and still find few roles that hire for implementation alone.
+Give a capable coding model a clear request and it will produce a working implementation in seconds. The first draft often looks finished. Then you find the case that receives null, the race that only appears under load, the permission check the generated code skipped, and the seam where this module meets the rest of the system. Addy Osmani calls that gap the seventy percent problem: the model gets you most of the way quickly, and the remaining work is where engineering judgment still earns its keep.
 
-Responsibility still requires human judgment. Somebody has to know what the system is for, decide what should change, describe that change precisely enough for a machine or person to execute it, verify the result, and answer for failures. Every one of those acts got more valuable as implementation got cheaper, because a vague instruction that used to waste one engineer's afternoon can now be executed wrong by thirty agents before lunch.
+A vague instruction that used to waste one afternoon can now be executed wrong many times before lunch. Responsibility still requires a person. Somebody has to know what the system is for, decide what should change, describe that change precisely enough for a machine or a person to execute it, verify the result, and answer for failures. Those acts grew more valuable as implementation got cheaper.
 
-The job postings already say this. Forward Deployed Engineer roles at GitLab and Google in 2026 ask for agent orchestration, context and retrieval systems, evaluation pipelines, observability, ambiguous problem solving, production delivery, and measurable outcomes. Amazon writes "agentic and spec-driven development" into requirements. Microsoft's developer blog argues that the specification has to become the shared source of truth for the code. Cisco engineering leads describe managing ten to twenty agents at once and say the work has moved to architecture, orchestration and asynchronous review. These postings emphasize decisions, coordination, verification, and outcomes.
+Hiring language already points this way. Postings for forward-deployed and platform roles ask for agent orchestration, context and retrieval, evaluation pipelines, observability, messy problem solving, production delivery, and measured outcomes. Some teams treat the specification as the shared source of truth once many executors can write the code. The common theme is decisions, coordination, verification, and results.
 
-## The name for it
+## The name for the outer loop
 
-An **Agentic Systems Engineer** can understand a complex system, define the outcomes and constraints that matter, organize machine and human work around those outcomes, and establish evidence that the result deserves trust. Your first role may use a different title. The capabilities transfer even when employers use different names.
+Osmani puts the remaining job on an outer loop. The model can investigate a bug, write a diagnosis, implement a fix, and run the tests. A person still decides whether that was the right problem, whether the diagnosis is sound, whether the change should ship, and who carries the consequences. The boundary between the two loops is evidence: the diff, the tests, the logs, and a short explanation that connects them.
 
-Everything this program grades reduces to four skills, and you will meet them in the next step: Comprehension, Vision, Communication, Verification. Those four skills organize every review. The eight disciplines below describe the work you will do to practice them. The **Map** is the curriculum view that shows your steps, their order, and their prerequisites.
+An **Agentic Systems Engineer** can understand a complex system, define the outcomes and constraints that matter, organize machine and human work around those outcomes, and establish evidence that the result deserves trust. A first role may use a different title. The capabilities transfer.
 
-| Discipline | The question it answers | What you will prove |
-|---|---|---|
-| System comprehension | What actually exists? | You can enter an unfamiliar system and reconstruct how it behaves |
-| Context and graph engineering | What must the intelligence have in front of it? | You can represent dependencies, state and knowledge so a machine reasons well |
-| Specification engineering | What exactly should become true? | You can turn a vague ask into requirements another person or agent can execute |
-| Agentic workflow engineering | How should intelligence execute this? | You can decompose work and direct humans, agents and tools |
-| Evaluation engineering | How do we know it worked? | You can build checks that would catch a wrong answer |
-| Reliability and systems reasoning | What can go wrong? | You can reason about failure, security, performance and state |
-| Product and value engineering | Was this worth building? | You can connect a change to an outcome a user or a business cares about |
-| Technical communication and defense | Can others trust the reasoning? | You can explain, be challenged, and defend a decision |
+Four skills organize that outer loop. Older programs called the first one program comprehension. Here it is **Comprehension**: understanding code you did not write well enough to explain it and to predict what it will do next. **Vision** means choosing work that serves the goal and declining work that does not. **Communication** means giving accurate information another person can use. **Verification** means using a repeatable check to establish whether a claim is true.
 
-Problem framing has its own reading between comprehension and specification. It practices Vision across these eight disciplines, so the discipline count remains eight.
+Those four skills appear across eight kinds of work. System comprehension asks what actually exists. Context and graph engineering asks what a person or a model must have in front of it. Specification engineering asks what should become true. Agentic workflow engineering asks how intelligence should execute the work. Evaluation engineering asks how you know it worked. Reliability and systems reasoning asks what can go wrong. Product and value engineering asks whether the change was worth building. Technical communication and defense asks whether others can trust the reasoning.
 
-```mermaid
-flowchart LR
-  subgraph skills["Four skills, graded on every review"]
-    direction LR
-    Cm[Comprehension] ~~~ V[Vision] ~~~ Co[Communication] ~~~ Ve[Verification]
-  end
-  subgraph work["Eight disciplines, practiced on the Map"]
-    direction LR
-    D1[Comprehension] --> D2[Context and graphs] --> D3[Specification] --> D4[Agentic workflow] --> D5[Evaluation] --> D6[Reliability] --> D7[Value] --> D8[Defense]
-  end
-  skills --> work
-```
+Problem framing connects comprehension to specification. It is the habit of walking from an observation to a cause before anyone writes code, and it exercises Vision across all eight kinds of work.
 
-## Why a live world instead of exercises
+## Why a live system is a better teacher
 
-Coding exercises test whether you can produce a known answer under a clock, which is work that became cheap. A live multiplayer system tests whether you can enter code you did not write, form an honest model of it, choose a useful change, describe it for another executor, direct the tools, prove the result, and explain your reasoning to a stranger. The program's world has real state, regressions, consequential dependencies, undocumented bugs, and visible effects when someone misunderstands the system. Those properties create the conditions for practice.
+A coding exercise tests whether you can produce a known answer under a clock. That work became cheap. A live multiplayer system tests whether you can enter code you did not write, form an honest model of it, choose a useful change, describe it for another executor, direct the tools, prove the result, and explain your reasoning to a stranger.
 
-Each week should expose a different gap: a system you do not yet understand, an assistant error, a weak specification, or a technically correct change that users do not value. Each gap gives you a place to practice one or more of the eight disciplines.
+**GridGlade** is the shared multiplayer game used as the running example here. CloudFront, a content delivery network, serves its Unity WebGL client. Lightsail, a small virtual-server service, runs its WebSocket server. The game has no database. GridGlade has real state, regressions, consequential dependencies, undocumented bugs, and visible effects when someone misunderstands the system. Working inside it exposes the gaps a tidy exercise can hide: a system you do not yet understand, an assistant error, a weak specification, or a technically correct change that users do not value.
 
-## The loop you are in
+## The part that remains yours
 
-A film introduces a concept, and a small challenge asks you to apply it and provide a link as evidence. You then use the concept in the live system, receive a review, and revise your work. The cycle continues until you can defend the work to an engineer who did not help you. Watching introduces the concept. You complete a step when a stranger can open a URL and see the capability.
+Code generation changed where the difficult work sits. Producing a first draft is becoming ordinary. Deciding what deserves to exist, understanding the system it will enter, and accepting the consequences of releasing it remain human responsibilities.
 
-```mermaid
-flowchart LR
-  W[Watch or read] --> C[Small controlled challenge] --> P[Prove with a link] --> E[Enter the live system] --> F[Fail in a messier version] --> R[Review] --> W
-  R --> D[Independent defense]
-```
+CCVV is a compact way to hold that responsibility. Comprehension keeps you tied to the system that exists. Vision keeps the work tied to a worthwhile result. Communication lets another mind act on what you know. Verification keeps a plausible answer from passing as a true one.
 
-## What you can say about yourself afterward
-
-A useful account of your work will be more specific than "completed a program" or "built a multiplayer game." The sentence you can support will be closer to this: you contributed to a continuously operating multiplayer system, mapped a subsystem you had never seen and had the map checked, wrote specifications other people executed without needing you in the room, completed production tasks with agents while recording every intervention, wrote checks that caught real regressions, and defended a change under questioning from an engineer who owed you nothing. Each clause points at a link. That is the credential, and the rest of this series is about earning each clause.
-
-## Do this now (10 minutes)
-
-Open a note. For each of the eight disciplines, write one sentence about the last time you needed it and did not have it. "I shipped a fix I never checked" counts. "I built a feature nobody used" counts. You will reuse this in The four skills, where the same honesty about misses is what makes your examples worth reading.
-
-**Done when** your note contains one specific sentence for each of the eight disciplines.
-
-## What's next
-
-01 · System comprehension: how to enter software you did not write and come out with a model that predicts what it will do.
+An Agentic Systems Engineer is therefore defined less by how many agents they can run than by the quality of the judgment around those agents. The machine may own more of the inner loop over time. The outer loop still needs someone who understands the goal, guards the boundaries, checks the evidence, and can answer for the result.

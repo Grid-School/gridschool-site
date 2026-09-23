@@ -4,9 +4,9 @@
  * The mark at the top is the way home. Then the doors, Map first, each an
  * icon with its word under it so nothing needs a tooltip to be understood,
  * and the Map carrying the one count that matters (required lit / total).
- * Under a hairline, the World: opens Stage or Production in a new tab
- * (world-door.js). At the bottom, the student, as an avatar that opens the
- * profile sheet.
+ * Under a hairline, GridGlade opens Stage or Production in a new tab
+ * (world-door.js). Posts sits under that door: the day's LinkedIn comments.
+ * At the bottom, the student, as an avatar that opens the profile sheet.
  * Nothing about instructors or dev lives here; that is instructor-strip.js,
  * mounted only when the device is flagged, so a student rail is a student
  * rail without a mode.
@@ -52,6 +52,21 @@ export function createRail({ onNavigate, onProfile }) {
   }
 
   const world = createWorldDoor();
+  const posts = el(
+    "a.rail__door",
+    {
+      href: "#/posts",
+      title: "Posts worth a comment today",
+      "aria-label": "Posts",
+      onclick: (event) => {
+        event.preventDefault();
+        onNavigate("posts");
+      },
+    },
+    el("span.rail__glyph", {}, icon("posts")),
+    el("span.rail__word", {}, "Posts")
+  );
+  links.set("posts", posts);
 
   const avatar = el("span.rail__avatar", { "aria-hidden": "true" }, "");
   const profile = el(
@@ -66,7 +81,7 @@ export function createRail({ onNavigate, onProfile }) {
     {},
     el("a.rail__brand", { href: "../", title: "GridSchool", "aria-label": "GridSchool home" }, gmark({ className: "rail__logo" })),
     nav,
-    el("div.rail__world", {}, world.root),
+    el("div.rail__world", {}, world.root, posts),
     el("div.rail__foot", {}, profile)
   );
 

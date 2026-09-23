@@ -4,7 +4,7 @@
     {
       "id": "first",
       "title": "Week 1: board, then boot",
-      "blurb": "Required first. How this board works, then It runs. World, graph, and Career can wait for a mission receipt.",
+      "blurb": "Required first. How this board works, then It runs. GridGlade, graph, and Career can wait for a mission receipt.",
       "items": [
         {
           "id": "v.board",

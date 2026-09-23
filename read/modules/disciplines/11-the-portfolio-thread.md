@@ -1,87 +1,43 @@
 # 11 · The portfolio thread
 
-*Series: disciplines. Your public record is an engineering artifact: the site, the design system behind it, the research you publish, and the users you can point at. Read before LinkedIn that reads as you; return to it at Your site is live. ~13 minutes.*
+*Your public record is an engineering artifact: the site, the design system behind it, the research you publish, and the users you can point at. About 11 minutes.*
 
-## What a portfolio is for now
+## A trail of hard problems
 
-A portfolio once worked as a gallery of finished projects. In 2026, many candidates can produce a site, a repository, and a project list with model assistance. Before meeting you, an employer still needs evidence that you can work responsibly inside an unfamiliar system. Your public record should make that evidence easy to inspect.
+Julia Evans publishes the problems she actually struggled with. Addy Osmani's point about review is the reason that trail now matters more. Writing got cheap. Understanding stayed expensive. Many candidates can produce a site, a repository, and a project list with model assistance. Before meeting you, an employer still needs evidence that you can work responsibly inside an unfamiliar system. Your public record should make that evidence easy to inspect.
 
-A portfolio now needs to serve as a **record of evidence**, arranged so a stranger with four minutes can get from "who is this" to "this person did a real thing and I can check it" without your help. Everything in this reading follows from that sentence.
+A portfolio now needs to serve as a record of evidence, arranged so a stranger with about four minutes can get from “who is this” to “this person did a real thing and I can check it” without your help. A portfolio item is a link to a change plus a **receipt**, the artifact that supports the claim: a pull request, test result, log, measurement, or recording. A resume line is a sentence with nowhere to click.
 
 ## The sentence, and the clauses under it
 
-Write "contributed to a continuously operating multiplayer system," because the phrase gives a more precise claim than "built a multiplayer game," and then let each clause underneath it point at a receipt.
+Write a claim a stranger can check. “Contributed to a continuously operating multiplayer system” is more precise than “built a multiplayer game,” because each clause can point at a receipt.
 
-| Clause | The receipt behind it |
-|---|---|
-| Mapped a subsystem I had never seen, and the map was checked | Your trace note from You can read a system, with the reviewer's note |
-| Wrote specifications other people executed without needing me | The spec from Someone else can build it, with its clarification count |
-| Completed production tasks with agents, every intervention recorded | Your intervention log from You ran the agents |
-| Wrote checks that caught a real regression | The failing-then-passing check from You can prove it |
-| Resolved a concurrency defect in a live inventory | The ticket, the PR, the invariant test |
-| Moved a number | Baseline, change, result, from A number moved |
-| Defended a change to an engineer who did not help me | The defense recording |
-| Reviewed a peer's change and found something | Your review comments |
+Mapped a subsystem I had never seen, and the map was checked: a written model plus a reviewer's note. Wrote specifications other people executed without needing me: the specification, with how many questions it produced. Completed production tasks with agents, every human stop recorded: an intervention log that says what the agent did, why you stopped it, and what changed next. Wrote checks that caught a real regression: the failing-then-passing check. Resolved a concurrency defect in a live inventory system: the ticket, the pull request, and the rule that the new test protects. Moved a number: baseline, change, result. Explained a change under questioning: a defense recording that captures the questions, answers, and corrections. Reviewed a peer's change and found something: your review comments.
 
-A stranger who clicks any row and lands on a real PR, a real check, or a real recording believes the next row too. A stranger who clicks and lands on a screenshot of a tutorial stops reading. One page that does this beats five that do not, which is why The work is on the site asks for one project page, with receipts, and grades it on whether proof is reachable in under a minute.
-
-```mermaid
-flowchart LR
-  S[Stranger lands on your site] --> W[Who and what, one screen]
-  W --> P[One project page]
-  P --> R1[Merged PR]
-  P --> R2[Failing-then-passing check]
-  P --> R3[Defense recording]
-  P --> R4[Metric: before and after]
-  R1 & R2 & R3 & R4 --> T{Trust, in under a minute}
-```
+A stranger who clicks any clause and lands on a real pull request, a real check, or a real recording believes the next clause too. A stranger who clicks and lands on a screenshot of a tutorial stops reading. One page that does this beats five that do not. Put one project in front, with receipts a stranger can reach in under a minute.
 
 ## The design system underneath
 
 Everything you put in public should follow the same design system: the site, project page, diagrams, pull request screenshots, and the slide behind you in a defense recording. Consistent choices show an employer that you work from a repeatable method before they read the details.
 
-The depth step Your look, on every screen asks you to write this down once and apply it everywhere:
+Write the system down once and apply it everywhere. Tokens: two or three colours, one accent, one type family for prose and one for code, a spacing scale. Record these choices as variables so you can apply them consistently. Type: a heading scale and a body size that read well at phone width, because that is where a recruiter will first open your link. One diagram style, so every graph you publish in a post or a pull request looks like yours. One screenshot convention: same window size, same padding, same annotation colour. The convention is dull, and it makes a pull request description read as if a professional wrote it.
 
-- **Tokens.** Two or three colours, one accent, one type family for prose and one for code, a spacing scale. Record these choices as variables so you can apply them consistently.
-- **Type.** A heading scale and a body size that read well at phone width, because that is where a recruiter will first open your link.
-- **One diagram style.** A Mermaid theme file with your tokens in it, so every graph you publish in a post or a PR looks like yours. You have been reading diagrams in this house's theme through this whole series; that is what it looks like when someone does this.
-- **One screenshot convention.** Same window size, same padding, same annotation colour. Boring, and it makes a PR description read like a professional wrote it.
-
-The method is the same one this program used to build its own site, and the artifact is a single document you can hand to a model with "apply this" and get consistent output back. That handoff is itself a specification, and it is graded like one.
+The artifact is a single document you can hand to a model with “apply this” and get consistent output back. That handoff is itself a specification.
 
 ## Research in public
 
-The skills this industry will hire for in three years do not have names yet. The people who get found for them are the ones who were visibly poking at them before the names arrived. That is what the depth step Research you ran yourself is for: one experiment you ran because you wanted the answer, published with the same discipline you would apply to a production change.
+People get found for new kinds of work when they have already published a careful attempt at the question. Run one experiment because you wanted the answer, and publish it with the same discipline you would apply to a production change.
 
-The shape is fixed, and it is the shape of every honest experiment:
+The shape is the shape of every honest experiment. Claim: your hypothesis, written as a sentence that could be wrong. Method: what you did, precisely enough that someone could repeat it. Result: what happened, with the numbers, including the ones that disappointed you. What it does not show: the limits of the method, said before anyone else says them. Next: what you would try next and why.
 
-| Section | What goes in it |
-|---|---|
-| Claim | Your hypothesis, written as a sentence that could be wrong |
-| Method | What you did, precisely enough that someone could repeat it |
-| Result | What happened, with the numbers, including the ones that disappointed you |
-| What it does not show | The limits of the method, said before anyone else says them |
-| Next | What you would try next and why |
+Small is fine. “Does giving an agent a call graph, a map of which functions call which, reduce human interventions on a mechanical refactor? I ran twelve tasks each way; here is the count” is a **research** post. It is interesting because it has a method and a number.
 
-Small is fine. "Does giving an agent the call graph reduce its interventions on a mechanical refactor? I ran twelve tasks each way; here is the count" is a research post, and it is more interesting than most of what is published on the subject because it has a method and a number. The post also feeds the system you build in A system that feeds posts: research is the highest-grade raw material that system will ever have.
+A public record that stops updating looks abandoned. Writing about a change you shipped is also an inexpensive rehearsal for a technical defense, where another engineer challenges your reasoning. If you cannot explain the change to strangers in about two hundred words, you will struggle to explain it under live questioning. Treat every post as a compression exercise: preserve the important meaning in fewer words, then include the supporting link.
 
-## Posting as an engineering habit
+## A record another person can trust
 
-The posting steps on the Map, One post from the system and Two posts in seven days, keep your public record current. They also require explanation because a public record that stops updating looks abandoned, and because writing about a change you shipped is the cheapest defense rehearsal available: if you cannot explain it to strangers in two hundred words, you will not explain it to an engineer in a live room either. Treat every post as the compression exercise from Technical communication and defense, with a link.
+A polished project page can be generated quickly. The history behind it cannot. A real receipt contains the stubborn details of work: the first wrong model, the check that failed, the review that changed the design, and the result a user actually experienced.
 
-## When your system has users
+That trail is valuable because it lets another person inspect your judgment without borrowing your confidence. They can follow the claim to the change, the change to the evidence, and the evidence to its limits. The portfolio stops being a gallery and becomes a record of how you think when the answer is uncertain.
 
-If your owned system does something useful for other people, the depth step Real people used it asks you to find five of them, record a baseline, ship a change, and measure. Revenue is not required and is deliberately not rewarded here, because requiring it would push everyone toward the easiest thing to charge for. Observed value is required. If value turns into customers, the receipt for that is the same baseline-and-result you would have produced anyway, and it belongs on the project page next to the PRs. Gaining attention and gaining customers are downstream of the same artifact: evidence a stranger can check.
-
-## Do this now (20 minutes)
-
-1. Write the sentence as "contributed to Y" and name the system you worked within. Then list the clauses you can already back with a link, and the ones you cannot yet.
-2. For each clause you cannot back, name the step on the Map that will produce the receipt.
-3. Open your site, or the folder where it will live. Write down the two colours, the type family and the accent you will use for everything. Put them in a file.
-4. Write one research claim you actually want the answer to, as a sentence that could be wrong.
-
-**Done when** a stranger can reach a real receipt from your site in under a minute, and everything they see on the way looks like it came from one person with a method.
-
-## What's next
-
-12 · Work states after Scrum: the board you pull from and the model underneath it.
+Writing became cheap. Understanding did not. A useful public record makes that understanding visible.

@@ -1,108 +1,51 @@
 # 10 · Evidence, gates and the evidence record
 
-*Series: disciplines. How this program measures you: the six gates, the seven levels of evidence, the score vector, and the four metrics your log tracks from week one. Read in week one, and again before You defend it live. ~14 minutes.*
+*How to write a claim another person can check, and how to tell strong evidence from a story you told yourself. About 11 minutes.*
 
-## Every step is a falsifiable claim
+## Show me the artifact
 
-Every step carries a six-field contract, visible on the step page under "What this step proves," written in the same shape as the checks you write for code.
+Hamel Husain's demand for model work is “show me the prompt.” The same demand applies to any claim you will reuse. “I can specify a change” and “this check would have caught the bug” sound finished. They are not finished until someone can open the specification, the check, or the review and see what would have counted as failure.
 
-| Field | The question |
-|---|---|
-| Claim | What capability do we say you acquired? |
-| Challenge | What behaviour would demonstrate it? |
-| Evidence | What artifact or observation records that behaviour? |
-| Falsification | What would convince us you do not have it? |
-| Threshold | What counts as passing? |
-| Transfer | Where must you show it again later, in a place you did not choose? |
+Karl Popper's name for this habit is falsification. You cannot prove that every swan is white. One black swan ends the claim. Quality work is a structured attempt to find that swan. A claim with no failing condition is a hope.
 
-Every step on the Map must fill these six fields. The same principle applies to tests and lessons: each needs a defined condition that can show failure.
+Take one sentence you might write about yourself: “I can specify a change well enough that another person can execute it.” What behaviour would demonstrate it? A stranger takes the specification and ships the change without asking you fourteen questions. What artifact records that behaviour? The specification, the question count, and the resulting pull request. What would convince a reader you do not have it? The executor guessing past an unknown you never named. What counts as enough? Two clarifications on a real change, with a working result. Where would you have to show it again, in a place you did not choose? On a system you did not design, with a reviewer who owed you nothing.
 
-## Progressively less control
+Together, the claim, the behaviour that would demonstrate it, the artifact, the way to falsify it, the threshold, and the transfer test form a **gate**: a check that can fail. You do not need this structure on every scrap of work. You need it when someone else will rely on the claim to hire, build, or release. A claim shown only in the room where you already knew the answers is still thin.
 
-The program uses environments that become less controlled over time. Capability becomes visible when you work under conditions you did not choose.
+## A claim gains weight
 
-```mermaid
-flowchart LR
-  L1["I. Controlled labs<br/>small systems we hand you<br/>proving single capabilities"] --> L2["II. Owned system<br/>a small product you build<br/>proving the loop end to end"]
-  L2 --> L3["III. Production project<br/>real users, real baseline<br/>proving autonomous ownership"]
-  L3 --> L4["IV. Live world<br/>our shared system<br/>proving transfer, teamwork, trust"]
-```
+Suppose an engineer says, “I can change an unfamiliar system safely.” The sentence tells you what they believe about themselves. It gives you no reason to believe it too.
 
-Along that line the instructions thin out on purpose. Early: here is the system, the problem, the desired outcome and the evaluation. Later: here is the system and the problem. Later: here is the system. Finally: here is reality, find something worth improving. The eight-week intensive runs levels I and IV in a compressed form, with the owned-system depth nodes available for anyone with time. Levels II and III as full projects are the shape of the longer program.
+They show you a repository. Now you know that some work exists, although you still do not know who made the important decisions or whether the result works. The repository becomes more useful when it contains the trail: the bug as first observed, the engineer's initial model, a test that failed, the change, and the same test passing. You can inspect how the conclusion was reached instead of judging the finished code alone.
 
-## The six gates
+Then the engineer receives a problem they did not choose in a system they did not design. Their usual shortcuts may no longer fit. If they can form a new model, expose the defect, and repair it under those conditions, the original claim carries more weight.
 
-Before the live world trusts you with a change that matters, six small demonstrations, each mapped to a step on the Map.
+Another engineer reviews the change and challenges its assumptions. Production supplies a harder review: real requests, unexpected sequences, and users who behave differently from test data. If the change survives both, you have evidence about what happened outside the author's control.
 
-| Gate | Tests | Step | You pass when |
-|---|---|---|---|
-| 1 Comprehension | You can model unfamiliar code | You can read a system | Your predictions about the system's behaviour under change are mostly right, and you can say which ones you were unsure of |
-| 2 Problem discovery | You distinguish the underlying problem from its symptom | You found the real problem | Your framing has more than one hypothesis and names the evidence that would settle it |
-| 3 Specification | Someone else can execute your words | Someone else can build it | Clarifications requested against your spec stay low |
-| 4 Delegation | You direct machines and record it | You ran the agents | Your intervention log reconstructs what the human did |
-| 5 Verification | Your checks could have failed | You can prove it | You name the result that would have made you revert, and you looked for it |
-| 6 Communication and outcome | Your reasoning survives a stranger | You defend it live and A number moved | Your model updates under a changed fact; your outcome claim has a baseline |
+One success can still be luck or familiarity with a particular stack. The claim becomes most convincing when the same reasoning transfers to a different system with different constraints. The repeated result suggests that the capability belongs to the engineer rather than to the original project.
 
-The gates form the core sequence. Everything else on the Map is depth you add when the gates are behind you.
+**GridGlade**, the shared multiplayer game used as the example here, can provide one such unfamiliar setting. A content delivery network serves its browser client, a rented virtual machine runs its game server, and it has no database. A safe change has to respect machines and decisions the engineer did not choose.
 
-## Levels of evidence
+An **evidence record**, sometimes called an evidence ledger, preserves this story. It connects the claim to the artifacts, the challenges that could have defeated it, and the result under each condition. The strength comes from how many plausible explanations the evidence rules out.
 
-Evidence carries different weights. When you make a claim about yourself, identify its level. The program asks you to move every important claim toward the stronger evidence near the bottom of this table.
+## What the evidence record should reveal
 
-| Level | Kind | Example | Weight |
-|---|---|---|---|
-| 0 | Self-reported | "I am strong at agent orchestration" | None |
-| 1 | Artifact | A repository exists | Weak |
-| 2 | Instrumented behaviour | We can see how it was produced: the intervention log, the commits, the checks | Better |
-| 3 | Controlled challenge | The capability reproduced under conditions you did not choose | Strong |
-| 4 | Independent human evaluation | An engineer who owed you nothing reviewed it | Stronger |
-| 5 | Production consequence | Real users or real system behaviour changed | Very strong |
-| 6 | Repeated transfer | The same capability across unrelated environments | Strongest |
+A useful evidence record answers four questions. Each question exposes a different place where a polished final result can hide weak judgment.
 
-A portfolio is level 1. An eight-week review is level 4. A changed retention number in the live world is level 5. The Transfer field on every step exists to get you to level 6 at least once per capability, which is why the same skill keeps showing up in places you did not pick.
+**Clarifications.** How often did another person's work stop because your specification left an important decision unresolved?
 
-## The score vector
+**Calibration.** When you recorded high confidence in a claim, how often did later evidence show that the claim was correct?
 
-At the end you receive a score vector. Every entry links to the evidence that produced it.
+**Interventions.** When you delegated work, where did you have to step in, and what would have happened if you had not?
 
-| Score | Meaning | Where the evidence comes from |
-|---|---|---|
-| System comprehension | Accuracy of your models | Gate 1 predictions, defense |
-| Specification precision | Executable without clarification | Clarification counts on your specs |
-| Verification strength | Would your checks have caught it | Falsification findings, defects caught |
-| Autonomy | Human intervention required | Intervention log |
-| Agent efficiency | Useful output per unit of human effort | Task records with cost and time |
-| Judgment calibration | Stated confidence against actual correctness | Claim, confidence, outcome triples |
-| Communication fidelity | Information preserved across handoffs | Handoff exercises, review notes |
-| Value creation | Measured product or system improvement | Baseline, intervention, result |
-| Collaboration | Effectiveness in shared work | Reviews given, defects found in others' work |
-| Learning velocity | How fast wrong models get corrected | Log entries over time |
+**Falsification.** Which counterexamples, invariant violations, load failures, adversarial findings, or unintended effects did you actively look for?
 
-An employer who clicks Verification should see the count of evaluated tasks, the checks you wrote, the defects you found, the defects you missed, and the review that graded them. Without those links, the score provides little evidence beyond a conventional grade.
+These answers do not require a special dashboard. They require the claim, the confidence, the challenge, and the result to remain together so a reader can follow what actually happened.
 
-## The four metrics your log tracks from week one
+## Evidence is a claim that survived
 
-The student log template has four numbers in it that are unusual. They are there because they are the most honest signals the program has found.
+An artifact can show that work exists. Evidence shows why a particular conclusion deserves belief. The difference is the possibility of failure. A test that could never fail, a review with no opposing view, and a metric chosen after the result all decorate the claim without challenging it.
 
-- **Clarification debt.** Clarifications requested divided by specifications handed over. How often does someone else's work stop because your representation was not enough? Watch it fall.
-- **Comprehension calibration.** For each claim about a system, record your confidence. When the truth arrives, score it. Are your ninety-percents right nine times in ten?
-- **Intervention rate.** Useful completed outcome divided by human interventions on delegated work. It should fall over the program while quality holds. If quality falls with it, you learned to look away.
-- **Falsification strength.** How hard did you try to prove your own work wrong? The evidence includes counterexamples, invariant violations, load failures, adversarial findings, and unintended effects you found before someone else did.
+A gate makes the challenge explicit before the answer is known. An evidence record preserves what happened afterward, including the counterexample, the uncertainty, and the cases where the claim did not transfer.
 
-## Rotating roles, later
-
-In the longer program, teams of five take missions in the live world, and for every mission the responsibility roles rotate: outcome owner, system investigator, specification owner, execution orchestrator, evaluation owner. Everyone passes every role. The eight-week intensive is solo, but the roles are already visible in the gates: each gate is one of those hats worn for one week. When you reach the team version you will have worn each of them once.
-
-## Do this now (15 minutes)
-
-Open your student log.
-
-1. For the step you are on, read its "What this step proves" block. Write, in your own words, what would convince a reviewer you do not have the capability.
-2. Make your first claim, confidence, outcome entry: one thing you believe about the world's code, a percentage, and how you will find out.
-3. Write the current value of your four metrics, even if three of them are "not yet measured." The zeros are the baseline.
-
-**Done when** you can use the levels table and concrete examples to explain why these scores provide stronger evidence than a certificate.
-
-## What's next
-
-11 · The portfolio thread: the personal site, the design system, the research posts, and why your public record is an engineering artifact too.
+That record cannot make a false idea true. It can make the boundary between what you know and what you hope visible. Trust begins at that boundary.

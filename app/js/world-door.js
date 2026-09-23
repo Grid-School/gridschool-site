@@ -16,12 +16,12 @@ import { WORLD, isPlaceholder } from "../../config.js";
 const PRESENCE_TTL_MS = 30_000;
 
 export function createWorldDoor() {
-  const menu = el("div.wdoor__menu", { hidden: true, role: "menu", "aria-label": "Open the world" });
+  const menu = el("div.wdoor__menu", { hidden: true, role: "menu", "aria-label": "Open GridGlade" });
   const button = el(
     "button.rail__door.rail__door--world",
-    { type: "button", title: "Open the world in a new tab", "aria-haspopup": "menu", "aria-expanded": "false", onclick: toggle },
+    { type: "button", title: "Open GridGlade in a new tab", "aria-haspopup": "menu", "aria-expanded": "false", onclick: toggle },
     el("span.rail__glyph", {}, icon("world")),
-    el("span.rail__word", {}, "World")
+    el("span.rail__word", {}, "GridGlade")
   );
   const root = el("div.wdoor", {}, button, menu);
 

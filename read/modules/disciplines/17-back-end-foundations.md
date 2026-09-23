@@ -1,61 +1,45 @@
 # 17 · Back-end foundations, framework-agnostic
 
-*Series: disciplines. Follow one request lifecycle through .NET, Spring, Express, FastAPI, and Rails. About 12 minutes.*
+*One request lifecycle, followed through .NET, Spring, Express, FastAPI, and Rails. About 11 minutes.*
 
 ## The other end of the packet
 
-After the front end sends a request, a server program decides what the request may do. The server finds the code assigned to the path, runs checks shared by many requests, validates the input, reads or changes data, schedules any work that should happen later, and sends a response. Mature server frameworks implement this sequence under different names. Once you can trace the sequence through an unfamiliar system, you can transfer that skill to another framework.
+After the front end, the client program running in a browser or game, sends a request, a server program decides what the request may do. A request arrives with a method, a path, and headers. The server finds the **handler** assigned to that path, runs **middleware** that many requests share, validates the input, reads or changes data, schedules any work that should happen later, and sends a response with a status code. Mature server frameworks implement this sequence under different names. Once you can trace the sequence through an unfamiliar system, you can transfer that skill to another framework.
 
-```mermaid
-flowchart LR
-  R[Request] --> RT[Routing]
-  RT --> MW[Middleware]
-  MW --> H[Handler]
-  H --> V[Validation]
-  V --> D[Data access]
-  D --> J[Jobs, maybe]
-  J --> RS[Response]
-```
+## One game message, walked once
+
+**GridGlade** is the shared multiplayer game used as the example here. CloudFront, a content delivery network, serves its Unity WebGL client. Its WebSocket server runs on Lightsail, a small virtual-server service. The game has no database. The message we are tracing leaves the game client, crosses the network, and lands on the server process.
+
+The GridGlade server uses WebSockets for gameplay, and the same request lifecycle still applies. Accepting a WebSocket routes the connection to a handler. The server decodes each incoming message by type and runs the matching handler. Middleware, if any, would run around that handler: authentication, logging, a size limit. GridGlade has no validation step for player position, so the server stores any position sent by the client. Updating in-memory state is the data-access step because GridGlade has no database. Broadcasting the new position to other clients is the response. The missing validation step is the interesting row: a client can report a false position and the server will keep it. The status of that conversation is implicit in the socket staying open. An HTTP version of the same mistake would be a 200 that stored a lie.
 
 ## One shape in five dialects
 
-Use this table as a reference. If an agent gives you a Spring controller after you have worked only with Express, the table helps you find validation, where a database transaction begins and ends, and the framework’s error behavior.
+If an agent gives you a Spring controller after you have worked only with Express, you still need to find the same stages in the request lifecycle: routing, middleware, handling, validation, data access, optional background work, and the response. An object-relational mapper, or ORM, converts between database rows and program objects. Structured Query Language, or SQL, is the language used to query a relational database.
 
-An object-relational mapper, or ORM, converts between database rows and program objects. Structured Query Language, or SQL, is the language used to query a relational database. The table also uses common framework names that you can look up when you encounter them.
+Routing: .NET uses an endpoint or controller; Spring uses `@RequestMapping`; Express uses `app.get`; FastAPI and Django use a path operation or urlconf; Rails uses routes plus a controller.
 
-| Box | .NET | Spring | Express / Fastify | FastAPI / Django | Rails |
-|---|---|---|---|---|---|
-| Routing | endpoint / controller | `@RequestMapping` | `app.get` | path operation / urlconf | routes + controller |
-| Middleware | filter / middleware | filter / interceptor | middleware | dependency / middleware | rack / before_action |
-| Injection | DI container | `@Autowired` | you pass it in | `Depends()` | implicit, which is its own lesson |
-| Validation | data annotations / Fluent | Bean Validation | schema / zod | pydantic / forms | strong params + validations |
-| Data | EF / Dapper | JPA / JDBC | any client | ORM or SQL | ActiveRecord |
-| Jobs | hosted service / hangfire | `@Scheduled` / queue | worker process | celery / rq | ActiveJob |
+Middleware: .NET uses a filter or middleware; Spring uses a filter or interceptor; Express uses middleware; FastAPI uses a dependency or middleware; Rails uses rack or `before_action`.
+
+Dependency injection: .NET has a dependency-injection container; Spring uses `@Autowired`; Express expects you to pass the dependency in; FastAPI uses `Depends()`; Rails connects many parts implicitly, which is its own lesson.
+
+Validation: .NET uses data annotations or Fluent; Spring uses Bean Validation; Express often uses a schema such as zod; FastAPI uses pydantic; Rails uses strong params plus validations.
+
+Data: .NET uses EF or Dapper; Spring uses JPA or JDBC; Express uses any client; FastAPI and Django use an ORM or SQL; Rails uses ActiveRecord.
+
+Jobs: .NET uses a hosted service or Hangfire; Spring uses `@Scheduled` or a queue; Express uses a worker process; FastAPI often uses Celery or rq; Rails uses ActiveJob.
 
 Rows with no direct counterpart often reveal the most. Express expects you to pass dependencies directly and provides no built-in dependency-injection system. Rails connects many parts implicitly, so a newcomer must learn where each value comes from. Treat these as framework behavior you need to locate.
 
-## The world's request, walked once
-
-The World server uses WebSockets for gameplay, and the same request lifecycle still applies. Accepting a WebSocket routes the connection to a handler. The server decodes each incoming message by type and runs the matching handler. World has no validation step for player position, so the server stores any position sent by the client. The ticket board calls this inherited defect “trusting the client.” Updating in-memory state is the data-access step because World has no database. Broadcasting the new position to other clients is the response. Record these steps for World and for a starter application in an unfamiliar framework. Your comparison should make the missing validation step visible.
-
-Stage is the shared client. The packet you are tracing leaves that client, crosses CloudFront, and lands on the Lightsail process. You do not need your own server to walk that path.
-
 ## ORMs, SQL, and work that should not block the answer
 
-An ORM can hide a database join that you need to inspect. Raw SQL exposes the query but can duplicate object mapping across several call sites. Choose based on the query in front of you, and switch approaches when the hidden cost becomes a problem. Reading 22 provides vocabulary for making that request precisely.
+An ORM can hide a database join that you need to inspect. Raw SQL exposes the query but can duplicate object mapping across several call sites. Choose based on the query in front of you, and switch approaches when the hidden cost becomes a problem. **Coupling** is how often one module must change because another module changed; the term helps you describe that cost precisely.
 
-A background job performs work after the server sends its response. Sending email, generating a thumbnail, or notifying another service inside the request handler makes the user wait and lets those operations delay or fail the response. Record the choice to run such work inside the handler as a load decision in the specification.
+A background job performs work after the server sends its response. Sending email, generating a thumbnail, or notifying another service inside the request handler makes the user wait and lets those operations delay or fail the response. Record in the change specification whether slow work runs inside the request handler or in a background job.
 
-## Do this now (45 minutes)
+## Every framework is answering the request
 
-Trace one request through the World server from WebSocket acceptance to broadcast. Record every lifecycle step, including the missing validation step. Then open a starter application in a server framework you have never shipped and trace `GET /` through the same lifecycle. Create a table that maps each World step to the corresponding step in the unfamiliar framework. Include a row when one system has no counterpart.
+.NET, Spring, Express, FastAPI, and Rails arrange the lifecycle differently, but the server still owes the client the same account. Which code received the request? Which shared rules ran around it? Who checked the input? Where did state change? What response crossed the boundary?
 
-Choose a starter application from any server framework you have never shipped. A single `GET /` route is enough for mapping the framework’s lifecycle names.
+Framework magic is simply part of that path you have not named yet. Once you can trace the request, implicit injection and hidden ORM calls become ordinary decisions with costs and failure modes.
 
-## Done when
-
-the World field traces socket acceptance, message type, handler, state mutation, and broadcast; the unfamiliar-framework field traces `GET /` through the same lifecycle; and the final field explains which row has no counterpart.
-
-## What's next
-
-18 · Data: a toy migration you can undo, with a row that has to survive both directions.
+Back-end understanding is less about memorising each framework's nouns than about refusing to lose the packet. Follow it from the boundary to the authoritative state and back, and the dialect becomes learnable.

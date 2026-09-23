@@ -1,58 +1,33 @@
 # 21 · Observability and incidents
 
-*Series: disciplines. Use logs, metrics, and traces to investigate a supplied incident, then write its incident report. About 12 minutes.*
+*Logs, metrics, and traces, used to understand a failure and write it down. About 11 minutes.*
 
-## Observability completes the live system
+## The night the empty world looked dead
 
-World’s first inherited ticket concerns a health endpoint that reports the server as dead whenever no players are connected. An automated health check restarted the process during quiet nights. **Observability** means collecting enough information to understand a running system’s behavior. Instrumentation produces that information so you can find a failure before a user reports it. This reading treats an incident report as required project evidence because observing a failure tests your understanding of the live system.
+**GridGlade** is the shared multiplayer game used as the example here. A content delivery network serves its Unity WebGL client, and a small rented virtual machine runs its WebSocket server. The game has no database. At 02:14 UTC a Docker health check called `GET /health` and received 503. The process restarted. Eighteen seconds later the server's `WebSocketHandler` initialized, `connected_sockets` was still zero, and `/health` said 503 again. The loop ran until 09:02, when the first player connected and `/health` returned 200. The deployment logs show a nightly restart loop. The first guess is often that the process is crashing. The evidence shows a healthy empty server returning an unhealthy status.
 
-Use that ticket as the assigned incident. Base every statement in the report on the supplied signals.
+Charity Majors's definition of **observability** is the power to ask a new question of a running system without shipping new code to gather new data. Monitoring is the known alarm: `/health` should be 200. Observability is being able to ask why an empty world looked dead. Instrumentation produces that information so you can find a failure before a user reports it. The night-restart loop is a case study in that gap: the process looked dead while it was only empty.
 
-## Three signals, three questions
+`WebSocketHandler` sets `_isHealthy` from whether any sockets are connected. `/health` returns 503 whenever the game has zero players. The Docker health check requests `/health` every thirty seconds. In the Development configuration, used on a developer's machine, the same endpoint says OK. In the Production configuration, used on the live server, an empty game looks dead and the process restarts all night. Liveness means that the server process is running and able to continue its work. A game with zero players can still be live.
 
-Logs record events in order with attached context. Too many unstructured logs become difficult to read, and careless logs may expose personal data. Metrics measure amounts, frequency, and duration, but an average can hide slow requests. Traces follow one request across the machines from reading 15, but incomplete tracing may cover only successful requests. Use the three signals together: a latency metric shows that requests are slow, a trace locates the slow step, and a log at that step may explain the cause.
+## Three signals with different jobs
+
+Logs record events in order with attached context. Too many unstructured logs become difficult to read, and careless logs may expose personal data. Metrics measure amounts, frequency, and duration, but an average can hide slow requests. Traces follow one request across the machines that handled it, but incomplete tracing may cover only successful requests. Use the three signals together: a latency metric shows that requests are slow, a trace locates the slow step, and a log at that step may explain the cause.
+
+While players are connected, the averages appear healthy. The nightly loop lives in the timestamps: 02:14:01 health check 503, 02:14:02 restart, 02:14:18 handler initialized, 02:14:19 `connected_sockets=0`, 02:14:20 `/health` 503, and the same pair again at 02:14:50. At 09:02:11 a socket connects. At 09:02:12 `/health` is 200 and process uptime has been reset repeatedly since 02:14. These timestamps form a constructed incident example based on the health-check defect; they do not claim that you were on call that night.
 
 ## Alerts, SLOs, and who is woken up
 
-An **alert** tells a named person to respond when a condition becomes true. An alert with no owner or one that fires during every deployment becomes noise. A **service level objective**, or SLO, states a measurable availability or latency target. An **error budget** states how much failure the service may have before feature work pauses for reliability work. For a student project, write the SLO in one sentence and explain the error budget in one paragraph.
+An alert tells a named person to respond when a condition becomes true. An alert with no owner or one that fires during every deployment becomes noise. A **service level objective**, or **SLO**, states a measurable availability or latency target. An **error budget** is the amount of failure the target permits before feature work pauses for reliability work. The SLO is useful when it names a number another person could check. The error budget is useful when it says what work stops once that number is spent.
+
+A health check that restarts an empty world spends the budget on a lie.
 
 ## Incidents when the team is you
 
-During an incident, one role tracks time, one changes the system, and one records the timeline. When you fill all three roles, record timestamps before making changes, including a rollback. The postmortem records what you first believed, what the signals showed, what changed, and which check will expose the same failure in the future. A blameless report focuses on system conditions and still requires corrective action.
+Google's SRE postmortem culture assumes that everyone involved had good intentions and did the right thing with the information they had. The write-up names contributing causes. It does not name a person to blame. During an incident, one role tracks time, one changes the system, and one records the timeline. When you fill all three roles, record timestamps before making changes, including a rollback. The postmortem records what you first believed, what the signals showed, what changed, and which check will expose the same failure in the future. A blameless report focuses on system conditions and still requires corrective action.
 
-The `INCIDENT.md` timeline has separate columns for your belief at the time and the evidence from system signals. Use the difference between those columns to explain how the investigation changed your understanding.
+A useful incident timeline keeps what you believed at the time in one column and the evidence from system signals in another. The difference between those columns is how the investigation changed your understanding. For the empty-world night, the first belief was a crash. The signals showed a 503 on zero sockets. The fix is a `/health` that reports liveness, and an SLO that does not treat an empty world as downtime.
 
-## The assigned incident
+The incident began because the system answered the question it was given: “Are any players connected?” Operations thought it had asked, “Can the server continue working?” Observability exposed the difference.
 
-`WebSocketHandler` sets `_isHealthy` from whether any sockets are connected. `/health` returns 503 whenever the world has zero players. The Docker health check curls `/health` every thirty seconds. In Development the same endpoint says OK, which is why a laptop run hides the lie. In Production an empty world looks dead, and the process is restarted all night. **Liveness** means that the server process is running and able to continue its work.
-
-The packet below describes the staged incident. The timestamps show the restart loop and do not claim that you were on call that night.
-
-| Time (UTC) | Signal | Value |
-|---|---|---|
-| 02:14:01 | docker healthcheck | `GET /health` → 503 |
-| 02:14:02 | docker | restarting `world-server` |
-| 02:14:18 | log | `[WebSocketHandler] Handler initialized.` |
-| 02:14:19 | metric | `connected_sockets=0` |
-| 02:14:20 | `/health` | 503 |
-| 02:14:50 | docker healthcheck | `GET /health` → 503 |
-| 02:14:51 | docker | restarting `world-server` |
-| 09:02:11 | metric | `connected_sockets=1` |
-| 09:02:12 | `/health` | 200 |
-| 09:02:12 | metric | process uptime reset repeatedly from 02:14 until the first connection |
-
-While players are connected, the averages appear healthy. Operations records show a nightly restart loop. The ticket first assumes the process is crashing, but the evidence shows a healthy empty server returning an unhealthy status.
-
-## Do this now (50 minutes)
-
-Open the incident template from the task. Complete its timeline, root-cause, and fix sections from the supplied signals. In the task fields, paste the timestamped timeline, the root cause stated as the condition that allowed the failure, and a regression check that fails if the defect returns. The check may use `curl` against an empty server and require a 200 response in Production mode.
-
-Base the report on the supplied signals from World’s incorrect health endpoint. Leave your own running processes unchanged.
-
-## Done when
-
-the incident template names the fix, the timeline field uses timestamps from the supplied signals, the root-cause field explains that the server confused liveness with a connected player, and the regression-check field proves that an empty World in Production returns 200.
-
-## What's next
-
-22 · Engineering principles as a suspicion vocabulary: a provided agent pull request, reviewed by name.
+That is the deeper purpose of logs, metrics, traces, and postmortems. They let a team replace the first story with a better one while the evidence is still available. The system becomes easier to operate when it can explain its behaviour in terms a person can question, and the team becomes more reliable when it preserves what the surprise taught.

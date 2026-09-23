@@ -151,8 +151,8 @@ function studioBlock() {
       "div.room__acts",
       {},
       play && btn({ label: "Open the world", variant: "solid", href: play, target: "_blank" }),
-      server && btn({ label: "World server", variant: "quiet", href: server, target: "_blank" }),
-      client && btn({ label: "World client", variant: "quiet", href: client, target: "_blank" }),
+      server && btn({ label: "GridGlade server", variant: "quiet", href: server, target: "_blank" }),
+      client && btn({ label: "GridGlade client", variant: "quiet", href: client, target: "_blank" }),
       jira
         ? btn({ label: "Open the ticket board", variant: "quiet", href: jira, target: "_blank" })
         : el("span.notwired", {}, "The ticket board is not connected yet. It arrives on day one.")

@@ -1,30 +1,32 @@
 # 22 · Engineering principles as a suspicion vocabulary
 
-*Series: disciplines. Learn common design principles and use them to review a supplied change. About 13 minutes.*
+*Common design principles, used as named suspicions when you review a change. About 11 minutes.*
 
-## Why the old words still earn their keep
+## The wrong shared function
 
-AI reduced the cost of implementation while review still requires careful work. A request to “use SOLID better in the billing module” is useful only when you can name the relevant principle and verify the result. A comment that a pull request “couples the domain to the payment vendor” should identify a specific design problem. This reading gives you vocabulary for finding missing work in a diff and requesting a refactor precisely. The review grades how you apply the principles to the supplied code.
+Sandi Metz's warning is that the wrong abstraction is worse than duplication. You extract a shared function because two callers look alike. The next requirement adds a parameter. The one after that adds a conditional. Soon the shared function is a condition-laden procedure that interleaves two ideas, and everyone is afraid to touch it. Her remedy is to put the code back into each caller, let the real duplication show, and extract again only from what you can now see.
+
+DRY means “do not repeat yourself.” Apply it when the same rule has multiple copies that can drift apart. Similar lines may represent different rules, so do not combine them until you confirm that they have the same meaning. **Coupling** measures how often one part must change because another part changed. These words are vocabulary you use in a review. They name tradeoffs you can argue about in a review.
+
+AI reduced the cost of implementation while review still requires careful work. A request to “use SOLID better in the billing module” is useful only when you can name the relevant principle and verify the result. A comment that a pull request “couples the domain to the payment vendor” should identify a specific design problem. These words help you find missing work in a diff and request a refactor precisely.
 
 ## The words, as suspicions
 
-SOLID names five design principles. **Single responsibility** asks whether a file changes for more than one reason. **Open/closed** asks whether adding a new case requires editing every existing case. **Liskov substitution** asks whether a subtype surprises code written for its parent type. **Interface segregation** asks whether a caller must depend on methods it never uses. **Dependency inversion** asks whether high-level policy imports a low-level detail, such as a domain model that imports a database driver or payment software development kit.
+SOLID names five design principles. Single responsibility asks whether a file changes for more than one reason. Open/closed asks whether adding a new case requires editing every existing case. Metz's reading of open/closed is to wait: write the simplest code today, then rearrange when the next requirement arrives. Liskov substitution asks whether a subtype surprises code written for its parent type. Interface segregation asks whether a caller must depend on methods it never uses. Dependency inversion asks whether high-level policy imports a low-level detail, such as a domain model that imports a database driver or payment software development kit.
 
-DRY means “do not repeat yourself.” Apply it when the same rule has multiple copies that can drift apart. Similar lines may represent different rules, so do not combine them until you confirm that they have the same meaning.
-
-**Cohesion** measures whether related code stays together. **Coupling** measures how often one part must change because another part changed. The graph-track tool can measure one form of coupling by finding cycles in the call graph. **Clean architecture** keeps policy in inner layers and details such as HTTP, databases, and vendor software development kits in outer layers, with dependencies pointing inward. Three design patterns are enough to begin: use a factory when object creation requires a decision, a strategy when the algorithm may vary, and an adapter when your code must communicate with an interface you do not control.
+Cohesion measures whether related code stays together. A call graph, a map of which functions call which other functions, can reveal cycles, which is one form of coupling you can measure. Robert Martin's clean architecture places business rules at the center and details such as HTTP, databases, and vendor software development kits at the edge, with dependencies pointing inward. Three design patterns are enough to begin: use a factory when object creation requires a decision, a strategy when the algorithm may vary, and an adapter when your code must communicate with an interface you do not control.
 
 The testing pyramid calls for many fast unit checks, fewer checks that several units work together, and the fewest full checks that a stranger can perform through the interface. An inverted pyramid is slow and unreliable. A pyramid without any full-interface checks leaves the user-facing contract untested.
 
 ## How the vocabulary is used on a review
 
-During review, name the violated principle and request a specific refactor. Then verify that the new code matches the principle’s meaning. For example, moving a payment SDK import one layer lower while leaving it inside the domain does not achieve dependency inversion.
+Name the violated principle and request a specific refactor. Then verify that the new code matches the principle's meaning. For example, moving a payment SDK import one layer lower while leaving it inside the domain does not achieve dependency inversion.
 
 Also review for missing work: “This pull request does not test the retry path. It copies the price rule into a second file. It adds an interface and still imports the concrete class.” Specific comments about absent tests or boundaries show that you examined the diff.
 
-## The agent pull request for this reading
+## A deliberately flawed charging change
 
-An agent received the request, “add charging to the toy shop so a paid item can be marked sold.” The agent opened the pull request below. The code comes from the supplied toy shop.
+The pull request below is a worked example from a small inventory application. It is deliberately flawed. An agent received the request, “add charging so a paid item can be marked sold.” The code uses Stripe's older Charges API (`stripe.charges.create`), which many current integrations have replaced. Read it as a review target.
 
 ```diff
 // domain/order.js  (new)
@@ -45,25 +47,19 @@ An agent received the request, “add charging to the toy shop so a paid item ca
 +   return order
 + }
 
-// cart.js  (already in the repo, unchanged)
+// cart.js  (existing file in the example project)
   export function cartTotal(items) {
     const TAX = 1.08
     return items.reduce((n, item) => n + item.price * TAX, 0)
   }
 ```
 
-The domain module imports the payment vendor, stores the vendor’s identifier on the order, and duplicates the tax rule from `cart.js`. The change has no retry test and no test for a charge that succeeds after the caller times out.
+The domain module imports the payment vendor, stores the vendor's identifier on the order, and duplicates the tax rule from `cart.js`. The tax constant looks like a DRY violation. Before you extract it, ask Metz's question: is it the same rule, or two rules that happen to share a number today? The change has no retry test and no test for a charge that succeeds after the caller times out. The coupling to Stripe is the clearer finding. The duplicated 1.08 is a suspicion until the next requirement tells you whether the two callers should stay in step.
 
-## Do this now (40 minutes)
+## Principles help you ask a better question
 
-Review the provided pull request. Name the principle it violates, write the refactor request using that principle, and describe the observable code change that would satisfy the request. If you identify several principles, choose the first one you would address and explain the order.
+The vocabulary did not produce a mechanical verdict on the diff. It made several concerns precise enough to investigate. The Stripe import creates measurable coupling. The missing retry test leaves a known failure unexamined. The repeated tax number might be duplication or might represent two rules that merely agree today.
 
-Save agent diffs from your own work for a later review. For this assignment, submit a review note about the supplied toy-shop charging patch.
+That uncertainty is healthy. Design principles become harmful when they replace observation with obedience. Used well, they give reviewers shared names for pressure in the code and a way to explain why a change may become expensive.
 
-## Done when
-
-the review note names a principle, makes a specific request, and describes a before-and-after change a stranger can verify against the supplied diff.
-
-## What's next
-
-23 · Choosing technology for the goal: pick one project from the published menu and write the stack decision you will defend.
+The principle is the beginning of the conversation. The behaviour of the system decides how the conversation ends.

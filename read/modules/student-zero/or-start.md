@@ -12,7 +12,7 @@ Open Discord with the button on the Join Discord task. Read the pinned message i
 
 ## Explore Stage
 
-Open World from the left-hand menu and choose Stage. Move your avatar with the W A S D keys or the arrow keys. Open Stage in a second browser tab, move one player, resize the window, refresh, and leave one tab idle for a minute.
+Open GridGlade from the left-hand menu and choose Stage. GridGlade is the shared multiplayer game, and Stage is the version where the cohort meets. Move your avatar with the W A S D keys or the arrow keys. Open Stage in a second browser tab, move one player, resize the window, refresh, and leave one tab idle for a minute.
 
 Return to the Welcome step. In the first observation field, describe one behavior a developer could investigate. In the second, describe one useful addition and name its intended user. Record only the behavior you observed; a later lesson investigates possible causes.
 

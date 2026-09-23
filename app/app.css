@@ -74,7 +74,11 @@ body[data-view="step"] .gridbg { display: none; }
 
 /* The world door: under a hairline because it leaves the board. The chooser
    opens to the right so the rail itself never widens. */
-.rail__world { border-top: 1px solid var(--line); padding-top: 6px; }
+.rail__world {
+  border-top: 1px solid var(--line); padding-top: 6px;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.rail__world > .rail__door { width: 100%; }
 .wdoor { position: relative; }
 .wdoor .rail__door { width: 100%; }
 .wdoor__menu {
@@ -1380,3 +1384,33 @@ pre.diagram--failed { border-color: var(--amber); }
 /* Focusable stand-ins for the pillars: read by assistive tech, invisible otherwise. */
 .world3d__proxies { position: absolute; inset: 0; width: 0; height: 0; overflow: hidden; }
 .world3d__proxy { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+
+/* ---------- posts worth a comment ---------- */
+
+.posts__suggest { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.posts__suggest .chip2 { background: none; font: inherit; cursor: pointer; }
+.posts__suggest .chip2:hover { color: var(--text); border-color: var(--hair-cyan); }
+.posts__status { margin: 10px 0 0; font-size: 13.5px; color: var(--muted); }
+.posts__row {
+  display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; gap: 14px; align-items: start;
+  padding: 14px 0; border-top: 1px solid var(--line);
+}
+.posts__row:first-child { border-top: 0; padding-top: 0; }
+.posts__score {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 20px; line-height: 1; color: var(--cyan);
+}
+.posts__who { color: #fff; font-size: 14.5px; }
+.posts__headline, .posts__meta { display: block; color: var(--muted); font-size: 12.5px; margin-top: 3px; }
+.posts__text { margin: 8px 0 0; color: var(--text); font-size: 14.5px; line-height: 1.5; }
+.posts__gap {
+  display: inline-block; margin-top: 8px;
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px; letter-spacing: .04em;
+  color: var(--cyan);
+}
+.posts__why { margin: 4px 0 0; color: var(--muted); font-size: 13px; line-height: 1.45; }
+.posts__actions { display: flex; flex-direction: column; gap: 6px; align-items: stretch; }
+.posts__row.is-done { opacity: .5; }
+@media (max-width: 720px) {
+  .posts__row { grid-template-columns: 40px minmax(0, 1fr); }
+  .posts__actions { grid-column: 1 / -1; flex-direction: row; }
+}

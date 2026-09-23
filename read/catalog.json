@@ -1,195 +1,221 @@
 {
   "title": "Reading",
-  "note": "These modules are the textbook. The board is the sequence. Type the code. Do not paste it.",
+  "note": "These modules are the textbook. Numbers follow the board. Type the code. Do not paste it.",
   "seriesNotes": {
-    "disciplines": "The eight kinds of work an engineer does when implementation is cheap, the full-stack systems foundations (15–23), and the thread that carries the evidence into public. Read each one just before the step that uses it.",
+    "disciplines": "The kinds of work an engineer does when implementation is cheap, then the systems foundations, then the public evidence thread. Numbers follow the board, not the file name.",
     "projects": "The eight systems you may choose to own. Read the menu after the foundations, then write the stack decision for one row.",
     "kit": "Templates that open inside GridSchool when you model and ship your own system: spec, verify, live, incident, and the rest.",
-    "nanograph": "Build a code graph from nothing, one module at a time. The Graph track on the board.",
+    "nanograph": "Build a code graph from nothing. These sit on the Graph track; their numbers are the board order, same as every other reading.",
     "student-zero": "The founder's own path through the map, kept honest."
   },
   "modules": [
     {
       "id": "disciplines/00-the-agentic-systems-engineer",
-      "title": "00 · The engineer this program is building",
+      "title": "00 · The Agentic Systems Engineer",
       "series": "disciplines",
       "mins": 12,
-      "attachesTo": "cv.four"
+      "attachesTo": "cv.four",
+      "walk": 2
     },
     {
       "id": "disciplines/01-system-comprehension",
       "title": "01 · System comprehension",
       "series": "disciplines",
       "mins": 14,
-      "attachesTo": "cv.understand"
+      "attachesTo": "cv.understand",
+      "walk": 16
     },
     {
       "id": "disciplines/02-context-and-graph-engineering",
       "title": "02 · Context and graph engineering",
       "series": "disciplines",
       "mins": 12,
-      "attachesTo": "gr.pack"
+      "attachesTo": "gr.pack",
+      "walk": 23
     },
     {
       "id": "disciplines/03-problem-framing",
       "title": "03 · Problem framing",
       "series": "disciplines",
       "mins": 11,
-      "attachesTo": "cv.frame"
+      "attachesTo": "cv.frame",
+      "walk": 20
     },
     {
       "id": "disciplines/04-specification-engineering",
       "title": "04 · Specification engineering",
       "series": "disciplines",
       "mins": 13,
-      "attachesTo": "cv.spec"
+      "attachesTo": "cv.spec",
+      "walk": 24
     },
     {
       "id": "disciplines/05-agentic-workflow-engineering",
       "title": "05 · Agentic workflow engineering",
       "series": "disciplines",
       "mins": 14,
-      "attachesTo": "cv.delegate"
+      "attachesTo": "cv.delegate",
+      "walk": 29
     },
     {
       "id": "disciplines/06-evaluation-engineering",
       "title": "06 · Evaluation engineering",
       "series": "disciplines",
       "mins": 13,
-      "attachesTo": "cv.check"
+      "attachesTo": "cv.check",
+      "walk": 27
     },
     {
       "id": "disciplines/07-reliability-and-systems-reasoning",
       "title": "07 · Reliability and systems reasoning",
       "series": "disciplines",
       "mins": 12,
-      "attachesTo": "wd.ticket"
+      "attachesTo": "wd.ticket",
+      "walk": 31
     },
     {
       "id": "disciplines/08-product-and-value-engineering",
       "title": "08 · Product and value engineering",
       "series": "disciplines",
       "mins": 12,
-      "attachesTo": "cap.outcome"
+      "attachesTo": "cap.outcome",
+      "walk": 36
     },
     {
       "id": "disciplines/09-technical-communication-and-defense",
       "title": "09 · Technical communication and defense",
       "series": "disciplines",
       "mins": 13,
-      "attachesTo": "cap.defend"
+      "attachesTo": "cap.defend",
+      "walk": 37
     },
     {
       "id": "disciplines/10-evidence-gates-and-the-ledger",
       "title": "10 · Evidence, gates and the evidence record",
       "series": "disciplines",
       "mins": 14,
-      "attachesTo": "or.start"
+      "attachesTo": "or.start",
+      "walk": 3
     },
     {
       "id": "disciplines/11-the-portfolio-thread",
       "title": "11 · The portfolio thread",
       "series": "disciplines",
       "mins": 13,
-      "attachesTo": "sg.profile"
+      "attachesTo": "sg.profile",
+      "walk": 30
     },
     {
       "id": "disciplines/12-work-states-after-scrum",
       "title": "12 · Work states after Scrum",
       "series": "disciplines",
       "mins": 11,
-      "attachesTo": "ops.flow"
+      "attachesTo": "ops.flow",
+      "walk": 4
     },
     {
       "id": "disciplines/13-evaluation-modes-and-traps",
       "title": "13 · Evaluation modes and traps",
       "series": "disciplines",
       "mins": 10,
-      "attachesTo": "cv.check"
+      "attachesTo": "cv.check",
+      "walk": 28
     },
     {
       "id": "disciplines/14-containment-and-accountability",
       "title": "14 · Containment and accountability",
       "series": "disciplines",
       "mins": 14,
-      "attachesTo": "cv.contain"
+      "attachesTo": "cv.contain",
+      "walk": 32
     },
     {
       "id": "disciplines/15-how-a-system-runs",
       "title": "15 · How a system runs, end to end",
       "series": "disciplines",
       "mins": 12,
-      "attachesTo": "fs.map"
+      "attachesTo": "fs.map",
+      "walk": 5
     },
     {
       "id": "disciplines/16-front-end-foundations",
       "title": "16 · Front-end foundations, framework-agnostic",
       "series": "disciplines",
       "mins": 12,
-      "attachesTo": "fs.front"
+      "attachesTo": "fs.front",
+      "walk": 6
     },
     {
       "id": "disciplines/17-back-end-foundations",
       "title": "17 · Back-end foundations, framework-agnostic",
       "series": "disciplines",
       "mins": 12,
-      "attachesTo": "fs.back"
+      "attachesTo": "fs.back",
+      "walk": 7
     },
     {
       "id": "disciplines/18-data-what-you-keep",
       "title": "18 · Data: what you keep and how it moves",
       "series": "disciplines",
       "mins": 12,
-      "attachesTo": "fs.data"
+      "attachesTo": "fs.data",
+      "walk": 8
     },
     {
       "id": "disciplines/19-contracts-and-trust",
       "title": "19 · Contracts and trust boundaries",
       "series": "disciplines",
       "mins": 13,
-      "attachesTo": "fs.api"
+      "attachesTo": "fs.api",
+      "walk": 9
     },
     {
       "id": "disciplines/20-ship-and-host",
       "title": "20 · Delivery pipelines, environments, and where to host",
       "series": "disciplines",
       "mins": 12,
-      "attachesTo": "fs.ship"
+      "attachesTo": "fs.ship",
+      "walk": 10
     },
     {
       "id": "disciplines/21-observability-and-incidents",
       "title": "21 · Observability and incidents",
       "series": "disciplines",
       "mins": 12,
-      "attachesTo": "fs.observe"
+      "attachesTo": "fs.observe",
+      "walk": 11
     },
     {
       "id": "disciplines/22-principles-as-vocabulary",
       "title": "22 · Engineering principles as a suspicion vocabulary",
       "series": "disciplines",
       "mins": 13,
-      "attachesTo": "fs.principles"
+      "attachesTo": "fs.principles",
+      "walk": 12
     },
     {
       "id": "disciplines/23-choosing-technology",
       "title": "23 · Choosing technology for the goal",
       "series": "disciplines",
       "mins": 12,
-      "attachesTo": "fs.choose"
+      "attachesTo": "fs.choose",
+      "walk": 13
     },
     {
       "id": "projects/menu",
       "title": "Project menu",
       "series": "projects",
       "mins": 10,
-      "attachesTo": "fs.choose"
+      "attachesTo": "fs.choose",
+      "walk": 14
     },
     {
       "id": "kit/README",
       "title": "Project templates",
       "series": "kit",
       "mins": 5,
-      "attachesTo": "fs.choose"
+      "attachesTo": "fs.choose",
+      "walk": 15
     },
     {
       "id": "kit/SPEC",
@@ -243,73 +269,85 @@
       "id": "nanograph/00-your-repo-is-a-graph",
       "title": "00 · Your repo is a graph",
       "series": "nanograph",
-      "mins": 20
+      "mins": 20,
+      "walk": 17
     },
     {
       "id": "nanograph/01-parse-one-file",
       "title": "01 · Parse one file",
       "series": "nanograph",
-      "mins": 45
+      "mins": 45,
+      "walk": 18
     },
     {
       "id": "nanograph/02-edges-across-files",
       "title": "02 · Edges across files",
       "series": "nanograph",
-      "mins": 60
+      "mins": 60,
+      "walk": 19
     },
     {
       "id": "nanograph/03-who-calls-x",
       "title": "03 · Who calls X",
       "series": "nanograph",
-      "mins": 45
+      "mins": 45,
+      "walk": 21
     },
     {
       "id": "nanograph/04-blast-radius",
       "title": "04 · Blast radius",
       "series": "nanograph",
-      "mins": 45
+      "mins": 45,
+      "walk": 22
     },
     {
       "id": "nanograph/05-cycles",
       "title": "05 · Cycles",
       "series": "nanograph",
-      "mins": 45
+      "mins": 45,
+      "walk": 33
     },
     {
       "id": "nanograph/06-load-bearing",
       "title": "06 · Load-bearing code",
       "series": "nanograph",
-      "mins": 50
+      "mins": 50,
+      "walk": 34
     },
     {
       "id": "nanograph/07-module-coupling",
       "title": "07 · Module coupling",
       "series": "nanograph",
-      "mins": 40
+      "mins": 40,
+      "walk": 35
     },
     {
       "id": "nanograph/08-swap-the-parser",
       "title": "08 · Swap the parser",
       "series": "nanograph",
-      "mins": 90
+      "mins": 90,
+      "walk": 38
     },
     {
       "id": "nanograph/09-context-packing",
       "title": "09 · Context packing",
       "series": "nanograph",
-      "mins": 60
+      "mins": 60,
+      "walk": 39
     },
     {
       "id": "nanograph/10-ship-it",
       "title": "10 · Ship it",
       "series": "nanograph",
-      "mins": 60
+      "mins": 60,
+      "walk": 40
     },
     {
       "id": "nanograph/11-make-it-yours",
       "title": "11 · Make it yours",
       "series": "nanograph",
-      "mins": 180
+      "mins": 180,
+      "walk": 41
     },
     {
       "id": "student-zero/or-start",
@@ -324,7 +362,8 @@
       "title": "Verification tax",
       "series": "briefs",
       "mins": 5,
-      "attachesTo": "cv.check"
+      "attachesTo": "cv.check",
+      "walk": 26
     }
   ],
   "readings": [
@@ -333,14 +372,16 @@
       "title": "Humans around the ticket",
       "series": "readings",
       "mins": 5,
-      "attachesTo": "cap.change"
+      "attachesTo": "cap.change",
+      "walk": 25
     },
     {
       "id": "readings/your-machine",
       "title": "Your machine, ready",
       "series": "readings",
       "mins": 8,
-      "attachesTo": "or.setup"
+      "attachesTo": "or.setup",
+      "walk": 1
     }
   ]
 }

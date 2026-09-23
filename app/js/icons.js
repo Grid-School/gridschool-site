@@ -28,6 +28,8 @@ export const ICONS = {
   coach: () => svg(path("M5 5.5h14a1.5 1.5 0 0 1 1.5 1.5v8a1.5 1.5 0 0 1-1.5 1.5H10l-4.5 3.5v-3.5H5A1.5 1.5 0 0 1 3.5 15V7A1.5 1.5 0 0 1 5 5.5z")),
   /** The world: a globe with one meridian and the equator. */
   world: () => svg(el("circle", { cx: 12, cy: 12, r: 8.5 }), path("M3.5 12h17M12 3.5c2.6 2.6 3.9 5.4 3.9 8.5s-1.3 5.9-3.9 8.5c-2.6-2.6-3.9-5.4-3.9-8.5S9.4 6.1 12 3.5z")),
+  /** Posts worth a comment: a card of lines. */
+  posts: () => svg(el("rect", { x: 4, y: 3.5, width: 16, height: 17, rx: 2 }), path("M8 8h8M8 12h8M8 16h5")),
   /** Profile: a person. */
   user: () => svg(el("circle", { cx: 12, cy: 8.5, r: 3.6 }), path("M4.5 20a7.5 7.5 0 0 1 15 0")),
   /** Export: a tray with an arrow out. */

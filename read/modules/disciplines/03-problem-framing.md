@@ -1,71 +1,55 @@
 # 03 · Problem framing
 
-*Series: disciplines. Observation, symptom, hypothesis, cause, opportunity, intervention, in that order, and why skipping one costs you the week. Read before You found the real problem. ~11 minutes.*
+*How to get from “something feels wrong” to a change worth making. About 11 minutes.*
 
-## Follow the full chain
+## The expensive leap
 
-A player writes "movement feels laggy." A product owner writes "add trading." A dashboard shows new players not returning after their first session. All three arrive as requests for action, and the untrained response to all three is to act. The trained response is to walk a chain, one link at a time, and refuse to move to the next link until the current one is written down.
+A player says, “Movement feels laggy,” and somebody opens the editor before asking another question. Perhaps the server is slow. Perhaps the client needs smoother animation. Perhaps a clever queue will settle the matter. Within ten minutes there are branches, tickets, and opinions. There may even be code.
 
-```mermaid
-flowchart LR
-  O[Observation<br/>what was actually seen] --> S[Symptom<br/>what the observer experienced] --> H[Hypotheses<br/>competing explanations] --> C[Cause<br/>the one the evidence supports] --> Op[Opportunity<br/>what becomes possible if fixed] --> I[Intervention<br/>the smallest change that tests it]
-```
+The only missing item is evidence that anybody is fixing the problem the player had.
 
-**Observation** is the raw fact. Three players used the word "laggy" in chat on Tuesday. Retention at day seven is eighteen percent. Nobody has traded because there is no trading. An observation is something you could show to a stranger and they would agree it happened.
+This happens because a complaint tends to arrive as a small bundle. It contains something a person noticed, what the experience felt like, and often a guess about what should change. Those parts sound close enough to get mixed together. Pulling them apart is called **problem framing**, and it can save a week of excellent work on the wrong problem.
 
-**Symptom** is what the observer experienced, in their words, without your interpretation. "Movement feels laggy" is a symptom. You still need evidence before naming a cause or writing a ticket.
+Hillel Wayne's warning is the reason the pause is worth taking. You cannot reason your way to the cause of a system failure by thinking hard in a chair. Too many parts affect each other. The useful work is to write down competing explanations and gather the cheapest evidence that can tell them apart.
 
-**Hypotheses**, plural, are the explanations that could produce the symptom. Laggy movement could be network round trip, server tick rate, client interpolation, a garbage collection pause, an overloaded region, or a keyboard handler that fires late. You are required to write more than one. Writing several hypotheses prevents you from treating your first explanation as established fact.
+## Walk the laggy player
 
-**Cause** is the hypothesis that survives the evidence. You get here by gathering something: a log, a trace, a measurement, a question to a user, a reproduction. Choose the cause from the evidence, even when another hypothesis is easier for you to fix.
+An **observation** is a fact another person could check. Suppose three players used the word “laggy” in a support channel on Tuesday. Suppose a dashboard shows that eighteen percent of new players return seven days after joining. Both statements may matter, but neither one explains why anything happened.
 
-**Opportunity** is what changes for the user or the system if the cause is removed. Sometimes the honest answer is "very little," and then the intervention is to do nothing and say so.
+A **symptom** describes the experience. “Movement feels laggy” is useful because it preserves the player's words. It still leaves open what the player saw. The avatar might respond late, move in jumps, or slide after the key is released. Each experience points toward a different investigation.
 
-**Intervention** is the smallest change that would test whether removing the cause removes the symptom. It is the last link, and the only one anyone ever wanted to start with.
+Then come the **hypotheses**, the possible explanations. The network may take too long to carry each movement update. The server may update the world too slowly. The player's device may display the updates poorly, or the keyboard handler may respond late. The first plausible explanation usually feels especially intelligent because it occurred to us. That feeling is not evidence. A second and third explanation give the first one some competition.
 
-## Why immediate coding is penalised
+A **cause** is the explanation that best survives contact with logs, traces, measurements, a reproduction, or another question to the player. Certainty is rare. You may end with sixty percent confidence rather than complete certainty. That is still useful because it tells the next person how much weight the conclusion can bear.
 
-In the eight-week review sheet, a change that skips from symptom to intervention loses Vision points even if the code works, because the review measures whether evidence guided your decision. Fixing the first idea provides no such evidence. This is deliberate training against the strongest habit engineers have, and it is the habit that assistants amplify most: give a model a symptom and it will propose an intervention in one breath, fluent and plausible and untested. Your job is to insert the four links it skipped.
+The **opportunity** is what would improve if the cause were removed. If smoother movement keeps new players in the world long enough to meet somebody, the opportunity may be valuable. If the delay occurs once on an internal screen used by two people a month, very little may change. A real problem can still be too small to deserve a week of work.
 
-## Work backward from a requested solution
+At the end comes the **intervention**, the smallest change that can test the explanation. If data takes much longer to travel to one server location, route a small group elsewhere and compare the result. If the server updates the world less often when many players join, change the update rate in a controlled test and measure what happens. A useful intervention examines the suspected cause.
 
-"Add trading" is the hardest case because it arrives as an intervention with no observation attached. When a request arrives at the wrong end of the chain, walk it backward. Why trading? Because players say the game is lonely. Is that observed, or assumed? Three said it in chat; nobody asked the others. What else could produce "lonely"? Empty spawn areas, no way to find other players, no reason to interact. Now trading is one hypothesis among four, and you can compare them on evidence and cost before choosing an intervention.
+The names make a tidy path: observation, symptom, hypotheses, cause, opportunity, intervention. Real investigations loop. You will return to an earlier step when a measurement kills a favourite explanation. That is the work succeeding.
 
-The framing that comes out of this is a short document, and it is the artifact the You found the real problem step asks you to link:
+## When the solution arrives first
 
-| Field | Contents |
-|---|---|
-| Observation | The fact, with where and when you saw it |
-| Symptom | What the observer said or felt, quoted |
-| Hypotheses | At least three, each one sentence |
-| Evidence gathered | What you looked at and what it showed |
-| Cause | The surviving hypothesis, with confidence |
-| Opportunity | What changes if it is fixed, for whom, how you would know |
-| Proposed intervention | The smallest test that can examine the cause |
-| Not doing | The hypotheses you set aside and why |
+“Add trading” sounds like a piece of work, but it has arrived at the far end of the path with no story attached. The sensible question is, “What would trading improve?”
 
-## Framing on a live world
+Suppose the answer is that players find the game lonely. Now there is something to investigate. Three players said so in a support channel, although nobody asked the others. The spawn area, where new players first appear, may be empty. Players may have no way to find one another, or no reason to interact once they do. Trading becomes one possible response among several, each with a different cost and a different chance of helping.
 
-The world you work in ships with problems that were never written down. That is the point. When a step says "find the highest-value problem," the deliverable is the table above, and the judgment being tested is whether you can tell an annoyance from an opportunity. A stuck door that one player hit once is an observation. Forty percent of first sessions ending inside three minutes is a symptom with a business attached to it. Learn to estimate the size of the problem before you decide how much of your week it deserves.
+Walking backward does not dismiss the original idea. It gives the idea a fair trial. Trading may win. If it does, you will know what result to watch after it ships. If it loses, you have avoided building a marketplace in order to solve a navigation problem.
 
-## Do this now (20 minutes)
+Keep a short record of the explanations and interventions you set aside. The record prevents an old idea from returning next week with its history erased, and it gives the eventual specification a clear boundary. “No trading system in this change” is useful information when somebody else must decide what to build.
 
-Take one of these and walk the full chain in writing.
+## Why good tools make this harder
 
-- A real complaint from software you use: something you have said "this is annoying" about this week.
-- "New players are not coming back after their first session."
-- "Make search better."
+Opening an editor feels productive because something changes immediately. An AI assistant makes the temptation stronger. Give it a symptom and it can produce a convincing cause, a plan, and a patch before you have finished your coffee. Fluency makes the leap difficult to notice.
 
-Write three or more hypotheses. For each, write the single cheapest piece of evidence that would raise or lower your confidence in it. Pick the one you would gather first and say why. Do not write the fix.
+The assistant is useful once you give it the right job. Ask it for competing explanations. Have it name the evidence that would distinguish them. Let it search code or summarize logs you have already chosen. You still gather the evidence and record where and when it came from, because an old log or an unattributed number can support a neat conclusion about a system that has already changed.
 
-## Where this skill is paid
+Code can work perfectly and still leave the original problem untouched. If movement feels delayed because the player is far from the server, polishing the avatar's animation may produce a beautiful patch with no useful effect. The waste came from beginning one question too late.
 
-The companies that still hire this profile sit on old systems, a compliance duty, and a failed agent pilot: banks, insurers, clinics, warehouses, factories, utilities, and the consultancies that serve them. They pay for someone who can walk from a messy observation to a cause they can defend, in that business's words. Big tech and funded startups are the default target a stuck builder brings in the door, and they are the weakest market for a first seat.
+## Choosing a problem worth the week
 
-On You found the real problem you pick one of those domains and write three words they use that the world does not. You reuse that sentence on the spec, on outreach, and on a stranger's problem. The world stays the arena. The domain is the translation.
+A stuck door that bothered one player once is worth recording. If a dashboard showed that forty percent of first sessions ended within three minutes, the pattern would deserve a closer look. Judge the scale by how many people encounter the problem, what it prevents them from doing, and what becomes possible if it is fixed.
 
-**Done when** someone can read your framing, disagree with your chosen cause, and point to the exact evidence that would settle it. If they cannot disagree, you have not framed; you have decided.
+The same reasoning applies outside a game. A warehouse manager who says “pick accuracy fell” means that workers selected the wrong items for too many orders. Before changing the warehouse software, an engineer still has to learn where the errors occurred, what the workers experienced, and which explanations fit the evidence. Using the words of the people who operate the system helps keep the investigation tied to the result they need.
 
-## What's next
-
-04 · Specification engineering: turning the surviving hypothesis into a contract someone else can execute without you in the room.
+Problem framing is a modest practice. You slow down long enough to separate what happened from what it might mean. You entertain several explanations, gather the cheapest evidence that can distinguish them, and estimate whether the result deserves the cost of a change. Then you can write a specification: a precise description of what should change, what stays outside the work, and what result the eventual code should improve.

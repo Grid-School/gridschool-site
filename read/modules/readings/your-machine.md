@@ -68,4 +68,4 @@ Return to the Your machine step in GridSchool. Paste the complete terminal outpu
 
 In the **Operating system and memory** field, write one sentence that names your operating system, amount of RAM, and whether all seven checks passed. Post the same sentence in the Asks channel. Paste that sentence into the field labeled **Paste the sentence you posted in the Asks channel**.
 
-Use the Asks channel for blockers and include what you already tried. Post your Friday URL in the Ship channel. Open World from the left-hand menu to enter Stage, where the cohort meets.
+Use the Asks channel for blockers and include what you already tried. Post your Friday URL in the Ship channel. Open GridGlade from the left-hand menu and choose Stage, the shared version where the cohort meets.

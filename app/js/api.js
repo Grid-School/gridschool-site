@@ -8,6 +8,7 @@ import { seedFromSnapshot } from "./persist.js";
 import { fetchSnapshot, remoteEnabled } from "./persist-remote.js";
 import { applySiteOverrides, applyPrivateLinks, applyCopyOverrides } from "../../js/site-overrides.js";
 import { revealMemberInvite } from "../../js/member-invite.js";
+import { numberCurriculumReadings } from "./reading-order.js";
 
 const BASE = "../data/";
 const cache = new Map();
@@ -36,7 +37,7 @@ export const loadCurriculum = ({ tour = false } = {}) => {
     if (res.ok) return res.json();
     if (tour) return getJson("curriculum.public.json");
     return loadPrivateJson(BASE + "curriculum.enc.json");
-  });
+  }).then(numberCurriculumReadings);
   cache.set(cacheKey, promise);
   return promise;
 };
