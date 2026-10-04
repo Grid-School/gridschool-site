@@ -17,14 +17,15 @@
  */
 
 import { el, clear } from "../../dom.js";
-import { traceSet } from "../model.js";
+import { traceSet, stepNumber } from "../model.js";
 import { loadThree } from "./three.js";
 import { readPalette } from "./palette.js";
 import { createCamera3d } from "./camera3d.js";
 import { createPillar, paintPillar, placePillar, disposePillar } from "./pillars.js";
 import { STANDING, standingOf } from "../standing.js";
 import { createEnvironment } from "./environment.js";
-import { planFloor } from "./floorplan.js";
+import { planFloor, NODE_R } from "./floorplan.js";
+import { makeGlyph } from "./glyphs.js";
 
 const BEAM_LIFT = 1.2;
 /** Below this camera height the titles come in; above it, numbers only. */
@@ -287,6 +288,8 @@ export async function createScene3d(container) {
     environment?.dispose();
     if (environment) scene.remove(environment.group);
     environment = createEnvironment(THREE, palette, state.plan.box);
+    const sideLabel = sideQuestLabel(THREE, state.plan, palette);
+    if (sideLabel) environment.group.add(sideLabel);
     scene.add(environment.group);
 
     for (const group of state.pillarFor.values()) {
@@ -297,7 +300,7 @@ export async function createScene3d(container) {
     state.nodeEls.clear();
     clear(proxies);
 
-    for (const id of state.plan.order) {
+    for (const id of [...state.plan.order, ...state.plan.side]) {
       const node = graph.byId?.get(id) ?? graph.nodes.find((item) => item.id === id);
       const group = createPillar(THREE, node, state.plan.at.get(id), palette);
       group.getObjectByName("title").visible = state.showTitles;
@@ -305,7 +308,7 @@ export async function createScene3d(container) {
       state.pillarFor.set(id, group);
       const proxy = el("button.world3d__proxy", {
         type: "button",
-        "aria-label": `Node ${node.n}: ${node.title}`,
+        "aria-label": `Node ${stepNumber(node)}: ${node.title}`,
         "data-id": id,
       });
       proxies.append(proxy);
@@ -334,9 +337,23 @@ export async function createScene3d(container) {
   }
 }
 
+/**
+ * "Side quests", on the floor in front of the side column, so the region reads
+ * as a place apart rather than a branch of the road. Lives in the environment
+ * group, which is disposed and rebuilt with the floor.
+ */
+function sideQuestLabel(THREE, plan, palette) {
+  const first = plan.side?.[0] && plan.at.get(plan.side[0]);
+  if (!first) return null;
+  const xs = plan.side.map((id) => plan.at.get(id).x);
+  const label = makeGlyph(THREE, "SIDE QUESTS", { size: 20, color: palette.ink, width: 280, height: 40, screenHeight: 0.018 });
+  label.position.set((Math.min(...xs) + Math.max(...xs)) / 2, 4, first.z + NODE_R + 70);
+  return label;
+}
+
 /** State classes on a proxy, so tests and assistive tech read the same board. */
 function markProxy(proxy, node, nextId) {
-  proxy.setAttribute("aria-label", `Node ${node.n}: ${node.title}`);
+  proxy.setAttribute("aria-label", `Node ${stepNumber(node)}: ${node.title}`);
   const standing = standingOf(node, nextId);
   for (const name of Object.values(STANDING)) proxy.classList.toggle(`is-${name}`, name === standing);
   // The model's status is a separate axis from standing; both are useful.

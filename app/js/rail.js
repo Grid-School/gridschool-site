@@ -4,8 +4,7 @@
  * The mark at the top is the way home. Then the doors, Map first, each an
  * icon with its word under it so nothing needs a tooltip to be understood,
  * and the Map carrying the one count that matters (required lit / total).
- * Under a hairline, GridGlade opens Stage or Production in a new tab
- * (world-door.js). Posts sits under that door: the day's LinkedIn comments.
+ * Under a hairline, Posts: the day's LinkedIn comments.
  * At the bottom, the student, as an avatar that opens the profile sheet.
  * Nothing about instructors or dev lives here; that is instructor-strip.js,
  * mounted only when the device is flagged, so a student rail is a student
@@ -17,7 +16,6 @@ import { gmark } from "../../js/brand.js";
 import { icon } from "./icons.js";
 import { returnedUnread } from "./tasks.js";
 import { progress } from "./graph/model.js";
-import { createWorldDoor } from "./world-door.js";
 
 export const DOORS = [
   { id: "map", label: "Map", icon: "map", hint: "Where you are and what is next" },
@@ -51,7 +49,6 @@ export function createRail({ onNavigate, onProfile }) {
     nav.append(link);
   }
 
-  const world = createWorldDoor();
   const posts = el(
     "a.rail__door",
     {
@@ -81,7 +78,7 @@ export function createRail({ onNavigate, onProfile }) {
     {},
     el("a.rail__brand", { href: "../", title: "GridSchool", "aria-label": "GridSchool home" }, gmark({ className: "rail__logo" })),
     nav,
-    el("div.rail__world", {}, world.root, posts),
+    el("div.rail__extra", {}, posts),
     el("div.rail__foot", {}, profile)
   );
 

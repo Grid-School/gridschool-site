@@ -295,14 +295,24 @@ export function seedFromSnapshot(snap) {
     clock: identity.clock ?? {},
     oneone: identity.oneone ?? {},
     note: identity.note ?? "",
+    ...(snap?.map ? { map: snap.map } : {}),
   };
 }
 
-/** Merge a student file with its overlay. The shape both surfaces read from. */
+function withoutMap(overlay = {}) {
+  const { map, ...rest } = overlay ?? {};
+  return rest;
+}
+
+/**
+ * Merge a student file with its overlay. The shape both surfaces read from.
+ * `map` (the student's published plan) is never in the overlay: the board
+ * cannot write it, so it always comes from the seed or the server snapshot.
+ */
 export function mergeStudent(student, overlay) {
   return {
     ...student,
-    ...overlay,
+    ...withoutMap(overlay),
     evidence: { ...(student.evidence ?? {}), ...(overlay.evidence ?? {}) },
     tasks: { ...(student.tasks ?? {}), ...(overlay.tasks ?? {}) },
     layout: { ...(student.layout ?? {}), ...(overlay.layout ?? {}) },

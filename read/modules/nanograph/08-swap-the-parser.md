@@ -28,7 +28,7 @@ Install the dependencies once:
 pip install tree-sitter tree-sitter-python tree-sitter-c-sharp
 ```
 
-Install only the language grammars you need. Lab students mapping the world server need the C# grammar.
+Install only the language grammars you need. Lab students also install the grammar for the language their own project uses.
 
 Create the parser interface:
 
@@ -63,15 +63,15 @@ def build_graph(root, parser) -> dict:
 
 Connect the CLI so that `nanograph.py parse <root> --lang python|csharp` selects a parser and writes `graph.json`. Keep every query command unchanged.
 
-## Lab students: map the world
+## Lab students: map your own project
 
-If you are a Lab student, run the C# parser on the world server repository. Then run `blast` on the function that your next world ticket will change. Post the blast radius in `#world`. The result applies the tool you built to the live system you are preparing to change.
+If you are a Lab student, run the parser on your own project's repository. Then run `blast` on the function that your next change will touch. Post the blast radius in `#asks`. The result applies the tool you built to the system you are preparing to change.
 
 ## Exercise (not shown)
 
 Create a small JavaScript or Go fixture and parse it with a third grammar. Run `callers` without changing the query code. Commit the fixture and the one-line CLI addition.
 
-**Done when** `graph.json` builds from a non-Python repository, all query commands remain unchanged, and you have a blast radius for one function in that repository. If you are a Lab student, use a world-server function and post the URL and blast output in `#ship`.
+**Done when** `graph.json` builds from a non-Python repository, all query commands remain unchanged, and you have a blast radius for one function in that repository. If you are a Lab student, use a function from your own project and post the URL and blast output in `#ship`.
 
 ## Sources
 

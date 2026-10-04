@@ -20,7 +20,7 @@ Evaluate **reversibility**: data in a proprietary store or models owned by a fra
 
 Write the goal, constraints, and relevant users, data, or partner. Name the stack directly. Describe at least two alternatives and why each lost. Record what the decision makes easier, what it makes expensive, and the condition that would trigger a review. State the cost and the unit you will monitor. The writing is a thinking tool. The reasoning is finished when you can explain the choice without rereading the note.
 
-**GridGlade**, the shared multiplayer game used as the example here, shows one finished architecture: a Unity WebGL client served through a content delivery network, and a .NET WebSocket server on one rented virtual machine with no database. That is a monolith on a well-understood host. The interesting part of that choice is what would force a change: a need for durable player state, a host you can no longer operate, or a cost unit that grows faster than the goal can bear.
+A small multiplayer browser game shows one finished architecture: a Unity WebGL client served through a content delivery network, and a .NET WebSocket server on one rented virtual machine with no database. That is a monolith on a well-understood host. The interesting part of that choice is what would force a change: a need for durable player state, a host you can no longer operate, or a cost unit that grows faster than the goal can bear.
 
 Technology choices compound. Every database, framework, queue, and service becomes something the team must understand, secure, upgrade, observe, and eventually replace. The cost arrives long after the excitement of choosing it.
 

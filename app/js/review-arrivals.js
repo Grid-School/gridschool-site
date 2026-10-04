@@ -8,7 +8,7 @@
  * ones that just came back. `watchReviewArrivals` wires it to the store.
  */
 
-import { OUTCOME } from "./graph/model.js";
+import { OUTCOME, stepNumber } from "./graph/model.js";
 import { toast } from "./ui.js";
 
 export function arrivals(before = [], after = []) {
@@ -19,7 +19,7 @@ export function arrivals(before = [], after = []) {
 /** The one line the student reads. */
 export function arrivalLine(review, byId) {
   const node = review.nodeId ? byId?.get(review.nodeId) : null;
-  const where = node ? `${String(node.n).padStart(2, "0")} · ${node.title}` : review.title ?? "your work";
+  const where = node ? `${stepNumber(node)} · ${node.title}` : review.title ?? "your work";
   return (review.outcome ?? OUTCOME.ACCEPTED) === OUTCOME.CHANGES
     ? `Changes came back on ${where}. The fix is on the node.`
     : `Accepted: ${where}. It is lit.`;

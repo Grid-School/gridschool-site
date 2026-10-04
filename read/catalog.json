@@ -15,7 +15,7 @@
       "series": "disciplines",
       "mins": 12,
       "attachesTo": "cv.four",
-      "walk": 2
+      "walk": 4
     },
     {
       "id": "disciplines/01-system-comprehension",
@@ -23,7 +23,7 @@
       "series": "disciplines",
       "mins": 14,
       "attachesTo": "cv.understand",
-      "walk": 16
+      "walk": 18
     },
     {
       "id": "disciplines/02-context-and-graph-engineering",
@@ -31,7 +31,7 @@
       "series": "disciplines",
       "mins": 12,
       "attachesTo": "gr.pack",
-      "walk": 23
+      "walk": 26
     },
     {
       "id": "disciplines/03-problem-framing",
@@ -39,7 +39,7 @@
       "series": "disciplines",
       "mins": 11,
       "attachesTo": "cv.frame",
-      "walk": 20
+      "walk": 22
     },
     {
       "id": "disciplines/04-specification-engineering",
@@ -47,7 +47,7 @@
       "series": "disciplines",
       "mins": 13,
       "attachesTo": "cv.spec",
-      "walk": 24
+      "walk": 27
     },
     {
       "id": "disciplines/05-agentic-workflow-engineering",
@@ -55,7 +55,7 @@
       "series": "disciplines",
       "mins": 14,
       "attachesTo": "cv.delegate",
-      "walk": 29
+      "walk": 32
     },
     {
       "id": "disciplines/06-evaluation-engineering",
@@ -63,15 +63,15 @@
       "series": "disciplines",
       "mins": 13,
       "attachesTo": "cv.check",
-      "walk": 27
+      "walk": 30
     },
     {
       "id": "disciplines/07-reliability-and-systems-reasoning",
       "title": "07 · Reliability and systems reasoning",
       "series": "disciplines",
       "mins": 12,
-      "attachesTo": "wd.ticket",
-      "walk": 31
+      "attachesTo": "cap.review",
+      "walk": 35
     },
     {
       "id": "disciplines/08-product-and-value-engineering",
@@ -79,7 +79,7 @@
       "series": "disciplines",
       "mins": 12,
       "attachesTo": "cap.outcome",
-      "walk": 36
+      "walk": 40
     },
     {
       "id": "disciplines/09-technical-communication-and-defense",
@@ -87,7 +87,7 @@
       "series": "disciplines",
       "mins": 13,
       "attachesTo": "cap.defend",
-      "walk": 37
+      "walk": 41
     },
     {
       "id": "disciplines/10-evidence-gates-and-the-ledger",
@@ -95,7 +95,7 @@
       "series": "disciplines",
       "mins": 14,
       "attachesTo": "or.start",
-      "walk": 3
+      "walk": 5
     },
     {
       "id": "disciplines/11-the-portfolio-thread",
@@ -103,7 +103,7 @@
       "series": "disciplines",
       "mins": 13,
       "attachesTo": "sg.profile",
-      "walk": 30
+      "walk": 33
     },
     {
       "id": "disciplines/12-work-states-after-scrum",
@@ -111,7 +111,7 @@
       "series": "disciplines",
       "mins": 11,
       "attachesTo": "ops.flow",
-      "walk": 4
+      "walk": 6
     },
     {
       "id": "disciplines/13-evaluation-modes-and-traps",
@@ -119,7 +119,7 @@
       "series": "disciplines",
       "mins": 10,
       "attachesTo": "cv.check",
-      "walk": 28
+      "walk": 31
     },
     {
       "id": "disciplines/14-containment-and-accountability",
@@ -127,7 +127,7 @@
       "series": "disciplines",
       "mins": 14,
       "attachesTo": "cv.contain",
-      "walk": 32
+      "walk": 36
     },
     {
       "id": "disciplines/15-how-a-system-runs",
@@ -135,7 +135,7 @@
       "series": "disciplines",
       "mins": 12,
       "attachesTo": "fs.map",
-      "walk": 5
+      "walk": 7
     },
     {
       "id": "disciplines/16-front-end-foundations",
@@ -143,7 +143,7 @@
       "series": "disciplines",
       "mins": 12,
       "attachesTo": "fs.front",
-      "walk": 6
+      "walk": 8
     },
     {
       "id": "disciplines/17-back-end-foundations",
@@ -151,7 +151,7 @@
       "series": "disciplines",
       "mins": 12,
       "attachesTo": "fs.back",
-      "walk": 7
+      "walk": 9
     },
     {
       "id": "disciplines/18-data-what-you-keep",
@@ -159,7 +159,7 @@
       "series": "disciplines",
       "mins": 12,
       "attachesTo": "fs.data",
-      "walk": 8
+      "walk": 10
     },
     {
       "id": "disciplines/19-contracts-and-trust",
@@ -167,7 +167,7 @@
       "series": "disciplines",
       "mins": 13,
       "attachesTo": "fs.api",
-      "walk": 9
+      "walk": 11
     },
     {
       "id": "disciplines/20-ship-and-host",
@@ -175,7 +175,7 @@
       "series": "disciplines",
       "mins": 12,
       "attachesTo": "fs.ship",
-      "walk": 10
+      "walk": 12
     },
     {
       "id": "disciplines/21-observability-and-incidents",
@@ -183,7 +183,7 @@
       "series": "disciplines",
       "mins": 12,
       "attachesTo": "fs.observe",
-      "walk": 11
+      "walk": 13
     },
     {
       "id": "disciplines/22-principles-as-vocabulary",
@@ -191,7 +191,7 @@
       "series": "disciplines",
       "mins": 13,
       "attachesTo": "fs.principles",
-      "walk": 12
+      "walk": 14
     },
     {
       "id": "disciplines/23-choosing-technology",
@@ -199,7 +199,7 @@
       "series": "disciplines",
       "mins": 12,
       "attachesTo": "fs.choose",
-      "walk": 13
+      "walk": 15
     },
     {
       "id": "projects/menu",
@@ -207,7 +207,7 @@
       "series": "projects",
       "mins": 10,
       "attachesTo": "fs.choose",
-      "walk": 14
+      "walk": 16
     },
     {
       "id": "kit/README",
@@ -215,7 +215,7 @@
       "series": "kit",
       "mins": 5,
       "attachesTo": "fs.choose",
-      "walk": 15
+      "walk": 17
     },
     {
       "id": "kit/SPEC",
@@ -270,90 +270,102 @@
       "title": "00 · Your repo is a graph",
       "series": "nanograph",
       "mins": 20,
-      "walk": 17
+      "walk": 19
     },
     {
       "id": "nanograph/01-parse-one-file",
       "title": "01 · Parse one file",
       "series": "nanograph",
       "mins": 45,
-      "walk": 18
+      "walk": 20
     },
     {
       "id": "nanograph/02-edges-across-files",
       "title": "02 · Edges across files",
       "series": "nanograph",
       "mins": 60,
-      "walk": 19
+      "walk": 21
     },
     {
       "id": "nanograph/03-who-calls-x",
       "title": "03 · Who calls X",
       "series": "nanograph",
       "mins": 45,
-      "walk": 21
+      "walk": 24
     },
     {
       "id": "nanograph/04-blast-radius",
       "title": "04 · Blast radius",
       "series": "nanograph",
       "mins": 45,
-      "walk": 22
+      "walk": 25
     },
     {
       "id": "nanograph/05-cycles",
       "title": "05 · Cycles",
       "series": "nanograph",
       "mins": 45,
-      "walk": 33
+      "walk": 37
     },
     {
       "id": "nanograph/06-load-bearing",
       "title": "06 · Load-bearing code",
       "series": "nanograph",
       "mins": 50,
-      "walk": 34
+      "walk": 38
     },
     {
       "id": "nanograph/07-module-coupling",
       "title": "07 · Module coupling",
       "series": "nanograph",
       "mins": 40,
-      "walk": 35
+      "walk": 39
     },
     {
       "id": "nanograph/08-swap-the-parser",
       "title": "08 · Swap the parser",
       "series": "nanograph",
       "mins": 90,
-      "walk": 38
+      "walk": 43
     },
     {
       "id": "nanograph/09-context-packing",
       "title": "09 · Context packing",
       "series": "nanograph",
       "mins": 60,
-      "walk": 39
+      "walk": 44
     },
     {
       "id": "nanograph/10-ship-it",
       "title": "10 · Ship it",
       "series": "nanograph",
       "mins": 60,
-      "walk": 40
+      "walk": 45
     },
     {
       "id": "nanograph/11-make-it-yours",
       "title": "11 · Make it yours",
       "series": "nanograph",
       "mins": 180,
-      "walk": 41
+      "walk": 46
     },
     {
       "id": "student-zero/or-start",
       "title": "Start here: the first four tasks",
       "series": "student-zero",
       "mins": 10
+    },
+    {
+      "id": "kit/WORK-LOG",
+      "title": "Work and learning record",
+      "series": "kit",
+      "mins": 3
+    },
+    {
+      "id": "kit/CAREER-TRACKER",
+      "title": "Career activity record",
+      "series": "kit",
+      "mins": 3
     }
   ],
   "briefs": [
@@ -363,7 +375,7 @@
       "series": "briefs",
       "mins": 5,
       "attachesTo": "cv.check",
-      "walk": 26
+      "walk": 29
     }
   ],
   "readings": [
@@ -373,7 +385,7 @@
       "series": "readings",
       "mins": 5,
       "attachesTo": "cap.change",
-      "walk": 25
+      "walk": 28
     },
     {
       "id": "readings/your-machine",
@@ -381,7 +393,62 @@
       "series": "readings",
       "mins": 8,
       "attachesTo": "or.setup",
+      "walk": 2
+    },
+    {
+      "id": "readings/ai-and-foundations",
+      "title": "Using AI while learning to own the result",
+      "series": "readings",
+      "mins": 8,
+      "attachesTo": [
+        "or.start",
+        "cv.understand"
+      ],
       "walk": 1
+    },
+    {
+      "id": "readings/northline-baseline",
+      "title": "Your first look at Northline Desk",
+      "series": "readings",
+      "mins": 5,
+      "attachesTo": [
+        "or.setup"
+      ],
+      "walk": 3
+    },
+    {
+      "id": "readings/reality-gate",
+      "title": "Check the problem before you build",
+      "series": "readings",
+      "mins": 8,
+      "attachesTo": [
+        "cv.frame",
+        "pj.model",
+        "sg.scope"
+      ],
+      "walk": 23
+    },
+    {
+      "id": "readings/career-evidence",
+      "title": "Help the right people see your work",
+      "series": "readings",
+      "mins": 15,
+      "attachesTo": [
+        "sg.profile",
+        "sg.show",
+        "sg.apply"
+      ],
+      "walk": 34
+    },
+    {
+      "id": "readings/arena",
+      "title": "Respond to an unexpected change",
+      "series": "readings",
+      "mins": 5,
+      "attachesTo": [
+        "cap.defend"
+      ],
+      "walk": 42
     }
   ]
 }

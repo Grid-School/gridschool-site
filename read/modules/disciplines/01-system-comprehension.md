@@ -16,19 +16,19 @@ An assistant can fake this skill more convincingly than most. Ask a model to exp
 
 The faster path is the one the running system already knows. Clone the repository, get it running, and use the product. Open the app, connect, and watch one action happen. You cannot understand code you have never seen do anything. The running app gives you real behaviour to attach the code to later.
 
-Then pick one action and follow it all the way through. **GridGlade**, the shared multiplayer game used as the example here, gives us a player moving. CloudFront, a content delivery network, serves its Unity WebGL client. A movement intent leaves the browser as a WebSocket frame. A process on Lightsail, a small virtual-server service, receives it. GridGlade has no database, so the server holds position in memory. Restart the process and every player disappears. The server currently accepts the position the client reports, which means the client is the authority for that piece of state. That is a known trust-boundary defect because a user controls the client.
+Then pick one action and follow it all the way through. Take a small multiplayer browser game as the example, and follow a player moving. CloudFront, a content delivery network, serves its Unity WebGL client. A movement intent leaves the browser as a WebSocket frame. A process on Lightsail, a small virtual-server service, receives it. The game has no database, so the server holds position in memory. Restart the process and every player disappears. Suppose the server accepts the position the client reports, which means the client is the authority for that piece of state. That is a trust-boundary defect because a user controls the client.
 
 Following that one path teaches the layers in the order they actually connect: the screen, the message, the handler, the state, the broadcast back to other clients. Reading fifty files across the repository teaches fifty disconnected facts. Tracing one feature teaches the project's conventions.
 
 Along the path, write down what you can confirm. Which processes exist. Which process may change each piece of state. What survives a restart. What happens, in order, when the player taps. What crosses the wire, and in which format. What must stay true. Where the path breaks if the client lies or the server dies mid-message. Who may do what. How code reaches the host. How you would know what happened. You will not have every answer on day one. Say which ones you do not have.
 
-A generic multiplayer game with persistence and plots would add more boxes: a gateway that authenticates, a game session that owns the tick, and a store that keeps inventory across restarts. GridGlade is smaller than that picture. Include the missing database in the map, because a useful model records missing parts as well as existing machines.
+A generic multiplayer game with persistence and plots would add more boxes: a gateway that authenticates, a game session that owns the tick, and a store that keeps inventory across restarts. The example game is smaller than that picture. Include the missing database in the map, because a useful model records missing parts as well as existing machines.
 
 ## The test that separates a model from a summary
 
 Once you have a model, check it against reality with **counterfactuals**: questions the system's behaviour will answer whether or not your model does.
 
-Start with questions GridGlade can answer now. Where is the authority over a player's position, and what happens if the client lies? What disappears when the server process restarts? Then label richer examples as hypothetical: if a future game added plots and inventory, what would happen if two players claimed the same plot in one tick, or if the server died halfway through an inventory transaction?
+Start with questions the small game can answer now. Where is the authority over a player's position, and what happens if the client lies? What disappears when the server process restarts? Then label richer examples as hypothetical: if a future game added plots and inventory, what would happen if two players claimed the same plot in one tick, or if the server died halfway through an inventory transaction?
 
 Write your answer before you look. Then look. Where you were wrong, your model was wrong, and you have found the exact place to read more carefully. Where you were right, you have earned the confidence you now have. A summary describes what you already saw. A model predicts what will happen next, which is why it can be checked.
 

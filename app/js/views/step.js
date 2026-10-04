@@ -10,12 +10,12 @@
 
 import { el, mount } from "../dom.js";
 import { btn, placeholder, toast, field } from "../ui.js";
-import { STATUS, blockedBy, progress, isSpine, nextUp } from "../graph/model.js";
+import { STATUS, blockedBy, progress, isSpine, nextUp, stepNumber } from "../graph/model.js";
 import { taskRow, reviewScores } from "./parts.js";
 import { statusLabel, trackLabel, ccvvLabel, stepRule } from "../copy.js";
 import { videoCard, resolveMedia, filmSummary } from "./video.js";
 import { handoffDisclosure } from "./handoff.js";
-import { TASK_STATE } from "../tasks.js";
+import { withSavedState, isCountTask } from "../task-state.js";
 import { renderMarkdown, splitTitle } from "../markdown.js";
 import { hydrateMermaid, mermaidSource } from "../mermaid.js";
 import { provesBlock } from "./proves.js";
@@ -75,6 +75,23 @@ function lessonSection(section, { letter = false } = {}) {
 }
 
 /** True when #/map/<id> should be the step page rather than the graph. */
+/**
+ * The line over a step's task list. Habit (count) tasks reset each day or
+ * week and never block the step, so "in order, check each box" would be
+ * wrong for them; say what they are instead.
+ */
+export function tasksLead(node, welcome = false) {
+  if (welcome) return "Do these in order. Check the box after you have finished the work. Reading the task does not complete it.";
+  const tasks = node?.tasks ?? [];
+  const habits = tasks.filter(isCountTask);
+  if (!habits.length) return "Complete these tasks in order. Check each box after you finish the work.";
+  const periods = new Set(habits.map((task) => (task.per === "week" ? "week" : "day")));
+  const reset = periods.size === 1 ? `each ${[...periods][0]}` : "each day or week";
+  const habitLine = `Habits reset ${reset}; they never block this step.`;
+  if (habits.length === tasks.length) return `Keep these habits going. ${habitLine}`;
+  return `Complete the other tasks in order and check each box after you finish the work. ${habitLine}`;
+}
+
 export function isStepArgs(args, graph) {
   const list = Array.isArray(args) ? args : [];
   const [arg] = list;
@@ -127,7 +144,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
       Array.isArray(node.weeks) && node.weeks.length
         ? ` · week ${node.weeks[0] === node.weeks[1] ? node.weeks[0] : `${node.weeks[0]} to ${node.weeks[1]}`}`
         : "";
-    return `${track} · ${family?.label ?? "Step"} · ${String(node.n).padStart(2, "0")} · ${statusLabel(node.status)}${weeks}`;
+    return `${track} · ${family?.label ?? "Step"} · ${stepNumber(node)} · ${statusLabel(node.status)}${weeks}`;
   }
 
   function stepView(node, graph, student) {
@@ -204,9 +221,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
           el(
             "p.step__tasks-lead",
             {},
-            welcome
-              ? "Do these in order. Check the box after you have finished the work. Reading the task does not complete it."
-              : "Complete these tasks in order. Check each box after you finish the work."
+            tasksLead(node, welcome)
           ),
           el(
             "div.tasks",
@@ -214,14 +229,13 @@ export function renderStep(ctx, nodeId, moduleId = null) {
             node.tasks.map((task, i) =>
               taskRow(
                 {
-                  ...task,
+                  ...withSavedState(task, student),
                   nodeId: node.id,
                   nodeN: node.n,
+                  nodeLabel: stepNumber(node),
                   nodeTitle: node.title,
-                  state: student.tasks?.[task.id]?.state ?? TASK_STATE.TODO,
-                  answers: student.tasks?.[task.id]?.answers ?? {},
                   index: i + 1,
-                  hideKind: true,
+                  hideKind: !isCountTask(task),
                 },
                 { store: current.store, navigate: current.navigate }
               )
@@ -318,7 +332,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
                   el(
                     "button.room__goto",
                     { type: "button", onclick: () => current.navigate("map", blocker.id) },
-                    `Go to ${String(blocker.n).padStart(2, "0")} · ${blocker.title}`
+                    `Go to ${stepNumber(blocker)} · ${blocker.title}`
                   )
                 )
               )
@@ -581,7 +595,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
                 : "Orientation complete. Open the Board to see your current work."
             );
           } else {
-            toast(`Step ${String(node.n).padStart(2, "0")} saved.`);
+            toast(`Step ${stepNumber(node)} saved.`);
           }
         },
       },
@@ -625,7 +639,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
         {},
         (node.requires ?? []).map((id) => {
           const req = graph.byId.get(id);
-          return el("span.chip2", {}, req ? `${String(req.n).padStart(2, "0")} ${req.title}` : id);
+          return el("span.chip2", {}, req ? `${stepNumber(req)} ${req.title}` : id);
         }),
         !(node.requires ?? []).length && el("span.muted", {}, "no prerequisites")
       ),

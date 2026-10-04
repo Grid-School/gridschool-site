@@ -55,21 +55,26 @@ test("discipline readings keep homework and course scoring out of the article", 
   }
 });
 
-test("each standalone reading defines GridGlade on first use", () => {
+test("no reading points at the retired multiplayer game", () => {
+  // GridGlade (and GridSeak before it) was the shared game students used to
+  // change. Students now ship to their own project; a small multiplayer game
+  // may still appear as a hypothetical example, but never as a place to go.
+  const retired = /GridGlade|GridSeak|play\.gridschool|world[- ]server|shared multiplayer game|#world\b|#bugs\b/i;
+  const dirs = ["disciplines", "readings", "student-zero", "nanograph", "briefs"];
+  for (const dir of dirs) {
+    const path = join(root, "content", dir);
+    for (const name of readdirSync(path).filter((file) => file.endsWith(".md"))) {
+      const text = readFileSync(join(path, name), "utf8");
+      assert.doesNotMatch(text, retired, `${dir}/${name} still points at the retired game`);
+      assert.doesNotMatch(text, /\bStage\b/, `${dir}/${name} still sends students to Stage`);
+    }
+  }
+});
+
+test("the public reading mirror matches its source for every discipline", () => {
   for (const name of files) {
-    const text = readFileSync(join(sourceDir, name), "utf8");
-    const firstUse = text.indexOf("GridGlade");
-    if (firstUse < 0) continue;
-
-    const paragraphStart = text.lastIndexOf("\n\n", firstUse) + 2;
-    const nextBreak = text.indexOf("\n\n", firstUse);
-    const paragraphEnd = nextBreak < 0 ? text.length : nextBreak;
-    const firstParagraph = text.slice(paragraphStart, paragraphEnd);
-
-    assert.match(
-      firstParagraph,
-      /shared multiplayer game/i,
-      `${name} uses GridGlade before explaining that it is the shared multiplayer game`,
-    );
+    const source = readFileSync(join(sourceDir, name), "utf8");
+    const mirror = readFileSync(join(here, "../read/modules/disciplines", name), "utf8");
+    assert.equal(mirror, source, `${name}: run ops/sync-reading.sh`);
   }
 });

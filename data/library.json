@@ -4,7 +4,7 @@
     {
       "id": "first",
       "title": "Week 1: board, then boot",
-      "blurb": "Required first. How this board works, then It runs. GridGlade, graph, and Career can wait for a mission receipt.",
+      "blurb": "Required first. How this board works, then It runs. Graph and Career can wait for a mission receipt.",
       "items": [
         {
           "id": "v.board",
@@ -48,7 +48,7 @@
     {
       "id": "project",
       "title": "On the required spine",
-      "blurb": "Weeks 2-8. Watch the film that matches the spine step you are on, then do that step. After cap.change, Career core is required. Depth (world, graph, Career expansion) is elective.",
+      "blurb": "Weeks 2-8. Watch the film that matches the spine step you are on, then do that step. After cap.change, Career core is required. Depth (graph, Career expansion) is elective.",
       "items": [
         {
           "id": "v.cv.four",

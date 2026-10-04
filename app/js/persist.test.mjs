@@ -362,3 +362,25 @@ test("two-writer simulation: student laptop and Aden console stay coherent", () 
   assert.equal(attention.includes("review.returned"), false);
   assert.equal(attention.includes("task.toggled"), false);
 });
+
+test("a student's published map rides the seed and the merge, never the overlay", () => {
+  const map = { version: "1", title: "Zed", families: [], phases: [], nodes: [{ id: "a" }], weekly: [] };
+  const seed = seedFromSnapshot({ slug: "zed", identity: { name: "Zed" }, map });
+  assert.deepEqual(seed.map, map);
+  assert.equal(seedFromSnapshot({ slug: "zed", identity: {} }).map, undefined);
+  const merged = mergeStudent(seed, { map: { nodes: [] }, tasks: { x: { state: "done" } } });
+  assert.deepEqual(merged.map, map);
+  assert.equal(merged.tasks.x.state, "done");
+});
+
+test("the board uses a student's map when there is one, and the universal curriculum otherwise", async () => {
+  const { boardCurriculum, usableMap } = await import("./api.js");
+  const universal = { version: "u", families: [], phases: [], nodes: [{ id: "u.1", n: 0 }], weekly: [] };
+  const map = { version: "m", title: "Zed", families: [], phases: [], nodes: [{ id: "m.1", n: 0 }], weekly: [] };
+  assert.equal(boardCurriculum({ universal, student: { map }, slug: "zed" }).nodes[0].id, "m.1");
+  assert.equal(boardCurriculum({ universal, student: {}, slug: "zed" }).nodes[0].id, "u.1");
+  assert.equal(boardCurriculum({ universal, student: { map }, slug: "demo" }).nodes[0].id, "u.1");
+  assert.equal(boardCurriculum({ universal, student: { map }, slug: "zed", tour: true }).nodes[0].id, "u.1");
+  assert.equal(usableMap({ nodes: [] }), null);
+  assert.equal(usableMap(null), null);
+});

@@ -1,14 +1,13 @@
 /**
  * One line under Today's next action: which family the step belongs to,
  * and whether it is required spine or elective depth.
- * Unknown family returns null; never invent "the world" as a fallback.
+ * Unknown family returns null; never invent a family as a fallback.
  */
 
 const FAMILY_LINE = {
   portfolio: "This week's system · Repo (required)",
   ccvv: "This week's system · Skills (required)",
   capstone: "This week's system · Mission (required)",
-  world: "This week's system · The world (depth track)",
   graph: "This week's system · Graph / nanograph (depth)",
   project: "This week's system · Your own system (depth)",
 };

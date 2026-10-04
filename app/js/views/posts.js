@@ -4,13 +4,25 @@ import { el } from "../dom.js";
 import { btn, field } from "../ui.js";
 import { formatAge } from "../posts/age.js";
 import { SUGGESTIONS, addKeyword, parseKeywords } from "../posts/search.js";
-import { loadDesk, saveDesk, todayKey } from "../posts/desk.js";
-import { fetchNextOpportunity, markOpportunity, queueEnabled } from "../posts/remote.js";
+import { loadDesk, rememberSeen, saveDesk, todayKey } from "../posts/desk.js";
+import {
+  fetchNextOpportunity,
+  fetchPreviewOpportunity,
+  markOpportunity,
+  queueMode,
+  retireOpportunity,
+} from "../posts/remote.js";
+
+const OFF_NOTE = {
+  demo: "The demo board does not use live posts. Sign in to a student board.",
+  other: "The live queue is not connected for this board.",
+};
 
 export function renderPosts(ctx) {
   const root = el("div.view.view--posts");
   const slug = ctx.state.slug;
   const today = todayKey();
+  const mode = queueMode(slug);
   let desk = loadDesk(safeStorage(), slug, today);
   let status = "";
   let busy = false;
@@ -67,20 +79,24 @@ export function renderPosts(ctx) {
             })
           ),
           status ? el("p.posts__status", { role: "status" }, status) : null,
-          !queueEnabled(slug)
-            ? el(
-                "p.posts__status",
-                {},
-                slug === "demo"
-                  ? "The demo board does not consume live opportunities. Sign in to a student board to use the shared queue."
-                  : "This board is not connected to the live opportunity queue."
-              )
-            : null
+          modeNote()
         )
       ),
     ];
     if (desk.current) page.push(currentCard(desk.current));
     root.replaceChildren(...page);
+  }
+
+  function modeNote() {
+    if (mode === "preview") {
+      return el(
+        "p.posts__status.posts__status--dev",
+        {},
+        `Developer preview. Real posts from the live queue, but nothing is recorded on the server and no student slot is used. This browser remembers ${desk.seen.length} post${desk.seen.length === 1 ? "" : "s"} it already opened.`
+      );
+    }
+    if (mode === "off") return el("p.posts__status", {}, slug === "demo" ? OFF_NOTE.demo : OFF_NOTE.other);
+    return null;
   }
 
   function suggest(keywords) {
@@ -145,8 +161,14 @@ export function renderPosts(ctx) {
             btn({
               label: "Skip",
               variant: "quiet",
-              disabled: post.state === "skipped",
+              disabled: post.state === "skipped" || post.state === "comments_closed",
               onclick: () => complete(post, "skipped"),
+            }),
+            btn({
+              label: "Comments closed",
+              variant: "quiet",
+              disabled: post.state === "comments_closed",
+              onclick: () => complete(post, "comments_closed"),
             })
           )
         )
@@ -162,11 +184,8 @@ export function renderPosts(ctx) {
       draw();
       return;
     }
-    if (!queueEnabled(slug)) {
-      status =
-        slug === "demo"
-          ? "The demo board does not use live posts. Sign in to a student board."
-          : "The live queue is not connected for this board.";
+    if (mode === "off") {
+      status = slug === "demo" ? OFF_NOTE.demo : OFF_NOTE.other;
       draw();
       return;
     }
@@ -180,45 +199,92 @@ export function renderPosts(ctx) {
     status = "Choosing the best unseen post.";
     draw();
     try {
-      const payload = await fetchNextOpportunity(slug, parseKeywords(desk.keywords));
+      const interests = parseKeywords(desk.keywords);
+      const payload =
+        mode === "preview"
+          ? await fetchPreviewOpportunity(interests, desk.seen)
+          : await fetchNextOpportunity(slug, interests);
       const opportunity = payload.opportunity;
       if (!opportunity) {
         closeTab(tab);
         status =
-          "No fresh qualified post is available right now. The next refresh will add one when a vetted leader posts.";
+          mode === "preview"
+            ? "No commentable post is left that this browser has not already opened. Try again in a few minutes."
+            : "No commentable post is available right now. Try again in a few minutes.";
         return;
       }
       desk.current = normalizeOpportunity(opportunity);
+      if (mode === "preview") desk.seen = rememberSeen(desk.seen, opportunity.id);
       persist();
       tab.location = opportunity.url;
       tab.opener = null;
-      markOpportunity(slug, opportunity.id, "opened").catch(() => {});
+      if (mode === "live") markOpportunity(slug, opportunity.id, "opened").catch(() => {});
       status = `${opportunity.author} is open. ${opportunity.gap_label} Click Next post for another.`;
     } catch (error) {
       closeTab(tab);
-      status = error.status === 401
-        ? "Your session expired. Sign in again."
-        : "The opportunity queue is unavailable right now. Try again shortly.";
+      status = failureMessage(error);
     } finally {
       busy = false;
       draw();
     }
   }
 
+  function failureMessage(error) {
+    if (mode === "preview" && error.status === 403) {
+      return "Developer preview needs the admin token. Open the local admin console, save the admin token there, then come back.";
+    }
+    if (error.status === 401) {
+      return mode === "preview"
+        ? "The saved token was refused. Save the current admin token in the local admin console."
+        : "Your session expired. Sign in again.";
+    }
+    return "The opportunity queue is unavailable right now. Try again shortly.";
+  }
+
   async function complete(post, state) {
-    if (!queueEnabled(slug) || busy) return;
-    busy = true;
-    try {
-      await markOpportunity(slug, post.id || post.post_id, state);
+    if (mode === "off" || busy) return;
+    let advance = state === "skipped" || state === "comments_closed";
+    if (mode === "preview") {
       desk.current = { ...post, state };
       persist();
-      status = state === "commented" ? "Comment recorded. Ask for the next post." : "Skipped. Ask for the next post.";
+      if (state === "comments_closed") {
+        await retireOpportunity(post.id || post.post_id).catch(() => {});
+      }
+      if (advance) {
+        status = state === "comments_closed"
+          ? "Comments are closed on that post. Finding another."
+          : "Skipped. Finding another.";
+        draw();
+        await nextPost(desk.keywords);
+        return;
+      }
+      status = "Marked on this browser only. Developer preview records nothing on the server.";
+      draw();
+      return;
+    }
+    busy = true;
+    try {
+      const assignment = state === "comments_closed" ? "skipped" : state;
+      await markOpportunity(slug, post.id || post.post_id, assignment);
+      if (state === "comments_closed") {
+        await retireOpportunity(post.id || post.post_id);
+      }
+      desk.current = { ...post, state };
+      persist();
+      status =
+        state === "commented"
+          ? "Comment recorded. Ask for the next post."
+          : state === "comments_closed"
+            ? "Comments are closed on that post. Finding another."
+            : "Skipped. Finding another.";
     } catch {
       status = "That update did not save. Try again.";
+      advance = false;
     } finally {
       busy = false;
       draw();
     }
+    if (advance) await nextPost(desk.keywords);
   }
 
   draw();

@@ -1,10 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { buildGraph, nextUp, progress, visibleGraph, STATUS, TRACK } from "./model.js";
+import { buildGraph, nextUp, progress, visibleGraph, isSide, isSpine, trackOf, stepNumber, STATUS, TRACK } from "./model.js";
+import { buildQueue } from "../tasks.js";
 
 const families = [
   { id: "ccvv", track: "spine" },
-  { id: "world", track: "depth" },
+  { id: "lab", track: "depth" },
   { id: "graph", track: "depth" },
 ];
 
@@ -16,24 +17,24 @@ test("track is derived from the family when the node does not set one", () => {
   const graph = buildGraph(
     curriculum([
       { id: "or.start", n: 0, family: "ccvv", requires: [] },
-      { id: "wd.local", n: 9, family: "world", requires: [] },
+      { id: "lab.local", n: 9, family: "lab", requires: [] },
     ]),
     { evidence: {} }
   );
   assert.equal(graph.byId.get("or.start").track, TRACK.SPINE);
-  assert.equal(graph.byId.get("wd.local").track, TRACK.DEPTH);
+  assert.equal(graph.byId.get("lab.local").track, TRACK.DEPTH);
 });
 
 test("nextUp prefers an open spine node over an open depth node", () => {
   const graph = buildGraph(
     curriculum([
       { id: "or.start", n: 0, family: "ccvv", requires: [] },
-      { id: "wd.local", n: 9, family: "world", requires: [] },
+      { id: "lab.local", n: 9, family: "lab", requires: [] },
     ]),
     { evidence: {} }
   );
   assert.equal(graph.byId.get("or.start").status, STATUS.OPEN);
-  assert.equal(graph.byId.get("wd.local").status, STATUS.OPEN);
+  assert.equal(graph.byId.get("lab.local").status, STATUS.OPEN);
   assert.equal(nextUp(graph).id, "or.start");
 });
 
@@ -41,12 +42,12 @@ test("nextUp may pick depth only when no spine node is open", () => {
   const graph = buildGraph(
     curriculum([
       { id: "or.start", n: 0, family: "ccvv", requires: [] },
-      { id: "wd.local", n: 9, family: "world", requires: [] },
+      { id: "lab.local", n: 9, family: "lab", requires: [] },
     ]),
     { evidence: { "or.start": { url: "https://example.com/note" } } }
   );
   assert.equal(graph.byId.get("or.start").status, STATUS.LIT);
-  assert.equal(nextUp(graph).id, "wd.local");
+  assert.equal(nextUp(graph).id, "lab.local");
 });
 
 test("an in-app onboarding node lights only when every task and required answer is complete", () => {
@@ -85,8 +86,8 @@ test("progress splits spine from depth and ignores future nodes", () => {
     curriculum([
       { id: "or.start", n: 0, family: "ccvv", requires: [] },
       { id: "pf.runs", n: 1, family: "ccvv", requires: [] },
-      { id: "wd.local", n: 9, family: "world", requires: [] },
-      { id: "wd.mark", n: 12, family: "world", kind: "future", requires: [] },
+      { id: "lab.local", n: 9, family: "lab", requires: [] },
+      { id: "lab.mark", n: 12, family: "lab", kind: "future", requires: [] },
     ]),
     { evidence: { "or.start": { url: "https://example.com/note" } } }
   );
@@ -132,7 +133,7 @@ test("nextUp prefers picked depth over offered depth once the spine is clear", (
   const graph = buildGraph(
     curriculum([
       { id: "or.start", n: 0, family: "ccvv", requires: [] },
-      { id: "wd.local", n: 9, family: "world", requires: [] },
+      { id: "lab.local", n: 9, family: "lab", requires: [] },
       { id: "gr.parse", n: 12, family: "graph", requires: [] },
     ]),
     { evidence: { "or.start": { url: "https://x/a" } }, chosen: ["gr.parse"] }
@@ -275,4 +276,124 @@ test("unlockAll opens locked nodes without lighting them", () => {
   assert.equal(graph.byId.get("b").status, STATUS.OPEN);
   assert.equal(graph.byId.get("b").devForced, true);
   assert.equal(progress(graph).spine.lit, 0);
+});
+
+/* ---------- side quests and habits (per-student maps) ---------- */
+
+const mapFamilies = [
+  { id: "proof", lane: 0, track: "spine" },
+  { id: "craft", lane: 2, track: "depth" },
+  { id: "foundations", lane: 5, track: "side" },
+];
+
+function studentMap() {
+  return {
+    families: mapFamilies,
+    phases: [],
+    nodes: [
+      { id: "a", n: 0, family: "proof", kind: "core", requires: [], tasks: [] },
+      { id: "b", n: 1, family: "proof", kind: "core", requires: ["a"], tasks: [] },
+      { id: "d", n: 2, family: "craft", kind: "core", requires: [], tasks: [] },
+      { id: "s1", n: 0.5, family: "foundations", kind: "core", requires: [], tasks: [] },
+      { id: "s2", n: 3, family: "foundations", kind: "core", requires: ["s1"], tasks: [] },
+    ],
+  };
+}
+
+test("a side-track family makes its nodes side quests", () => {
+  const graph = buildGraph(studentMap(), { evidence: {} });
+  assert.equal(graph.byId.get("s1").track, TRACK.SIDE);
+  assert.equal(isSide(graph.byId.get("s1")), true);
+  assert.equal(isSpine(graph.byId.get("s1")), false);
+  assert.equal(trackOf({ family: "proof", track: "side" }, mapFamilies), TRACK.SIDE);
+});
+
+test("side quests are open and visible but never offered, hidden, or next", () => {
+  const graph = buildGraph(studentMap(), { evidence: { a: { url: "https://example.com/a" } } });
+  const s1 = graph.byId.get("s1");
+  const s2 = graph.byId.get("s2");
+  assert.equal(s1.status, STATUS.OPEN);
+  assert.equal(s2.status, STATUS.LOCKED);
+  assert.equal(s1.offered || s1.hidden || s2.offered || s2.hidden, false);
+  assert.ok(visibleGraph(graph).nodes.some((node) => node.id === "s2"));
+  assert.equal(nextUp(graph).id, "b");
+});
+
+test("nextUp never falls back to a side quest when nothing else is open", () => {
+  const graph = buildGraph(studentMap(), {
+    evidence: { a: { url: "https://x/a" }, b: { url: "https://x/b" }, d: { url: "https://x/d" } },
+    chosen: ["d"],
+  });
+  assert.equal(graph.byId.get("s1").status, STATUS.OPEN);
+  assert.equal(nextUp(graph), null);
+});
+
+test("progress counts side quests on their own and nowhere else", () => {
+  const graph = buildGraph(studentMap(), {
+    evidence: { a: { url: "https://x/a" }, s1: { url: "https://x/s1" } },
+  });
+  const prog = progress(graph);
+  assert.deepEqual([prog.spine.lit, prog.spine.total], [1, 2]);
+  assert.equal(prog.depth.available, 1);
+  assert.equal(prog.total, 3);
+  assert.deepEqual([prog.side.lit, prog.side.total], [1, 2]);
+});
+
+test("the task queue leaves side quests out", () => {
+  const map = studentMap();
+  map.nodes.find((node) => node.id === "s1").tasks = [{ id: "s1.read", title: "Read it", kind: "write" }];
+  map.nodes.find((node) => node.id === "a").tasks = [{ id: "a.ship", title: "Ship it", kind: "ship" }];
+  const graph = buildGraph(map, { evidence: {} });
+  const queue = buildQueue({ graph, curriculum: map, student: { tasks: {} }, week: 1 });
+  assert.deepEqual(queue.map((task) => task.id), ["a.ship"]);
+
+  // Only side quests open: still nothing queued from them.
+  const done = buildGraph(map, {
+    evidence: { a: { url: "https://x/a" }, b: { url: "https://x/b" }, d: { url: "https://x/d" } },
+  });
+  assert.deepEqual(buildQueue({ graph: done, curriculum: map, student: { tasks: {} }, week: 1 }), []);
+});
+
+test("habit (count) tasks never gate a tasks-completed node", () => {
+  const map = {
+    families: mapFamilies,
+    phases: [],
+    nodes: [
+      {
+        id: "a",
+        n: 0,
+        family: "proof",
+        kind: "core",
+        completion: "tasks",
+        requires: [],
+        tasks: [
+          { id: "a.intro", title: "Introduce yourself", kind: "write" },
+          { id: "a.comments", title: "Comment", kind: "count", target: 3, per: "day" },
+        ],
+      },
+    ],
+  };
+  const graph = buildGraph(map, { tasks: { "a.intro": { state: "done" } } });
+  assert.equal(graph.byId.get("a").status, STATUS.LIT);
+  assert.deepEqual(graph.byId.get("a").taskProgress, { done: 1, total: 1 });
+});
+
+test("side quests read S1, S2… in n order; path steps keep their padded n", () => {
+  const graph = buildGraph(
+    {
+      phases: [],
+      families: [{ id: "p", track: "spine" }, { id: "side", track: "side" }],
+      nodes: [
+        { id: "a", n: 1, family: "p", requires: [] },
+        { id: "s2", n: 105, family: "side", requires: [] },
+        { id: "s1", n: 101, family: "side", requires: [] },
+      ],
+    },
+    { evidence: {}, tasks: {}, reviews: [] }
+  );
+  assert.equal(stepNumber(graph.byId.get("a")), "01");
+  assert.equal(stepNumber(graph.byId.get("s1")), "S1");
+  assert.equal(stepNumber(graph.byId.get("s2")), "S2");
+  assert.equal(graph.byId.get("s2").n, 105, "stored n is untouched");
+  assert.equal(stepNumber({ n: 7 }), "07");
 });

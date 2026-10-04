@@ -5,9 +5,18 @@
  * Most nodes light when a URL exists. A first-run node may explicitly use
  * `completion: "tasks"` when its work belongs inside GridSchool instead of in
  * a fake external artifact.
+ *
+ * Side quests (`track: "side"`) are the philosophy and foundations that sit
+ * beside a student's own map: always visible, never required. They light like
+ * any node, but they are never offered or hidden, never "next", and never in
+ * the required count, so reading them is a choice and skipping them costs
+ * nothing.
+ *
+ * Habit tasks (`kind: "count"`) are tallies that reset each day or week. They
+ * never gate a node: a habit is kept, not finished.
  */
 
-import { taskIsComplete } from "../task-state.js";
+import { taskIsComplete, isCountTask } from "../task-state.js";
 
 export const STATUS = {
   LIT: "lit",
@@ -19,22 +28,41 @@ export const STATUS = {
 export const TRACK = {
   SPINE: "spine",
   DEPTH: "depth",
+  SIDE: "side",
 };
 
-const DEPTH_FAMILIES = new Set(["world", "graph", "project"]);
+const DEPTH_FAMILIES = new Set(["graph", "project"]);
 // Career (signal) is a mixed family: core nodes are spine via node.track or
 // family.track; expansion nodes set track: "depth" explicitly.
 
-/** Spine is the graded path to the defense. Depth is elective. */
+const TRACKS = new Set(Object.values(TRACK));
+
+/** Spine is the graded path to the defense. Depth is elective. Side is off the path. */
 export function trackOf(node, families = []) {
-  if (node.track === TRACK.SPINE || node.track === TRACK.DEPTH) return node.track;
+  if (TRACKS.has(node.track)) return node.track;
   const family = families.find((item) => item.id === node.family);
-  if (family?.track === TRACK.SPINE || family?.track === TRACK.DEPTH) return family.track;
+  if (TRACKS.has(family?.track)) return family.track;
   return DEPTH_FAMILIES.has(node.family) ? TRACK.DEPTH : TRACK.SPINE;
 }
 
 export function isSpine(node) {
   return (node.track ?? TRACK.SPINE) === TRACK.SPINE;
+}
+
+export function isSide(node) {
+  return node?.track === TRACK.SIDE;
+}
+
+/**
+ * The number a student reads on a step. Path steps show their `n` ("07").
+ * Side quests count on their own ("S1", "S2"…) in `n` order, so a map whose
+ * side quests are stored at 101+ never shows "101" on the floor. Stored `n`
+ * is untouched: it still orders the walk.
+ */
+export function stepNumber(node) {
+  if (!node) return "";
+  if (node.sideNumber) return node.sideNumber;
+  return String(node.n ?? "").padStart(2, "0");
 }
 
 export function buildGraph(curriculum, student, { unlockAll = false } = {}) {
@@ -46,6 +74,12 @@ export function buildGraph(curriculum, student, { unlockAll = false } = {}) {
     return { ...merged, track: trackOf(merged, families) };
   });
   const byId = new Map(nodes.map((node) => [node.id, node]));
+  nodes
+    .filter(isSide)
+    .sort((a, b) => a.n - b.n)
+    .forEach((node, index) => {
+      node.sideNumber = `S${index + 1}`;
+    });
 
   const edges = [];
   for (const node of nodes) {
@@ -61,8 +95,10 @@ export function buildGraph(curriculum, student, { unlockAll = false } = {}) {
   const taskState = student?.tasks ?? {};
   const completionEvidence = { ...evidence };
   for (const node of nodes) {
-    if (node.completion !== "tasks" || !(node.tasks ?? []).length) continue;
-    const complete = node.tasks.every((task) => taskIsComplete(task, taskState[task.id] ?? {}));
+    // Habits are tallies, not steps: they never hold a node open.
+    const gating = (node.tasks ?? []).filter((task) => !isCountTask(task));
+    if (node.completion !== "tasks" || !gating.length) continue;
+    const complete = gating.every((task) => taskIsComplete(task, taskState[task.id] ?? {}));
     if (complete) completionEvidence[node.id] = { url: `gridschool:tasks/${node.id}`, internal: true };
   }
   const reviews = student?.reviews ?? [];
@@ -104,9 +140,10 @@ export function buildGraph(curriculum, student, { unlockAll = false } = {}) {
   }
 
   // Depth the map renders instead of hiding: how far into a node's tasks the
-  // student is. Derived here like status, never stored.
+  // student is. Derived here like status, never stored. Habits are left out
+  // for the same reason they do not gate completion.
   for (const node of nodes) {
-    const tasks = node.tasks ?? [];
+    const tasks = (node.tasks ?? []).filter((task) => !isCountTask(task));
     node.taskProgress = {
       done: tasks.filter((task) => taskState[task.id]?.state === "done").length,
       total: tasks.length,
@@ -237,7 +274,7 @@ export function blockedBy(graph, id) {
 
 function openCore(graph) {
   return graph.nodes
-    .filter((node) => node.status === STATUS.OPEN && node.kind !== "future")
+    .filter((node) => node.status === STATUS.OPEN && node.kind !== "future" && !isSide(node))
     .sort((a, b) => a.n - b.n);
 }
 
@@ -266,10 +303,12 @@ function tally(nodes) {
  * Spine counts every required node. Depth counts what the student took on
  * (picked or lit), and reports separately how much is on offer and how much
  * exists, so "0 of 0" on a new board reads as a choice not made rather than
- * a course with no depth.
+ * a course with no depth. Side quests are counted on their own and nowhere
+ * else, so reading one never moves "Required X of Y".
  */
 export function progress(graph) {
-  const core = graph.nodes.filter((node) => node.kind !== "future");
+  const sideNodes = graph.nodes.filter((node) => node.kind !== "future" && isSide(node));
+  const core = graph.nodes.filter((node) => node.kind !== "future" && !isSide(node));
   const spineNodes = core.filter(isSpine);
   const depthNodes = core.filter((node) => !isSpine(node));
   const taken = depthNodes.filter((node) => node.chosen || node.status === STATUS.LIT);
@@ -282,6 +321,7 @@ export function progress(graph) {
     ...tally(core),
     spine: tally(spineNodes),
     depth,
+    side: tally(sideNodes),
   };
 }
 

@@ -2,7 +2,7 @@
 
 These templates open inside GridSchool. Leave them empty during the foundation readings. After you choose from the project menu, use the templates to model and ship the system you own.
 
-A complete project includes a live system, an incident report, and a real user, real data, or a real partner. Build original work; tutorial copies and copies of another student’s project are prohibited.
+A complete project includes a live system, an incident report, and a real user with a measured baseline and feedback. Build original work; tutorial copies and copies of another student’s project are prohibited.
 
 Use the provided templates for every project.
 
@@ -19,3 +19,7 @@ Use the provided templates for every project.
 | `README-shape.md` | What a stranger sees first on the repo: what it is, how to run, how to verify, what it cannot do | The repo root |
 
 Complete the required “What this cannot do” section in `SPEC.md`. A valid check must be able to fail. A complete specification must state the system’s limit.
+
+## Planning and career records
+
+Use [Work and learning record](?m=kit/WORK-LOG) to record time, predictions, project review, and foundations practice. Use [Career activity record](?m=kit/CAREER-TRACKER) to plan relevant conversations and applications. Keep both records private and share selected entries with Aden.

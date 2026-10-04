@@ -87,3 +87,63 @@ export function fetchSiteOverrides() {
 export function saveSiteOverrides(doc) {
   return request("POST", "/site", { doc });
 }
+
+export function listVideoPlans() {
+  return request("GET", "/videos");
+}
+
+export function fetchVideoPlan(slug) {
+  return request("GET", `/videos/${encodeURIComponent(slug)}`);
+}
+
+/**
+ * `base` is the updated_at this copy was loaded at. A newer save on another
+ * device answers 409 instead of being overwritten; `force` overwrites anyway.
+ */
+export function saveVideoPlan(slug, doc, { base = null, force = false } = {}) {
+  return request("POST", `/videos/${encodeURIComponent(slug)}`, { doc, base, force });
+}
+
+/** The newest stored map of one status, or null when there is none. */
+export async function fetchStudentMap(slug, status) {
+  try {
+    return await request("GET", `/students/${encodeURIComponent(slug)}/map?status=${encodeURIComponent(status)}`);
+  } catch (error) {
+    if (error.status === 404) return null;
+    throw error;
+  }
+}
+
+/** Save a new map version. A 400 carries `payload.errors` from validate_map. */
+export function saveStudentMap(slug, map, status, context) {
+  return request("PUT", `/students/${encodeURIComponent(slug)}/map`, { map, status, context });
+}
+
+/**
+ * Open the builder's draft stream (POST with a bearer token, so not
+ * EventSource). Resolves to the Response once the server has accepted the
+ * request; its body is SSE. Refusals before the stream (400/403/503) throw like
+ * any other admin call.
+ */
+export async function openMapDraft(slug, body, { signal } = {}) {
+  const token = persistToken();
+  if (!token) {
+    const error = new Error("persist token missing");
+    error.code = "NO_TOKEN";
+    throw error;
+  }
+  const res = await fetch(`${endpoint()}/students/${encodeURIComponent(slug)}/map/draft`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, Accept: "text/event-stream" },
+    body: JSON.stringify(body),
+    signal,
+  });
+  if (!res.ok) {
+    const payload = await res.json().catch(() => ({}));
+    const error = new Error(payload.error || `persist ${res.status}`);
+    error.status = res.status;
+    error.payload = payload;
+    throw error;
+  }
+  return res;
+}

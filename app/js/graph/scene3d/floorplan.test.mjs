@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { planFloor, STEP, NODE_R } from "./floorplan.js";
+import { planFloor, laneCenter, STEP, NODE_R, LANE_W } from "./floorplan.js";
 
 const families = [
   { id: "signal", lane: 0 },
@@ -81,4 +81,83 @@ test("an empty graph plans an empty floor without throwing", () => {
   const plan = planFloor(graph([]));
   assert.equal(plan.order.length, 0);
   assert.deepEqual(plan.box, { minX: 0, maxX: 1, minZ: 0, maxZ: 1 });
+});
+
+/* ---------- side quests ---------- */
+
+const mapFamilies = [
+  { id: "proof", lane: 0, track: "spine" },
+  { id: "presence", lane: 1, track: "spine" },
+  { id: "network", lane: 2, track: "spine" },
+  { id: "pipeline", lane: 3, track: "spine" },
+  { id: "interview", lane: 4, track: "spine" },
+  { id: "foundations", lane: 9, track: "side" },
+];
+
+function sideGraph() {
+  return {
+    families: mapFamilies,
+    nodes: [
+      { id: "a", n: 0, family: "proof" },
+      { id: "b", n: 1, family: "interview" },
+      { id: "c", n: 2, family: "network" },
+      { id: "s1", n: 3, family: "foundations" },
+      { id: "s2", n: 4, family: "foundations" },
+      { id: "s3", n: 5, family: "foundations" },
+    ],
+    edges: [
+      { from: "a", to: "b" },
+      { from: "b", to: "c" },
+      { from: "s1", to: "s2" },
+      { from: "a", to: "s3" },
+    ],
+  };
+}
+
+test("five lanes centre on their midpoint; side families do not pull the centre", () => {
+  assert.equal(laneCenter(mapFamilies), 2);
+  assert.equal(laneCenter(families), 1.5);
+  const plan = planFloor(sideGraph());
+  assert.equal(plan.at.get("c").x, 0);
+});
+
+test("side quests stand in their own column right of the main floor", () => {
+  const plan = planFloor(sideGraph());
+  assert.deepEqual(plan.order, ["a", "b", "c"]);
+  assert.deepEqual(plan.side, ["s1", "s2", "s3"]);
+  const mainMax = Math.max(...plan.order.map((id) => plan.at.get(id).x));
+  const sideXs = plan.side.map((id) => plan.at.get(id).x);
+  for (const x of sideXs) assert.ok(x > mainMax + LANE_W, `side x ${x} is not clear of the main floor (${mainMax})`);
+  assert.notEqual(sideXs[0], sideXs[1]);
+  // Their own sequence, level with the first main node.
+  assert.deepEqual(plan.side.map((id) => plan.at.get(id).z + 0), [0, -STEP, -2 * STEP]);
+  assert.equal(plan.at.get("a").z + 0, 0);
+  // Main ranks are unaffected by side nodes interleaved in n.
+  assert.equal(plan.at.get("c").z, -2 * STEP);
+});
+
+test("the road never reaches a side quest; edges touching one are ties", () => {
+  const plan = planFloor(sideGraph());
+  assert.deepEqual(plan.sequence, [
+    { from: "a", to: "b" },
+    { from: "b", to: "c" },
+  ]);
+  assert.deepEqual(plan.ties, [
+    { from: "s1", to: "s2" },
+    { from: "a", to: "s3" },
+  ]);
+});
+
+test("the floor box includes the side column, so Fit frames it", () => {
+  const plan = planFloor(sideGraph());
+  const rightmost = Math.max(...plan.side.map((id) => plan.at.get(id).x));
+  assert.equal(plan.box.maxX, rightmost + NODE_R);
+});
+
+test("a node track overrides its family for the side column", () => {
+  const graph = sideGraph();
+  graph.nodes[1] = { ...graph.nodes[1], track: "side" };
+  const plan = planFloor(graph);
+  assert.deepEqual(plan.order, ["a", "c"]);
+  assert.deepEqual(plan.side, ["b", "s1", "s2", "s3"]);
 });

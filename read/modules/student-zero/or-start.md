@@ -10,9 +10,9 @@ In the first field, describe what you are doing now and what is making progress 
 
 Open Discord with the button on the Join Discord task. Read the pinned message in the Asks channel. Post your name, city or time zone, the last thing you built, and the eight-week result from the first task.
 
-## Explore Stage
+## Study software your future user relies on
 
-Open GridGlade from the left-hand menu and choose Stage. GridGlade is the shared multiplayer game, and Stage is the version where the cohort meets. Move your avatar with the W A S D keys or the arrow keys. Open Stage in a second browser tab, move one player, resize the window, refresh, and leave one tab idle for a minute.
+Pick software that you, or a person you could build for, use every week. The problem your own project will solve is the best choice. Use it for twenty minutes the way that person would: try one task twice, resize the window, refresh mid-task, and leave it idle for a minute.
 
 Return to the Welcome step. In the first observation field, describe one behavior a developer could investigate. In the second, describe one useful addition and name its intended user. Record only the behavior you observed; a later lesson investigates possible causes.
 
@@ -22,4 +22,4 @@ Open Calendar from the left-hand menu and check the cohort call and weekly meeti
 
 ## Done when
 
-you have answered both goal fields, posted the complete introduction in the Asks channel, saved two specific Stage observations, checked both meeting times in Calendar, and posted any schedule conflict in the Asks channel.
+you have answered both goal fields, posted the complete introduction in the Asks channel, saved two specific observations, checked both meeting times in Calendar, and posted any schedule conflict in the Asks channel.

@@ -73,6 +73,7 @@ export function createEnvironment(THREE, palette, worldBox) {
     dispose() {
       for (const child of group.children) {
         child.geometry?.dispose();
+        child.material?.map?.dispose();
         child.material?.dispose();
       }
     },

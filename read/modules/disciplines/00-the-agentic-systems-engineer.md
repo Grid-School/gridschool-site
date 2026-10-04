@@ -24,9 +24,9 @@ Problem framing connects comprehension to specification. It is the habit of walk
 
 ## Why a live system is a better teacher
 
-A coding exercise tests whether you can produce a known answer under a clock. That work became cheap. A live multiplayer system tests whether you can enter code you did not write, form an honest model of it, choose a useful change, describe it for another executor, direct the tools, prove the result, and explain your reasoning to a stranger.
+A coding exercise tests whether you can produce a known answer under a clock. That work became cheap. A live system with real users tests whether you can enter code you did not write, form an honest model of it, choose a useful change, describe it for another executor, direct the tools, prove the result, and explain your reasoning to a stranger.
 
-**GridGlade** is the shared multiplayer game used as the running example here. CloudFront, a content delivery network, serves its Unity WebGL client. Lightsail, a small virtual-server service, runs its WebSocket server. The game has no database. GridGlade has real state, regressions, consequential dependencies, undocumented bugs, and visible effects when someone misunderstands the system. Working inside it exposes the gaps a tidy exercise can hide: a system you do not yet understand, an assistant error, a weak specification, or a technically correct change that users do not value.
+Take a small multiplayer browser game as the running example. CloudFront, a content delivery network, serves its Unity WebGL client. Lightsail, a small virtual-server service, runs its WebSocket server. The game has no database. A system like that has real state, regressions, consequential dependencies, undocumented bugs, and visible effects when someone misunderstands the system. Working inside it exposes the gaps a tidy exercise can hide: a system you do not yet understand, an assistant error, a weak specification, or a technically correct change that users do not value.
 
 ## The part that remains yours
 

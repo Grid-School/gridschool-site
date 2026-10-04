@@ -81,6 +81,23 @@ export function isValidSlug(slug) {
   return typeof slug === "string" && /^[a-z0-9-]{1,40}$/.test(slug);
 }
 
+/**
+ * A student's own map, when they have one. Each student is planned against
+ * their goals; the universal curriculum stays the demo, the tour, and the
+ * fallback for anyone whose map has not been published yet. A map has the
+ * curriculum's shape, so everything downstream reads it unchanged.
+ */
+export function usableMap(map) {
+  return map && typeof map === "object" && Array.isArray(map.nodes) && map.nodes.length ? map : null;
+}
+
+export function boardCurriculum({ universal, student, slug, tour = false, overrides }) {
+  const map = slug === "demo" || tour ? null : usableMap(student?.map);
+  const source = map ? numberCurriculumReadings({ families: [], phases: [], weekly: [], ...map }) : universal;
+  // Copy edits from the console apply by node id, so they reach a map too.
+  return applyCopyOverrides(source, overrides);
+}
+
 /** Load everything one board needs, in parallel. */
 export async function loadBoard(slug, { tour = false } = {}) {
   const [curriculum, cohort, student, overrides] = await Promise.all([
@@ -93,5 +110,10 @@ export async function loadBoard(slug, { tour = false } = {}) {
   ]);
   await applyPrivateLinks();
   revealMemberInvite({ slug });
-  return { curriculum: applyCopyOverrides(curriculum, overrides), cohort, student };
+  return {
+    curriculum: boardCurriculum({ universal: curriculum, student, slug, tour, overrides }),
+    universal: curriculum,
+    cohort,
+    student,
+  };
 }

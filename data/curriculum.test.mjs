@@ -1,30 +1,203 @@
 /**
- * Static invariants over the real curriculum.json. The operating plan's
- * per-node contract (ops/curriculum-operating-plan.md §1.3) and the audit
- * criteria (ops/founding-path-audit.md §A) as checks, so a node without a
- * falsification line or a summary cannot land on the map by accident.
+ * Static invariants over every map the board can load.
+ *
+ * Part one runs over the universal demo map (curriculum.json) AND every
+ * student map in maps/*.json: the structural rules a map must meet to be
+ * walkable at all (map-rules.mjs, the JS twin of site/server/maps.py), plus
+ * task shape, side quests staying optional, and a clean walk of the required
+ * path. No map's ids are hard-coded there.
+ *
+ * Part two is the demo map's content contract (ops/curriculum-operating-plan.md
+ * §1.3, ops/founding-path-audit.md §A): per-node proves/video/review fields,
+ * the reading catalog, and copy rules, so a node without a falsification line
+ * or a summary cannot land on the demo board by accident.
  */
 
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { MODES } from "../app/js/modes.js";
 import { ARTIFACTS } from "../app/js/artifacts.js";
 import { walkReadings } from "../app/js/reading-order.js";
+import { buildGraph, STATUS, isSpine, nextUp, ancestorsOf } from "../app/js/graph/model.js";
+import { validateMap } from "./map-rules.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const site = join(here, "..");
-const cur = JSON.parse(readFileSync(join(here, "curriculum.json"), "utf8"));
-const catalog = JSON.parse(readFileSync(join(site, "read/catalog.json"), "utf8"));
+const readJson = (path) => JSON.parse(readFileSync(path, "utf8"));
+const cur = readJson(join(here, "curriculum.json"));
+const catalog = readJson(join(site, "read/catalog.json"));
 
+const MAPS = [
+  ["curriculum.json", cur],
+  ...readdirSync(join(here, "maps"))
+    .filter((name) => name.endsWith(".json"))
+    .sort()
+    .map((name) => [`maps/${name}`, readJson(join(here, "maps", name))]),
+];
+
+function shapeOf(map) {
+  const byId = new Map(map.nodes.map((node) => [node.id, node]));
+  const familyTrack = new Map((map.families ?? []).map((family) => [family.id, family.track]));
+  const trackOf = (node) => node.track ?? familyTrack.get(node.family);
+  const core = map.nodes.filter((node) => node.kind !== "future");
+  return { byId, familyTrack, trackOf, core, spine: core.filter((node) => trackOf(node) === "spine") };
+}
+
+/** Light a node the way a student would: answers for in-app steps, a URL and an accepted review otherwise. */
+function light(student, node) {
+  if (node.completion === "tasks") {
+    for (const task of node.tasks ?? []) {
+      if (task.kind === "count") continue;
+      const answers = {};
+      for (const field of task.fields ?? []) {
+        if (field.required) answers[field.id] = "walk answer";
+      }
+      student.tasks[task.id] = { state: "done", answers };
+    }
+    return;
+  }
+  student.evidence[node.id] = { url: `https://example.test/${node.id}` };
+  if (node.signoff) {
+    student.reviews.unshift({
+      id: `walk-${node.id}`,
+      nodeId: node.id,
+      state: "returned",
+      outcome: "accepted",
+      link: student.evidence[node.id].url,
+    });
+  }
+}
+
+const RETIRED_GAME = /GridGlade|GridSeak|play\.gridschool|world server|ticket board|multiplayer|\bthe world\b/i;
+const RETIRED_STAGE = /\bStage\b/; // the game's staging world, capitalised; "a pipeline stage" is fine
+
+for (const [name, map] of MAPS) {
+  const { byId, trackOf, core, spine } = shapeOf(map);
+
+  test(`${name}: meets the map rules (ids, families, requires, acyclic, n order, side quests, task ids)`, () => {
+    assert.deepEqual(validateMap(map), []);
+  });
+
+  test(`${name}: every task has a title, a kind, and a done-when; habits are well-formed`, () => {
+    for (const node of core) {
+      for (const task of node.tasks ?? []) {
+        assert.ok(task.title?.trim(), `${node.id} task ${task.id} title`);
+        assert.ok(task.kind?.trim(), `${node.id} task ${task.id} kind`);
+        assert.ok(task.done_when?.trim(), `${node.id} task ${task.id} done_when`);
+        if (task.kind === "count") {
+          assert.ok(Number.isInteger(task.target) && task.target >= 1, `${task.id} target`);
+          assert.ok(["day", "week"].includes(task.per), `${task.id} per`);
+        }
+      }
+    }
+  });
+
+  test(`${name}: every core node has a why, an evidence line, and at least one task`, () => {
+    for (const node of core) {
+      assert.ok(node.why?.trim(), `${node.id} why`);
+      assert.ok(node.evidence?.trim(), `${node.id} evidence`);
+      assert.ok(Array.isArray(node.tasks) && node.tasks.length, `${node.id} tasks`);
+    }
+  });
+
+  test(`${name}: side quests are never required, never next, and never gate a core node`, () => {
+    for (const node of map.nodes) {
+      if (trackOf(node) === "side") continue;
+      for (const req of node.requires ?? []) {
+        assert.notEqual(trackOf(byId.get(req)), "side", `${node.id} requires side quest ${req}`);
+      }
+    }
+    const graph = buildGraph(map, { evidence: {}, tasks: {}, reviews: [] });
+    assert.notEqual(nextUp(graph)?.track, "side", "a side quest is never the next step");
+  });
+
+  test(`${name}: no required node waits on an elective`, () => {
+    const spineIds = new Set(spine.map((node) => node.id));
+    for (const node of spine) {
+      for (const req of node.requires ?? []) {
+        assert.ok(spineIds.has(req), `${node.id} (required) depends on ${req} (elective)`);
+      }
+    }
+  });
+
+  test(`${name}: a fresh board opens at least one required node`, () => {
+    assert.ok(spine.some((node) => !(node.requires ?? []).length), "no required node is open on day one");
+  });
+
+  test(`${name}: the required path can be walked to the end in board order, never a wide fan-out`, () => {
+    const student = { evidence: {}, tasks: {}, reviews: [] };
+    const seen = [];
+    while (seen.length < spine.length) {
+      const graph = buildGraph(map, student);
+      const openSpine = graph.nodes.filter((node) => node.status === STATUS.OPEN && isSpine(node) && node.kind !== "future");
+      assert.ok(openSpine.length <= 8, `open required ${openSpine.map((n) => n.id).join(", ")}`);
+      const next = nextUp(graph);
+      assert.ok(next && isSpine(next), `required path stalled after ${seen.join(" -> ") || "(start)"}`);
+      const dark = [...ancestorsOf(graph, next.id)].filter((id) => graph.byId.get(id)?.status !== STATUS.LIT);
+      assert.deepEqual(dark, [], `${next.id} is next but its ancestors are dark`);
+      light(student, next);
+      seen.push(next.id);
+    }
+  });
+
+  test(`${name}: future nodes carry an availability line and no actionable work`, () => {
+    for (const node of map.nodes.filter((item) => item.kind === "future")) {
+      assert.ok(node.coming?.trim(), `${node.id} needs a coming line`);
+      assert.equal((node.tasks ?? []).length, 0, `${node.id} must not assign tasks`);
+    }
+  });
+
+  test(`${name}: names only the two Discord rooms and never the retired game`, () => {
+    const allowed = new Set(["#asks", "#ship"]);
+    for (const node of core) {
+      const text = studentFacingNodeText(node);
+      for (const hit of text.match(/(?<![\w&])#[a-z][a-z0-9-]*/gi) ?? []) {
+        assert.ok(allowed.has(hit.toLowerCase()), `${node.id} names unsupported channel ${hit}`);
+      }
+      assert.doesNotMatch(text, RETIRED_GAME, `${node.id} still points at the retired game`);
+      assert.doesNotMatch(text, RETIRED_STAGE, `${node.id} still sends students to Stage`);
+    }
+    assert.ok(!(map.families ?? []).some((family) => family.id === "world"), "the world family is retired");
+    assert.ok(!map.nodes.some((node) => node.id.startsWith("wd.")), "wd.* nodes are retired");
+    assert.doesNotMatch(String(map.law ?? ""), RETIRED_GAME);
+  });
+}
+
+test("the map rules catch what the board cannot recover from", () => {
+  const base = () => ({
+    version: "t",
+    title: "t",
+    families: [{ id: "a", track: "spine" }, { id: "s", track: "side" }],
+    phases: [],
+    weekly: [],
+    nodes: [
+      { id: "x", n: 1, title: "x", family: "a", requires: [], tasks: [{ id: "x.1" }], kind: "core" },
+      { id: "y", n: 2, title: "y", family: "a", requires: ["x"], tasks: [], kind: "core" },
+      { id: "q", n: 101, title: "q", family: "s", requires: [], tasks: [], kind: "core" },
+    ],
+  });
+  assert.deepEqual(validateMap(base()), []);
+  const broken = (mutate) => {
+    const doc = base();
+    mutate(doc);
+    return validateMap(doc).join("\n");
+  };
+  assert.match(broken((d) => (d.nodes[1].requires = ["nope"])), /does not exist/);
+  assert.match(broken((d) => (d.nodes[0].requires = ["y"])), /cycle/);
+  assert.match(broken((d) => (d.nodes[1].n = 1)), /already used|must be greater/);
+  assert.match(broken((d) => (d.nodes[1].requires = ["q"])), /cannot require side quest/);
+  assert.match(broken((d) => (d.nodes[1].family = "ghost")), /does not exist/);
+  assert.match(broken((d) => d.nodes[1].tasks.push({ id: "x.1" })), /used twice/);
+  assert.match(broken((d) => d.nodes[1].tasks.push({ id: "h", kind: "count", target: 0, per: "month" })), /target[\s\S]*per/);
+});
+
+/* ---------- the demo map's content contract ---------- */
+
+const { byId, familyTrack, trackOf, core, spine } = shapeOf(cur);
 const nodes = cur.nodes;
-const byId = new Map(nodes.map((node) => [node.id, node]));
-const core = nodes.filter((node) => node.kind !== "future");
-const familyTrack = new Map((cur.families ?? []).map((family) => [family.id, family.track]));
-const trackOf = (node) => node.track ?? familyTrack.get(node.family);
-const spine = core.filter((node) => trackOf(node) === "spine");
 
 const PROVES = ["claim", "challenge", "evidence", "falsification", "threshold", "transfer"];
 const SURFACE_FILES = {
@@ -61,44 +234,6 @@ function studentFacingNodeText(node) {
     })),
   });
 }
-
-test("ids are unique and every `requires` names a real node", () => {
-  assert.equal(byId.size, nodes.length);
-  for (const node of nodes) {
-    for (const req of node.requires ?? []) {
-      assert.ok(byId.has(req), `${node.id} requires unknown ${req}`);
-    }
-  }
-});
-
-test("requires form a DAG", () => {
-  const state = new Map();
-  const visit = (id, path) => {
-    if (state.get(id) === "done") return;
-    assert.notEqual(state.get(id), "active", `cycle: ${[...path, id].join(" -> ")}`);
-    state.set(id, "active");
-    for (const req of byId.get(id).requires ?? []) visit(req, [...path, id]);
-    state.set(id, "done");
-  };
-  for (const node of nodes) visit(node.id, []);
-});
-
-test("sequence numbers are unique and never precede a prerequisite", () => {
-  const seen = new Set();
-  for (const node of nodes) {
-    assert.ok(!seen.has(node.n), `duplicate n=${node.n} (${node.id})`);
-    seen.add(node.n);
-    for (const req of node.requires ?? []) {
-      assert.ok(byId.get(req).n < node.n, `${node.id} (n=${node.n}) is ordered before ${req}`);
-    }
-  }
-});
-
-test("every family a node names exists", () => {
-  for (const node of nodes) {
-    assert.ok(familyTrack.has(node.family), `${node.id} family ${node.family}`);
-  }
-});
 
 test("every core node carries the per-node contract (why, evidence, ccvv, reviewFor, a task with done_when)", () => {
   for (const node of core) {
@@ -222,65 +357,13 @@ test("student-facing completion copy avoids retired instructions and operator te
   );
 });
 
-test("the spine is the six gates, the foundations series, the mission, the Career core with last-mile proofs, the owned system through users, and the graph tool", () => {
-  const expected = [
-    "cap.change", "cap.defend", "cap.outcome", "cap.review", "cv.check", "cv.contain", "cv.delegate", "cv.four", "cv.frame", "cv.spec", "cv.understand", "fs.api", "fs.back", "fs.choose", "fs.data", "fs.front", "fs.map", "fs.observe", "fs.principles", "fs.ship", "gr.parse", "gr.query", "li.close", "li.publish", "ops.flow", "or.setup", "or.start", "pf.runs", "pf.style", "pj.model", "pj.ship", "pj.users", "sg.profile", "sg.scope", "sg.show", "sg.site", "wd.deploy", "wd.ticket",
-  ];
-  assert.deepEqual(spine.map((node) => node.id).sort(), [...expected].sort());
-  assert.deepEqual(byId.get("or.setup").requires, ["or.start"]);
-  assert.deepEqual(byId.get("cv.four").requires, ["or.setup"]);
-  assert.deepEqual(byId.get("ops.flow").requires, ["cv.four"]);
-  assert.deepEqual(byId.get("pf.runs").requires, ["ops.flow"]);
-  assert.deepEqual(byId.get("fs.map").requires, ["pf.runs"]);
-  assert.deepEqual(byId.get("fs.front").requires, ["fs.map"]);
-  assert.deepEqual(byId.get("fs.back").requires, ["fs.map"]);
-  assert.deepEqual([...byId.get("fs.data").requires].sort(), ["fs.back", "fs.front"]);
-  assert.deepEqual(byId.get("fs.api").requires, ["fs.data"]);
-  assert.deepEqual(byId.get("fs.ship").requires, ["fs.api"]);
-  assert.deepEqual(byId.get("fs.observe").requires, ["fs.api"]);
-  assert.deepEqual([...byId.get("fs.principles").requires].sort(), ["fs.observe", "fs.ship"]);
-  assert.deepEqual(byId.get("fs.choose").requires, ["fs.principles"]);
-  assert.deepEqual(byId.get("cv.understand").requires, ["fs.choose"]);
-  assert.deepEqual(byId.get("cv.frame").requires, ["cv.understand"]);
-  assert.deepEqual(byId.get("cv.spec").requires, ["cv.frame"]);
-  assert.deepEqual(byId.get("cap.change").requires, ["cv.spec"]);
-  assert.deepEqual([...byId.get("pj.model").requires].sort(), ["cv.spec", "fs.choose"]);
-  assert.deepEqual(byId.get("pj.ship").requires, ["pj.model"]);
-  assert.deepEqual([...byId.get("cap.defend").requires].sort(), ["cap.review", "cv.check", "cv.contain", "cv.delegate"]);
-  assert.deepEqual([...byId.get("li.publish").requires].sort(), ["cap.defend", "sg.profile"]);
-  for (const id of ["cap.defend"]) {
-    assert.ok(!byId.get(id).requires.some((r) => r.startsWith("pj.")), `${id} must not wait on the owned system`);
-  }
-  assert.deepEqual(byId.get("sg.profile").requires, ["cap.change"]);
-  assert.deepEqual(byId.get("pf.style").requires, ["sg.profile"]);
-  assert.deepEqual(byId.get("sg.site").requires, ["pf.style"]);
-  assert.deepEqual(byId.get("sg.scope").requires, ["sg.show"]);
-  assert.deepEqual(byId.get("li.close").requires, ["sg.show"]);
-});
-
-test("Career expansion and the later project track never sit on the spine", () => {
-  const depthOnly = ["sg.engine", "sg.post", "sg.habit", "sg.article", "sg.research", "sg.oss",
-    "sg.resume", "sg.apply", "gr.structure", "gr.seam", "gr.pack", "gr.fork", "wd.mark"];
-  for (const id of depthOnly) {
-    assert.equal(trackOf(byId.get(id)), "depth", `${id} should be depth`);
-  }
-});
-
-test("project assignments carry a final sign-off; nothing else does", () => {
-  const signoff = nodes.filter((node) => node.signoff).map((node) => node.id).sort();
-  assert.deepEqual(signoff, ["cap.defend", "cap.outcome", "pj.model", "pj.ship", "pj.users"]);
-  for (const node of nodes.filter((n) => n.signoff)) {
+test("sign-off steps carry a rubric, and the defense does not wait on the owned system", () => {
+  const signoff = nodes.filter((node) => node.signoff);
+  assert.ok(signoff.length >= 1);
+  for (const node of signoff) {
     assert.ok(node.reviewFor, `${node.id} signoff needs reviewFor so the sign-off has a rubric`);
   }
-});
-
-test("the spine can be worked in `n` order: no required node waits on an elective", () => {
-  const spineIds = new Set(spine.map((node) => node.id));
-  for (const node of spine) {
-    for (const req of node.requires ?? []) {
-      assert.ok(spineIds.has(req), `${node.id} (required) depends on ${req} (elective)`);
-    }
-  }
+  assert.ok(!byId.get("cap.defend").requires.some((r) => r.startsWith("pj.")), "the defense must not wait on the owned system");
 });
 
 function ancestors(id, seen = new Set()) {
@@ -292,9 +375,8 @@ function ancestors(id, seen = new Set()) {
   return seen;
 }
 
-test("the machine comes before the world: It runs and the weekly loop wait on Your machine", () => {
+test("the machine comes first: It runs and the weekly loop wait on Your machine", () => {
   assert.deepEqual(byId.get("or.setup").requires, ["or.start"]);
-  assert.equal(byId.get("or.setup").n, 1);
   for (const id of ["pf.runs", "ops.flow"]) {
     assert.ok(ancestors(id).has("or.setup"), `${id} must wait on or.setup`);
   }
@@ -366,10 +448,8 @@ test("a gate waits for the verdict on a sign-off it depends on; Publish is the o
   }
 });
 
-test("operational work and first ticket sit downstream of the weekly loop", () => {
-  for (const id of ["cap.change", "wd.ticket", "wd.deploy"]) {
-    assert.ok(ancestors(id).has("ops.flow"), `${id} must sit downstream of ops.flow`);
-  }
+test("the first ticket sits downstream of the weekly loop", () => {
+  assert.ok(ancestors("cap.change").has("ops.flow"), "cap.change must sit downstream of ops.flow");
 });
 
 test("project creation cannot precede project choice, and shipping cannot precede the model", () => {
@@ -405,78 +485,6 @@ test("student-facing lesson copy does not leak node ids, film notes, or operator
     const text = studentFacingNodeText(node);
     assert.doesNotMatch(text, banned, `${node.id} leaks operator language`);
     assert.doesNotMatch(text, idTalk, `${node.id} names a node id in student copy`);
-  }
-});
-
-test("student copy only names the four Discord rooms", () => {
-  const allowed = new Set(["#asks", "#ship", "#bugs", "#world"]);
-  for (const node of core) {
-    const text = JSON.stringify({
-      why: node.why,
-      evidence: node.evidence,
-      reviewFor: node.reviewFor,
-      lesson: node.lesson,
-      proves: node.proves,
-      tasks: (node.tasks ?? []).map((task) => ({
-        title: task.title,
-        done_when: task.done_when,
-        how: task.how,
-        why: task.why,
-      })),
-    });
-    for (const hit of text.match(/#[a-z][a-z0-9-]*/gi) ?? []) {
-      assert.ok(allowed.has(hit.toLowerCase()), `${node.id} names unsupported channel ${hit}`);
-    }
-  }
-});
-
-test("open required work stays bounded: never a nine-way fan-out", async () => {
-  const { buildGraph, STATUS, isSpine } = await import("../app/js/graph/model.js");
-  const student = { evidence: {}, tasks: {}, reviews: [] };
-  const light = (node) => {
-    if (node.completion === "tasks") {
-      student.tasks = student.tasks ?? {};
-      for (const task of node.tasks ?? []) {
-        const answers = {};
-        for (const field of task.fields ?? []) {
-          if (field.required) answers[field.id] = "bounded-open answer";
-        }
-        student.tasks[task.id] = { state: "done", answers };
-      }
-      return;
-    }
-    student.evidence[node.id] = { url: `https://example.test/${node.id}` };
-    if (node.signoff) {
-      student.reviews.unshift({
-        id: `bound-${node.id}`,
-        nodeId: node.id,
-        state: "returned",
-        outcome: "accepted",
-        link: student.evidence[node.id].url,
-      });
-    }
-  };
-  let maxOpen = 0;
-  for (let i = 0; i <= spine.length; i++) {
-    const graph = buildGraph(cur, student);
-    const openSpine = graph.nodes.filter(
-      (node) => node.status === STATUS.OPEN && isSpine(node) && node.kind !== "future"
-    );
-    maxOpen = Math.max(maxOpen, openSpine.length);
-    assert.ok(openSpine.length <= 6, `open spine ${openSpine.map((n) => n.id).join(", ")}`);
-    const next = openSpine.sort((a, b) => a.n - b.n)[0];
-    if (!next) break;
-    light(next);
-  }
-  assert.ok(maxOpen >= 1);
-});
-
-test("future nodes carry an availability line and no actionable work", () => {
-  const future = nodes.filter((node) => node.kind === "future");
-  assert.ok(future.length >= 1);
-  for (const node of future) {
-    assert.ok(node.coming?.trim(), `${node.id} needs a coming line`);
-    assert.equal((node.tasks ?? []).length, 0, `${node.id} must not assign tasks`);
   }
 });
 

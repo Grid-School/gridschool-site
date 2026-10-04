@@ -1,0 +1,73 @@
+{
+  "slug": "bots-crash-server",
+  "title": "I Let Bots Into My Game Until the Server Died",
+  "stage": "pitch",
+  "formula": 2,
+  "runtime": { "targetMin": 10, "capMin": 14 },
+  "beats": {
+    "setup": {
+      "answers": {
+        "what": "A multiplayer world that runs in the browser. Anyone with the link can walk in.",
+        "how": "The server sends every player's position to every other player 20 times a second, so its work grows with the square of the player count.",
+        "stakes": "I want real people in it. Before I invite them, I want to know where it breaks."
+      }
+    },
+    "prediction": {
+      "answers": {
+        "reasoning": "Outgoing bytes per second is about N x N x bytes per player x 20. Measure bytes per player from one real snapshot, then solve for the limit of the Lightsail micro."
+      },
+      "notes": "The guess stays empty until you say it on camera."
+    },
+    "build": {
+      "answers": {
+        "built": "A bot script of about 40 lines. It opens a WebSocket to staging, sends positions at the real client's rate, wanders at random, reads and discards snapshots, and logs how late each snapshot arrives against the expected 50 ms."
+      },
+      "notes": "Build the dashboard before filming anything: bots connected, average and worst snapshot gap, server bytes out, CPU, and a top-down view with each bot as a dot. The dashboard is most of the footage."
+    },
+    "runs": {
+      "answers": {
+        "axis": "Number of bots connected at once."
+      },
+      "notes": "Your laptop may choke before the server does, because every bot also receives N squared data. If it does, say so on camera and move bots to AWS. That is a run, not a failure."
+    },
+    "twist": {
+      "notes": "Candidate, not confirmed: one bot that stops reading its socket. If GF-2 behaves as the audit describes, one slow connection stalls the world for everyone. Film it before planning around it."
+    },
+    "why": {
+      "answers": {
+        "picture": "N dots, each with a line to every other dot. Add dots and watch the number of lines explode."
+      }
+    },
+    "invite": {
+      "answers": {
+        "ask": "Open the world and be a real player among the bots."
+      },
+      "notes": "Do not promise a fix on camera. GF-2 and GF-4 are reserved as future student missions in world/gameplan.md."
+    }
+  },
+  "rungs": [
+    { "id": "r1", "change": "1 bot", "prediction": "", "result": "", "meaning": "", "status": "planned" },
+    { "id": "r2", "change": "10 bots", "prediction": "", "result": "", "meaning": "", "status": "planned" },
+    { "id": "r3", "change": "50 bots", "prediction": "", "result": "", "meaning": "", "status": "planned" },
+    { "id": "r4", "change": "100 bots", "prediction": "", "result": "", "meaning": "", "status": "planned" },
+    { "id": "r5", "change": "Bots from two or three AWS regions", "prediction": "", "result": "", "meaning": "", "status": "planned" },
+    { "id": "r6", "change": "Push until it breaks", "prediction": "", "result": "", "meaning": "", "status": "planned" }
+  ],
+  "preconditions": [
+    { "id": "p1", "text": "play.gridschool.org resolves and a networked WebGL build connects to the world server. Checked 2026-09-24: the name did not resolve.", "done": false },
+    { "id": "p2", "text": "Staging world server /health returns 200. Checked 2026-09-24: 200.", "done": true },
+    { "id": "p3", "text": "Dashboard built: bots connected, snapshot gap average and worst, server bytes out, CPU, top-down dot view.", "done": false },
+    { "id": "p4", "text": "Every on-screen count says bots, never players (ops/world-population.md).", "done": false },
+    { "id": "p5", "text": "Bots point at staging only.", "done": false },
+    { "id": "p6", "text": "No students appear in this video.", "done": false },
+    { "id": "p7", "text": "Tear down every EC2 bot host after filming.", "done": false }
+  ],
+  "sessions": [],
+  "clips": [],
+  "pickups": [],
+  "prep": {},
+  "passes": {},
+  "retention": [],
+  "lessons": [],
+  "publish": {}
+}

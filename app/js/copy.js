@@ -29,6 +29,7 @@ export function statusLabel(status) {
 }
 
 export function trackLabel(track) {
+  if (track === "side") return "Side quest · optional";
   return track === "depth" ? "Depth · optional" : "Required";
 }
 

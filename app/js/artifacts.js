@@ -10,8 +10,8 @@
 
 export const ARTIFACTS = {
   ticket: {
-    label: "Your ticket on the world",
-    edits: "The live system you change through the board. This step adds to what your merged work proves.",
+    label: "Your shipped changes",
+    edits: "The project you are building and the changes you ship to it. This step adds to what your merged work proves.",
   },
   graph: {
     label: "Your graph tool",

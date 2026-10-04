@@ -8,7 +8,7 @@ Google's SRE book opens reliability with a claim that surprises people. Past a c
 
 Richard Cook's note on how complex systems fail adds the other half. Serious failures are almost never one broken part. They are combinations: a race plus a retry plus a client the server trusted. You meet the principles when a live system makes each one necessary.
 
-**GridGlade**, the shared multiplayer game used as the example here, gives us one current failure and three hypothetical extensions that make the principles concrete. GridGlade already exposes slow movement and client-reported positions. A richer game might allow two players to claim one plot or might duplicate an item. Any software project can also be damaged by an agent reaching production systems it should not touch.
+A small multiplayer browser game, used as the example here, gives us one plain failure and three hypothetical extensions that make the principles concrete. Picture one that already shows slow movement and trusts client-reported positions. A richer game might allow two players to claim one plot or might duplicate an item. Any software project can also be damaged by an agent reaching production systems it should not touch.
 
 ## Two players, one plot
 
@@ -24,7 +24,7 @@ Optimistic concurrency lets both proceed, and makes the write fail if the row ch
 
 When you meet this failure, the question to answer in writing is: which of these does the current code use, and where is the gap?
 
-## The world feels slow
+## Movement feels slow
 
 Players say movement is laggy. Problem framing, the practice of separating an observed symptom from its possible causes, requires several hypotheses before a fix. The cluster is performance.
 
@@ -44,7 +44,7 @@ The discipline is measuring before believing. A trace that shows where the milli
 
 Imagine a game with collectible items. Someone has two copies of an item that should exist once. The cluster is trust boundaries, and it begins with a single question: who is the authority?
 
-For each piece of state, exactly one component decides its truth. If the client tells the server “I picked up the sword” and the server believes it, the client is the authority, and the client is in the hands of the user. GridGlade currently accepts every position reported by a client. That known trust-boundary defect follows the same pattern.
+For each piece of state, exactly one component decides its truth. If the client tells the server “I picked up the sword” and the server believes it, the client is the authority, and the client is in the hands of the user. A game server that accepts every position reported by a client has the same trust-boundary defect.
 
 Validate on the client for responsiveness. Validate on the server for truth. Skipping the second because the first exists is the classic duplication bug.
 
@@ -54,7 +54,7 @@ A trust boundary is any place data crosses from something you control to somethi
 
 ## An agent broke production
 
-An assistant, given a task, did something outside the task, and the world is down. The cluster is blast radius, and it is the one this generation of engineers will meet most.
+An assistant, given a task, did something outside the task, and production is down. The cluster is blast radius, and it is the one this generation of engineers will meet most.
 
 Least privilege: the agent had the permissions to do it. Should it have? Grant the minimum a task needs, per task, and revoke it after.
 

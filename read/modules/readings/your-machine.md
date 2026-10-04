@@ -2,20 +2,20 @@
 
 You will first run every part of this program on your own laptop. Before you begin the first ticket or the system-reading lesson, install the toolchain and produce output that proves each tool works. Follow this list from top to bottom on the laptop you will use for the program.
 
-Use a laptop with at least sixteen gigabytes of RAM. Eight gigabytes can run the server alone, but the operating system will begin swapping memory to disk when Docker, an editor, a browser with the world open, and an agent run at the same time. If your laptop has eight gigabytes, include that amount in the machine sentence you post in the Asks channel.
+Use a laptop with at least sixteen gigabytes of RAM. Eight gigabytes can run the server alone, but the operating system will begin swapping memory to disk when Docker, an editor, a browser with your app open, and an agent run at the same time. If your laptop has eight gigabytes, include that amount in the machine sentence you post in the Asks channel.
 
 ## What you install, and why each one
 
 | Tool | Why it is here |
 |---|---|
 | Git | Every change travels as a branch and a pull request. |
-| A GitHub account with an SSH key | The world’s repositories live there. An SSH key lets scripts connect automatically. |
-| .NET 8 SDK | The world server is C#. You build and run it locally in week one. |
+| A GitHub account with an SSH key | Your project's repositories live there. An SSH key lets scripts connect automatically. |
+| .NET 8 SDK | Some starters and projects are C#. Install it so you can build and run them locally. |
 | Docker Desktop (or Docker Engine on Linux) | Production runs the server in a container. You run it the same way. |
-| Node.js LTS | The web client, the graph tool you will build, and most scripts. |
+| Node.js LTS | The web client, most scripts, and the graph tool if you take that elective. |
 | Python 3.11 or newer | The delegation script and the notebook tooling. |
 | An editor with a built-in terminal | Use VS Code, Cursor, or another editor you already know. By the end of this page, you must be comfortable running commands in its terminal. |
-| Discord desktop app | Ask for reviews in the Asks channel, post shipped work in the Ship channel, and use Discord to tell the cohort when you are in Stage. |
+| Discord desktop app | Ask for reviews in the Asks channel, post shipped work in the Ship channel, and use Discord to tell the cohort when you are working. |
 
 ## macOS
 
@@ -68,4 +68,4 @@ Return to the Your machine step in GridSchool. Paste the complete terminal outpu
 
 In the **Operating system and memory** field, write one sentence that names your operating system, amount of RAM, and whether all seven checks passed. Post the same sentence in the Asks channel. Paste that sentence into the field labeled **Paste the sentence you posted in the Asks channel**.
 
-Use the Asks channel for blockers and include what you already tried. Post your Friday URL in the Ship channel. Open GridGlade from the left-hand menu and choose Stage, the shared version where the cohort meets.
+Use the Asks channel for blockers and include what you already tried. Post your Friday URL in the Ship channel.

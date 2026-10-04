@@ -5,17 +5,53 @@
  * The title is not a secret button. Done-when is always visible, and so are
  * the how-to steps: nothing on a task is behind a click. Actions sit in the
  * open, and they say what they do.
+ *
+ * A habit (`kind: "count"`) has no checkbox. It has a tally for the current
+ * day or week, because "3 comments a day" is never finished, only kept.
  */
 
 import { el } from "../dom.js";
 import { btn, toast } from "../ui.js";
 import { KIND_LABEL, TASK_STATE, formatEstimate } from "../tasks.js";
-import { taskIsComplete } from "../task-state.js";
+import { taskIsComplete, isCountTask, countOf } from "../task-state.js";
 import { fmtDay, fmtTime, relativeDay } from "../time.js";
 import { isPrivateLinkKey, link } from "../../../config.js";
 export { statusLabel } from "../copy.js";
 
 export const stateIdOf = (task) => task.weekKey ?? task.id;
+
+const PERIOD_WORD = { day: "today", week: "this week" };
+
+/** "2 of 3 today". The words and the numbers the tally shows. */
+export function tallyLabel(task, count) {
+  const target = Math.max(1, Number(task.target) || 1);
+  return `${count} of ${target} ${PERIOD_WORD[task.per] ?? PERIOD_WORD.day}`;
+}
+
+/** − count +. Each press saves the period's count; done once it meets the target. */
+function tallyControl(task, id, { store }) {
+  const target = Math.max(1, Number(task.target) || 1);
+  const count = countOf({ answers: task.answers });
+  const save = (next) => {
+    const value = Math.max(0, next);
+    store.setTaskState(id, value >= target ? TASK_STATE.DONE : TASK_STATE.TODO, { count: value });
+  };
+  return el(
+    "div.task__tally",
+    { role: "group", "aria-label": `${task.title}: ${tallyLabel(task, count)}` },
+    el(
+      "button.task__step",
+      { type: "button", "aria-label": `One less for ${task.title}`, disabled: count === 0, onclick: () => save(count - 1) },
+      "−"
+    ),
+    el("span.task__count", { "aria-live": "polite" }, tallyLabel(task, count)),
+    el(
+      "button.task__step",
+      { type: "button", "aria-label": `One more for ${task.title}`, onclick: () => save(count + 1) },
+      "+"
+    )
+  );
+}
 
 function taskOpen(task, { navigate } = {}) {
   const open = task.open;
@@ -51,6 +87,7 @@ export function taskRow(task, { store, navigate, showGo = false } = {}) {
   const how = task.how ?? [];
   const number = Number.isInteger(task.index) && task.index > 0 ? task.index : null;
   const hideKind = Boolean(task.hideKind);
+  const habit = isCountTask(task);
 
   const steps = how.length ? el("ol.task__how", {}, how.map((step) => el("li", {}, step))) : null;
 
@@ -76,8 +113,8 @@ export function taskRow(task, { store, navigate, showGo = false } = {}) {
 
   const row = el(
     "div.task",
-    { class: `is-${done ? TASK_STATE.DONE : state === TASK_STATE.DONE ? TASK_STATE.TODO : state}` },
-    el("button.task__mark", {
+    { class: `is-${done ? TASK_STATE.DONE : state === TASK_STATE.DONE ? TASK_STATE.TODO : state}${habit ? " is-habit" : ""}` },
+    habit ? null : el("button.task__mark", {
       type: "button",
       "aria-pressed": String(done),
       "aria-label": done ? `Mark ${task.title} not done` : `Mark ${task.title} done`,
@@ -113,8 +150,9 @@ export function taskRow(task, { store, navigate, showGo = false } = {}) {
         {},
         !hideKind && el("span.task__kind", {}, KIND_LABEL[task.kind] ?? task.kind),
         task.est && el("span", {}, formatEstimate(task.est)),
-        showGo && task.nodeTitle && el("span", {}, `step ${String(task.nodeN).padStart(2, "0")}`),
+        showGo && task.nodeTitle && el("span", {}, `step ${task.nodeLabel ?? String(task.nodeN).padStart(2, "0")}`),
         task.recurring && el("span", {}, "every week"),
+        habit && el("span", {}, task.per === "week" ? "every week" : "every day"),
         waiting && el("span.task__wait", {}, "Waiting for review")
       ),
       task.done_when && el("p.task__dw", {}, el("b", {}, "Done when "), task.done_when),
@@ -144,8 +182,9 @@ export function taskRow(task, { store, navigate, showGo = false } = {}) {
             })
           )
         : null,
+      habit ? tallyControl(task, id, { store }) : null,
       taskOpen(task, { navigate }),
-      done ? el("p.task__undo", {}, "Task complete. Uncheck the box if you need to change an answer.") : null,
+      done && !habit ? el("p.task__undo", {}, "Task complete. Uncheck the box if you need to change an answer.") : null,
       acts.length ? el("div.task__acts", {}, acts) : null
     )
   );

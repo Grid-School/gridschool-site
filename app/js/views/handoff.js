@@ -13,6 +13,7 @@
 import { el } from "../dom.js";
 import { btn, field, toast } from "../ui.js";
 import { registerLeaveGuard, clearLeaveGuard } from "../leave-guard.js";
+import { stepNumber } from "../graph/model.js";
 
 const KINDS = [
   { id: "pr", label: "A pull request" },
@@ -28,8 +29,8 @@ export function handoffForm({ store, node = null, onDone = () => {} } = {}) {
   const title = field({
     label: "What is it",
     id: `rv-title${suffix}`,
-    value: node ? `${String(node.n).padStart(2, "0")} ${node.title}` : "",
-    placeholder: "GridGlade server: the healthcheck fix",
+    value: node ? `${stepNumber(node)} ${node.title}` : "",
+    placeholder: "My project: the healthcheck fix",
   });
   const url = field({
     label: "Link to the work",
@@ -52,7 +53,7 @@ export function handoffForm({ store, node = null, onDone = () => {} } = {}) {
     KINDS.map((kind) => el("option", { value: kind.id }, kind.label))
   );
 
-  const initialTitle = node ? `${String(node.n).padStart(2, "0")} ${node.title}` : "";
+  const initialTitle = node ? `${stepNumber(node)} ${node.title}` : "";
   const initialUrl = node?.proof?.url ?? "";
   const guardId = `review${suffix}`;
   registerLeaveGuard(
@@ -86,7 +87,7 @@ export function handoffForm({ store, node = null, onDone = () => {} } = {}) {
           ask: ask.input.value.trim(),
           nodeId: node?.id ?? null,
         });
-        title.input.value = node ? `${String(node.n).padStart(2, "0")} ${node.title}` : "";
+        title.input.value = node ? `${stepNumber(node)} ${node.title}` : "";
         url.input.value = "";
         ask.input.value = "";
         toast("Sent. Notes come back Sunday evening.");

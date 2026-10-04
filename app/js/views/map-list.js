@@ -8,23 +8,27 @@
  *
  * This is also the list a student pastes into a message, which is why copying
  * every link at once is the loudest thing on it.
+ *
+ * Side quests get their own section after the path, the way they get their
+ * own column on the floor: listed, never in the required count.
  */
 
 import { el } from "../dom.js";
 import { panel, btn, copy, dot } from "../ui.js";
-import { STATUS, isSpine, nextUp } from "../graph/model.js";
+import { STATUS, isSide, isSpine, nextUp, stepNumber } from "../graph/model.js";
 import { inSequence, standingOf, STANDING_LABEL, STANDING_TONE } from "../graph/standing.js";
 import { reviewScores } from "./parts.js";
 import { trackLabel } from "../copy.js";
 import { fmtDay } from "../time.js";
-import { link } from "../../../config.js";
 
 export function mapList({ state, onOpenNode }) {
   const { graph, student } = state;
   // The same sequence the floor walks, so the two projections cannot disagree.
-  const ordered = inSequence(graph.nodes);
+  const all = inSequence(graph.nodes);
+  const ordered = all.filter((node) => !isSide(node));
+  const side = all.filter(isSide);
   const nextId = nextUp(graph)?.id ?? null;
-  const lit = ordered.filter((node) => node.status === STATUS.LIT);
+  const lit = all.filter((node) => node.status === STATUS.LIT);
   const spine = ordered.filter((node) => node.kind !== "future" && isSpine(node));
   const spineLit = spine.filter((node) => node.status === STATUS.LIT);
   const reviewsByNode = groupReviews(student.reviews ?? []);
@@ -48,13 +52,22 @@ export function mapList({ state, onOpenNode }) {
       },
       el("div.mlrows", {}, sequenceRows(graph, ordered, reviewsByNode, nextId, onOpenNode))
     ),
+    side.length
+      ? panel(
+          {
+            eyebrow: `Side quests · ${side.filter((node) => node.status === STATUS.LIT).length} of ${side.length} done`,
+            title: "Side quests",
+            note: "Optional, any time. None of these is required, and none of them is ever the next step.",
+          },
+          el("div.mlrows", {}, sequenceRows(graph, side, reviewsByNode, nextId, onOpenNode))
+        )
+      : null,
     loose.length
       ? panel(
           { eyebrow: "Not tied to a node", title: "Other reviews" },
           el("div.rvs", {}, loose.map((review) => reviewLine(review)))
         )
-      : null,
-    panel({ eyebrow: "The shared codebases", title: "The world, and the graph tool" }, studioBlock())
+      : null
   );
 }
 
@@ -79,10 +92,10 @@ function row(node, reviews, onOpenNode, nextId, family) {
       {
         type: "button",
         onclick: () => onOpenNode(node.id),
-        "aria-label": `Open step ${node.n}, ${node.title}`,
+        "aria-label": `Open step ${stepNumber(node)}, ${node.title}`,
       },
       dot(standing),
-      el("span.mlrow__n", {}, String(node.n).padStart(2, "0")),
+      el("span.mlrow__n", {}, stepNumber(node)),
       el("span.mlrow__title", {}, node.title),
       family && el("span.mlrow__fam", {}, `${family} · ${trackLabel(node.track)}`)
     ),
@@ -132,30 +145,4 @@ function groupReviews(reviews) {
 
 function linkBlock(nodes, name) {
   return [`${name}: work you can click`, "", ...nodes.map((node) => `${node.title}: ${node.proof.url}`)].join("\n");
-}
-
-function studioBlock() {
-  const play = link("play");
-  const server = link("worldServer");
-  const client = link("worldClient");
-  const jira = link("jira");
-  return el(
-    "div",
-    {},
-    el(
-      "p.muted",
-      {},
-      "The world is the live game. Features you ship stay there with a maker's mark, and anyone you send the link to can walk in. The graph tool is the one you build: who calls what, and what a change reaches. How far you go there follows your goals, and I review that work the same way. Daily stories live on the ticket board."
-    ),
-    el(
-      "div.room__acts",
-      {},
-      play && btn({ label: "Open the world", variant: "solid", href: play, target: "_blank" }),
-      server && btn({ label: "GridGlade server", variant: "quiet", href: server, target: "_blank" }),
-      client && btn({ label: "GridGlade client", variant: "quiet", href: client, target: "_blank" }),
-      jira
-        ? btn({ label: "Open the ticket board", variant: "quiet", href: jira, target: "_blank" })
-        : el("span.notwired", {}, "The ticket board is not connected yet. It arrives on day one.")
-    )
-  );
 }

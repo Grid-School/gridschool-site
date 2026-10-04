@@ -7,7 +7,7 @@
 import { el, clear } from "../../dom.js";
 import { edgePath, bounds, phaseBands } from "./layout.js";
 import { spreadLabels } from "./labels.js";
-import { STATUS, traceSet } from "../model.js";
+import { STATUS, traceSet, stepNumber } from "../model.js";
 
 const LABEL_CHARS = 17;
 /**
@@ -152,7 +152,7 @@ function nodeElement(node, options) {
     transform: `translate(${node.x} ${node.y})`,
     tabindex: 0,
     role: "button",
-    "aria-label": `Node ${node.n}: ${node.title}`,
+    "aria-label": `Node ${stepNumber(node)}: ${node.title}`,
   });
 
   const metaY = r + 24 + labelLines(node.title).length * 15;
@@ -163,7 +163,7 @@ function nodeElement(node, options) {
     // Task progress, drawn as an arc filling the ring. Content set in paint().
     el("path.gnode__prog", { d: "" }),
     el("circle.gnode__core", { r: r - 9 }),
-    el("text.gnode__num", { y: 5, "text-anchor": "middle" }, String(node.n).padStart(2, "0")),
+    el("text.gnode__num", { y: 5, "text-anchor": "middle" }, stepNumber(node)),
     // Review standing, top-right of the ring. Class set in paint().
     el("circle.gnode__rvdot", { cx: r * 0.72, cy: -r * 0.72, r: 4.5 }),
     wrappedLabel(node.title, r + 24),

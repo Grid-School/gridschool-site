@@ -11,13 +11,19 @@
  *
  * Width is classification. Each family has a lane (curriculum.json): Career
  * left, Skills and Mission centre-left, Repo centre-right, Graph right, with
- * the world and the student's own system between. Two consecutive nodes never
+ * Foundations and the student's own system between. Two consecutive nodes never
  * share an x, so the walk always turns.
  *
  * Two kinds of edge. The **sequence** (n → n+1, solid) is the road. Every
  * other `requires` edge is a **tie** (dashed): a prerequisite that is not the
  * step right before you, drawn so the dependency is visible without becoming
  * a second road.
+ *
+ * Side quests stand apart. Nodes on the `side` track (philosophy, foundations)
+ * get their own column to the right of the main floor, walked in their own
+ * `n` order from level with the first main node. The road never reaches them
+ * and no solid line joins them to it: any `requires` edge that touches one is
+ * a tie. They are in view, and plainly not the way forward.
  */
 
 export const NODE_R = 33;
@@ -25,24 +31,56 @@ export const NODE_R = 33;
 export const STEP = 120;
 /** Between lane centres. */
 export const LANE_W = 230;
-/** Lanes are 0..3 in the data; this lane sits at x = 0. */
-const LANE_CENTER = 1.5;
 /** A same-lane repeat is nudged this far so the walk still turns. */
 const STAGGER = 0.45;
+/** The side column stands this many lanes right of the rightmost main lane. */
+export const SIDE_GAP = 1.6;
+/** Consecutive side quests alternate this far either side of their column. */
+const SIDE_STAGGER = 0.18;
+
+export function isSideNode(node, families = []) {
+  if (node.track) return node.track === "side";
+  return families.find((family) => family.id === node.family)?.track === "side";
+}
+
+/**
+ * The lane that sits at x = 0: the midpoint of the lanes the main floor
+ * actually uses. The universal curriculum's 0..3 gives 1.5; a student map's
+ * five lanes (0..4) gives 2. Side families do not pull the centre.
+ */
+export function laneCenter(families = []) {
+  const lanes = families
+    .filter((family) => family.track !== "side" && Number.isFinite(family.lane))
+    .map((family) => family.lane);
+  if (!lanes.length) return 0;
+  return (Math.min(...lanes) + Math.max(...lanes)) / 2;
+}
 
 export function planFloor(graph) {
-  const laneOf = new Map((graph.families ?? []).map((family) => [family.id, family.lane]));
-  const ordered = [...graph.nodes].sort((a, b) => a.n - b.n);
+  const families = graph.families ?? [];
+  const laneOf = new Map(families.map((family) => [family.id, family.lane]));
+  const center = laneCenter(families);
+  const byN = [...graph.nodes].sort((a, b) => a.n - b.n);
+  const ordered = byN.filter((node) => !isSideNode(node, families));
+  const sideNodes = byN.filter((node) => isSideNode(node, families));
   const at = new Map();
+  const laneX = (node) => ((laneOf.get(node.family) ?? center) - center) * LANE_W;
 
   let previousX = null;
   ordered.forEach((node, rank) => {
-    let x = ((laneOf.get(node.family) ?? LANE_CENTER) - LANE_CENTER) * LANE_W;
+    let x = laneX(node);
     if (previousX !== null && Math.abs(x - previousX) < 1) {
       x += (rank % 2 ? 1 : -1) * LANE_W * STAGGER;
     }
     at.set(node.id, { x, z: -rank * STEP, rank, r: node.r ?? NODE_R });
     previousX = x;
+  });
+
+  const mainLaneXs = ordered.map(laneX);
+  const sideX = (mainLaneXs.length ? Math.max(...mainLaneXs) : 0) + LANE_W * SIDE_GAP;
+  sideNodes.forEach((node, sideRank) => {
+    const x = sideX + (sideRank % 2 ? 1 : -1) * LANE_W * SIDE_STAGGER;
+    at.set(node.id, { x, z: -sideRank * STEP, rank: sideRank, r: node.r ?? NODE_R, side: true });
   });
 
   const sequence = [];
@@ -52,7 +90,14 @@ export function planFloor(graph) {
   const road = new Set(sequence.map((edge) => `${edge.from}->${edge.to}`));
   const ties = (graph.edges ?? []).filter((edge) => !road.has(`${edge.from}->${edge.to}`) && at.has(edge.from) && at.has(edge.to));
 
-  return { at, order: ordered.map((node) => node.id), sequence, ties, box: boxOf(at) };
+  return {
+    at,
+    order: ordered.map((node) => node.id),
+    side: sideNodes.map((node) => node.id),
+    sequence,
+    ties,
+    box: boxOf(at),
+  };
 }
 
 /** The floor's extent, padded by a node. Empty graphs get a unit box. */

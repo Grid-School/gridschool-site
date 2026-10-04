@@ -6,7 +6,7 @@
 
 Martin Fowler's definition of continuous delivery is the ability to put a working build into a production-like environment at any time. The obligation to ship every commit is a different practice, continuous deployment. Continuous delivery is the skill discussed here. A **pipeline** is the sequence that makes the ability real.
 
-**GridGlade** is the shared multiplayer game used as the example here. When a change lands on a GridGlade pull request, the build workflow restores packages, builds the .NET server, runs the tests, and builds a Docker image. If any stage fails, the change stops. If the build passes and the deploy credentials are available as protected AWS secrets, a separate deploy workflow sends the server to **Lightsail**, Amazon's small virtual-server service. If the credentials are missing, the deploy job succeeds with a notice and skips the deployment. The workflow aims to serve the client at `https://play.gridschool.org` through CloudFront, Amazon's content delivery network, while the WebSocket server runs on Lightsail.
+Take a small multiplayer browser game as the example. When a change lands on one of its pull requests, the build workflow restores packages, builds the .NET server, runs the tests, and builds a Docker image. If any stage fails, the change stops. If the build passes and the deploy credentials are available as protected AWS secrets, a separate deploy workflow sends the server to **Lightsail**, Amazon's small virtual-server service. If the credentials are missing, the deploy job succeeds with a notice and skips the deployment. The workflow serves the client through CloudFront, Amazon's content delivery network, while the WebSocket server runs on Lightsail.
 
 Continuous integration and continuous delivery, or CI/CD, is that sequence of checks when you push code. A build step confirms that the code compiles or bundles. A test step runs the suite, including a contract check when needed: an automated comparison between the implemented API and its written API document. Include linting or formatting only when the result is deterministic. A deploy step publishes the result from a named branch to a URL a stranger can open. Branch protection and pull-request checks require the shared branch to pass these stages. A process that allows unchecked pushes to `main` does not provide that pipeline protection.
 
@@ -16,7 +16,7 @@ Use a development environment for changes, a staging environment for tests with 
 
 ## Where to host
 
-GridGlade already uses a small server that someone patches and backs up: a Unity WebGL client served through CloudFront, and a WebSocket server on an Amazon Lightsail machine with no database.
+The example game already uses a small server that someone patches and backs up: a Unity WebGL client served through CloudFront, and a WebSocket server on an Amazon Lightsail machine with no database.
 
 The four kinds of host are worth telling apart because each one moves a different cost onto you.
 
@@ -32,9 +32,9 @@ You may use a packaged service. Choose a host for the project's goal, explain wh
 
 A useful host decision names the platform, two rejected platforms and why they lost, and the condition that would make you move. Those details turn a preference into a choice another person can review.
 
-## The GridGlade pipeline
+## An example pipeline
 
-On pull request and on push to `main` the GridGlade server restores, builds, tests, and builds a Docker image.
+On pull request and on push to `main` the game server restores, builds, tests, and builds a Docker image.
 
 ```yaml
 name: build
@@ -57,7 +57,7 @@ jobs:
       - name: Test
         run: dotnet test --no-build -c Release --verbosity normal
       - name: Docker build
-        run: docker build -t gridschool-world-server:ci .
+        run: docker build -t game-server:ci .
 ```
 
 Restore fails when dependencies cannot be fetched, build fails when the code does not compile, test fails when a check in the suite fails, and the Docker step fails when the image cannot be built. Each stage is useful because it can stop an unsafe change from reaching the next one.

@@ -12,7 +12,7 @@
 import { el, mount } from "../dom.js";
 import { btn, toast } from "../ui.js";
 import { createScene3d } from "../graph/scene3d/index.js";
-import { STATUS, nextUp, progress, visibleGraph } from "../graph/model.js";
+import { STATUS, nextUp, progress, visibleGraph, stepNumber } from "../graph/model.js";
 import { LEGEND, STANDING, STANDING_LABEL, standingOf, legendKeyOf } from "../graph/standing.js";
 import { trackLabel } from "../copy.js";
 import { mapList } from "./map-list.js";
@@ -254,7 +254,10 @@ export function renderMap(ctx, initialArg) {
         {},
         modeToggle(),
         el("b.hud__count", {}, `Required ${prog.spine.lit} of ${prog.spine.total}`),
-        el("span.hud__depth", {}, depthLine(prog.depth))
+        // A personal map has no elective depth; "No depth picked yet" would
+        // read as a choice the student cannot make.
+        hasDepth(graph, prog) ? el("span.hud__depth", {}, depthLine(prog.depth)) : null,
+        prog.side.total ? el("span.hud__side", {}, `Side quests ${prog.side.lit} of ${prog.side.total}`) : null
       ),
       el("div.hud__group", {}, ...legendFor(graph).map((standing) => legendKey(standing, STANDING_LABEL[standing])))
     );
@@ -297,6 +300,11 @@ export function renderMap(ctx, initialArg) {
     return LEGEND.filter((standing) => always.has(standing) || present.has(standing));
   }
 
+  /** Depth exists on this map: a depth-track family, or a node marked depth. */
+  function hasDepth(graph, prog) {
+    return (graph.families ?? []).some((family) => family.track === "depth") || prog.depth.available > 0;
+  }
+
   /** Depth is what you took on, then what is waiting to be picked. */
   function depthLine(depth) {
     const taken = depth.total ? `Depth ${depth.lit} of ${depth.total} picked` : "No depth picked yet";
@@ -309,7 +317,7 @@ export function renderMap(ctx, initialArg) {
     const node = graph.byId.get(id);
     if (!node) return null;
     const standing = standingOf(node, nextUp(graph)?.id ?? null);
-    const parts = [`${String(node.n).padStart(2, "0")} · ${node.title}`, STANDING_LABEL[standing]];
+    const parts = [`${stepNumber(node)} · ${node.title}`, STANDING_LABEL[standing]];
     if (standing === STANDING.LOCKED) {
       const blockers = (node.requires ?? [])
         .map((rid) => graph.byId.get(rid))

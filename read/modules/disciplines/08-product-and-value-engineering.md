@@ -14,7 +14,7 @@ A useful account names a number, a change, a later number, and why you think the
 
 Live systems hand you work in two forms. The first is an order: implement a numbered feature. The second is an observation: new players leave after one session. Starting from the observation forces you to name the problem, rank possible causes, and only then choose a change.
 
-Take **GridGlade**, the shared multiplayer game used as the example here. A dashboard might show that eighteen percent of new players return seven days after joining. Treat that figure as hypothetical until you have measured your own system. Once you measure the symptom and rank possible causes before writing code, the explanations become easier to separate.
+Take a small multiplayer browser game as the example. A dashboard might show that eighteen percent of new players return seven days after joining. Treat that figure as hypothetical until you have measured your own system. Once you measure the symptom and rank possible causes before writing code, the explanations become easier to separate.
 
 Seven hypotheses are easy to name: onboarding is confusing; movement is unpleasant; players cannot find each other; there is no visible goal; loading is slow; spawn areas are empty; there is nothing social to do. Each one has a different cost to test and a different plausible effect. Ranking them is the work.
 

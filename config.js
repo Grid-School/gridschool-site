@@ -15,15 +15,13 @@ export const LINKS = {
   discord: "REPLACE_ME_DISCORD_INVITE",
   discordAsks: "REPLACE_ME_DISCORD_ASKS",
   discordShip: "REPLACE_ME_DISCORD_SHIP",
+  // Retired rooms. Kept only because the private-link pipeline (server
+  // persist_links.py, ops/site-pull.mjs, tools/check-private-links.mjs) still
+  // lists them; no student page links to them.
   discordBugs: "REPLACE_ME_DISCORD_BUGS",
   discordWorld: "REPLACE_ME_DISCORD_WORLD",
   toolPack: "REPLACE_ME_GITHUB_TOOLPACK_INVITE",
   studioRepo: "REPLACE_ME_GITHUB_STUDIO_REPO",
-  jira: "https://github.com/orgs/Grid-School/projects/1",
-  ticketBoard: "https://github.com/orgs/Grid-School/projects/1",
-  worldServer: "https://github.com/Grid-School/gridschool-world-server",
-  worldClient: "https://github.com/Grid-School/gridschool-world-client",
-  play: "https://play.gridschool.org",
   email: "support@gridschool.org",
   applyEmail: "apply@gridschool.org",
 };
@@ -108,38 +106,12 @@ export const PRICING = {
 };
 
 /**
- * The world, as two doors from the rail. Stage is the default: it is where
- * students' merged work lands first and where meeting up costs nothing.
- * `presence` is a GET that answers `{ "online": n }`; until the server has
- * it the door shows no count rather than a guessed one.
- */
-export const WORLD = {
-  stage: {
-    label: "Stage",
-    note: "Where your merges land first. Meet here.",
-    play: "https://play-staging.gridschool.org",
-    presence: "REPLACE_ME_STAGE_PRESENCE_URL",
-  },
-  production: {
-    label: "Production",
-    note: "The public world at play.gridschool.org.",
-    // Becomes LINKS.play once play.gridschool.org resolves and a production
-    // world server exists (instructor-runbook §9). A placeholder keeps the
-    // door honest instead of linking students to a host with no DNS record.
-    play: "REPLACE_ME_PROD_PLAY_URL",
-    presence: "REPLACE_ME_PROD_PRESENCE_URL",
-  },
-};
-
-/**
  * Discord rooms named once so later steps can point at a purpose instead of
  * inventing a new channel. Links stay placeholders until the invite exists.
  */
 export const CHANNELS = {
   asks: { name: "#asks", purpose: "Questions and anything that is blocking you", linkKey: "discordAsks" },
   ship: { name: "#ship", purpose: "Finished work with a URL", linkKey: "discordShip" },
-  bugs: { name: "#bugs", purpose: "Something you saw in the live world that looks wrong", linkKey: "discordBugs" },
-  world: { name: "#world", purpose: "Notes from running or deploying the live world", linkKey: "discordWorld" },
 };
 
 /**

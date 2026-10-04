@@ -1,0 +1,347 @@
+{
+  "version": 2,
+  "name": "Build and test",
+  "summary": "One question about something you built, answered on screen by running it until it breaks or surprises you. Plan what you can before filming. Fill the rest from what actually happened.",
+  "runtime": {
+    "targetMin": 10,
+    "capMin": 14,
+    "note": "Aim for 10 minutes. Past 14, cut a run before you cut the break. Length is earned by open questions, not by footage."
+  },
+  "fills": {
+    "before": "Before filming",
+    "after-filming": "After filming",
+    "edit": "In the edit"
+  },
+  "stages": [
+    {
+      "id": "pitch",
+      "name": "Pitch",
+      "goal": "Decide whether this video is worth filming: one question, a prediction you can say out loud, the runs in order, and a link that works.",
+      "rules": [
+        "One question per video.",
+        "If you cannot say the prediction as a number or a concrete outcome, the question is too vague.",
+        "Open the join link from a clean browser now. A video that points at a dead link does harm."
+      ]
+    },
+    {
+      "id": "prep",
+      "name": "Prep",
+      "goal": "Get everything ready so a filming session only captures and never sets up.",
+      "rules": [
+        "The build footage for this video starts here. Record while you build the dashboard and the test tools.",
+        "Anything that is not ready now becomes dead air later."
+      ]
+    },
+    {
+      "id": "film",
+      "name": "Film",
+      "goal": "Capture. Talk out loud at every prediction, change, and surprise so you can search for it later.",
+      "rules": [
+        "Say the prediction before the first run. It cannot be recorded afterwards.",
+        "Before each run, say what you change. After it, say what you see.",
+        "Keep recording through failures. Unplanned breaks are often the best footage.",
+        "After a code change, start a new session and note the version, so clips from different builds do not get mixed by accident."
+      ]
+    },
+    {
+      "id": "review",
+      "name": "Review",
+      "goal": "Find the good moments. Search the transcript in Descript or DaVinci Resolve for the words you said, then log each keeper as a clip.",
+      "rules": [
+        "A clip is a timestamp, what it shows, which section it belongs to, and how long it will run.",
+        "Log only what you might use. Three hours of footage usually hold under two minutes of results.",
+        "Results are the clips. Process becomes flash montage."
+      ]
+    },
+    {
+      "id": "story",
+      "name": "Story",
+      "goal": "Put clips into the nine sections and write one line for each. The runtime budget tells you what to cut before you open the editor.",
+      "rules": [
+        "Every section needs at least one clip or a pickup that will fill it.",
+        "Over budget: cut a run before you cut the break.",
+        "The one-liners become the narration draft."
+      ]
+    },
+    {
+      "id": "edit",
+      "name": "Edit",
+      "goal": "Cut in passes, in order, working from the clip list.",
+      "rules": [
+        "Do one pass at a time. Polishing a clip you later cut is the most common waste of an evening."
+      ]
+    },
+    {
+      "id": "publish",
+      "name": "Publish",
+      "goal": "Ship it, then learn from the retention graph and carry one lesson into the next video.",
+      "rules": [
+        "Check retention after 48 hours and again after 7 days.",
+        "A sudden drop of more than a few percent is a mistake at that timestamp. Write what caused it."
+      ]
+    }
+  ],
+  "prep": [
+    { "id": "scenes", "text": "OBS scenes ready: screen with camera, screen only, camera only." },
+    { "id": "mic", "text": "Mic tested: record 30 seconds and listen back on headphones." },
+    { "id": "resolution", "text": "Recording at 1440p or higher so zooms stay sharp." },
+    { "id": "space", "text": "Enough disk space for the session. Check the size of a 1 minute test recording and multiply." },
+    { "id": "visible", "text": "The thing you will test shows its numbers on screen: counts, timings, errors." },
+    { "id": "talk", "text": "You know what to say out loud: the prediction, each change, and your honest reactions." }
+  ],
+  "editPasses": [
+    { "id": "rough", "text": "Rough cut: every clip from the list, in order. No polish." },
+    { "id": "pacing", "text": "Pacing: speed up process, hold results, nothing still for more than 4 seconds, something changes every 2 to 5 seconds." },
+    { "id": "audio", "text": "Audio: voice level even, music 15 to 20 dB under the voice, silence before the break, master near -14 LUFS." },
+    { "id": "graphics", "text": "Graphics: the prediction on screen, run numbers, elapsed time labels on skipped waits, the diagram." },
+    { "id": "watch", "text": "Final watch at normal speed. Every 30 seconds, ask why someone would keep watching." }
+  ],
+  "searchWords": ["prediction", "predict", "froze", "freeze", "broke", "crash", "whoa", "wait", "okay so", "why"],
+  "shotKinds": {
+    "flash": { "label": "Flash", "min": 0.5, "max": 2, "use": "Montage, typing, prompts, quick proof." },
+    "beat": { "label": "Beat", "min": 3, "max": 6, "use": "One line of code, a reaction, a graph tick." },
+    "hold": { "label": "Hold", "min": 8, "max": 15, "use": "A result on screen while something keeps moving." },
+    "realtime": { "label": "Real time", "min": 15, "max": 60, "use": "The break, uncut. Only in the climax." }
+  },
+  "content": {
+    "world": "The thing running: world, dashboard, results",
+    "diagram": "Explanation drawn on screen",
+    "build": "Code, prompts, terminal",
+    "face": "You on camera"
+  },
+  "mix": {
+    "targets": { "world": 50, "diagram": 15, "build": 20, "face": 15 },
+    "buildMax": 25,
+    "faceMax": 20,
+    "note": "Shares of kept footage. They come from Sebastian Lague style pacing and the rule that results hold attention better than process. They are a starting point, not a measured law."
+  },
+  "beats": [
+    {
+      "id": "cold-open",
+      "n": 1,
+      "name": "Cold open",
+      "job": "Show the ending first. The most striking frame you filmed, then the question in one sentence.",
+      "share": 5,
+      "fill": "after-filming",
+      "reuses": true,
+      "questions": [
+        { "id": "moment", "q": "What is the most striking thing you captured?", "pick": "clip", "hint": "Pick it from your clips." },
+        { "id": "line", "q": "The one sentence you say over it.", "hint": "It must contain the question. Example: At 300 bots my server stops. I want to know exactly why." }
+      ],
+      "shots": [
+        { "kind": "flash", "count": 3, "content": "world", "what": "The break from different angles: world, graph, log." },
+        { "kind": "beat", "count": 1, "content": "world", "what": "The question line spoken over the world." }
+      ],
+      "rules": [
+        "No greeting, no name, no channel intro.",
+        "Open on motion, not a still frame.",
+        "First words inside the first second."
+      ]
+    },
+    {
+      "id": "setup",
+      "n": 2,
+      "name": "Setup",
+      "job": "What the thing is and what you are testing, in under 30 seconds.",
+      "share": 5,
+      "fill": "before",
+      "questions": [
+        { "id": "what", "q": "What is the thing, in one sentence a non-programmer understands?" },
+        { "id": "how", "q": "The one mechanism that makes this test interesting.", "hint": "Example: every player hears every other player 20 times a second." },
+        { "id": "stakes", "q": "Why should a viewer care what happens?" }
+      ],
+      "shots": [
+        { "kind": "beat", "count": 2, "content": "face", "what": "You saying the setup." },
+        { "kind": "beat", "count": 1, "content": "world", "what": "The thing running, before anything is pushed." }
+      ],
+      "rules": [
+        "One mechanism only. Save the rest for the explanation.",
+        "Your face is here and at the prediction, not everywhere."
+      ]
+    },
+    {
+      "id": "prediction",
+      "n": 3,
+      "name": "Prediction",
+      "job": "Commit to a number or outcome before you know. This is the open loop that keeps people watching.",
+      "share": 3,
+      "fill": "before",
+      "questions": [
+        { "id": "guess", "q": "What do you predict, as a number or a concrete outcome?", "hint": "Record it on camera before the first run. It cannot be faked afterwards." },
+        { "id": "reasoning", "q": "How did you get that number?", "hint": "Show the math on screen. Wrong math is still good content." }
+      ],
+      "shots": [
+        { "kind": "beat", "count": 1, "content": "face", "what": "You saying the number." },
+        { "kind": "hold", "count": 1, "content": "diagram", "what": "The math written out." }
+      ],
+      "rules": [
+        "Say the number out loud and put it on screen.",
+        "Film this before the first run, even if the rest is filmed later."
+      ]
+    },
+    {
+      "id": "build",
+      "n": 4,
+      "name": "Build",
+      "job": "Compress the making. Show the decisions and the first moment it works. Everything else is montage.",
+      "share": 15,
+      "fill": "after-filming",
+      "questions": [
+        { "id": "built", "q": "What did you build to run this test?" },
+        { "id": "decisions", "q": "The two or three decisions that mattered.", "hint": "These get beat shots with the code zoomed. Everything else is flash." },
+        { "id": "ai", "q": "What did the AI do, one sentence per prompt that mattered?", "hint": "Say it over a zoom on one to three lines. Never scroll raw output." },
+        { "id": "alive", "q": "The first moment it worked on screen.", "hint": "File and timestamp. This plays at real speed." }
+      ],
+      "shots": [
+        { "kind": "flash", "count": 12, "content": "build", "what": "Typing, prompts, diffs at four to eight times speed." },
+        { "kind": "beat", "count": 3, "content": "build", "what": "Each decision: the line that matters, zoomed." },
+        { "kind": "hold", "count": 1, "content": "world", "what": "First working moment at real speed." }
+      ],
+      "rules": [
+        "Typing and prompting: four to eight times speed with voice over.",
+        "Waiting for the AI or a build: cut straight to the result and show elapsed time on screen, for example +14 min.",
+        "AI output: zoom on one to three lines and say what it did in one sentence.",
+        "Errors: the red line at real speed for two to three seconds, then the fix.",
+        "Keep the build under a quarter of the runtime."
+      ]
+    },
+    {
+      "id": "runs",
+      "n": 5,
+      "name": "Runs",
+      "job": "Escalate. Each run changes one thing, then reveals a result and what it means.",
+      "share": 35,
+      "fill": "after-filming",
+      "repeat": "rungs",
+      "questions": [
+        { "id": "axis", "q": "What gets bigger or harder each run?" }
+      ],
+      "shots": [
+        { "kind": "hold", "count": 1, "perRung": true, "content": "world", "what": "The result on screen while it moves." },
+        { "kind": "beat", "count": 2, "perRung": true, "content": "world", "what": "Graph or counter as the run starts and lands." },
+        { "kind": "flash", "count": 1, "perRung": true, "content": "build", "what": "The one change for this run." }
+      ],
+      "rules": [
+        "Each run: change, run, reveal, one sentence of meaning.",
+        "The result gets the long hold. The setup gets the short clips.",
+        "Put the question on screen before each reveal.",
+        "A run that goes badly for an unrelated reason is still a run. Say what happened."
+      ]
+    },
+    {
+      "id": "twist",
+      "n": 6,
+      "name": "Surprise",
+      "job": "Something you did not expect. Usually not just a bigger number. It lands around the middle of the video.",
+      "share": 10,
+      "fill": "after-filming",
+      "optional": true,
+      "ifMissing": "Nothing surprised you yet. Either add one harder run, or skip this beat and let the video be shorter.",
+      "questions": [
+        { "id": "what", "q": "What surprised you?" },
+        { "id": "why", "q": "Why was it surprising, given your prediction?" }
+      ],
+      "shots": [
+        { "kind": "hold", "count": 1, "content": "world", "what": "The surprise happening." },
+        { "kind": "beat", "count": 2, "content": "world", "what": "Evidence: a log line or graph." },
+        { "kind": "beat", "count": 1, "content": "face", "what": "Your honest reaction." }
+      ],
+      "rules": [
+        "Do not stage this. If you did not find one, skip the beat."
+      ]
+    },
+    {
+      "id": "climax",
+      "n": 7,
+      "name": "The break",
+      "job": "Show the moment it fails at real speed.",
+      "share": 10,
+      "fill": "after-filming",
+      "questions": [
+        { "id": "where", "q": "Where exactly did it break?", "hint": "The number, the time, and the symptom a viewer can see." },
+        { "id": "proof", "q": "Which graph or log proves it?" }
+      ],
+      "shots": [
+        { "kind": "realtime", "count": 1, "content": "world", "what": "The break, uncut, 15 to 40 seconds." },
+        { "kind": "beat", "count": 2, "content": "world", "what": "Graphs at the moment it breaks." }
+      ],
+      "rules": [
+        "No speed-up here.",
+        "Drop the music a beat before it breaks."
+      ]
+    },
+    {
+      "id": "why",
+      "n": 8,
+      "name": "Why",
+      "job": "One picture that makes the cause obvious, then check the prediction.",
+      "share": 12,
+      "fill": "edit",
+      "questions": [
+        { "id": "cause", "q": "What caused it, in one sentence?" },
+        { "id": "picture", "q": "What single picture shows the cause?" },
+        { "id": "check", "q": "Was the prediction right? By how much?" }
+      ],
+      "shots": [
+        { "kind": "hold", "count": 2, "content": "diagram", "what": "The picture, animating while you explain." },
+        { "kind": "beat", "count": 2, "content": "world", "what": "Cut back to the real break to tie it together." }
+      ],
+      "rules": [
+        "One picture. If you need two, the cause is not clear to you yet.",
+        "The picture moves while you talk."
+      ]
+    },
+    {
+      "id": "invite",
+      "n": 9,
+      "name": "Invite",
+      "job": "Tell them where to go, with the thing still on screen.",
+      "share": 5,
+      "fill": "before",
+      "questions": [
+        { "id": "ask", "q": "What do you want them to do?" },
+        { "id": "url", "q": "The exact URL. Did you open it from a clean browser today?" },
+        { "id": "next", "q": "What will you look at next?", "hint": "No date. Do not promise a fix you have not planned." }
+      ],
+      "shots": [
+        { "kind": "beat", "count": 2, "content": "world", "what": "The thing live, with the URL on screen." }
+      ],
+      "rules": [
+        "Under 30 seconds.",
+        "Only after the break. Never before the payoff.",
+        "If the URL does not work today, do not publish."
+      ]
+    }
+  ],
+  "rules": {
+    "pacing": [
+      "Something on screen changes every 2 to 5 seconds. A cut, a zoom, an overlay, or motion inside the frame all count.",
+      "Vary clip length. A fast run of short clips, then a long hold while something moves. Evenly spaced cuts feel mechanical.",
+      "A frame with nothing moving gets at most 4 seconds.",
+      "Every 30 seconds there is a question in the voice or on screen that is not answered yet."
+    ],
+    "speed": [
+      "Film everything. Decide speed in the edit.",
+      "Talk out loud at every prediction, result, surprise, and break. You find them later by searching the transcript.",
+      "Speed up process. Never speed up results."
+    ],
+    "audio": [
+      "Voice is the backbone. Record the final narration after filming, written from what happened.",
+      "Music sits about 15 to 20 dB under the voice and changes at each beat.",
+      "Silence right before the break.",
+      "Master near -14 LUFS, which is where YouTube normalizes loudness.",
+      "Audio quality beats video quality. Use the good mic."
+    ],
+    "after": [
+      "After publishing, open the retention graph in YouTube Studio.",
+      "Any sudden drop of more than a few percent is a mistake at that timestamp. Log it under Retention with a cause.",
+      "Change one pattern in the next video because of it."
+    ]
+  },
+  "sources": [
+    { "claim": "Average shot length in popular films fell from about 10 seconds in the 1930s to under 4 seconds after 2000, and shot lengths vary in rhythm rather than evenly.", "cite": "Cutting, Brunick, DeLong, Iricinschi, Candan. Quicker, faster, darker: Changes in Hollywood film over 75 years. i-Perception 2011." },
+    { "claim": "Motion inside a shot holds attention alongside cuts.", "cite": "Cutting, DeLong, Brunick. Visual activity in Hollywood film: 1935 to 2005 and beyond. Psychology of Aesthetics, Creativity, and the Arts 2011." },
+    { "claim": "Worse audio makes the same speaker seem less credible.", "cite": "Newman, Schwarz. Good sound, good research. Science Communication 2018." },
+    { "claim": "Most viewer drop-off happens in the first 30 to 60 seconds.", "cite": "Consistent across YouTube creator benchmark reports. Exact percentages come from marketing sources and are rough." }
+  ]
+}

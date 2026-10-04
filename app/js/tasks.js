@@ -5,7 +5,8 @@
  * Task state lives on the student. Everything else here is derived.
  */
 
-import { STATUS, blockedBy, isSpine } from "./graph/model.js";
+import { STATUS, blockedBy, isSide, isSpine, stepNumber } from "./graph/model.js";
+import { withSavedState } from "./task-state.js";
 import { weekRange, isoDate } from "./time.js";
 
 export const TASK_STATE = {
@@ -23,12 +24,13 @@ export const KIND_LABEL = {
   practice: "Practice",
   record: "Record",
   evidence: "Turn in",
+  count: "Habit",
 };
 
 /** Flatten every node task into one indexable list. */
 export function allNodeTasks(graph) {
   return graph.nodes.flatMap((node) =>
-    (node.tasks ?? []).map((task) => ({ ...task, nodeId: node.id, nodeTitle: node.title, nodeN: node.n }))
+    (node.tasks ?? []).map((task) => ({ ...task, nodeId: node.id, nodeTitle: node.title, nodeN: node.n, nodeLabel: stepNumber(node) }))
   );
 }
 
@@ -36,25 +38,27 @@ export function taskState(student, id) {
   return student?.tasks?.[id]?.state ?? TASK_STATE.TODO;
 }
 
-function withState(task, student) {
-  const saved = student?.tasks?.[task.id] ?? {};
-  return { ...task, state: saved.state ?? TASK_STATE.TODO, answers: saved.answers ?? {} };
+function withState(task, student, now = new Date()) {
+  return withSavedState(task, student, now);
 }
 
 /**
  * The queue, ordered so the top item is always the honest next action:
  * the current node's open tasks first, then this week's recurring work.
+ * Side quests stay out: they are on the map to be chosen, never queued.
+ * A habit leaves the queue once today's (or this week's) tally is met and
+ * comes back when the period turns.
  */
-export function buildQueue({ graph, curriculum, student, week }) {
+export function buildQueue({ graph, curriculum, student, week, now = new Date() }) {
   const open = graph.nodes
-    .filter((node) => node.status === STATUS.OPEN && node.kind !== "future")
+    .filter((node) => node.status === STATUS.OPEN && node.kind !== "future" && !isSide(node))
     .sort((a, b) => a.n - b.n);
   const spineOpen = open.filter(isSpine);
   const focusNodes = spineOpen.length ? spineOpen : open;
 
   const nodeTasks = focusNodes.flatMap((node) =>
     (node.tasks ?? [])
-      .map((task) => withState({ ...task, nodeId: node.id, nodeTitle: node.title, nodeN: node.n }, student))
+      .map((task) => withState({ ...task, nodeId: node.id, nodeTitle: node.title, nodeN: node.n, nodeLabel: stepNumber(node) }, student, now))
       .filter((task) => task.state !== TASK_STATE.DONE)
   );
 

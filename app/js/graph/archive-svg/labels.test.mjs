@@ -8,7 +8,7 @@ test("labels that already clear each other keep their positions", () => {
 });
 
 test("two labels on the same row are pushed apart by the gap, in order", () => {
-  const out = spreadLabels([{ label: "Career", y: -320 }, { label: "The world", y: -320 }]);
+  const out = spreadLabels([{ label: "Career", y: -320 }, { label: "Graph", y: -320 }]);
   assert.equal(out[0].y, -320);
   assert.equal(out[1].y, -320 + LABEL_GAP);
 });

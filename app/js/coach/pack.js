@@ -15,6 +15,7 @@ import { retrieve, formatSnippets } from "./memory.js";
 import { credits, formatUsd } from "./credits.js";
 import { modeOf } from "../modes.js";
 import { artifactOf } from "../artifacts.js";
+import { stepNumber } from "../graph/model.js";
 
 const FENCE = "-----";
 
@@ -29,7 +30,7 @@ export function nodeLines(node) {
   const mode = modeOf(node);
   const artifact = artifactOf(node);
   return [
-    `Open node: ${String(node.n).padStart(2, "0")} ${node.title}. Lights when: ${node.evidence}`,
+    `Open node: ${stepNumber(node)} ${node.title}. Lights when: ${node.evidence}`,
     mode.key === "open" ? null : `Mode: ${mode.label}. ${mode.rule}`,
     artifact ? `Edits: ${artifact.label}. Keep them on that artifact; a new tool is not the answer here.` : null,
     node.proves?.falsification ? `Would show they do not have it: ${node.proves.falsification}` : null,

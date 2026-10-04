@@ -6,12 +6,12 @@
  * Rows, in the order they are done:
  *   read   each attached reading, opened and marked read (stepFlags read:<id>)
  *   lesson the page itself, when the page is the whole step (no readings, no tasks)
- *   task   each task, checked
+ *   task   each task, checked (habits are left out: a tally never finishes a step)
  *   link   the URL that lights the node
  */
 
 import { el } from "../dom.js";
-import { taskIsComplete } from "../task-state.js";
+import { taskIsComplete, isCountTask, savedTask } from "../task-state.js";
 
 export const ROW = { READ: "read", LESSON: "lesson", TASK: "task", LINK: "link" };
 
@@ -23,7 +23,7 @@ export function stepRows(node, student) {
   if (node?.kind === "future") return [];
   const flags = student?.stepFlags?.[node.id] ?? {};
   const readings = node.modules ?? [];
-  const tasks = node.tasks ?? [];
+  const tasks = (node.tasks ?? []).filter((task) => !isCountTask(task));
   const rows = readings.map((module) => ({
     kind: ROW.READ,
     id: module.id,
@@ -34,7 +34,7 @@ export function stepRows(node, student) {
     rows.push({ kind: ROW.LESSON, id: "lesson", label: "The lesson", ok: Boolean(flags.read) });
   }
   for (const task of tasks) {
-    const saved = student?.tasks?.[task.id] ?? {};
+    const saved = savedTask(student, task);
     rows.push({
       kind: ROW.TASK,
       id: task.id,

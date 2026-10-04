@@ -6,7 +6,7 @@
 import { el } from "../dom.js";
 import { panel, empty, btn } from "../ui.js";
 import { buildQueue, remainingMinutes, formatEstimate } from "../tasks.js";
-import { STATUS } from "../graph/model.js";
+import { STATUS, stepNumber } from "../graph/model.js";
 import { taskRow } from "./parts.js";
 
 export function renderTasks(ctx) {
@@ -55,7 +55,7 @@ export function renderTasks(ctx) {
       const node = graph.byId.get(nodeId);
       return panel(
         {
-          eyebrow: `Step ${String(node.n).padStart(2, "0")} · ${node.status === STATUS.OPEN ? "Current" : node.status}`,
+          eyebrow: `Step ${stepNumber(node)} · ${node.status === STATUS.OPEN ? "Current" : node.status}`,
           title: node.title,
           note: node.evidence,
           actions: btn({ label: "Open this step", variant: "quiet", onclick: () => navigate("map", nodeId) }),

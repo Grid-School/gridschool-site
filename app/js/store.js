@@ -9,7 +9,7 @@
  * data/students/<slug>.json.
  */
 
-import { loadBoard } from "./api.js";
+import { loadBoard, boardCurriculum } from "./api.js";
 import { buildGraph } from "./graph/model.js";
 import { weekNumber } from "./time.js";
 import {
@@ -45,7 +45,12 @@ export async function init(nextSlug, { tour = false } = {}) {
   slug = nextSlug;
   base = await loadBoard(nextSlug, { tour });
   if (!tour && nextSlug !== "demo") {
-    await hydrateFromRemote(nextSlug, { force: true });
+    const snap = await hydrateFromRemote(nextSlug, { force: true });
+    // A seat with a seed file still takes its published map from the server.
+    if (snap?.map && snap.map !== base.student.map) {
+      const student = { ...base.student, map: snap.map };
+      base = { ...base, student, curriculum: boardCurriculum({ universal: base.universal, student, slug: nextSlug }) };
+    }
     startPolling(nextSlug, () => {
       overlay = read(nextSlug);
       publish();
@@ -133,7 +138,7 @@ export function setTaskState(id, taskState, answers = null) {
     overlay.tasks = { ...(overlay.tasks ?? {}) };
     const previous = overlay.tasks[id] ?? mergedStudent().tasks?.[id] ?? {};
     if (taskState === "todo") {
-      const next = { ...previous };
+      const next = { ...previous, ...(answers ? { answers } : {}) };
       delete next.state;
       delete next.at;
       if (Object.keys(next).length) overlay.tasks[id] = next;

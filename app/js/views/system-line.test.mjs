@@ -37,11 +37,8 @@ test("systemLine labels signal depth as Career depth", () => {
   );
 });
 
-test("systemLine keeps world and graph as depth wording", () => {
-  assert.equal(
-    systemLine({ family: "world", track: "depth" }),
-    "This week's system · The world (depth track)"
-  );
+test("systemLine keeps graph as depth wording; the retired game family is unknown", () => {
+  assert.equal(systemLine({ family: "world", track: "depth" }), null);
   assert.equal(
     systemLine({ family: "graph", track: "depth" }),
     "This week's system · Graph / nanograph (depth)"
@@ -55,7 +52,7 @@ test("systemLine labels the owned-system project family as depth", () => {
   );
 });
 
-test("systemLine returns null for unknown family (never invents the world)", () => {
+test("systemLine returns null for unknown family (never invents a family)", () => {
   assert.equal(systemLine({ family: "mystery", track: "spine" }), null);
   assert.equal(systemLine(null), null);
 });

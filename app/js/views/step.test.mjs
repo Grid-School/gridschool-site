@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { isStepArgs, moduleIdFromArgs } from "./step.js";
+import { isStepArgs, moduleIdFromArgs, tasksLead } from "./step.js";
 
 const graph = { byId: new Map([["or.start", {}], ["gr.parse", {}], ["cv.four", {}]]) };
 
@@ -22,4 +22,15 @@ test("module id is joined from /m/ segments", () => {
     moduleIdFromArgs(["gr.parse", "m", "nanograph", "00-your-repo-is-a-graph"]),
     "nanograph/00-your-repo-is-a-graph"
   );
+});
+
+test("the task lead tells habits apart from the checklist", () => {
+  assert.match(tasksLead({ tasks: [{ id: "a" }] }), /in order/);
+  assert.match(tasksLead({ tasks: [{ id: "a" }] }, true), /Reading the task does not complete it/);
+  const mixed = tasksLead({ tasks: [{ id: "a" }, { id: "h", kind: "count", target: 3, per: "day" }] });
+  assert.match(mixed, /Habits reset each day; they never block this step/);
+  const weekly = tasksLead({ tasks: [{ id: "h", kind: "count", target: 1, per: "week" }] });
+  assert.match(weekly, /^Keep these habits going\. Habits reset each week/);
+  const both = [{ id: "d", kind: "count", target: 1, per: "day" }, { id: "w", kind: "count", target: 1, per: "week" }];
+  assert.match(tasksLead({ tasks: both }), /each day or week/);
 });

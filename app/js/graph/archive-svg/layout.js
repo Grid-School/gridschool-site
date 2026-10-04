@@ -14,8 +14,8 @@ export const COL_W = 206;
 export const LANE_H = 216;
 
 const RADIUS = { core: 33, future: 25, outcome: 40 };
-/** Rail order, top to bottom: Career · The world · Skills+Mission · Repo · Your system · Graph. */
-const FAMILY_RANK = { signal: 0, linkedin: 0, world: 0.5, ccvv: 1, capstone: 1, portfolio: 2, project: 2.5, graph: 3 };
+/** Rail order, top to bottom: Career · Skills+Mission · Repo · Your system · Graph. */
+const FAMILY_RANK = { signal: 0, linkedin: 0, ccvv: 1, capstone: 1, portfolio: 2, project: 2.5, graph: 3 };
 
 export function radiusOf(node) {
   if (node.kind === "future") return RADIUS.future;
@@ -69,7 +69,7 @@ function placeLump(nodes) {
 }
 
 function railOf(node) {
-  if (node.family === "signal" || node.family === "linkedin" || node.family === "world") {
+  if (node.family === "signal" || node.family === "linkedin") {
     return "top";
   }
   if (node.family === "portfolio" || node.family === "project" || node.family === "graph") return "bot";

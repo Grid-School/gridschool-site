@@ -4,6 +4,8 @@
  * any pitch. Fonts are the brand's, restated because a canvas cannot read CSS.
  */
 
+import { stepNumber } from "../model.js";
+
 const MONO = "'IBM Plex Mono', ui-monospace, monospace";
 const SANS = "'IBM Plex Sans', system-ui, sans-serif";
 
@@ -32,7 +34,7 @@ export function makeGlyph(THREE, text, { font = MONO, size = 28, color = "#e8ecf
 }
 
 export function numberGlyph(THREE, node, color) {
-  return makeGlyph(THREE, String(node.n).padStart(2, "0"), { size: 30, color, width: 96, height: 48, screenHeight: 0.026 });
+  return makeGlyph(THREE, stepNumber(node), { size: 30, color, width: 96, height: 48, screenHeight: 0.026 });
 }
 
 const TITLE_CHARS = 30;

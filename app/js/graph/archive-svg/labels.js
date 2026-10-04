@@ -1,6 +1,6 @@
 /**
  * Rail labels share one gutter column on the map. Two families whose first
- * nodes sit on the same row (Career over The world, Repo beside Your system)
+ * nodes sit on the same row (Career over Graph, Repo beside Your system)
  * would otherwise print on top of each other.
  */
 

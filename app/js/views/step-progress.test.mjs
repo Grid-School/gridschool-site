@@ -45,7 +45,7 @@ test("a saved link on a node with no reading and no task is complete on its own"
 });
 
 test("a future node has no actionable rows and cannot be completed", () => {
-  const future = { id: "wd.mark", kind: "future", coming: "Later.", tasks: [{ id: "nope" }] };
+  const future = { id: "lab.mark", kind: "future", coming: "Later.", tasks: [{ id: "nope" }] };
   assert.deepEqual(stepRows(future, {}), []);
   assert.equal(isStepComplete(future, {}), false);
   assert.equal(canAdvance(future, {}), false);

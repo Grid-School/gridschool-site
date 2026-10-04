@@ -24,7 +24,7 @@ Another engineer reviews the change and challenges its assumptions. Production s
 
 One success can still be luck or familiarity with a particular stack. The claim becomes most convincing when the same reasoning transfers to a different system with different constraints. The repeated result suggests that the capability belongs to the engineer rather than to the original project.
 
-**GridGlade**, the shared multiplayer game used as the example here, can provide one such unfamiliar setting. A content delivery network serves its browser client, a rented virtual machine runs its game server, and it has no database. A safe change has to respect machines and decisions the engineer did not choose.
+A small multiplayer browser game is one such unfamiliar setting. A content delivery network serves its browser client, a rented virtual machine runs its game server, and it has no database. A safe change has to respect machines and decisions the engineer did not choose.
 
 An **evidence record**, sometimes called an evidence ledger, preserves this story. It connects the claim to the artifacts, the challenges that could have defeated it, and the result under each condition. The strength comes from how many plausible explanations the evidence rules out.
 
