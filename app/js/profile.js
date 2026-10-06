@@ -8,13 +8,13 @@
  * and this sheet says so rather than pretending to a ledger it does not hold.
  */
 
-import { el } from "./dom.js?v=e80d53a-202610060435";
-import { btn, kv } from "./ui.js?v=e80d53a-202610060435";
-import { createModal } from "./modal.js?v=e80d53a-202610060435";
-import { icon } from "./icons.js?v=e80d53a-202610060435";
-import { link } from "../../config.js?v=e80d53a-202610060435";
-import { returnedUnread } from "./tasks.js?v=e80d53a-202610060435";
-import { initials } from "./rail.js?v=e80d53a-202610060435";
+import { el } from "./dom.js?v=bb483b2-202610060747";
+import { btn, kv } from "./ui.js?v=bb483b2-202610060747";
+import { createModal } from "./modal.js?v=bb483b2-202610060747";
+import { icon } from "./icons.js?v=bb483b2-202610060747";
+import { link } from "../../config.js?v=bb483b2-202610060747";
+import { returnedUnread } from "./tasks.js?v=bb483b2-202610060747";
+import { initials } from "./rail.js?v=bb483b2-202610060747";
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 

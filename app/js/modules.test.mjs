@@ -11,9 +11,9 @@ import {
   loadModules,
   resolveWithLibrary,
   SLOTS,
-} from "./modules.js?v=e80d53a-202610060435";
+} from "./modules.js?v=bb483b2-202610060747";
 import { validateMap } from "../../data/map-rules.mjs";
-import { boardCurriculum } from "./api.js?v=e80d53a-202610060435";
+import { boardCurriculum } from "./api.js?v=bb483b2-202610060747";
 import { readLibrary, MODULE_DIR } from "../../data/module-library.mjs";
 
 const site = join(dirname(fileURLToPath(import.meta.url)), "..", "..");

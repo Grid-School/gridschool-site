@@ -4,12 +4,12 @@
  * already answers where you are. This page does not teach those jobs again.
  */
 
-import { el } from "../dom.js?v=e80d53a-202610060435";
-import { panel, btn, empty } from "../ui.js?v=e80d53a-202610060435";
-import { eventsForWeek, weekRange, fmtShort, programPhase, relativeDay } from "../time.js?v=e80d53a-202610060435";
-import { eventRow } from "./parts.js?v=e80d53a-202610060435";
-import { requestSystemReminders } from "../reminders.js?v=e80d53a-202610060435";
-import { toast } from "../ui.js?v=e80d53a-202610060435";
+import { el } from "../dom.js?v=bb483b2-202610060747";
+import { panel, btn, empty } from "../ui.js?v=bb483b2-202610060747";
+import { eventsForWeek, weekRange, fmtShort, programPhase, relativeDay } from "../time.js?v=bb483b2-202610060747";
+import { eventRow } from "./parts.js?v=bb483b2-202610060747";
+import { requestSystemReminders } from "../reminders.js?v=bb483b2-202610060747";
+import { toast } from "../ui.js?v=bb483b2-202610060747";
 
 export function renderCalendar(ctx, weekArg) {
   const { state, navigate } = ctx;

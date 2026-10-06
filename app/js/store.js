@@ -9,9 +9,9 @@
  * data/students/<slug>.json.
  */
 
-import { loadBoard, boardCurriculum, libraryFor } from "./api.js?v=e80d53a-202610060435";
-import { buildGraph } from "./graph/model.js?v=e80d53a-202610060435";
-import { weekNumber, studentWeek, ownSchedule } from "./time.js?v=e80d53a-202610060435";
+import { loadBoard, boardCurriculum, libraryFor } from "./api.js?v=bb483b2-202610060747";
+import { buildGraph } from "./graph/model.js?v=bb483b2-202610060747";
+import { weekNumber, studentWeek, ownSchedule } from "./time.js?v=bb483b2-202610060747";
 import {
   read,
   clear as clearPersist,
@@ -21,17 +21,31 @@ import {
   mergeStudent,
   STUDENT_KEYS,
   INSTRUCTOR_KEYS,
-} from "./persist.js?v=e80d53a-202610060435";
-import { flushAfterLocalWrite, hydrateFromRemote, persistStatus, startPolling } from "./persist-remote.js?v=e80d53a-202610060435";
-import { validReviewReturn } from "./review.js?v=e80d53a-202610060435";
-import { isDevUnlock } from "./dev-mode.js?v=e80d53a-202610060435";
+} from "./persist.js?v=bb483b2-202610060747";
+import { flushAfterLocalWrite, hydrateFromRemote, persistStatus, startPolling } from "./persist-remote.js?v=bb483b2-202610060747";
+import { validReviewReturn } from "./review.js?v=bb483b2-202610060747";
+import { isDevUnlock } from "./dev-mode.js?v=bb483b2-202610060747";
 
 export { validReviewReturn };
 
 let base = null;
 let overlay = {};
 let slug = null;
+let progressReadOnly = false;
 const listeners = new Set();
+
+/**
+ * The admin key viewing a real student's board: their progress shows, and
+ * nothing here can change it (the server refuses it too). Test seats stay
+ * writable.
+ */
+export function setProgressReadOnly(value) {
+  progressReadOnly = Boolean(value);
+}
+
+export function isProgressReadOnly() {
+  return progressReadOnly;
+}
 
 function pick(source, keys) {
   const out = {};
@@ -123,12 +137,25 @@ function publish() {
 }
 
 function flushThenPublish(domain, extra = {}) {
-  void flushAfterLocalWrite(slug, domain, extra).then(() => {
+  void flushAfterLocalWrite(slug, domain, extra).then(async (result) => {
+    if (result?.refused) {
+      // The server would not take it: show the student's own record again.
+      await hydrateFromRemote(slug, { force: true });
+      syncFromPersist();
+    }
     publish();
   });
 }
 
+function notifyReadOnly() {
+  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("gridschool:progress-readonly"));
+}
+
 function commitStudent(mutate, event = null) {
+  if (progressReadOnly) {
+    notifyReadOnly();
+    return state();
+  }
   mutate();
   patchStudent(slug, pick(overlay, STUDENT_KEYS), event);
   syncFromPersist();

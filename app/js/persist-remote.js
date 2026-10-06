@@ -5,9 +5,9 @@
  * Spec: ops/student-data.md
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=e80d53a-202610060435";
-import { persistToken } from "./session.js?v=e80d53a-202610060435";
-import { readDoc, replace, pendingOf, hasPending, markFlushed } from "./persist.js?v=e80d53a-202610060435";
+import { PERSIST, isPlaceholder } from "../../config.js?v=bb483b2-202610060747";
+import { persistToken } from "./session.js?v=bb483b2-202610060747";
+import { readDoc, replace, pendingOf, hasPending, markFlushed } from "./persist.js?v=bb483b2-202610060747";
 
 const POLL_MS = 15000;
 let inflight = 0;
@@ -214,6 +214,15 @@ export async function flushAfterLocalWrite(slug, domain, extra = {}) {
     if (error.code === "NO_TOKEN") {
       emitStatus({ state: "local-only", slug, error: "no-token" });
       return { skipped: true, reason: "no-token" };
+    }
+    if (error.status === 403 && domain === "student") {
+      // Not ours to write (the admin key on a real student's board). Drop the
+      // local change instead of retrying it forever; the next read brings the
+      // student's own record back.
+      markFlushed(slug, "student");
+      lastStamp.delete(slug);
+      emitStatus({ state: "ok", slug, error: null });
+      return { skipped: true, refused: true };
     }
     console.warn("persist flush failed", error);
     emitStatus({ state: "local-only", slug, error: error.message });

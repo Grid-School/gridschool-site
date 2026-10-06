@@ -2,8 +2,8 @@
  * Admin persist calls. Desk only. Student boards never import this.
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=e80d53a-202610060435";
-import { persistToken } from "./session.js?v=e80d53a-202610060435";
+import { PERSIST, isPlaceholder } from "../../config.js?v=bb483b2-202610060747";
+import { persistToken } from "./session.js?v=bb483b2-202610060747";
 
 function endpoint() {
   return String(PERSIST.endpoint || "").replace(/\/$/, "");
@@ -114,9 +114,15 @@ export async function fetchStudentMap(slug, status) {
   }
 }
 
-/** Save a new map version. A 400 carries `payload.errors` from validate_map. */
-export function saveStudentMap(slug, map, status, context) {
-  return request("PUT", `/students/${encodeURIComponent(slug)}/map`, { map, status, context });
+/**
+ * Save a new map version. A 400 carries `payload.errors` from validate_map.
+ * Publishing names `base`, the live version it replaces (null if none); a
+ * newer publish since then answers 409 with `payload.live`.
+ */
+export function saveStudentMap(slug, map, status, context, { base = null } = {}) {
+  const body = { map, status, context };
+  if (status === "published") body.base = base;
+  return request("PUT", `/students/${encodeURIComponent(slug)}/map`, body);
 }
 
 /**

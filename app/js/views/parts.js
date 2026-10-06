@@ -10,13 +10,13 @@
  * day or week, because "3 comments a day" is never finished, only kept.
  */
 
-import { el } from "../dom.js?v=e80d53a-202610060435";
-import { btn, toast } from "../ui.js?v=e80d53a-202610060435";
-import { KIND_LABEL, TASK_STATE, formatEstimate } from "../tasks.js?v=e80d53a-202610060435";
-import { taskIsComplete, isCountTask, countOf } from "../task-state.js?v=e80d53a-202610060435";
-import { fmtDay, fmtTime, relativeDay } from "../time.js?v=e80d53a-202610060435";
-import { isPrivateLinkKey, link } from "../../../config.js?v=e80d53a-202610060435";
-export { statusLabel } from "../copy.js?v=e80d53a-202610060435";
+import { el } from "../dom.js?v=bb483b2-202610060747";
+import { btn, toast } from "../ui.js?v=bb483b2-202610060747";
+import { KIND_LABEL, TASK_STATE, formatEstimate } from "../tasks.js?v=bb483b2-202610060747";
+import { taskIsComplete, isCountTask, countOf } from "../task-state.js?v=bb483b2-202610060747";
+import { fmtDay, fmtTime, relativeDay } from "../time.js?v=bb483b2-202610060747";
+import { isPrivateLinkKey, link } from "../../../config.js?v=bb483b2-202610060747";
+export { statusLabel } from "../copy.js?v=bb483b2-202610060747";
 
 export const stateIdOf = (task) => task.weekKey ?? task.id;
 
