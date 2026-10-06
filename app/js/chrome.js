@@ -10,12 +10,12 @@
  *   profile.js           the sheet behind the avatar
  */
 
-import { el, mount } from "./dom.js?v=98fadd2-202610060354";
-import { signOut } from "./session.js?v=98fadd2-202610060354";
-import { lock } from "./gate.js?v=98fadd2-202610060354";
-import { createRail } from "./rail.js?v=98fadd2-202610060354";
-import { createInstructorStrip } from "./instructor-strip.js?v=98fadd2-202610060354";
-import { createProfile } from "./profile.js?v=98fadd2-202610060354";
+import { el, mount } from "./dom.js?v=e80d53a-202610060435";
+import { signOut } from "./session.js?v=e80d53a-202610060435";
+import { lock } from "./gate.js?v=e80d53a-202610060435";
+import { createRail } from "./rail.js?v=e80d53a-202610060435";
+import { createInstructorStrip } from "./instructor-strip.js?v=e80d53a-202610060435";
+import { createProfile } from "./profile.js?v=e80d53a-202610060435";
 
 export function createChrome({
   onNavigate,

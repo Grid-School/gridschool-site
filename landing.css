@@ -64,6 +64,29 @@
   --hair: color-mix(in srgb, var(--text) 6%, transparent);
   --hair-cyan: color-mix(in srgb, var(--cyan) 20%, transparent);
 
+  /* type families. The funnel pages set their own sizes; the board and desk
+     read these so a family change is one line. */
+  --font-sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  /* reading (board step page, desk inspector): one comfortable column */
+  --measure: 68ch;
+  --fs-read: 16.5px;
+  --lh-read: 1.75;
+  --fs-meta: 12.5px;
+
+  /* calm workspace surfaces: barely lifted off --bg, so whitespace and type do
+     the separating and a box is the exception. The landing never reads these. */
+  --calm-0: var(--bg);
+  --calm-1: #060a11;
+  --calm-2: #0a0f18;
+  --calm-3: #0e1520;
+  --hair-soft: color-mix(in srgb, var(--text) 4.5%, transparent);
+  --hair-strong: color-mix(in srgb, var(--text) 11%, transparent);
+  --tint-cyan: color-mix(in srgb, var(--cyan) 5%, transparent);
+  --tint-amber: color-mix(in srgb, var(--amber) 8%, transparent);
+  --ink-soft: color-mix(in srgb, var(--text) 86%, var(--muted));
+
   /* motion */
   --dur-fast: 120ms;
   --dur-base: 400ms;
@@ -106,7 +129,7 @@ body {
 .btn--solid:hover { border-color: var(--cyan); }
 .btn--cta {
   background: none; color: var(--cyan); font-size: 13px; font-weight: 500;
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-family: var(--font-mono);
   letter-spacing: .2em; padding: 10px 0; box-shadow: none;
   text-transform: uppercase;
   text-shadow: 0 0 20px color-mix(in srgb, var(--cyan) 22%, transparent);
@@ -139,7 +162,7 @@ body {
 .nav__logo .g-on rect { fill: var(--cyan); }
 .nav__logo .g-off rect { fill: var(--logo-dim); }
 .nav__name {
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-weight: 400; letter-spacing: .42em; font-size: 11px; color: var(--ghost);
 }
 .nav__name b { font-weight: 500; color: var(--text); }
@@ -166,7 +189,7 @@ h1 em { font-style: normal; color: var(--white); text-shadow: none; }
 .enter {
   display: inline-flex; align-items: center; gap: 10px;
   margin-top: 16px; padding: 8px 0 4px;
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 13px; font-weight: 500; letter-spacing: .2em;
   color: var(--cyan); text-decoration: none;
   text-shadow: 0 0 20px color-mix(in srgb, var(--cyan) 22%, transparent);
@@ -185,7 +208,7 @@ h1 em { font-style: normal; color: var(--white); text-shadow: none; }
 .hero__alt:hover { text-decoration: underline; }
 .chip {
   display: inline-block;
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: var(--fs-chip); letter-spacing: .14em;
   color: #93aabf; text-transform: uppercase;
 }
@@ -262,7 +285,7 @@ tr.us td { color: var(--cyan); }
 }
 .verdict__eyebrow {
   display: block;
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 11px; letter-spacing: .22em; text-transform: uppercase;
   color: var(--cyan); margin-bottom: 10px;
 }
@@ -270,7 +293,7 @@ tr.us td { color: var(--cyan); }
 .verdict__form { margin: 18px 0 10px; display: grid; gap: 14px; }
 .verdict__q {
   display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px;
-  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 13px;
+  font-family: var(--font-mono); font-size: 13px;
   color: var(--text);
 }
 .verdict__blank {
@@ -286,7 +309,7 @@ tr.us td { color: var(--cyan); }
 .founder__receipts {
   list-style: none; display: flex; flex-wrap: wrap; justify-content: center;
   gap: 10px 22px; margin-top: 20px; padding: 0;
-  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 13px;
+  font-family: var(--font-mono); font-size: 13px;
 }
 .founder__receipts a { color: var(--cyan); }
 .founder__receipts a:hover { text-decoration: underline; }
