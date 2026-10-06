@@ -8,15 +8,15 @@
  * position; a task marked done elsewhere must not throw you back to the top.
  */
 
-import { el, mount } from "../dom.js";
-import { btn, toast } from "../ui.js";
-import { COACH } from "../../../config.js";
-import { nextAction } from "../coach/next.js";
-import { nextUp } from "../graph/model.js";
-import { credits, formatUsd, attachmentBudget } from "../coach/credits.js";
-import { rememberIntent } from "../coach/memory.js";
-import { sendTurn, coachIsLive } from "../coach/client.js";
-import { systemLine } from "./system-line.js";
+import { el, mount } from "../dom.js?v=98fadd2-202610060354";
+import { btn, toast } from "../ui.js?v=98fadd2-202610060354";
+import { COACH } from "../../../config.js?v=98fadd2-202610060354";
+import { nextAction } from "../coach/next.js?v=98fadd2-202610060354";
+import { nextUp } from "../graph/model.js?v=98fadd2-202610060354";
+import { credits, formatUsd, attachmentBudget } from "../coach/credits.js?v=98fadd2-202610060354";
+import { rememberIntent } from "../coach/memory.js?v=98fadd2-202610060354";
+import { sendTurn, coachIsLive } from "../coach/client.js?v=98fadd2-202610060354";
+import { systemLine } from "./system-line.js?v=98fadd2-202610060354";
 
 const TEXT_FILES = /\.(txt|md|markdown|json|diff|patch|py|js|mjs|ts|tsx|jsx|css|html|rs|go|java|rb|sh|yml|yaml|toml|csv)$/i;
 

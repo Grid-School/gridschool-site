@@ -3,13 +3,13 @@
  * student file seeds identity from the notebook API.
  */
 
-import { loadPrivateJson } from "./gate.js";
-import { seedFromSnapshot } from "./persist.js";
-import { fetchSnapshot, remoteEnabled } from "./persist-remote.js";
-import { applySiteOverrides, applyPrivateLinks, applyCopyOverrides } from "../../js/site-overrides.js";
-import { revealMemberInvite } from "../../js/member-invite.js";
-import { numberCurriculumReadings } from "./reading-order.js";
-import { resolveMap, loadModules, moduleRefs } from "./modules.js";
+import { loadPrivateJson } from "./gate.js?v=98fadd2-202610060354";
+import { seedFromSnapshot } from "./persist.js?v=98fadd2-202610060354";
+import { fetchSnapshot, remoteEnabled } from "./persist-remote.js?v=98fadd2-202610060354";
+import { applySiteOverrides, applyPrivateLinks, applyCopyOverrides } from "../../js/site-overrides.js?v=98fadd2-202610060354";
+import { revealMemberInvite } from "../../js/member-invite.js?v=98fadd2-202610060354";
+import { numberCurriculumReadings } from "./reading-order.js?v=98fadd2-202610060354";
+import { resolveMap, loadModules, moduleRefs } from "./modules.js?v=98fadd2-202610060354";
 
 const BASE = "../data/";
 const cache = new Map();

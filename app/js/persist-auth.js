@@ -3,9 +3,9 @@
  * the notebook token and the cohort access key so the client can inject both.
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js";
-import { setPersistToken, signIn } from "./session.js";
-import { unlock } from "./gate.js";
+import { PERSIST, isPlaceholder } from "../../config.js?v=98fadd2-202610060354";
+import { setPersistToken, signIn } from "./session.js?v=98fadd2-202610060354";
+import { unlock } from "./gate.js?v=98fadd2-202610060354";
 
 function endpoint() {
   return String(PERSIST.endpoint || "").replace(/\/$/, "");

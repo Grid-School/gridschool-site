@@ -3,7 +3,7 @@
  * yet rather than taking their money, and hands the record to lead.js.
  */
 
-import { submit, ingestLead } from "../js/lead.js";
+import { submit, ingestLead } from "../js/lead.js?v=98fadd2-202610060354";
 
 const form = document.getElementById("form");
 const screen = document.getElementById("screen");

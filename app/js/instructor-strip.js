@@ -8,10 +8,10 @@
  * locked node, which previews its lesson; it does not need Dev unlock.
  */
 
-import { el, mount } from "./dom.js";
-import { icon } from "./icons.js";
-import { isPreviewMedia } from "./preview-mode.js";
-import { isInstructorDevice, setInstructorDevice } from "./instructor-mode.js";
+import { el, mount } from "./dom.js?v=98fadd2-202610060354";
+import { icon } from "./icons.js?v=98fadd2-202610060354";
+import { isPreviewMedia } from "./preview-mode.js?v=98fadd2-202610060354";
+import { isInstructorDevice, setInstructorDevice } from "./instructor-mode.js?v=98fadd2-202610060354";
 
 export function createInstructorStrip({ onToggleDev, onTogglePreview, showAdminConsole = false }) {
   const root = el("div.istrip", { role: "group", "aria-label": "Instructor controls", hidden: true });

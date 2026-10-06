@@ -3,13 +3,13 @@
  * board, built from the same model the student sees so the two can never disagree.
  */
 
-import { loadRoster, loadStudent, loadCurriculum, loadCohort, boardCurriculum, libraryFor } from "./api.js";
-import { readOverlay, mergeStudent, listEvents } from "./overlay.js";
-import { hydrateFromRemote, remoteEnabled } from "./persist-remote.js";
-import { listPersistSlugs } from "./persist-admin.js";
-import { buildGraph, progress, nextUp, STATUS } from "./graph/model.js";
-import { quotaStatus, waitingOn, buildQueue } from "./tasks.js";
-import { weekNumber, studentWeek, ownSchedule } from "./time.js";
+import { loadRoster, loadStudent, loadCurriculum, loadCohort, boardCurriculum, libraryFor } from "./api.js?v=98fadd2-202610060354";
+import { readOverlay, mergeStudent, listEvents } from "./overlay.js?v=98fadd2-202610060354";
+import { hydrateFromRemote, remoteEnabled } from "./persist-remote.js?v=98fadd2-202610060354";
+import { listPersistSlugs } from "./persist-admin.js?v=98fadd2-202610060354";
+import { buildGraph, progress, nextUp, STATUS } from "./graph/model.js?v=98fadd2-202610060354";
+import { quotaStatus, waitingOn, buildQueue } from "./tasks.js?v=98fadd2-202610060354";
+import { weekNumber, studentWeek, ownSchedule } from "./time.js?v=98fadd2-202610060354";
 
 export async function loadCohortBoards() {
   const [roster, curriculum, cohort, persistSlugs] = await Promise.all([

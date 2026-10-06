@@ -10,13 +10,13 @@
  * day or week, because "3 comments a day" is never finished, only kept.
  */
 
-import { el } from "../dom.js";
-import { btn, toast } from "../ui.js";
-import { KIND_LABEL, TASK_STATE, formatEstimate } from "../tasks.js";
-import { taskIsComplete, isCountTask, countOf } from "../task-state.js";
-import { fmtDay, fmtTime, relativeDay } from "../time.js";
-import { isPrivateLinkKey, link } from "../../../config.js";
-export { statusLabel } from "../copy.js";
+import { el } from "../dom.js?v=98fadd2-202610060354";
+import { btn, toast } from "../ui.js?v=98fadd2-202610060354";
+import { KIND_LABEL, TASK_STATE, formatEstimate } from "../tasks.js?v=98fadd2-202610060354";
+import { taskIsComplete, isCountTask, countOf } from "../task-state.js?v=98fadd2-202610060354";
+import { fmtDay, fmtTime, relativeDay } from "../time.js?v=98fadd2-202610060354";
+import { isPrivateLinkKey, link } from "../../../config.js?v=98fadd2-202610060354";
+export { statusLabel } from "../copy.js?v=98fadd2-202610060354";
 
 export const stateIdOf = (task) => task.weekKey ?? task.id;
 

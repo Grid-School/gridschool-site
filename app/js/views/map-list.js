@@ -13,14 +13,14 @@
  * own column on the floor: listed, never in the required count.
  */
 
-import { el } from "../dom.js";
-import { panel, btn, copy, dot } from "../ui.js";
-import { STATUS, isSide, isSpine, nextUp, stepNumber } from "../graph/model.js";
-import { inSequence, standingOf, STANDING_LABEL, STANDING_TONE } from "../graph/standing.js";
-import { reviewScores } from "./parts.js";
-import { trackLabel } from "../copy.js";
-import { fmtDay } from "../time.js";
-import { dueBadge } from "./from-aden.js";
+import { el } from "../dom.js?v=98fadd2-202610060354";
+import { panel, btn, copy, dot } from "../ui.js?v=98fadd2-202610060354";
+import { STATUS, isSide, isSpine, nextUp, stepNumber } from "../graph/model.js?v=98fadd2-202610060354";
+import { inSequence, standingOf, STANDING_LABEL, STANDING_TONE } from "../graph/standing.js?v=98fadd2-202610060354";
+import { reviewScores } from "./parts.js?v=98fadd2-202610060354";
+import { trackLabel } from "../copy.js?v=98fadd2-202610060354";
+import { fmtDay } from "../time.js?v=98fadd2-202610060354";
+import { dueBadge } from "./from-aden.js?v=98fadd2-202610060354";
 
 export function mapList({ state, onOpenNode }) {
   const { graph, student } = state;
