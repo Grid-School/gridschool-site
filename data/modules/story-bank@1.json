@@ -1,0 +1,42 @@
+{
+  "id": "story-bank",
+  "version": 1,
+  "title": "Story bank from the case study",
+  "purpose": "Five two-minute stories, each with a number, built from real work.",
+  "lane": "interview",
+  "phase": "land",
+  "kind": "core",
+  "completion": "tasks",
+  "why": "Applied-AI interviews ask: did you understand the workflow, did you ship, did you measure it. Your stories answer all three.",
+  "evidence": "Five stories, each with a number.",
+  "modules": [
+    {
+      "id": "disciplines/09-technical-communication-and-defense",
+      "title": "09 · Technical communication and defense",
+      "href": "./read/?m=disciplines/09-technical-communication-and-defense"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "write",
+      "title": "Five stories: situation, what you did, what changed, the number",
+      "kind": "write",
+      "est": 90,
+      "done_when": "Each fits in two minutes out loud.",
+      "fields": [
+        {
+          "id": "stories",
+          "label": "Your stories",
+          "textarea": true,
+          "rows": 10,
+          "required": true
+        }
+      ]
+    }
+  ],
+  "slots": [
+    "notes",
+    "links",
+    "due"
+  ]
+}

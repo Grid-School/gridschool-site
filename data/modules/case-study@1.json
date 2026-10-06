@@ -1,0 +1,26 @@
+{
+  "id": "case-study",
+  "version": 1,
+  "title": "Case study: before → after",
+  "purpose": "One page from a real user: by hand, what you built, what changed.",
+  "lane": "proof",
+  "phase": "prove",
+  "kind": "core",
+  "completion": "link",
+  "why": "Hiring is a verification problem. A dated, specific record of a real user beats any claim, and your resume, posts and outreach all come from it.",
+  "evidence": "Case study URL.",
+  "tasks": [
+    {
+      "id": "write",
+      "title": "One page: what they did by hand, what you built, what changed, a quote or screenshot they allowed",
+      "kind": "write",
+      "est": 120,
+      "done_when": "Reads like a deployment report, not a resume bullet."
+    }
+  ],
+  "slots": [
+    "notes",
+    "links",
+    "due"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "id": "mock-interview",
+  "version": 1,
+  "title": "Mock interview (recorded)",
+  "purpose": "A recorded mock with written feedback; Aden's notes say which kind.",
+  "lane": "interview",
+  "phase": "land",
+  "kind": "core",
+  "completion": "tasks",
+  "why": "Reps you can watch back. The repeated misses become next week's practice.",
+  "evidence": "Recording plus written feedback.",
+  "tasks": [
+    {
+      "id": "do",
+      "title": "Do the mock with Aden and read the feedback",
+      "kind": "practice",
+      "est": 75,
+      "done_when": "Recorded, feedback written, one thing to fix named."
+    }
+  ],
+  "slots": [
+    "notes",
+    "links",
+    "due"
+  ]
+}

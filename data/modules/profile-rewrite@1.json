@@ -1,0 +1,54 @@
+{
+  "id": "profile-rewrite",
+  "version": 1,
+  "title": "Headline, About and top 3 roles, from proven answers only",
+  "purpose": "Rewrite the profile in recruiter search words, claiming only what the proof answers support.",
+  "lane": "presence",
+  "phase": "position",
+  "kind": "core",
+  "completion": "link",
+  "why": "The profile is a claim. It should say only what the proof questions showed, in the words recruiters type when they search.",
+  "evidence": "Your live LinkedIn profile URL.",
+  "modules": [
+    {
+      "id": "readings/career-evidence",
+      "title": "Help the right people see your work",
+      "href": "./read/?m=readings/career-evidence"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "headline",
+      "title": "Headline: your role | the work you want next | three or four skills you can prove",
+      "kind": "write",
+      "est": 15,
+      "done_when": "Uses the version your answers support."
+    },
+    {
+      "id": "about",
+      "title": "About in 3 sentences: your background → the problems you turn into systems → your current focus",
+      "kind": "write",
+      "est": 30,
+      "done_when": "Three sentences, no buzzwords you can't explain."
+    },
+    {
+      "id": "roles",
+      "title": "Top 3 roles: 2–3 bullets each, problem → what you built or owned → result",
+      "kind": "write",
+      "est": 60,
+      "done_when": "No generic \"collaborated/maintained\" bullets left."
+    },
+    {
+      "id": "skills",
+      "title": "Pin verified skills first; agent skills only if true",
+      "kind": "write",
+      "est": 10,
+      "done_when": "Top skills are the ones you can defend in an interview."
+    }
+  ],
+  "slots": [
+    "notes",
+    "links",
+    "due"
+  ]
+}

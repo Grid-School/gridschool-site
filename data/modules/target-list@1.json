@@ -1,0 +1,33 @@
+{
+  "id": "target-list",
+  "version": 1,
+  "title": "List 25–30 people in the seat you want",
+  "purpose": "A named list of the people already doing, or hiring for, the job you want.",
+  "lane": "network",
+  "phase": "position",
+  "kind": "core",
+  "completion": "tasks",
+  "why": "Recruiters search, and referrals convert many times better than cold applications. The network decides who sees your work first.",
+  "evidence": "A list of 25–30 people working in or hiring for the roles you want.",
+  "tasks": [
+    {
+      "id": "list",
+      "title": "Build the list: name, role, company, why them",
+      "kind": "record",
+      "est": 60,
+      "done_when": "25–30 people listed, each with a one-line reason.",
+      "fields": [
+        {
+          "id": "link",
+          "label": "Link to your list (doc or sheet)",
+          "required": true
+        }
+      ]
+    }
+  ],
+  "slots": [
+    "notes",
+    "links",
+    "due"
+  ]
+}

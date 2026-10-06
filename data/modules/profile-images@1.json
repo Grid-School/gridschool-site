@@ -1,0 +1,33 @@
+{
+  "id": "profile-images",
+  "version": 1,
+  "title": "Profile images that read as trust",
+  "purpose": "A sharp banner and headshot, graded to match: the first trust signal.",
+  "lane": "presence",
+  "phase": "position",
+  "kind": "core",
+  "completion": "tasks",
+  "why": "A recruiter decides in seconds. Sharp, consistent images are the first trust signal before a word is read.",
+  "evidence": "Both images live on your profile.",
+  "tasks": [
+    {
+      "id": "banner",
+      "title": "New banner: high resolution, colors that read as trust",
+      "kind": "ship",
+      "est": 45,
+      "done_when": "The banner is live and matches the headshot's color grade."
+    },
+    {
+      "id": "headshot",
+      "title": "New headshot: camera further back, dressed for the seat you want, graded to match the banner",
+      "kind": "ship",
+      "est": 60,
+      "done_when": "The headshot is live and shows your shoulders, not just a face."
+    }
+  ],
+  "slots": [
+    "notes",
+    "links",
+    "due"
+  ]
+}

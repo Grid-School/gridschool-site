@@ -16,6 +16,7 @@ import { STATUS, nextUp, progress, visibleGraph, stepNumber } from "../graph/mod
 import { LEGEND, STANDING, STANDING_LABEL, standingOf, legendKeyOf } from "../graph/standing.js";
 import { trackLabel } from "../copy.js";
 import { mapList } from "./map-list.js";
+import { dueLabel } from "./from-aden.js";
 import { createGridState, hashFor, RESERVED_ARGS, VIEW } from "./grid-state.js";
 import { lockNotice, shouldInterceptLock } from "./lock-notice.js";
 
@@ -318,6 +319,8 @@ export function renderMap(ctx, initialArg) {
     if (!node) return null;
     const standing = standingOf(node, nextUp(graph)?.id ?? null);
     const parts = [`${stepNumber(node)} · ${node.title}`, STANDING_LABEL[standing]];
+    const due = node.status !== STATUS.LIT ? dueLabel(node.fromAden?.due) : null;
+    if (due) parts.push(due);
     if (standing === STANDING.LOCKED) {
       const blockers = (node.requires ?? [])
         .map((rid) => graph.byId.get(rid))

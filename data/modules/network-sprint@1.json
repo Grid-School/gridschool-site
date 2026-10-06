@@ -1,0 +1,76 @@
+{
+  "id": "network-sprint",
+  "version": 1,
+  "title": "Network sprint: show up where they post",
+  "purpose": "Daily habits: connect, comment, save the best posts, post twice a week.",
+  "lane": "network",
+  "phase": "position",
+  "kind": "core",
+  "completion": "tasks",
+  "why": "LinkedIn's recruiter tools rank on activity and engagement as well as skills. Thoughtful comments start conversations and teach you what this space responds to.",
+  "evidence": "Saved posts and engagement results brought to the weekly call.",
+  "modules": [
+    {
+      "id": "readings/posting-kit",
+      "title": "Write posts that sound like you",
+      "href": "./read/?m=readings/posting-kit"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "connect",
+      "title": "Follow or connect with relevant people",
+      "kind": "count",
+      "target": 3,
+      "per": "day",
+      "est": 10,
+      "done_when": "3–5 relevant people a day."
+    },
+    {
+      "id": "comment",
+      "title": "Leave a substantive comment (observation, real question, or extend their idea, ending with a question)",
+      "kind": "count",
+      "target": 3,
+      "per": "day",
+      "est": 20,
+      "done_when": "3 comments a day that could start a conversation."
+    },
+    {
+      "id": "save",
+      "title": "Save an unusually good post with one sentence: why you stopped, the central idea, why people responded",
+      "kind": "count",
+      "target": 1,
+      "per": "day",
+      "est": 5,
+      "done_when": "1–2 saved a day, each with its sentence."
+    },
+    {
+      "id": "post",
+      "title": "Publish an original post in the style of the best ones you saved",
+      "kind": "count",
+      "target": 2,
+      "per": "week",
+      "est": 45,
+      "done_when": "2 posts this week."
+    },
+    {
+      "id": "review",
+      "title": "Bring the saved posts and engagement results to the call",
+      "kind": "record",
+      "est": 15,
+      "done_when": "Saved posts doc and your best comment threads linked here.",
+      "fields": [
+        {
+          "id": "link",
+          "label": "Link to your saved-posts doc",
+          "required": true
+        }
+      ]
+    }
+  ],
+  "slots": [
+    "notes",
+    "links",
+    "due"
+  ]
+}

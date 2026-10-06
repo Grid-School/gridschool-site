@@ -1,0 +1,158 @@
+{
+  "modules": [
+    {
+      "id": "profile-images",
+      "version": 1,
+      "title": "Profile images that read as trust",
+      "lane": "presence",
+      "purpose": "A sharp banner and headshot, graded to match: the first trust signal."
+    },
+    {
+      "id": "proof-questionnaire",
+      "version": 1,
+      "title": "Answer the six proof questions",
+      "lane": "presence",
+      "purpose": "Six short answers that decide what the profile may claim and what to build next."
+    },
+    {
+      "id": "profile-rewrite",
+      "version": 1,
+      "title": "Headline, About and top 3 roles, from proven answers only",
+      "lane": "presence",
+      "purpose": "Rewrite the profile in recruiter search words, claiming only what the proof answers support."
+    },
+    {
+      "id": "design-board",
+      "version": 1,
+      "title": "Design board: 35+ images of your taste",
+      "lane": "presence",
+      "purpose": "Collect 35+ images until you can name the style that ties your work together."
+    },
+    {
+      "id": "portfolio-site",
+      "version": 1,
+      "title": "Portfolio site live",
+      "lane": "presence",
+      "purpose": "A personal site in your own design system, led by one project page."
+    },
+    {
+      "id": "pinned-repos",
+      "version": 1,
+      "title": "Three pinned repos, one with a 60–90s walkthrough",
+      "lane": "presence",
+      "purpose": "Pinned repos with clear READMEs and a short walkthrough video."
+    },
+    {
+      "id": "target-list",
+      "version": 1,
+      "title": "List 25–30 people in the seat you want",
+      "lane": "network",
+      "purpose": "A named list of the people already doing, or hiring for, the job you want."
+    },
+    {
+      "id": "posting-kit",
+      "version": 1,
+      "title": "Posting kit: make one draft yours and post it",
+      "lane": "network",
+      "purpose": "Turn a draft built on something you noticed into a first post in your own voice."
+    },
+    {
+      "id": "network-sprint",
+      "version": 1,
+      "title": "Network sprint: show up where they post",
+      "lane": "network",
+      "purpose": "Daily habits: connect, comment, save the best posts, post twice a week."
+    },
+    {
+      "id": "build-posts",
+      "version": 1,
+      "title": "Post the build: three posts from real work",
+      "lane": "network",
+      "purpose": "Three posts from the build: a decision, a diagram, the system in motion."
+    },
+    {
+      "id": "project-ideas",
+      "version": 1,
+      "title": "Five to ten agentic additions to a system you already have",
+      "lane": "proof",
+      "purpose": "List AI/agentic additions to a real system, each tied to what users need."
+    },
+    {
+      "id": "pick-feature",
+      "version": 1,
+      "title": "Pick one small, highly visual feature",
+      "lane": "proof",
+      "purpose": "Choose one feature you can build in weeks and show clearly, with its done-when."
+    },
+    {
+      "id": "build-agentic-feature",
+      "version": 1,
+      "title": "Build it: real tools, approval, traces, evals",
+      "lane": "proof",
+      "purpose": "Ship a workflow agent with real tools, human approval, traces, evals and a deploy."
+    },
+    {
+      "id": "real-user",
+      "version": 1,
+      "title": "One real user",
+      "lane": "proof",
+      "purpose": "Measure one number, watch a real person use it, fix what breaks, measure again."
+    },
+    {
+      "id": "case-study",
+      "version": 1,
+      "title": "Case study: before → after",
+      "lane": "proof",
+      "purpose": "One page from a real user: by hand, what you built, what changed."
+    },
+    {
+      "id": "title-cluster",
+      "version": 1,
+      "title": "Set the title cluster and target companies",
+      "lane": "pipeline",
+      "purpose": "The handful of titles that name the same job, and 15 companies hiring for them."
+    },
+    {
+      "id": "warm-path",
+      "version": 1,
+      "title": "Warm path: 10 hiring managers, 10 people in the seat",
+      "lane": "pipeline",
+      "purpose": "Twenty warm contacts, five notes a week that lead with the case study."
+    },
+    {
+      "id": "company-prep",
+      "version": 1,
+      "title": "Prep notes for your top 5 companies",
+      "lane": "pipeline",
+      "purpose": "One page per top company: what they sell, who deploys it, where your proof fits."
+    },
+    {
+      "id": "offer-reported",
+      "version": 1,
+      "title": "Offer reported",
+      "lane": "pipeline",
+      "purpose": "The end of the path: the offer, reported."
+    },
+    {
+      "id": "story-bank",
+      "version": 1,
+      "title": "Story bank from the case study",
+      "lane": "interview",
+      "purpose": "Five two-minute stories, each with a number, built from real work."
+    },
+    {
+      "id": "mock-interview",
+      "version": 1,
+      "title": "Mock interview (recorded)",
+      "lane": "interview",
+      "purpose": "A recorded mock with written feedback; Aden's notes say which kind."
+    },
+    {
+      "id": "reading",
+      "version": 1,
+      "title": "Side quest: a reading",
+      "lane": "side",
+      "purpose": "An optional reading; the step names which one and what to do with it."
+    }
+  ]
+}

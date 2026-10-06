@@ -1,0 +1,61 @@
+{
+  "id": "real-user",
+  "version": 1,
+  "title": "One real user",
+  "purpose": "Measure one number, watch a real person use it, fix what breaks, measure again.",
+  "lane": "proof",
+  "phase": "prove",
+  "kind": "core",
+  "completion": "tasks",
+  "why": "Deployment, not demos. A stranger using what you built, in their actual environment, is the evidence nothing else can fake.",
+  "evidence": "Who used it, what broke, what changed.",
+  "modules": [
+    {
+      "id": "disciplines/08-product-and-value-engineering",
+      "title": "08 · Product and value engineering",
+      "href": "./read/?m=disciplines/08-product-and-value-engineering"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "baseline",
+      "title": "Measure one number before they use it (time, errors, steps)",
+      "kind": "record",
+      "est": 30,
+      "done_when": "The baseline is written down.",
+      "fields": [
+        {
+          "id": "baseline",
+          "label": "The number and how you measured it",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "watch",
+      "title": "Sit with them while they use it; fix what breaks",
+      "kind": "practice",
+      "est": 120,
+      "done_when": "Notes on what broke and what you fixed."
+    },
+    {
+      "id": "after",
+      "title": "Measure the same number after",
+      "kind": "record",
+      "est": 30,
+      "done_when": "Before and after, side by side.",
+      "fields": [
+        {
+          "id": "after",
+          "label": "The number after",
+          "required": true
+        }
+      ]
+    }
+  ],
+  "slots": [
+    "notes",
+    "links",
+    "due"
+  ]
+}

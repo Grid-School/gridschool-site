@@ -3,7 +3,7 @@
  * board, built from the same model the student sees so the two can never disagree.
  */
 
-import { loadRoster, loadStudent, loadCurriculum, loadCohort, boardCurriculum } from "./api.js";
+import { loadRoster, loadStudent, loadCurriculum, loadCohort, boardCurriculum, libraryFor } from "./api.js";
 import { readOverlay, mergeStudent, listEvents } from "./overlay.js";
 import { hydrateFromRemote, remoteEnabled } from "./persist-remote.js";
 import { listPersistSlugs } from "./persist-admin.js";
@@ -36,7 +36,7 @@ export async function loadCohortBoards() {
         const student = mergeStudent(file, readOverlay(slug));
         // Each student works their own map and their own clock: the desk
         // must count the same steps and weeks their board shows.
-        const own = boardCurriculum({ universal: curriculum, student, slug });
+        const own = boardCurriculum({ universal: curriculum, student, slug, library: await libraryFor(student) });
         const graph = buildGraph(own, student);
         const attention = listEvents(slug, { attentionOnly: true });
         return summarize({ slug, student, graph, curriculum: own, cohort: ownSchedule(cohort, student), week: studentWeek(student, week), attention });

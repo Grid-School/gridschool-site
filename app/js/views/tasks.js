@@ -8,6 +8,7 @@ import { panel, empty, btn } from "../ui.js";
 import { buildQueue, remainingMinutes, formatEstimate } from "../tasks.js";
 import { STATUS, stepNumber } from "../graph/model.js";
 import { taskRow } from "./parts.js";
+import { dueLabel, dueBadge } from "./from-aden.js";
 
 export function renderTasks(ctx) {
   const { state, store, navigate } = ctx;
@@ -40,7 +41,8 @@ export function renderTasks(ctx) {
           ? `${queue.length} open · about ${formatEstimate(remainingMinutes(queue))}`
           : "Nothing open. A review is holding you, or you are ahead."
       ),
-      steerNote(student)
+      steerNote(student),
+      dueNote(graph, navigate)
     ),
     weekly.length
       ? panel(
@@ -56,7 +58,9 @@ export function renderTasks(ctx) {
       const node = graph.byId.get(nodeId);
       return panel(
         {
-          eyebrow: `Step ${stepNumber(node)} · ${node.status === STATUS.OPEN ? "Current" : node.status}`,
+          eyebrow: [`Step ${stepNumber(node)}`, node.status === STATUS.OPEN ? "Current" : node.status, dueLabel(node.fromAden?.due)]
+            .filter(Boolean)
+            .join(" · "),
           title: node.title,
           note: node.evidence,
           actions: btn({ label: "Open this step", variant: "quiet", onclick: () => navigate("map", nodeId) }),
@@ -83,5 +87,37 @@ export function steerNote(student) {
     el("b.eyebrow", {}, "From Aden this week"),
     focus && el("p", {}, el("b", {}, "Focus: "), focus),
     next && el("p", {}, el("b", {}, "Next: "), next)
+  );
+}
+
+/**
+ * Due dates Aden set on steps (a module step's fill.due), soonest first.
+ * Lit and future steps drop out. Pure: the Tasks header and its test read
+ * the same list.
+ */
+export function dueSoon(graph, { limit = 3 } = {}) {
+  return (graph?.nodes ?? [])
+    .filter((node) => node.status !== STATUS.LIT && node.kind !== "future" && dueLabel(node.fromAden?.due))
+    .sort((a, b) => a.fromAden.due.localeCompare(b.fromAden.due) || a.n - b.n)
+    .slice(0, limit)
+    .map((node) => ({ id: node.id, due: node.fromAden.due, label: dueLabel(node.fromAden.due), step: stepNumber(node), title: node.title }));
+}
+
+/** Beside Aden's steer: the steps he put a date on. Null when nothing is dated. */
+export function dueNote(graph, navigate) {
+  const rows = dueSoon(graph);
+  if (!rows.length) return null;
+  return el(
+    "div.steer.steer--due",
+    {},
+    el("b.eyebrow", {}, "Dated by Aden"),
+    rows.map((row) =>
+      el(
+        "p.steer__due",
+        {},
+        dueBadge(row.due),
+        el("button.steer__step", { type: "button", onclick: () => navigate?.("map", row.id) }, `${row.step} · ${row.title}`)
+      )
+    )
   );
 }

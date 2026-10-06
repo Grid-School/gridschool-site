@@ -1,0 +1,33 @@
+{
+  "id": "portfolio-site",
+  "version": 1,
+  "title": "Portfolio site live",
+  "purpose": "A personal site in your own design system, led by one project page.",
+  "lane": "presence",
+  "phase": "prove",
+  "kind": "core",
+  "completion": "link",
+  "why": "AI sourcing tools search personal sites and GitHub in plain language. Your site should use the words a recruiter types for the seat you want.",
+  "evidence": "Site URL.",
+  "tasks": [
+    {
+      "id": "system",
+      "title": "Design system from the board: type, color, one accent, one diagram style",
+      "kind": "ship",
+      "est": 120,
+      "done_when": "Written down and applied to the site."
+    },
+    {
+      "id": "live",
+      "title": "Site live with the project page: problem, what you built, what changed",
+      "kind": "ship",
+      "est": 240,
+      "done_when": "Opens on a phone; the project page leads."
+    }
+  ],
+  "slots": [
+    "notes",
+    "links",
+    "due"
+  ]
+}

@@ -1,0 +1,116 @@
+{
+  "id": "proof-questionnaire",
+  "version": 1,
+  "title": "Answer the six proof questions",
+  "purpose": "Six short answers that decide what the profile may claim and what to build next.",
+  "lane": "presence",
+  "phase": "position",
+  "kind": "core",
+  "completion": "tasks",
+  "why": "Only claim what you can explain or show. Each answer decides what the profile may say, and each \"no\" becomes something to build.",
+  "evidence": "Six answers, 1–3 lines each.",
+  "modules": [
+    {
+      "id": "readings/career-evidence",
+      "title": "Help the right people see your work",
+      "href": "./read/?m=readings/career-evidence"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "agents",
+      "title": "Agent systems: an LLM/agent that calls tools, uses structured output, keeps state, or does multi-step work?",
+      "kind": "write",
+      "est": 10,
+      "done_when": "Answered in 1–3 lines, or \"not yet\".",
+      "fields": [
+        {
+          "id": "answer",
+          "label": "Your answer",
+          "textarea": true,
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "reliability",
+      "title": "AI reliability: evals, tracing, guardrails, retries, fallbacks, approval steps, monitoring?",
+      "kind": "write",
+      "est": 10,
+      "done_when": "Answered in 1–3 lines, or \"not yet\".",
+      "fields": [
+        {
+          "id": "answer",
+          "label": "Your answer",
+          "textarea": true,
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "backend",
+      "title": "Python/backend: FastAPI, SQL/Postgres, external APIs, Docker, AWS: which parts are strongest?",
+      "kind": "write",
+      "est": 10,
+      "done_when": "Answered in 1–3 lines.",
+      "fields": [
+        {
+          "id": "answer",
+          "label": "Your answer",
+          "textarea": true,
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "customer",
+      "title": "Customer ownership: mapped a messy workflow, scoped it, owned delivery? Best example?",
+      "kind": "write",
+      "est": 10,
+      "done_when": "Answered in 1–3 lines, or \"not yet\".",
+      "fields": [
+        {
+          "id": "answer",
+          "label": "Your answer",
+          "textarea": true,
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "title": "AI-native workflow: which tools do you actively use (Claude Code, Cursor, Copilot, MCP, n8n)? What have you automated?",
+      "kind": "write",
+      "est": 10,
+      "done_when": "Answered in 1–3 lines.",
+      "fields": [
+        {
+          "id": "answer",
+          "label": "Your answer",
+          "textarea": true,
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "proof",
+      "title": "Proof and initiative: the hardest thing you can show a founder now (repo, demo, architecture, metrics)?",
+      "kind": "write",
+      "est": 10,
+      "done_when": "Answered in 1–3 lines, or \"none strong yet\".",
+      "fields": [
+        {
+          "id": "answer",
+          "label": "Your answer",
+          "textarea": true,
+          "required": true
+        }
+      ]
+    }
+  ],
+  "slots": [
+    "notes",
+    "links",
+    "due"
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "id": "build-agentic-feature",
+  "version": 1,
+  "title": "Build it: real tools, approval, traces, evals",
+  "purpose": "Ship a workflow agent with real tools, human approval, traces, evals and a deploy.",
+  "lane": "proof",
+  "phase": "prove",
+  "kind": "core",
+  "completion": "link",
+  "why": "The applied-AI skill in miniature: a workflow agent that uses real tools, asks before risky actions, and can prove whether it worked.",
+  "evidence": "Repo or demo URL.",
+  "modules": [
+    {
+      "id": "disciplines/06-evaluation-engineering",
+      "title": "06 · Evaluation engineering",
+      "href": "./read/?m=disciplines/06-evaluation-engineering"
+    },
+    {
+      "id": "disciplines/14-containment-and-accountability",
+      "title": "14 · Containment and accountability",
+      "href": "./read/?m=disciplines/14-containment-and-accountability"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "tools",
+      "title": "Uses 3+ real tools/APIs to gather context and act",
+      "kind": "ship",
+      "est": 480,
+      "done_when": "Each tool call is visible in the code and the demo."
+    },
+    {
+      "id": "approval",
+      "title": "Requires human approval for risky actions",
+      "kind": "ship",
+      "est": 180,
+      "done_when": "A risky action waits for a person to approve it."
+    },
+    {
+      "id": "traces",
+      "title": "Logs traces of every run",
+      "kind": "ship",
+      "est": 120,
+      "done_when": "You can open one run and see each step and tool call."
+    },
+    {
+      "id": "evals",
+      "title": "Evaluates success and failure on a small test set",
+      "kind": "ship",
+      "est": 180,
+      "done_when": "5–10 cases with expected outcomes, run and scored."
+    },
+    {
+      "id": "deploy",
+      "title": "Deployed somewhere a person can use it",
+      "kind": "ship",
+      "est": 120,
+      "done_when": "A URL or install a user can open today."
+    }
+  ],
+  "slots": [
+    "notes",
+    "links",
+    "due"
+  ]
+}

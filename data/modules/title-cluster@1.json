@@ -1,0 +1,40 @@
+{
+  "id": "title-cluster",
+  "version": 1,
+  "title": "Set the title cluster and target companies",
+  "purpose": "The handful of titles that name the same job, and 15 companies hiring for them.",
+  "lane": "pipeline",
+  "phase": "position",
+  "kind": "core",
+  "completion": "tasks",
+  "why": "At least six titles describe the same job. Searching one title misses most of the market.",
+  "evidence": "Your title list and 15 target companies.",
+  "tasks": [
+    {
+      "id": "list",
+      "title": "Titles you'll search: every name the market uses for the job you want",
+      "kind": "write",
+      "est": 15,
+      "done_when": "Your final list, with any you're dropping and why."
+    },
+    {
+      "id": "companies",
+      "title": "15 target companies that hire for those titles",
+      "kind": "record",
+      "est": 60,
+      "done_when": "15 companies with a link to one open role each.",
+      "fields": [
+        {
+          "id": "link",
+          "label": "Link to your company list",
+          "required": true
+        }
+      ]
+    }
+  ],
+  "slots": [
+    "notes",
+    "links",
+    "due"
+  ]
+}

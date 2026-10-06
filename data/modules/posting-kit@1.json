@@ -1,0 +1,73 @@
+{
+  "id": "posting-kit",
+  "version": 1,
+  "title": "Posting kit: make one draft yours and post it",
+  "purpose": "Turn a draft built on something you noticed into a first post in your own voice.",
+  "lane": "network",
+  "phase": "position",
+  "kind": "core",
+  "completion": "tasks",
+  "why": "Picking what to post, and how to shape it, is the hard part. Start from a draft built on something you actually noticed, then make it sound like you.",
+  "evidence": "Your voice file saved and your first post live.",
+  "lesson": [
+    {
+      "h": "Three shapes that work",
+      "p": [
+        "Noticed → why it matters → question. Something small you saw this week, what it says about the work, and a question you'd genuinely like answered.",
+        "Problem → decision → result. One decision in something you're building: what you chose, why, and what changed.",
+        "A comment, grown up. A pattern you keep seeing in other people's posts, credited, with your own angle added."
+      ]
+    },
+    {
+      "h": "How to use a draft",
+      "p": [
+        "Start from a draft (Aden's notes on this step may hold some written from your own week). Fill every bracket with what really happened, then run it through the voice prompts in the reading.",
+        "Every claim in the post must be something you did or saw. Bring what got replies to the next session: keep the shapes that work and drop the rest."
+      ]
+    }
+  ],
+  "modules": [
+    {
+      "id": "readings/posting-kit",
+      "title": "Write posts that sound like you",
+      "href": "./read/?m=readings/posting-kit"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "voice",
+      "title": "Build your voice file with the Step 1 prompt in the reading",
+      "kind": "write",
+      "est": 20,
+      "done_when": "The voice description is saved where you can paste it again.",
+      "fields": [
+        {
+          "id": "voice",
+          "label": "Your voice file",
+          "textarea": true,
+          "rows": 6,
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "first",
+      "title": "Make one draft yours and post it",
+      "kind": "post",
+      "est": 45,
+      "done_when": "The post is live and every claim in it is something you did or saw.",
+      "fields": [
+        {
+          "id": "url",
+          "label": "Link to the post",
+          "required": true
+        }
+      ]
+    }
+  ],
+  "slots": [
+    "notes",
+    "links",
+    "due"
+  ]
+}

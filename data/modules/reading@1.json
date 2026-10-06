@@ -1,0 +1,27 @@
+{
+  "id": "reading",
+  "version": 1,
+  "title": "Side quest: a reading",
+  "purpose": "An optional reading; the step names which one and what to do with it.",
+  "lane": "side",
+  "phase": "prove",
+  "kind": "core",
+  "completion": "tasks",
+  "why": "Optional. Goes deeper than the step it sits beside; never required.",
+  "evidence": "One line in your own words.",
+  "tasks": [
+    {
+      "id": "read",
+      "title": "Read it and write one takeaway",
+      "kind": "write",
+      "est": 20,
+      "done_when": "One sentence you'd say in an interview."
+    }
+  ],
+  "slots": [
+    "notes",
+    "links",
+    "due",
+    "readings"
+  ]
+}

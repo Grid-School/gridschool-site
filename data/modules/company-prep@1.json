@@ -1,0 +1,33 @@
+{
+  "id": "company-prep",
+  "version": 1,
+  "title": "Prep notes for your top 5 companies",
+  "purpose": "One page per top company: what they sell, who deploys it, where your proof fits.",
+  "lane": "pipeline",
+  "phase": "land",
+  "kind": "core",
+  "completion": "tasks",
+  "why": "Specific beats general: their customers, their deployment model, where your case study maps onto their work.",
+  "evidence": "One page per company.",
+  "tasks": [
+    {
+      "id": "notes",
+      "title": "One page each: what they sell, who deploys it, where your proof fits",
+      "kind": "write",
+      "est": 150,
+      "done_when": "Five pages.",
+      "fields": [
+        {
+          "id": "link",
+          "label": "Link to your notes",
+          "required": true
+        }
+      ]
+    }
+  ],
+  "slots": [
+    "notes",
+    "links",
+    "due"
+  ]
+}

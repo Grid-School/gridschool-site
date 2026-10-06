@@ -1,0 +1,47 @@
+{
+  "id": "build-posts",
+  "version": 1,
+  "title": "Post the build: three posts from real work",
+  "purpose": "Three posts from the build: a decision, a diagram, the system in motion.",
+  "lane": "network",
+  "phase": "prove",
+  "kind": "core",
+  "completion": "link",
+  "why": "Screenshots alone don't land. What problem the screen represents, the decision you made, and why it matters is what makes people stop.",
+  "evidence": "Link to your best post of the three.",
+  "modules": [
+    {
+      "id": "readings/posting-kit",
+      "title": "Write posts that sound like you",
+      "href": "./read/?m=readings/posting-kit"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "decision",
+      "title": "Screenshot + the decision behind it",
+      "kind": "post",
+      "est": 45,
+      "done_when": "Says what problem, what you decided, why it matters."
+    },
+    {
+      "id": "diagram",
+      "title": "Architecture or workflow diagram post",
+      "kind": "post",
+      "est": 60,
+      "done_when": "Someone who never saw the code understands the system."
+    },
+    {
+      "id": "motion",
+      "title": "A gif or short video of the system working",
+      "kind": "post",
+      "est": 90,
+      "done_when": "Shows the feature doing its job, start to finish."
+    }
+  ],
+  "slots": [
+    "notes",
+    "links",
+    "due"
+  ]
+}

@@ -24,6 +24,7 @@ import { artifactLine } from "./artifact.js";
 import { refsBlock } from "./refs.js";
 import { lockNotice, shouldInterceptLock } from "./lock-notice.js";
 import { electiveBlock } from "./elective.js";
+import { fromAdenCard } from "./from-aden.js";
 import { signoffNotice, submitLabel, linkHint } from "./signoff.js";
 import { stepSpine, isStepComplete, canAdvance, readyToSave, readFlag } from "./step-progress.js";
 import { createReadingModal } from "./reading-modal.js";
@@ -264,6 +265,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
         welcome ? null : modeLine(node),
         welcome ? null : artifactLine(node)
       ),
+      fromAdenCard(node),
       electiveBlock({ node, store: current.store }),
       card || (preview && !filmed && node.video?.summary)
         ? el(

@@ -1,0 +1,33 @@
+{
+  "id": "design-board",
+  "version": 1,
+  "title": "Design board: 35+ images of your taste",
+  "purpose": "Collect 35+ images until you can name the style that ties your work together.",
+  "lane": "presence",
+  "phase": "position",
+  "kind": "core",
+  "completion": "tasks",
+  "why": "A consistent personal style across site, posts and profile makes every piece read as one person's work.",
+  "evidence": "A board with 35+ images.",
+  "tasks": [
+    {
+      "id": "board",
+      "title": "Pinterest sessions until the board has 35+ images",
+      "kind": "record",
+      "est": 90,
+      "done_when": "35+ images; you can say what ties them together.",
+      "fields": [
+        {
+          "id": "link",
+          "label": "Board link",
+          "required": true
+        }
+      ]
+    }
+  ],
+  "slots": [
+    "notes",
+    "links",
+    "due"
+  ]
+}

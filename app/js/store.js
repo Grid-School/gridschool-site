@@ -9,7 +9,7 @@
  * data/students/<slug>.json.
  */
 
-import { loadBoard, boardCurriculum } from "./api.js";
+import { loadBoard, boardCurriculum, libraryFor } from "./api.js";
 import { buildGraph } from "./graph/model.js";
 import { weekNumber, studentWeek, ownSchedule } from "./time.js";
 import {
@@ -48,8 +48,15 @@ export async function init(nextSlug, { tour = false } = {}) {
     const snap = await hydrateFromRemote(nextSlug, { force: true });
     // A seat with a seed file still takes its published map from the server.
     if (snap?.map && snap.map !== base.student.map) {
+      // Resolved like the seed's (its modules loaded) and with the same copy
+      // edits, so the published map reads exactly as loadBoard would draw it.
       const student = { ...base.student, map: snap.map };
-      base = { ...base, student, curriculum: boardCurriculum({ universal: base.universal, student, slug: nextSlug }) };
+      const library = await libraryFor(student);
+      base = {
+        ...base,
+        student,
+        curriculum: boardCurriculum({ universal: base.universal, student, slug: nextSlug, overrides: base.overrides, library }),
+      };
     }
     // And its 1:1 slot: set on the seat, it beats the seed file and the
     // cohort default on the calendar and in reminders.

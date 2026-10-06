@@ -1,0 +1,35 @@
+{
+  "id": "pick-feature",
+  "version": 1,
+  "title": "Pick one small, highly visual feature",
+  "purpose": "Choose one feature you can build in weeks and show clearly, with its done-when.",
+  "lane": "proof",
+  "phase": "position",
+  "kind": "core",
+  "completion": "tasks",
+  "why": "One feature you can build in a few weeks and show clearly in posts, on GitHub, and in interviews beats a big plan nobody sees.",
+  "evidence": "The chosen feature, why it's visual, and what done looks like.",
+  "tasks": [
+    {
+      "id": "choose",
+      "title": "Choose the feature with Aden and write what done looks like",
+      "kind": "write",
+      "est": 30,
+      "done_when": "Feature, who it helps, how you'll show it (screens, diagram, gif), done-when.",
+      "fields": [
+        {
+          "id": "spec",
+          "label": "The feature and its done-when",
+          "textarea": true,
+          "rows": 6,
+          "required": true
+        }
+      ]
+    }
+  ],
+  "slots": [
+    "notes",
+    "links",
+    "due"
+  ]
+}

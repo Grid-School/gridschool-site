@@ -1,0 +1,42 @@
+{
+  "id": "project-ideas",
+  "version": 1,
+  "title": "Five to ten agentic additions to a system you already have",
+  "purpose": "List AI/agentic additions to a real system, each tied to what users need.",
+  "lane": "proof",
+  "phase": "position",
+  "kind": "core",
+  "completion": "tasks",
+  "why": "A system that already runs is the fastest proof. Adding agent reliability, human approval, tool integration, or observability turns it into evidence of exactly what applied-AI roles hire for.",
+  "evidence": "A list of 5–10 ideas, each tied to something you read while commenting.",
+  "modules": [
+    {
+      "id": "disciplines/05-agentic-workflow-engineering",
+      "title": "05 · Agentic workflow engineering",
+      "href": "./read/?m=disciplines/05-agentic-workflow-engineering"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "list",
+      "title": "List 5–10 possible AI/agentic additions (reliability, approval, tool/API integration, evals, regulated workflow)",
+      "kind": "write",
+      "est": 60,
+      "done_when": "Each idea says what it adds and why a user would care.",
+      "fields": [
+        {
+          "id": "ideas",
+          "label": "Your ideas",
+          "textarea": true,
+          "rows": 8,
+          "required": true
+        }
+      ]
+    }
+  ],
+  "slots": [
+    "notes",
+    "links",
+    "due"
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "id": "warm-path",
+  "version": 1,
+  "title": "Warm path: 10 hiring managers, 10 people in the seat",
+  "purpose": "Twenty warm contacts, five notes a week that lead with the case study.",
+  "lane": "pipeline",
+  "phase": "land",
+  "kind": "core",
+  "completion": "tasks",
+  "why": "Referred candidates are far more likely to get a human review and an offer. Lead with the case study, not the resume.",
+  "evidence": "Twenty people contacted, replies tracked.",
+  "tasks": [
+    {
+      "id": "list",
+      "title": "List 10 hiring managers and 10 people already in the seat",
+      "kind": "record",
+      "est": 60,
+      "done_when": "20 names, each tied to a target company.",
+      "fields": [
+        {
+          "id": "link",
+          "label": "Link to the list",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "notes",
+      "title": "Send a short note that leads with the case study",
+      "kind": "count",
+      "target": 5,
+      "per": "week",
+      "est": 15,
+      "done_when": "5 notes a week, each specific to the person."
+    },
+    {
+      "id": "track",
+      "title": "Track sent, replied, screen in the tracker",
+      "kind": "record",
+      "est": 10,
+      "done_when": "Tracker link with this week's numbers.",
+      "fields": [
+        {
+          "id": "link",
+          "label": "Tracker link",
+          "required": true
+        }
+      ]
+    }
+  ],
+  "slots": [
+    "notes",
+    "links",
+    "due"
+  ]
+}

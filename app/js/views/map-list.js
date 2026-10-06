@@ -20,6 +20,7 @@ import { inSequence, standingOf, STANDING_LABEL, STANDING_TONE } from "../graph/
 import { reviewScores } from "./parts.js";
 import { trackLabel } from "../copy.js";
 import { fmtDay } from "../time.js";
+import { dueBadge } from "./from-aden.js";
 
 export function mapList({ state, onOpenNode }) {
   const { graph, student } = state;
@@ -111,6 +112,7 @@ function row(node, reviews, onOpenNode, nextId, family) {
       "div.mlrow__side",
       {},
       el("span", { class: `mlrow__state mlrow__state--${STANDING_TONE[standing]}` }, STANDING_LABEL[standing]),
+      node.status !== STATUS.LIT && node.fromAden?.due ? dueBadge(node.fromAden.due) : null,
       node.proof?.at && el("span.mlrow__at", {}, fmtDay(node.proof.at)),
       latest && el("span", { class: `mlrow__rv mlrow__rv--${latest.state}` }, latest.state === "returned" ? "reviewed" : "in review")
     )

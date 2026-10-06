@@ -1410,3 +1410,35 @@ pre.diagram--failed { border-color: var(--amber); }
 /* Aden's weekly steer on the Tasks page */
 .steer { margin-top: 12px; padding: 10px 12px; border: 1px solid var(--line, rgba(255,255,255,0.12)); border-radius: 8px; }
 .steer p { margin: 4px 0 0; }
+
+/* Due dates Aden set on a module step (fill.due): step card, map list, Tasks */
+.due {
+  display: inline-block; padding: 2px 8px; border-radius: 999px; white-space: nowrap;
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px; letter-spacing: .03em;
+  border: 1px solid var(--hair-cyan); color: var(--cyan);
+}
+.due--soon { border-color: color-mix(in srgb, var(--amber) 45%, transparent); color: var(--amber); }
+.due--late { border-color: color-mix(in srgb, var(--out) 45%, transparent); color: var(--out); }
+.steer__due { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.steer__step { background: none; border: 0; padding: 0; color: var(--text); font: inherit; cursor: pointer; text-align: left; }
+.steer__step:hover { color: var(--cyan); }
+
+/* "From Aden" on a step page: per-student notes, links and due date on a library module */
+.fromaden {
+  margin: var(--sp-3) 0; padding: var(--sp-2) var(--sp-3);
+  border-left: 2px solid var(--cyan); border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--cyan) 4%, var(--bg2));
+}
+.fromaden__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.fromaden__notes { color: var(--text); font-size: var(--fs-body); line-height: 1.6; max-width: 68ch; }
+.fromaden__notes p { margin: 0 0 12px; }
+.fromaden__notes ul { margin: 0 0 12px; padding-left: 20px; }
+.fromaden__notes li { margin: 4px 0; }
+.fromaden__notes strong { color: var(--white); font-weight: 600; }
+.fromaden__notes blockquote {
+  margin: 0 0 14px; padding: 10px 14px; border-left: 2px solid var(--hair-cyan);
+  background: var(--surface-2); border-radius: var(--radius-sm); color: var(--text);
+}
+.fromaden__notes blockquote p { margin: 0 0 8px; }
+.fromaden__notes blockquote p:last-child { margin-bottom: 0; }
+.fromaden__links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }

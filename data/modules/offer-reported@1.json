@@ -1,0 +1,33 @@
+{
+  "id": "offer-reported",
+  "version": 1,
+  "title": "Offer reported",
+  "purpose": "The end of the path: the offer, reported.",
+  "lane": "pipeline",
+  "phase": "land",
+  "kind": "core",
+  "completion": "tasks",
+  "why": "The point of all of it. Weekly sessions continue until this lights.",
+  "evidence": "Role, company, start date.",
+  "tasks": [
+    {
+      "id": "report",
+      "title": "Report the offer: role, company, pay, start date",
+      "kind": "record",
+      "est": 10,
+      "done_when": "Reported to Aden.",
+      "fields": [
+        {
+          "id": "offer",
+          "label": "Role, company, start date",
+          "required": true
+        }
+      ]
+    }
+  ],
+  "slots": [
+    "notes",
+    "links",
+    "due"
+  ]
+}

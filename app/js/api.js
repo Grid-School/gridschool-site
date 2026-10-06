@@ -9,6 +9,7 @@ import { fetchSnapshot, remoteEnabled } from "./persist-remote.js";
 import { applySiteOverrides, applyPrivateLinks, applyCopyOverrides } from "../../js/site-overrides.js";
 import { revealMemberInvite } from "../../js/member-invite.js";
 import { numberCurriculumReadings } from "./reading-order.js";
+import { resolveMap, loadModules, moduleRefs } from "./modules.js";
 
 const BASE = "../data/";
 const cache = new Map();
@@ -84,17 +85,28 @@ export function isValidSlug(slug) {
 /**
  * A student's own map, when they have one. Each student is planned against
  * their goals; the universal curriculum stays the demo, the tour, and the
- * fallback for anyone whose map has not been published yet. A map has the
- * curriculum's shape, so everything downstream reads it unchanged.
+ * fallback for anyone whose map has not been published yet. A resolved map
+ * has the curriculum's shape, so everything downstream reads it unchanged.
  */
 export function usableMap(map) {
   return map && typeof map === "object" && Array.isArray(map.nodes) && map.nodes.length ? map : null;
 }
 
-export function boardCurriculum({ universal, student, slug, tour = false, overrides }) {
+/** The modules a student's map places (modules.js). Empty for a free-form map or none. */
+export function libraryFor(student) {
+  const refs = moduleRefs(usableMap(student?.map));
+  return refs.length ? loadModules(refs) : Promise.resolve({});
+}
+
+/**
+ * The one seam where a stored map becomes the board's curriculum: module
+ * instances resolve against `library` (an unknown module shows as a
+ * placeholder step, never silently dropped), then readings are numbered in
+ * board order, then copy edits from the console apply by node id.
+ */
+export function boardCurriculum({ universal, student, slug, tour = false, overrides, library = {} }) {
   const map = slug === "demo" || tour ? null : usableMap(student?.map);
-  const source = map ? numberCurriculumReadings({ families: [], phases: [], weekly: [], ...map }) : universal;
-  // Copy edits from the console apply by node id, so they reach a map too.
+  const source = map ? numberCurriculumReadings({ families: [], phases: [], weekly: [], ...resolveMap(map, library) }) : universal;
   return applyCopyOverrides(source, overrides);
 }
 
@@ -108,12 +120,14 @@ export async function loadBoard(slug, { tour = false } = {}) {
     // for long and never fails it: config.js and the repo mirror stand in.
     applySiteOverrides(),
   ]);
+  const library = slug === "demo" || tour ? {} : await libraryFor(student);
   await applyPrivateLinks();
   revealMemberInvite({ slug });
   return {
-    curriculum: boardCurriculum({ universal: curriculum, student, slug, tour, overrides }),
+    curriculum: boardCurriculum({ universal: curriculum, student, slug, tour, overrides, library }),
     universal: curriculum,
     cohort,
     student,
+    overrides,
   };
 }

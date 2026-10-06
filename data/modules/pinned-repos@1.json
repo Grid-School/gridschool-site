@@ -1,0 +1,33 @@
+{
+  "id": "pinned-repos",
+  "version": 1,
+  "title": "Three pinned repos, one with a 60–90s walkthrough",
+  "purpose": "Pinned repos with clear READMEs and a short walkthrough video.",
+  "lane": "presence",
+  "phase": "prove",
+  "kind": "core",
+  "completion": "link",
+  "why": "LinkedIn's hiring tools now pull GitHub. Pinned repos with clear READMEs are what both recruiters and their tools read.",
+  "evidence": "GitHub profile URL.",
+  "tasks": [
+    {
+      "id": "readme",
+      "title": "README for the main project: architecture, how to run, demo link",
+      "kind": "write",
+      "est": 90,
+      "done_when": "A stranger can run it or watch it."
+    },
+    {
+      "id": "video",
+      "title": "60–90 second walkthrough video",
+      "kind": "ship",
+      "est": 90,
+      "done_when": "Linked from the README and LinkedIn."
+    }
+  ],
+  "slots": [
+    "notes",
+    "links",
+    "due"
+  ]
+}

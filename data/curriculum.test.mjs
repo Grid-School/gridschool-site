@@ -23,6 +23,8 @@ import { ARTIFACTS } from "../app/js/artifacts.js";
 import { walkReadings } from "../app/js/reading-order.js";
 import { buildGraph, STATUS, isSpine, nextUp, ancestorsOf } from "../app/js/graph/model.js";
 import { validateMap } from "./map-rules.mjs";
+import { resolveMap, instanceErrors } from "../app/js/modules.js";
+import { readLibrary } from "./module-library.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const site = join(here, "..");
@@ -30,13 +32,21 @@ const readJson = (path) => JSON.parse(readFileSync(path, "utf8"));
 const cur = readJson(join(here, "curriculum.json"));
 const catalog = readJson(join(site, "read/catalog.json"));
 
-const MAPS = [
-  ["curriculum.json", cur],
-  ...readdirSync(join(here, "maps"))
-    .filter((name) => name.endsWith(".json"))
-    .sort()
-    .map((name) => [`maps/${name}`, readJson(join(here, "maps", name))]),
-];
+// Student maps place library modules; every rule below runs on the map the
+// board draws, i.e. after resolving (modules.js), and the instances
+// themselves must be valid (known module, fills only in declared slots).
+const LIBRARY = readLibrary();
+const STORED = readdirSync(join(here, "maps"))
+  .filter((name) => name.endsWith(".json"))
+  .sort()
+  .map((name) => [`maps/${name}`, readJson(join(here, "maps", name))]);
+const MAPS = [["curriculum.json", cur], ...STORED.map(([name, map]) => [name, resolveMap(map, LIBRARY)])];
+
+for (const [name, map] of STORED) {
+  test(`${name}: every module step names a library module and fills only its declared slots`, () => {
+    assert.deepEqual(instanceErrors(map, LIBRARY), []);
+  });
+}
 
 function shapeOf(map) {
   const byId = new Map(map.nodes.map((node) => [node.id, node]));
