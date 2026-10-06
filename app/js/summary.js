@@ -3,7 +3,7 @@
  * board, built from the same model the student sees so the two can never disagree.
  */
 
-import { loadRoster, loadStudent, loadCurriculum, loadCohort } from "./api.js";
+import { loadRoster, loadStudent, loadCurriculum, loadCohort, boardCurriculum } from "./api.js";
 import { readOverlay, mergeStudent, listEvents } from "./overlay.js";
 import { hydrateFromRemote, remoteEnabled } from "./persist-remote.js";
 import { listPersistSlugs } from "./persist-admin.js";
@@ -19,7 +19,8 @@ export async function loadCohortBoards() {
     listPersistSlugs(),
   ]);
   const week = Math.min(Math.max(1, weekNumber(cohort.start)), cohort.weeks + 1);
-  const slugs = [...new Set([...(roster.students ?? []), ...persistSlugs])];
+  // The public demo tour is not a student; the desk lists real boards only.
+  const slugs = [...new Set([...(roster.students ?? []), ...persistSlugs])].filter((slug) => slug !== "demo");
 
   const boards = await Promise.all(
     slugs.map(async (slug) => {
@@ -33,9 +34,12 @@ export async function loadCohortBoards() {
           }
         }
         const student = mergeStudent(file, readOverlay(slug));
-        const graph = buildGraph(curriculum, student);
+        // Each student works their own map and their own clock: the desk
+        // must count the same steps and weeks their board shows.
+        const own = boardCurriculum({ universal: curriculum, student, slug });
+        const graph = buildGraph(own, student);
         const attention = listEvents(slug, { attentionOnly: true });
-        return summarize({ slug, student, graph, curriculum, cohort, week, attention });
+        return summarize({ slug, student, graph, curriculum: own, cohort, week: studentWeek(student, week), attention });
       } catch (error) {
         return { slug, error: error.message };
       }
@@ -43,6 +47,12 @@ export async function loadCohortBoards() {
   );
 
   return { boards: boards.filter((board) => !board.error), broken: boards.filter((b) => b.error), curriculum, cohort, week };
+}
+
+/** Week N of this student's own program, from the day they joined. */
+export function studentWeek(student, fallback, now = new Date()) {
+  if (!student?.joined) return fallback;
+  return Math.max(1, weekNumber(student.joined, now));
 }
 
 function summarize({ slug, student, graph, curriculum, cohort, week, attention = [] }) {

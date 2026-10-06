@@ -449,6 +449,17 @@
         "cap.defend"
       ],
       "walk": 42
+    },
+    {
+      "id": "readings/posting-kit",
+      "title": "Write posts that sound like you",
+      "series": "readings",
+      "mins": 7,
+      "attachesTo": [
+        "sg.post",
+        "sg.habit"
+      ],
+      "walk": 47
     }
   ]
 }
