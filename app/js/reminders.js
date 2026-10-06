@@ -1,7 +1,8 @@
 /**
  * Meeting reminders. One hour before, and fifteen minutes before, every live
- * room the student is in: the cohort call and their 1:1. Due dates and review
- * returns are not meetings and do not fire.
+ * room the student is in: their 1:1 (and a cohort call, if one is ever
+ * scheduled again). Due dates and review returns are not meetings and do
+ * not fire.
  *
  * Two layers: a toast inside the app (always, while the app is open), and a
  * system notification when the browser has already been given permission.

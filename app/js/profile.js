@@ -33,7 +33,7 @@ export function createProfile({ getState, onExport, onReset, onSignOut, onNaviga
   }
 
   function sheet(state) {
-    const { student, cohort, slug } = state;
+    const { student, slug } = state;
     const demo = slug === "demo";
     const unread = returnedUnread(student).length;
     const discord = link("discord");
@@ -45,7 +45,7 @@ export function createProfile({ getState, onExport, onReset, onSignOut, onNaviga
         "header.profile__head",
         {},
         el("span.profile__avatar", { "aria-hidden": "true" }, initials(student.name)),
-        el("div", {}, el("h2.profile__name", {}, student.name), el("p.profile__sub", {}, `${cohort.name} · week ${Math.min(state.week, cohort.weeks)}`))
+        el("div", {}, el("h2.profile__name", {}, student.name), el("p.profile__sub", {}, `Week ${state.week}`))
       ),
 
       el(

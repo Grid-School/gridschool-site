@@ -31,15 +31,18 @@ import { isInstructorDevice } from "./instructor-mode.js";
 import { startReminders } from "./reminders.js";
 import { watchReviewArrivals } from "./review-arrivals.js";
 import { enterView, leaveView } from "./transitions.js";
+import { gateRoutes } from "./features.js";
 
-const VIEWS = {
+/* Coach (today) and Posts are gated in features.js: switched off, they are
+   not routes at all, so their links land on the Map. */
+const VIEWS = gateRoutes({
   today: { render: renderToday, persistent: true },
   map: { render: renderMap, persistent: true },
   tasks: { render: renderTasks },
   calendar: { render: renderCalendar },
   library: { render: renderLibrary },
   posts: { render: renderPosts },
-};
+});
 
 /** Old links keep working after surfaces folded. */
 const ALIASES = {

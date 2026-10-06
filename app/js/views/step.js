@@ -30,6 +30,7 @@ import { createReadingModal } from "./reading-modal.js";
 import { bindDraft, clearDraft } from "../drafts.js";
 import { registerLeaveGuard, clearLeaveGuard, isLeaveDirty } from "../leave-guard.js";
 import { isPreviewMedia } from "../preview-mode.js";
+import { isViewEnabled } from "../features.js";
 import { siteOverridesDoc, dropSiteOverridesCache } from "../../../js/site-overrides.js";
 
 const FALLBACK_VIDEO = {
@@ -378,12 +379,14 @@ export function renderStep(ctx, nodeId, moduleId = null) {
         variant: "quiet",
         onclick: () => current.navigate("map"),
       }),
-      btn({
-        label: "Ask the Coach",
-        variant: "quiet",
-        title: "Talk the next move through",
-        onclick: () => current.navigate("coach"),
-      }),
+      isViewEnabled("today")
+        ? btn({
+            label: "Ask the Coach",
+            variant: "quiet",
+            title: "Talk the next move through",
+            onclick: () => current.navigate("coach"),
+          })
+        : null,
       el(
         "div.step__bar-next",
         {},

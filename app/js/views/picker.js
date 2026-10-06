@@ -48,7 +48,7 @@ export function renderPicker(mountPoint) {
             },
           },
           el("b", {}, student.name),
-          el("span", {}, student.note ?? `${student.cohort} · joined ${student.joined}`)
+          el("span", {}, student.note ?? `joined ${student.joined ?? "not yet"}`)
         )
       )
     );

@@ -67,6 +67,16 @@ export const COACH = {
 };
 
 /**
+ * Board doors that can be switched off without deleting their code. A door
+ * whose switch is off is not drawn and its route lands on the Map. Coach has
+ * no flag here: it shows exactly when COACH.endpoint is real.
+ */
+export const FEATURES = {
+  /** The Posts door (daily LinkedIn comment queue). Off while the crawler is off. */
+  posts: false,
+};
+
+/**
  * Lesson media. Public/funnel videos stay on YouTube; curriculum films live
  * on Lightsail object storage + CDN (gridschool-lessons → gridschool-media).
  * Each lesson entry uses `path` under baseUrl (HLS master + mp4/{360,720,1080,2160}.mp4).

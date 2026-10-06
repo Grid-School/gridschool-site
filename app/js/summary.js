@@ -9,7 +9,7 @@ import { hydrateFromRemote, remoteEnabled } from "./persist-remote.js";
 import { listPersistSlugs } from "./persist-admin.js";
 import { buildGraph, progress, nextUp, STATUS } from "./graph/model.js";
 import { quotaStatus, waitingOn, buildQueue } from "./tasks.js";
-import { weekNumber } from "./time.js";
+import { weekNumber, studentWeek, ownSchedule } from "./time.js";
 
 export async function loadCohortBoards() {
   const [roster, curriculum, cohort, persistSlugs] = await Promise.all([
@@ -39,7 +39,7 @@ export async function loadCohortBoards() {
         const own = boardCurriculum({ universal: curriculum, student, slug });
         const graph = buildGraph(own, student);
         const attention = listEvents(slug, { attentionOnly: true });
-        return summarize({ slug, student, graph, curriculum: own, cohort, week: studentWeek(student, week), attention });
+        return summarize({ slug, student, graph, curriculum: own, cohort: ownSchedule(cohort, student), week: studentWeek(student, week), attention });
       } catch (error) {
         return { slug, error: error.message };
       }
@@ -49,11 +49,8 @@ export async function loadCohortBoards() {
   return { boards: boards.filter((board) => !board.error), broken: boards.filter((b) => b.error), curriculum, cohort, week };
 }
 
-/** Week N of this student's own program, from the day they joined. */
-export function studentWeek(student, fallback, now = new Date()) {
-  if (!student?.joined) return fallback;
-  return Math.max(1, weekNumber(student.joined, now));
-}
+/** Week N of this student's own program, from the day they joined (time.js). */
+export { studentWeek };
 
 function summarize({ slug, student, graph, curriculum, cohort, week, attention = [] }) {
   const prog = progress(graph);
@@ -103,16 +100,4 @@ function signalFor({ prog, quota, waiting, student, week, attention = [] }) {
   if (quota.active && !quota.met) return { tone: "warn", text: "Quota not met this week" };
   if (week > 2 && prog.spine.lit === 0) return { tone: "bad", text: "Nothing required lit past week 2" };
   return { tone: "ok", text: "Moving" };
-}
-
-export function litMatrix(boards, curriculum) {
-  const nodes = curriculum.nodes.filter((node) => node.kind !== "future").sort((a, b) => a.n - b.n);
-  return {
-    nodes,
-    rows: boards.map((board) => ({
-      slug: board.slug,
-      name: board.student.name,
-      cells: nodes.map((node) => board.graph.byId.get(node.id)?.status ?? STATUS.LOCKED),
-    })),
-  };
 }

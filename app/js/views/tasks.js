@@ -39,7 +39,8 @@ export function renderTasks(ctx) {
         queue.length
           ? `${queue.length} open · about ${formatEstimate(remainingMinutes(queue))}`
           : "Nothing open. A review is holding you, or you are ahead."
-      )
+      ),
+      steerNote(student)
     ),
     weekly.length
       ? panel(
@@ -64,5 +65,23 @@ export function renderTasks(ctx) {
       );
     }),
     !queue.length ? panel({ title: "Nothing open" }, empty("Check what you are waiting on.", "Reviews come back Sunday evening.")) : null
+  );
+}
+
+/**
+ * Aden's weekly steer (Focus / Next from the desk's Call tab). The Coach page
+ * used to be its only home; the Tasks page is where a student plans, so it
+ * lives here, and only when there is something to say.
+ */
+export function steerNote(student) {
+  const focus = String(student?.focus ?? "").trim();
+  const next = String(student?.next ?? "").trim();
+  if (!focus && !next) return null;
+  return el(
+    "div.steer",
+    {},
+    el("b.eyebrow", {}, "From Aden this week"),
+    focus && el("p", {}, el("b", {}, "Focus: "), focus),
+    next && el("p", {}, el("b", {}, "Next: "), next)
   );
 }

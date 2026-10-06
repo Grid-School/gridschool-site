@@ -5,6 +5,8 @@
  * icon with its word under it so nothing needs a tooltip to be understood,
  * and the Map carrying the one count that matters (required lit / total).
  * Under a hairline, Posts: the day's LinkedIn comments.
+ * Coach and Posts are drawn only when they work (features.js); otherwise the
+ * rail is Map, Tasks, Calendar, and You.
  * At the bottom, the student, as an avatar that opens the profile sheet.
  * Nothing about instructors or dev lives here; that is instructor-strip.js,
  * mounted only when the device is flagged, so a student rail is a student
@@ -16,6 +18,7 @@ import { gmark } from "../../js/brand.js";
 import { icon } from "./icons.js";
 import { returnedUnread } from "./tasks.js";
 import { progress } from "./graph/model.js";
+import { enabledViews, isViewEnabled } from "./features.js";
 
 export const DOORS = [
   { id: "map", label: "Map", icon: "map", hint: "Where you are and what is next" },
@@ -24,12 +27,12 @@ export const DOORS = [
   { id: "today", label: "Coach", icon: "coach", hint: "Talk a next move through" },
 ];
 
-export function createRail({ onNavigate, onProfile }) {
+export function createRail({ onNavigate, onProfile, flags = enabledViews() }) {
   const nav = el("nav.rail__nav", { "aria-label": "Where to go" });
   const links = new Map();
   const count = el("span.rail__count", { hidden: true });
 
-  for (const door of DOORS) {
+  for (const door of DOORS.filter((d) => isViewEnabled(d.id, flags))) {
     const link = el(
       "a.rail__door",
       {
@@ -49,7 +52,7 @@ export function createRail({ onNavigate, onProfile }) {
     nav.append(link);
   }
 
-  const posts = el(
+  const posts = !isViewEnabled("posts", flags) ? null : el(
     "a.rail__door",
     {
       href: "#/posts",
@@ -63,7 +66,7 @@ export function createRail({ onNavigate, onProfile }) {
     el("span.rail__glyph", {}, icon("posts")),
     el("span.rail__word", {}, "Posts")
   );
-  links.set("posts", posts);
+  if (posts) links.set("posts", posts);
 
   const avatar = el("span.rail__avatar", { "aria-hidden": "true" }, "");
   const profile = el(
@@ -78,7 +81,7 @@ export function createRail({ onNavigate, onProfile }) {
     {},
     el("a.rail__brand", { href: "../", title: "GridSchool", "aria-label": "GridSchool home" }, gmark({ className: "rail__logo" })),
     nav,
-    el("div.rail__extra", {}, posts),
+    posts ? el("div.rail__extra", {}, posts) : null,
     el("div.rail__foot", {}, profile)
   );
 

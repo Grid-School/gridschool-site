@@ -20,8 +20,11 @@ export function createRouter({ routes, aliases = {}, fallback, onNavigate }) {
     const [name, ...args] = raw.split("/").filter(Boolean);
     if (aliases[name]) {
       const [mapped, ...forced] = aliases[name];
-      return { name: mapped, args: forced.length ? forced : args };
+      // An alias to a door that is switched off lands on the fallback too.
+      if (!routes[mapped]) return { name: fallback, args: [], redirected: true };
+      return { name: mapped, args: forced.length ? forced : args, redirected: true };
     }
+    if (name && !routes[name]) return { name: fallback, args: [], redirected: true };
     return { name: routes[name] ? name : fallback, args };
   }
 
@@ -43,14 +46,16 @@ export function createRouter({ routes, aliases = {}, fallback, onNavigate }) {
     permittedHash = null;
     lastHash = incoming;
     const route = parse();
-    // An alias lands somewhere true; the address bar should say where, so a
-    // copied link is the real route and not the retired name.
+    // An alias, or a door that is switched off (features.js), lands somewhere
+    // true; the address bar should say where, so a copied link is the real
+    // route and not the retired or hidden name.
     const canonical = `#/${[route.name, ...route.args].filter(Boolean).join("/")}`;
-    if (incoming !== canonical && incoming.replace(/^#\/?/, "").split("/")[0] in aliases) {
+    if (incoming !== canonical && route.redirected) {
       history.replaceState(null, "", `${location.pathname}${location.search}${canonical}`);
       lastHash = canonical;
     }
-    onNavigate(route, routes[route.name]);
+    const { redirected, ...shown } = route;
+    onNavigate(shown, routes[route.name]);
   }
 
   function go(name, ...args) {
@@ -66,5 +71,12 @@ export function createRouter({ routes, aliases = {}, fallback, onNavigate }) {
 
   window.addEventListener("hashchange", handle);
 
-  return { start: handle, go, current: parse };
+  return {
+    start: handle,
+    go,
+    current: () => {
+      const { redirected, ...shown } = parse();
+      return shown;
+    },
+  };
 }

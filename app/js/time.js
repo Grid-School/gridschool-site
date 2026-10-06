@@ -50,6 +50,29 @@ export function weekNumber(cohortStart, date = new Date()) {
   return Math.floor((current - start) / (7 * DAY_MS)) + 1;
 }
 
+/** The day a student joined, as YYYY-MM-DD, or null. Seat data may carry a timestamp. */
+export function joinedDate(student) {
+  const match = /^(\d{4}-\d{2}-\d{2})/.exec(String(student?.joined ?? ""));
+  return match ? match[1] : null;
+}
+
+/** Week N of this student's own program, from the day they joined. */
+export function studentWeek(student, fallback, now = new Date()) {
+  const joined = joinedDate(student);
+  if (!joined) return fallback;
+  return Math.max(1, weekNumber(joined, now));
+}
+
+/**
+ * The cohort rules on the student's own clock: same rituals, but week 1 is
+ * the week they joined. Every board surface (calendar, quota, reminders)
+ * reads this, so "week N" means the same thing everywhere for one student.
+ */
+export function ownSchedule(cohort, student) {
+  const joined = joinedDate(student);
+  return joined && cohort ? { ...cohort, start: joined } : cohort;
+}
+
 export function weekRange(cohortStart, week) {
   const start = addDays(weekStart(parseDate(cohortStart)), (week - 1) * 7);
   return { start, end: addDays(start, 6) };
@@ -105,10 +128,7 @@ export function eventsForWeek(cohort, student, week) {
   const events = [];
 
   for (const rule of cohort.recurring) {
-    const time = rule.perStudent && student?.oneone?.time ? student.oneone.time : rule.time;
-    const weekday = rule.perStudent && student?.oneone?.weekday != null
-      ? student.oneone.weekday
-      : rule.weekday;
+    const { weekday, time } = rule.perStudent ? ownSlot(rule, student?.oneone) : rule;
     // Rules are authored Sunday-indexed; week math is Monday-first.
     const offset = (weekday + 6) % 7;
     events.push({
@@ -136,6 +156,20 @@ export function eventsForWeek(cohort, student, week) {
     if (a.date !== b.date) return a.date < b.date ? -1 : 1;
     return (a.time ?? "").localeCompare(b.time ?? "");
   });
+}
+
+/**
+ * A student's own 1:1 slot wins over the cohort default, field by field. Seat
+ * data can arrive with the weekday as a string ("4") or the time blank, so
+ * both are checked before they replace the default.
+ */
+export function ownSlot(rule, oneone) {
+  const day = oneone?.weekday;
+  const weekday = day !== null && day !== undefined && day !== "" && Number.isInteger(Number(day)) && Number(day) >= 0 && Number(day) <= 6
+    ? Number(day)
+    : rule.weekday;
+  const time = typeof oneone?.time === "string" && /^\d{1,2}:\d{2}$/.test(oneone.time.trim()) ? oneone.time.trim() : rule.time;
+  return { weekday, time };
 }
 
 /** The next thing on the calendar from `now`, looking a few weeks ahead. */

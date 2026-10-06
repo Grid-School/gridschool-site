@@ -197,7 +197,7 @@ export function eventRow(event, { now = new Date() } = {}) {
   const go = event.room
     ? href
       ? btn({ label: event.open ?? "Open event", variant: "quiet", href, target: "_blank" })
-      : el("span.notwired", {}, "Event link unavailable")
+      : null // no link set yet: show the time, not a broken button
     : null;
 
   return el(

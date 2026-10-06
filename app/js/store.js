@@ -11,7 +11,7 @@
 
 import { loadBoard, boardCurriculum } from "./api.js";
 import { buildGraph } from "./graph/model.js";
-import { weekNumber } from "./time.js";
+import { weekNumber, studentWeek, ownSchedule } from "./time.js";
 import {
   read,
   clear as clearPersist,
@@ -51,6 +51,12 @@ export async function init(nextSlug, { tour = false } = {}) {
       const student = { ...base.student, map: snap.map };
       base = { ...base, student, curriculum: boardCurriculum({ universal: base.universal, student, slug: nextSlug }) };
     }
+    // And its 1:1 slot: set on the seat, it beats the seed file and the
+    // cohort default on the calendar and in reminders.
+    const seatSlot = snap?.identity?.oneone;
+    if (seatSlot && (seatSlot.weekday != null || seatSlot.time)) {
+      base = { ...base, student: { ...base.student, oneone: { ...(base.student.oneone ?? {}), ...seatSlot } } };
+    }
     startPolling(nextSlug, () => {
       overlay = read(nextSlug);
       publish();
@@ -72,12 +78,14 @@ export function state() {
   const student = mergedStudent();
   const unlockAll = isDevUnlock();
   const graph = buildGraph(base.curriculum, student, { unlockAll });
-  const week = Math.min(
-    Math.max(1, weekNumber(base.cohort.start)),
-    base.cohort.weeks + 1
-  );
+  // The student's own clock: week 1 is the week they joined, the same week
+  // number the desk counts them against. The cohort start is only a fallback
+  // for a board with no join date.
+  const fallbackWeek = Math.min(Math.max(1, weekNumber(base.cohort.start)), base.cohort.weeks + 1);
+  const week = studentWeek(student, fallbackWeek);
   return {
     ...base,
+    cohort: ownSchedule(base.cohort, student),
     student,
     graph,
     week,

@@ -9,29 +9,15 @@
   "seasonNote": "Wall-clock for live blocks. us-home = Aden evenings MT. ph-season = swap times per ops/solution-set.md (US evenings do not fit wake-14:00/work-22:00 PHT). Students always see timezoneLabel; operators swap season without changing ritual shape.",
   "recurring": [
     {
-      "id": "cohort",
-      "kind": "cohort",
-      "title": "Cohort call",
-      "weekday": 1,
-      "time": "18:00",
-      "mins": 75,
-      "where": "Discord · voice",
-      "who": "All five and me",
-      "agenda": "What you shipped. What a reviewer would still not trust. One live review.",
-      "required": true,
-      "room": "discord",
-      "open": "Open Discord"
-    },
-    {
       "id": "oneone",
       "kind": "oneone",
       "title": "Your 1:1",
       "weekday": 3,
       "time": "19:00",
       "mins": 45,
-      "where": "Video call",
-      "who": "You and me",
-      "agenda": "Your code. Your defense. The next evidence URL.",
+      "where": "Video call · Google Meet",
+      "who": "You and Aden",
+      "agenda": "Your map: what moved, what's stuck, what's next.",
       "required": true,
       "perStudent": true,
       "room": "oneOnOne",
@@ -50,20 +36,6 @@
       "required": true,
       "room": "discord",
       "open": "Open Discord"
-    },
-    {
-      "id": "reviews",
-      "kind": "return",
-      "title": "Written reviews returned",
-      "weekday": 0,
-      "time": "20:00",
-      "mins": 0,
-      "where": "#asks and your board",
-      "who": "Me",
-      "agenda": "Up to three written reviews back. FOCUS and NEXT set for Monday.",
-      "required": false,
-      "room": "discord",
-      "open": "Open Discord"
     }
   ],
   "milestones": [
@@ -77,7 +49,7 @@
       "week": 4,
       "kind": "gate",
       "title": "Extra 1:1 this week",
-      "detail": "Mid-lab correction. Founding cohort only."
+      "detail": "Mid-lab correction."
     },
     {
       "week": 6,

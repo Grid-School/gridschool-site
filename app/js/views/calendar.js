@@ -14,12 +14,12 @@ import { toast } from "../ui.js";
 export function renderCalendar(ctx, weekArg) {
   const { state, navigate } = ctx;
   const { cohort, student, week: currentWeek } = state;
-  const week = clampWeek(Number(weekArg) || currentWeek, cohort);
+  const week = clampWeek(Number(weekArg) || currentWeek, lastWeek(cohort, currentWeek));
   const range = weekRange(cohort.start, week);
   const events = eventsForWeek(cohort, student, week);
   const now = new Date();
   const program = programPhase(cohort, now);
-  const inLab = week <= cohort.weeks;
+  const last = lastWeek(cohort, currentWeek);
 
   return el(
     "div.view.view--cal",
@@ -27,8 +27,8 @@ export function renderCalendar(ctx, weekArg) {
     el(
       "header.view__head",
       {},
-      el("b.eyebrow", {}, cohort.name),
-      el("h1", {}, inLab ? `Week ${week} of ${cohort.weeks}` : `After week ${cohort.weeks}`),
+      el("b.eyebrow", {}, "Your calendar"),
+      el("h1", {}, `Week ${week}`),
       el(
         "p.muted",
         {},
@@ -37,17 +37,17 @@ export function renderCalendar(ctx, weekArg) {
       el(
         "p.muted.cal__remind",
         {},
-        "You get a reminder one hour before and fifteen minutes before every cohort call and 1:1, while this is open. ",
+        "You get a reminder one hour before and fifteen minutes before your 1:1, while this is open. ",
         systemReminderControl()
       ),
       program.phase === "before" &&
-        el("p.cal__pre", {}, `The cohort starts ${relativeDay(program.first, now)}, ${fmtShort(program.first)}. Week 1 is below.`),
+        el("p.cal__pre", {}, `You start ${relativeDay(program.first, now)}, ${fmtShort(program.first)}. Week 1 is below.`),
       el(
         "div.view__nav",
         {},
         btn({ label: "← Previous", variant: "quiet", disabled: week <= 1, onclick: () => navigate("calendar", String(week - 1)) }),
         week !== currentWeek && btn({ label: "This week", variant: "quiet", onclick: () => navigate("calendar", String(currentWeek)) }),
-        btn({ label: "Next →", variant: "quiet", disabled: week >= cohort.weeks + 1, onclick: () => navigate("calendar", String(week + 1)) })
+        btn({ label: "Next →", variant: "quiet", disabled: week >= last, onclick: () => navigate("calendar", String(week + 1)) })
       )
     ),
     panel(
@@ -77,6 +77,11 @@ function systemReminderControl() {
   });
 }
 
-function clampWeek(week, cohort) {
-  return Math.min(Math.max(1, week), cohort.weeks + 1);
+/** Weeks run on the student's own clock; look a few weeks past today or the program, whichever is later. */
+function lastWeek(cohort, currentWeek) {
+  return Math.max(cohort.weeks + 1, currentWeek + 4);
+}
+
+function clampWeek(week, last) {
+  return Math.min(Math.max(1, week), last);
 }
