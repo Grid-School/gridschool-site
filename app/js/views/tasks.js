@@ -3,12 +3,12 @@
  * Receipts live on the map list. Today owns what to do next.
  */
 
-import { el } from "../dom.js?v=bb483b2-202610060747";
-import { panel, empty, btn } from "../ui.js?v=bb483b2-202610060747";
-import { buildQueue, remainingMinutes, formatEstimate } from "../tasks.js?v=bb483b2-202610060747";
-import { STATUS, stepNumber } from "../graph/model.js?v=bb483b2-202610060747";
-import { taskRow } from "./parts.js?v=bb483b2-202610060747";
-import { dueLabel, dueBadge } from "./from-aden.js?v=bb483b2-202610060747";
+import { el } from "../dom.js?v=b6ca108-202610080352";
+import { panel, empty, btn } from "../ui.js?v=b6ca108-202610080352";
+import { buildQueue, remainingMinutes, formatEstimate } from "../tasks.js?v=b6ca108-202610080352";
+import { STATUS, stepNumber } from "../graph/model.js?v=b6ca108-202610080352";
+import { taskRow } from "./parts.js?v=b6ca108-202610080352";
+import { dueLabel, dueBadge } from "./from-aden.js?v=b6ca108-202610080352";
 
 export function renderTasks(ctx) {
   const { state, store, navigate } = ctx;
@@ -73,7 +73,7 @@ export function renderTasks(ctx) {
 }
 
 /**
- * Aden's weekly steer (Focus / Next from the desk's Call tab). The Coach page
+ * Aden's weekly steer (Focus / Next from the desk's This week box). The Coach page
  * used to be its only home; the Tasks page is where a student plans, so it
  * lives here, and only when there is something to say.
  */

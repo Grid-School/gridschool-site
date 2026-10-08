@@ -9,16 +9,16 @@
  * went with it, because on the floor position is derived from sequence.
  */
 
-import { el, mount } from "../dom.js?v=bb483b2-202610060747";
-import { btn, toast } from "../ui.js?v=bb483b2-202610060747";
-import { createScene3d } from "../graph/scene3d/index.js?v=bb483b2-202610060747";
-import { STATUS, nextUp, progress, visibleGraph, stepNumber } from "../graph/model.js?v=bb483b2-202610060747";
-import { LEGEND, STANDING, STANDING_LABEL, standingOf, legendKeyOf } from "../graph/standing.js?v=bb483b2-202610060747";
-import { trackLabel } from "../copy.js?v=bb483b2-202610060747";
-import { mapList } from "./map-list.js?v=bb483b2-202610060747";
-import { dueLabel } from "./from-aden.js?v=bb483b2-202610060747";
-import { createGridState, hashFor, RESERVED_ARGS, VIEW } from "./grid-state.js?v=bb483b2-202610060747";
-import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=bb483b2-202610060747";
+import { el, mount } from "../dom.js?v=b6ca108-202610080352";
+import { btn, toast } from "../ui.js?v=b6ca108-202610080352";
+import { createScene3d } from "../graph/scene3d/index.js?v=b6ca108-202610080352";
+import { STATUS, nextUp, progress, visibleGraph, stepNumber } from "../graph/model.js?v=b6ca108-202610080352";
+import { LEGEND, STANDING, STANDING_LABEL, standingOf, legendKeyOf } from "../graph/standing.js?v=b6ca108-202610080352";
+import { trackLabel } from "../copy.js?v=b6ca108-202610080352";
+import { mapList } from "./map-list.js?v=b6ca108-202610080352";
+import { dueLabel } from "./from-aden.js?v=b6ca108-202610080352";
+import { createGridState, hashFor, RESERVED_ARGS, VIEW } from "./grid-state.js?v=b6ca108-202610080352";
+import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=b6ca108-202610080352";
 
 /** Right side clears the control column, top clears the legend bar. */
 const INSETS = { top: 76, right: 132, bottom: 72, left: 40 };
