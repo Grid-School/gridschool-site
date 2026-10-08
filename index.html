@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="rez.css?v=6ffcb17-202610080629">
+<link rel="stylesheet" href="rez.css?v=bcd643b-202610080645">
 <script>/* First view of a session gets the arrival; a repeat starts drawn (js/landing-map.js). */
 try { if (!sessionStorage.getItem("gridschool.arrived") && !matchMedia("(prefers-reduced-motion: reduce)").matches) document.documentElement.classList.add("first-view"); } catch (e) {}</script>
 </head>
@@ -50,13 +50,13 @@ try { if (!sessionStorage.getItem("gridschool.arrived") && !matchMedia("(prefers
 <section class="hero" aria-label="GridSchool Residency">
   <div class="wrap hero__grid">
     <div class="hero__words">
-      <p class="eyebrow">GridSchool Residency</p>
+      <p class="hero__eyebrow">GridSchool Residency</p>
       <h1><span>Your next engineering role,</span> <em>mapped from where you stand.</em></h1>
       <p class="hero__sub">A route built around your goal, and a working engineer who reviews every step with you until a company hires you.</p>
       <div class="hero__cta">
         <a class="btn btn--solid" id="cta" href="apply/" data-book>Book a call to walk this map <span class="arr" aria-hidden="true">→</span></a>
       </div>
-      <p class="hero__fine">20-minute call · we finish your map on it · five founding spots</p>
+      <p class="hero__fine">20-minute call. We finish your map on it.</p>
     </div>
 
     <div class="compiler" aria-label="Draft your map">
@@ -91,9 +91,7 @@ try { if (!sessionStorage.getItem("gridschool.arrived") && !matchMedia("(prefers
       <div class="map" id="map">
         <div class="map__floor" aria-hidden="true"></div>
         <div class="step-card" id="step-card" role="tooltip" hidden></div>
-        <svg id="map-svg" viewBox="0 0 760 330" role="img" aria-labelledby="map-title">
-          <title id="map-title">Your draft map</title>
-        </svg>
+        <svg id="map-svg" viewBox="0 0 760 330" role="img" aria-label="Your draft map"></svg>
       </div>
       <div class="readout" aria-live="polite">
         <span><b id="r-route">defense-first</b> · <b id="r-count">11</b> steps</span>
@@ -278,6 +276,6 @@ try { if (!sessionStorage.getItem("gridschool.arrived") && !matchMedia("(prefers
   <div class="wrap">GridSchool Residency · <a href="mailto:support@gridschool.org">support@gridschool.org</a> · © 2026 GRID SCHOOL LLC · Boise, Idaho<br>A company's yes is theirs. Your evidence won't be.</div>
 </footer>
 
-<script type="module" src="landing.js?v=6ffcb17-202610080629"></script>
+<script type="module" src="landing.js?v=bcd643b-202610080645"></script>
 </body>
 </html>

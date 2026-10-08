@@ -208,8 +208,10 @@ export function drawGrid(parent, { id, cell, x, y, width, height, fade = false }
   svgEl("path", { class: "rez-grid__line", d: `M ${cell} 0 L 0 0 0 ${cell}`, fill: "none" }, pattern);
   let mask = null;
   if (fade) {
-    const gradient = svgEl("radialGradient", { id: `${id}-fade`, cx: "50%", cy: "50%", r: "62%" }, defs);
-    svgEl("stop", { offset: "35%", "stop-color": "#fff" }, gradient);
+    // r 50% reaches zero exactly at the edges, so the grid never ends on a
+    // hard line (a 62% radius left the rect's sides visible as stray lines).
+    const gradient = svgEl("radialGradient", { id: `${id}-fade`, cx: "50%", cy: "50%", r: "50%" }, defs);
+    svgEl("stop", { offset: "30%", "stop-color": "#fff" }, gradient);
     svgEl("stop", { offset: "100%", "stop-color": "#fff", "stop-opacity": "0" }, gradient);
     const m = svgEl("mask", { id: `${id}-mask` }, defs);
     svgEl("rect", { x, y, width, height, fill: `url(#${id}-fade)` }, m);

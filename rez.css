@@ -150,7 +150,7 @@ a { color: inherit; }
      land) the order is claim, sentence, map, action, then the explanation. */
   .hero__grid { grid-template-columns: minmax(0, 1fr); row-gap: 0; }
   .hero__words, .compiler { display: contents; }
-  .hero__words .eyebrow { order: 1; }
+  .hero__eyebrow { order: 1; }
   .hero h1 { order: 2; margin-bottom: 18px; }
   .prompt { order: 3; }
   .map { order: 4; margin-top: 4px; }
@@ -502,7 +502,7 @@ footer a { color: var(--muted); }
 @keyframes rise { from { opacity: 0; transform: translateY(8px); } }
 @keyframes fade { from { opacity: 0; } }
 @keyframes underline { from { background-size: 0% 1px; } }
-.first-view .hero .eyebrow { animation: fade 500ms var(--ease-out) both; }
+.first-view .hero__eyebrow { animation: fade 500ms var(--ease-out) both; }
 .first-view .hero h1 > span, .first-view .hero h1 > em { display: inline-block; animation: rise 620ms var(--ease-out) both; }
 .first-view .hero h1 > em { animation-delay: 70ms; }
 .first-view .hero__sub { animation: rise 620ms var(--ease-out) 140ms both; }
@@ -532,3 +532,77 @@ footer a { color: var(--muted); }
 .bets h3 { margin: 10px 0 6px; font-size: var(--fs-h3); font-weight: 500; color: var(--lumen); }
 .bets p { margin: 0; font-size: 14px; color: var(--muted); }
 .founder p:not(.eyebrow) + p { margin-top: 14px; }
+
+
+/* ================================================================
+   HERO, craft pass (2026-10-08): one column, two deliberate lines,
+   the map full width, two type styles, nothing under 11px on screen.
+   ================================================================ */
+@media (min-width: 1021px) {
+  .hero { padding-top: clamp(40px, 7svh, 88px); }
+  .hero__grid { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .hero__words {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 64px; align-items: end;
+  }
+  .hero__eyebrow, .hero h1 { grid-column: 1 / -1; }
+  .hero__sub { grid-column: 1; grid-row: 3; margin: 0; }
+  .hero__cta { grid-column: 2; grid-row: 3; justify-self: end; }
+  .hero__fine { grid-column: 2; grid-row: 4; justify-self: end; margin-top: 12px; }
+  .compiler { margin-top: clamp(32px, 5svh, 56px); }
+  .map svg { max-height: min(400px, 46svh); }
+}
+.hero h1 { font-size: clamp(36px, 4.6vw, 68px); letter-spacing: -0.04em; line-height: 1.04; margin: 14px 0 22px; text-wrap: balance; }
+@media (min-width: 1021px) { .hero h1 > span, .hero h1 > em, .first-view .hero h1 > span, .first-view .hero h1 > em { display: block; } }
+.hero h1 em { color: var(--lumen); }
+.hero__eyebrow { margin: 0; font-size: 14px; color: var(--muted); }
+.hero__sub { font-size: 18px; max-width: 32em; color: var(--soft); text-wrap: balance; }
+.hero__fine { font: 400 13px/1.5 var(--font-sans); color: var(--muted); }
+
+/* the map's words: sentence case, one mono size, never under 11px on screen */
+.phase-label { font: 500 calc(11px * var(--u, 1)) var(--font-mono); letter-spacing: 0; text-transform: none; fill: var(--soft); }
+.phase-pace { font: 400 calc(11px * var(--u, 1)) var(--font-mono); fill: var(--ghost); }
+.you-label, .end-label { font: 500 calc(11px * var(--u, 1)) var(--font-mono); letter-spacing: 0; }
+.end-label--soft { font-weight: 400; fill: var(--ghost); }
+.node .num { font: 500 calc(11px * var(--u, 1)) var(--font-mono); }
+.map svg.is-narrow .node .num { display: none; } /* a phone's ring is too small for a number; the card says it */
+.map svg.is-narrow .phase-pace { display: none; }
+
+/* the picker: a button sized to its words, a list that opens under it */
+.pick.is-enhanced select { position: absolute; inset: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.pick.is-enhanced::after { content: none; }
+.pick__btn {
+  font: inherit; color: var(--lumen); background: none; border: 0; cursor: pointer;
+  padding: 0 16px 1px 1px; margin: 0 1px; position: relative;
+  background-image: linear-gradient(90deg, color-mix(in srgb, var(--cyan) 70%, transparent), color-mix(in srgb, var(--cyan) 70%, transparent));
+  background-repeat: no-repeat; background-position: 0 100%; background-size: calc(100% - 15px) 1px;
+  transition: color var(--dur-fast);
+}
+.pick__btn::after {
+  content: ""; position: absolute; right: 2px; top: 50%; margin-top: -1px;
+  border: 4px solid transparent; border-top-color: var(--cyan);
+  transition: transform var(--dur-base) var(--ease-out); transform-origin: 50% 25%;
+}
+.pick__btn:hover { color: #fff; }
+.pick.is-open .pick__btn::after { transform: rotate(180deg); }
+.first-view .pick__btn { animation: underline 520ms var(--ease-out) 420ms both; }
+.first-view .pick:nth-of-type(2) .pick__btn { animation-delay: 500ms; }
+.first-view .pick:nth-of-type(3) .pick__btn { animation-delay: 580ms; }
+.pick__list {
+  position: absolute; z-index: 5; left: -10px; top: calc(100% + 6px); min-width: calc(100% + 20px);
+  margin: 0; padding: 6px; list-style: none; outline: none;
+  background: color-mix(in srgb, var(--panel) 96%, transparent);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-radius: 10px; box-shadow: inset 0 0 0 1px var(--hair-cyan), 0 18px 44px rgba(0, 0, 0, .55);
+  animation: card-in 140ms var(--ease-out);
+}
+.pick__list li {
+  padding: 7px 10px; border-radius: 6px; white-space: nowrap; cursor: pointer;
+  font: 400 14px/1.4 var(--font-mono); color: var(--soft);
+}
+.pick__list li.is-active { background: rgba(var(--cyan-rgb), .1); color: #fff; }
+.pick__list li[aria-selected="true"] { color: var(--cyan); }
+/* the sentence (and its open list) always sits above the map */
+.prompt { z-index: 4; }
+.pick__list { background: var(--panel); }
+.map svg.is-narrow .end-label--soft { display: none; }

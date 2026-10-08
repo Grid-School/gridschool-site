@@ -10,7 +10,7 @@
  * the map: kept steps slide, new ones arrive lit, dropped ones fade.
  */
 
-import { draftMap, stepTitle, checkOf, checkSummary, CHECK, FAMILIES, PHASES } from "./map-draft.js?v=6ffcb17-202610080629";
+import { draftMap, stepTitle, checkOf, checkSummary, CHECK, FAMILIES, PHASES } from "./map-draft.js?v=bcd643b-202610080645";
 import {
   svgEl,
   drawGrid,
@@ -22,7 +22,7 @@ import {
   arrivalFractions,
   rezIn,
   prefersReducedMotion,
-} from "./rez/road.js?v=6ffcb17-202610080629";
+} from "./rez/road.js?v=bcd643b-202610080645";
 
 /*
  * Everything sits on one grid. CELL is half a lane: lanes are every second
@@ -73,7 +73,10 @@ function preselect() {
   for (const key of ["stage", "role", "stop"]) {
     const value = params.get(key);
     const select = $(`#f-${key}`);
-    if (value && [...select.options].some((option) => option.value === value)) select.value = value;
+    if (value && [...select.options].some((option) => option.value === value)) {
+      select.value = value;
+      select.dispatchEvent(new Event("change")); // the picker button follows
+    }
   }
 }
 
@@ -133,7 +136,7 @@ export async function mountLandingMap() {
     svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
     svg.classList.toggle("is-narrow", narrow.matches);
 
-    while (svg.lastChild && svg.lastChild.nodeName !== "title") svg.lastChild.remove();
+    svg.replaceChildren();
     const grid = drawGrid(svg, { id: "draft-grid", cell: CELL, x: -2 * CELL, y: 0, width: W + 4 * CELL, height: H, fade: true });
     if (first && !reduce) grid.classList.add("is-arriving");
     hotCircle = reduce ? null : hotGrid(W);
@@ -159,7 +162,7 @@ export async function mountLandingMap() {
     const youG = svgEl("g", { class: "node node--you" }, layer);
     youG.style.transform = at(you.x, you.y);
     svgEl("circle", { class: "ring", r: 7 }, youG);
-    svgEl("text", { class: "you-label", y: -18 }, youG).textContent = "YOU";
+    svgEl("text", { class: "you-label", y: -18 }, youG).textContent = "You";
 
     // Steps that left the map fade where they stood.
     if (changed && !reduce) {
@@ -224,8 +227,8 @@ export async function mountLandingMap() {
     const endG = svgEl("g", { class: "node node--end" }, layer);
     endG.style.transform = at(end.x, end.y);
     svgEl("circle", { class: "ring", r: 12 }, endG);
-    svgEl("text", { class: "end-label", y: 30 }, endG).textContent = "AN OFFER";
-    svgEl("text", { class: "end-label", y: 43 }, endG).textContent = "THEIR YES";
+    svgEl("text", { class: "end-label", y: 30 }, endG).textContent = "An offer";
+    svgEl("text", { class: "end-label end-label--soft", y: 44 }, endG).textContent = "their yes";
 
     const spark = svgEl("circle", { class: "spark", r: 3, cx: you.x, cy: you.y }, svg);
     if (first && !reduce) endG.style.opacity = "0";
@@ -242,6 +245,7 @@ export async function mountLandingMap() {
     });
     previous = new Map(points.map((point) => [point.id, { x: point.x, y: point.y }]));
     first = false;
+    holdLabelSize();
   }
 
   /* ---------- the hover card ---------- */
@@ -256,9 +260,12 @@ export async function mountLandingMap() {
       el("span", `step-card__check step-card__check--${point.check}`, CHECK_LABEL[point.check])
     );
     card.hidden = false;
-    const scale = svg.clientWidth / svg.viewBox.baseVal.width;
-    const x = point.x * scale;
-    const y = point.y * scale;
+    // Screen position from the SVG's own transform, so letterboxing and zoom never misplace it.
+    const ctm = svg.getScreenCTM();
+    const box = mapBox.getBoundingClientRect();
+    const scale = ctm?.a ?? 1;
+    const x = (ctm ? ctm.a * point.x + ctm.e : point.x) - box.left;
+    const y = (ctm ? ctm.d * point.y + ctm.f : point.y) - box.top;
     const width = card.offsetWidth;
     const left = Math.max(0, Math.min(mapBox.clientWidth - width, x - width / 2));
     const above = y - card.offsetHeight - 22 * scale;
@@ -270,6 +277,16 @@ export async function mountLandingMap() {
     card.hidden = true;
     for (const node of svg.querySelectorAll(".node.is-hot")) node.classList.remove("is-hot");
   }
+
+  /*
+   * Labels keep their set size on screen at any width: --u is the inverse of
+   * the map's scale, and the label CSS multiplies by it.
+   */
+  function holdLabelSize() {
+    const scale = svg.getScreenCTM()?.a || 1;
+    svg.style.setProperty("--u", (1 / scale).toFixed(3));
+  }
+  new ResizeObserver(holdLabelSize).observe(svg);
 
   /* ---------- the grid notices the cursor ---------- */
 
