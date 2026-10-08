@@ -5,9 +5,9 @@
  * Spec: ops/student-data.md
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=bcd643b-202610080645";
-import { persistToken } from "./session.js?v=bcd643b-202610080645";
-import { readDoc, replace, pendingOf, hasPending, markFlushed } from "./persist.js?v=bcd643b-202610080645";
+import { PERSIST, isPlaceholder } from "../../config.js?v=71f92ac-202610080806";
+import { persistToken } from "./session.js?v=71f92ac-202610080806";
+import { readDoc, replace, pendingOf, hasPending, markFlushed } from "./persist.js?v=71f92ac-202610080806";
 
 const POLL_MS = 15000;
 let inflight = 0;
@@ -67,7 +67,10 @@ async function request(method, path, body) {
 }
 
 function stampOf(snap) {
-  return `${snap?.student_updated_at ?? ""}|${snap?.instructor_updated_at ?? ""}`;
+  // The seat's 1:1 record is identity, which has no updated_at: fold it in so
+  // a slot moved on the desk reaches an open board on the next poll.
+  const seat = JSON.stringify(snap?.identity?.oneone ?? {});
+  return `${snap?.student_updated_at ?? ""}|${snap?.instructor_updated_at ?? ""}|${seat}`;
 }
 
 /** GET the snapshot without writing the local cache. Used when Pages has no seed file. */

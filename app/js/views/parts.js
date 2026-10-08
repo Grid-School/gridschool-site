@@ -10,13 +10,14 @@
  * day or week, because "3 comments a day" is never finished, only kept.
  */
 
-import { el } from "../dom.js?v=bcd643b-202610080645";
-import { btn, toast } from "../ui.js?v=bcd643b-202610080645";
-import { KIND_LABEL, TASK_STATE, formatEstimate } from "../tasks.js?v=bcd643b-202610080645";
-import { taskIsComplete, isCountTask, countOf } from "../task-state.js?v=bcd643b-202610080645";
-import { fmtDay, fmtTime, relativeDay } from "../time.js?v=bcd643b-202610080645";
-import { isPrivateLinkKey, link } from "../../../config.js?v=bcd643b-202610080645";
-export { statusLabel } from "../copy.js?v=bcd643b-202610080645";
+import { el } from "../dom.js?v=71f92ac-202610080806";
+import { btn, toast } from "../ui.js?v=71f92ac-202610080806";
+import { KIND_LABEL, TASK_STATE, formatEstimate } from "../tasks.js?v=71f92ac-202610080806";
+import { taskIsComplete, isCountTask, countOf } from "../task-state.js?v=71f92ac-202610080806";
+import { fmtDay, fmtTime, relativeDay } from "../time.js?v=71f92ac-202610080806";
+import { joinIsLive } from "../call-slot.js?v=71f92ac-202610080806";
+import { isPrivateLinkKey, link } from "../../../config.js?v=71f92ac-202610080806";
+export { statusLabel } from "../copy.js?v=71f92ac-202610080806";
 
 export const stateIdOf = (task) => task.weekKey ?? task.id;
 
@@ -193,16 +194,16 @@ export function taskRow(task, { store, navigate, showGo = false } = {}) {
 }
 
 export function eventRow(event, { now = new Date() } = {}) {
-  const href = event.room ? link(event.room) : null;
-  const go = event.room
-    ? href
-      ? btn({ label: event.open ?? "Open event", variant: "quiet", href, target: "_blank" })
-      : null // no link set yet: show the time, not a broken button
-    : null;
+  // A 1:1 carries its own call link from the seat; shared rooms come from config.
+  const href = event.href ?? (event.room ? link(event.room) : null);
+  const live = Boolean(event.href && event.at && joinIsLive(event.at, event.mins ?? 0, now));
+  const go = href
+    ? btn({ label: event.open ?? "Open event", variant: live ? "solid" : "quiet", href, target: "_blank" })
+    : null; // no link set yet: show the time, not a broken button
 
   return el(
     "div.ev",
-    { class: `ev--${event.kind}` },
+    { class: `ev--${event.kind}${live ? " is-live" : ""}` },
     el(
       "div.ev__when",
       {},
@@ -218,7 +219,8 @@ export function eventRow(event, { now = new Date() } = {}) {
         {},
         event.where && el("span", {}, event.where),
         event.who && el("span", {}, event.who),
-        el("span.ev__rel", {}, relativeDay(event.date, now))
+        event.mins ? el("span", {}, `${event.mins} min`) : null,
+        el("span.ev__rel", {}, live ? "now" : relativeDay(event.date, now))
       ),
       (event.agenda || event.detail) && el("p.ev__agenda", {}, event.agenda ?? event.detail)
     ),

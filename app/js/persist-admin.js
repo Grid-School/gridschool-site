@@ -2,8 +2,8 @@
  * Admin persist calls. Desk only. Student boards never import this.
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=bcd643b-202610080645";
-import { persistToken } from "./session.js?v=bcd643b-202610080645";
+import { PERSIST, isPlaceholder } from "../../config.js?v=71f92ac-202610080806";
+import { persistToken } from "./session.js?v=71f92ac-202610080806";
 
 function endpoint() {
   return String(PERSIST.endpoint || "").replace(/\/$/, "");

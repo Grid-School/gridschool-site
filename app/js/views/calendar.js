@@ -4,12 +4,14 @@
  * already answers where you are. This page does not teach those jobs again.
  */
 
-import { el } from "../dom.js?v=bcd643b-202610080645";
-import { panel, btn, empty } from "../ui.js?v=bcd643b-202610080645";
-import { eventsForWeek, weekRange, fmtShort, programPhase, relativeDay } from "../time.js?v=bcd643b-202610080645";
-import { eventRow } from "./parts.js?v=bcd643b-202610080645";
-import { requestSystemReminders } from "../reminders.js?v=bcd643b-202610080645";
-import { toast } from "../ui.js?v=bcd643b-202610080645";
+import { el } from "../dom.js?v=71f92ac-202610080806";
+import { panel, btn, empty } from "../ui.js?v=71f92ac-202610080806";
+import { eventsForWeek, weekRange, fmtShort, programPhase, relativeDay, displayZone } from "../time.js?v=71f92ac-202610080806";
+import { zoneLabel } from "../call-slot.js?v=71f92ac-202610080806";
+import { PERSIST, isPlaceholder } from "../../../config.js?v=71f92ac-202610080806";
+import { eventRow } from "./parts.js?v=71f92ac-202610080806";
+import { requestSystemReminders } from "../reminders.js?v=71f92ac-202610080806";
+import { toast } from "../ui.js?v=71f92ac-202610080806";
 
 export function renderCalendar(ctx, weekArg) {
   const { state, navigate } = ctx;
@@ -18,6 +20,8 @@ export function renderCalendar(ctx, weekArg) {
   const range = weekRange(cohort.start, week);
   const events = eventsForWeek(cohort, student, week);
   const now = new Date();
+  const tz = displayZone(student);
+  const hasCall = events.some((event) => event.kind === "oneone");
   const program = programPhase(cohort, now);
   const last = lastWeek(cohort, currentWeek);
 
@@ -32,14 +36,17 @@ export function renderCalendar(ctx, weekArg) {
       el(
         "p.muted",
         {},
-        `${fmtShort(range.start)} to ${fmtShort(range.end)} · all times ${cohort.timezoneLabel}`
+        `${fmtShort(range.start)} to ${fmtShort(range.end)} · all times ${zoneLabel(tz, range.start)} (${tz.replace(/_/g, " ")})`
       ),
       el(
         "p.muted.cal__remind",
         {},
-        "You get a reminder one hour before and fifteen minutes before your 1:1, while this is open. ",
+        hasCall || student.oneone?.weekday != null
+          ? "An email reaches you one hour before your 1:1, and this page reminds you again at fifteen minutes while it is open. "
+          : "Your 1:1 shows here once Aden sets its time. ",
         systemReminderControl()
       ),
+      feedLinks(state.calendarFeed),
       program.phase === "before" &&
         el("p.cal__pre", {}, `You start ${relativeDay(program.first, now)}, ${fmtShort(program.first)}. Week 1 is below.`),
       el(
@@ -56,6 +63,27 @@ export function renderCalendar(ctx, weekArg) {
         ? el("div.evs", {}, events.map((event) => eventRow(event, { now })))
         : empty("Nothing scheduled this week.")
     )
+  );
+}
+
+/**
+ * The private calendar feed: the 1:1 lands in Google or Apple Calendar with the
+ * join link, and moves there when the slot moves. The path is signed per
+ * student by the server; without it (demo, no server) nothing shows.
+ */
+function feedLinks(path) {
+  const base = PERSIST?.endpoint;
+  if (!path || typeof base !== "string" || isPlaceholder(base)) return null;
+  const https = `${base.replace(/\/$/, "")}${path}`;
+  const webcal = https.replace(/^https?:/, "webcal:");
+  return el(
+    "p.muted.cal__feed",
+    {},
+    "Put your 1:1 in your own calendar: ",
+    el("a", { href: `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(webcal)}`, target: "_blank", rel: "noopener" }, "Google Calendar"),
+    " · ",
+    el("a", { href: webcal }, "Apple or Outlook"),
+    ". It stays in sync if the time moves."
   );
 }
 

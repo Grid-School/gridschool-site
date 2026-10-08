@@ -4,6 +4,8 @@
  * stays true when a start date or a 1:1 slot moves.
  */
 
+import { normalizeSlot, occurrenceInWeek, partsIn, validZone, browserZone } from "./call-slot.js?v=71f92ac-202610080806";
+
 const DAY_MS = 86400000;
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -121,26 +123,54 @@ export function relativeDay(date, now = new Date()) {
 
 /**
  * Every event in a week, generated from the cohort rules plus the student's own
- * 1:1 slot. Milestones for that week ride along as all-day markers.
+ * 1:1 record (call-slot.js). Timed events carry `at`, the real instant, and
+ * their `date`/`time` are shown in `tz`: the student's own zone on their board,
+ * the reader's zone on the desk. Milestones for that week ride along as
+ * all-day markers.
+ *
+ * A student with their own map gets only what that map schedules (`calendar`
+ * rules, `milestones`) plus their 1:1: the cohort's Friday ship and program
+ * gates belong to the old shared program, not to a personal map. Their 1:1
+ * shows only once it is set on the seat; the cohort's default slot is for the
+ * demo tour and seed files.
  */
-export function eventsForWeek(cohort, student, week) {
+export function eventsForWeek(cohort, student, week, { tz = null } = {}) {
   const { start } = weekRange(cohort.start, week);
   const events = [];
+  const ownMap = hasOwnMap(student);
+  const shown = displayZone(student, tz);
+  const rules = [
+    ...cohort.recurring.filter((rule) => rule.perStudent || !ownMap),
+    ...(ownMap && Array.isArray(student.map.calendar) ? student.map.calendar : []),
+  ];
 
-  for (const rule of cohort.recurring) {
-    const { weekday, time } = rule.perStudent ? ownSlot(rule, student?.oneone) : rule;
-    // Rules are authored Sunday-indexed; week math is Monday-first.
-    const offset = (weekday + 6) % 7;
+  for (const rule of rules) {
+    let slot;
+    if (rule.perStudent) {
+      slot = studentSlot(cohort, student);
+      if (!slot) continue;
+    } else {
+      slot = { weekday: rule.weekday, time: rule.time, tz: rule.tz ?? cohort.tz ?? shown, every: 1, mins: rule.mins ?? 0 };
+    }
+    const at = occurrenceInWeek(slot, isoDate(start));
+    if (!at) continue;
+    const local = partsIn(at, shown);
     events.push({
       ...rule,
-      time,
-      weekday,
-      date: isoDate(addDays(start, offset)),
+      time: local.time,
+      weekday: local.weekday,
+      date: local.date,
+      at,
+      tz: shown,
       week,
+      ...(rule.perStudent
+        ? { mins: slot.mins, href: slot.link, where: slot.where ?? rule.where, slot }
+        : {}),
     });
   }
 
-  for (const milestone of cohort.milestones ?? []) {
+  const milestones = ownMap ? student.map.milestones ?? [] : cohort.milestones ?? [];
+  for (const milestone of milestones) {
     if (milestone.week !== week) continue;
     events.push({
       ...milestone,
@@ -159,17 +189,42 @@ export function eventsForWeek(cohort, student, week) {
 }
 
 /**
- * A student's own 1:1 slot wins over the cohort default, field by field. Seat
- * data can arrive with the weekday as a string ("4") or the time blank, so
- * both are checked before they replace the default.
+ * The student's 1:1 record, resolved. A slot saved before zones existed reads
+ * as cohort.tz wall-clock, which is how it was entered.
  */
-export function ownSlot(rule, oneone) {
-  const day = oneone?.weekday;
-  const weekday = day !== null && day !== undefined && day !== "" && Number.isInteger(Number(day)) && Number(day) >= 0 && Number(day) <= 6
-    ? Number(day)
-    : rule.weekday;
-  const time = typeof oneone?.time === "string" && /^\d{1,2}:\d{2}$/.test(oneone.time.trim()) ? oneone.time.trim() : rule.time;
-  return { weekday, time };
+export function studentSlot(cohort, student) {
+  const rule = cohort?.recurring?.find((r) => r.perStudent);
+  return normalizeSlot(student?.oneone, {
+    rule: rule ? { ...rule, tz: rule.tz ?? cohort.tz } : null,
+    fallback: !hasOwnMap(student),
+    joined: joinedDate(student),
+  });
+}
+
+/** A real seat planned against its own published map (not the demo or a seed). */
+export function hasOwnMap(student) {
+  const map = student?.map;
+  return Boolean(map && typeof map === "object" && Array.isArray(map.nodes) && map.nodes.length);
+}
+
+/** Where times are shown: the caller's choice, else the student's own zone, else this device. */
+export function displayZone(student, tz = null) {
+  if (tz && validZone(tz)) return tz;
+  const own = student?.oneone?.studentTz;
+  return validZone(own) ? own : browserZone();
+}
+
+/** The student's next 1:1 that has not ended yet, or null (none set, or none within a month). */
+export function nextCall(cohort, student, now = new Date()) {
+  const current = Math.max(1, weekNumber(cohort.start, now));
+  for (let week = current - 1; week <= current + 4; week += 1) {
+    if (week < 1) continue;
+    for (const event of eventsForWeek(cohort, student, week)) {
+      if (event.kind !== "oneone" || !event.at) continue;
+      if (event.at.getTime() + (event.mins ?? 0) * 60000 > now.getTime()) return event;
+    }
+  }
+  return null;
 }
 
 /** The next thing on the calendar from `now`, looking a few weeks ahead. */
@@ -177,11 +232,8 @@ export function nextEvent(cohort, student, now = new Date()) {
   const current = Math.max(1, weekNumber(cohort.start, now));
   for (let week = current; week <= Math.min(current + 3, cohort.weeks + 1); week += 1) {
     for (const event of eventsForWeek(cohort, student, week)) {
-      if (event.allDay) continue;
-      const when = parseDate(event.date);
-      const [h, m] = (event.time || "00:00").split(":").map(Number);
-      when.setHours(h, m, 0, 0);
-      if (when >= now) return { ...event, at: when };
+      if (event.allDay || !event.at) continue;
+      if (event.at >= now) return event;
     }
   }
   return null;

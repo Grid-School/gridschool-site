@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { upcomingMeetings, dueReminders, reminderText, LEADS_MIN } from "./reminders.js?v=bcd643b-202610080645";
+import { upcomingMeetings, dueReminders, reminderText, LEADS_MIN } from "./reminders.js?v=71f92ac-202610080806";
 
 // A Monday. weekday 1 = Monday in the cohort rules (Sunday-indexed).
 const cohort = {
@@ -60,4 +60,10 @@ test("the text says what, when and where", () => {
   const meeting = { title: "Cohort call", where: "Discord · voice" };
   assert.equal(reminderText({ lead: 60, meeting }), "Cohort call in 1 hour · Discord · voice");
   assert.equal(reminderText({ lead: 15, meeting: { title: "Your 1:1" } }), "Your 1:1 in 15 minutes");
+  const at = new Date("2026-10-10T16:00:00Z");
+  assert.equal(
+    reminderText({ lead: 15, meeting: { title: "Your 1:1", at } }, new Date("2026-10-10T15:54:00Z")),
+    "Your 1:1 in 6 minutes",
+    "a late reminder says the real gap"
+  );
 });

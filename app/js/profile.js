@@ -8,15 +8,16 @@
  * and this sheet says so rather than pretending to a ledger it does not hold.
  */
 
-import { el } from "./dom.js?v=bcd643b-202610080645";
-import { btn, kv } from "./ui.js?v=bcd643b-202610080645";
-import { createModal } from "./modal.js?v=bcd643b-202610080645";
-import { icon } from "./icons.js?v=bcd643b-202610080645";
-import { link } from "../../config.js?v=bcd643b-202610080645";
-import { returnedUnread } from "./tasks.js?v=bcd643b-202610080645";
-import { initials } from "./rail.js?v=bcd643b-202610080645";
+import { el } from "./dom.js?v=71f92ac-202610080806";
+import { btn, kv } from "./ui.js?v=71f92ac-202610080806";
+import { createModal } from "./modal.js?v=71f92ac-202610080806";
+import { icon } from "./icons.js?v=71f92ac-202610080806";
+import { link } from "../../config.js?v=71f92ac-202610080806";
+import { returnedUnread } from "./tasks.js?v=71f92ac-202610080806";
+import { initials } from "./rail.js?v=71f92ac-202610080806";
+import { slotSummary } from "./call-slot.js?v=71f92ac-202610080806";
+import { displayZone, studentSlot } from "./time.js?v=71f92ac-202610080806";
 
-const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 export function createProfile({ getState, onExport, onReset, onSignOut, onNavigate }) {
   const modal = createModal({ label: "Your profile", size: "sheet", onClose: () => modal.setOpen(false) });
@@ -53,9 +54,11 @@ export function createProfile({ getState, onExport, onReset, onSignOut, onNaviga
         {},
         el("b.eyebrow", {}, "Enrollment"),
         kv("Status", demo ? "Demo board. Nothing here is a real account." : `Enrolled · since ${student.joined ?? "day one"}`),
-        kv("Residency", clockLine(student.clock)),
-        kv("Your 1:1", oneOnOneLine(student.oneone)),
-        kv("Payment", demo ? "None. This board is a public tour." : "One payment at checkout. Your receipt came from the checkout partner by email; there is no subscription."),
+        clockLine(student.clock) && kv("Residency", clockLine(student.clock)),
+        kv("Your 1:1", oneOnOneLine(state.cohort, student)),
+        demo
+          ? kv("Payment", "None. This board is a public tour.")
+          : student.clock?.payment && kv("Payment", student.clock.payment),
         kv("Reviews", unread ? `${unread} came back and ${unread === 1 ? "is" : "are"} unread` : "Nothing waiting on you")
       ),
 
@@ -113,16 +116,22 @@ export function createProfile({ getState, onExport, onReset, onSignOut, onNaviga
   return { layer: modal.layer, open, close: () => modal.setOpen(false), isOpen: modal.isOpen };
 }
 
+/**
+ * The seat's own words. A seat with no clock set says nothing here rather
+ * than a program default that may not be what this student bought.
+ */
 function clockLine(clock) {
-  if (!clock) return "Eight weeks, then I stay. Nothing on the map expires.";
-  const after = clock.kind === "get-in" ? "then I stay until you're hired" : (clock.kind || "then I stay until you're hired");
-  if (clock.weeks) return `${clock.weeks} weeks, ${after}. Nothing on the map expires.`;
-  if (clock.months) return `${clock.months} months, ${after}. Nothing on the map expires.`;
-  return "Eight weeks, then I stay. Nothing on the map expires.";
+  if (!clock || typeof clock !== "object") return null;
+  if (typeof clock.text === "string" && clock.text.trim()) return clock.text.trim();
+  if (!clock.weeks && !clock.months) return null;
+  const after = clock.kind === "get-in" || !clock.kind ? "then I stay until you're hired" : clock.kind;
+  const span = clock.weeks ? `${clock.weeks} weeks` : `${clock.months} months`;
+  return `${span}, ${after}. Nothing on the map expires.`;
 }
 
-function oneOnOneLine(oneone) {
-  if (!oneone) return "Set on your first call";
-  const day = DAYS[oneone.weekday] ?? "";
-  return `${day} ${oneone.time ?? ""}`.trim() || "Set on your first call";
+/** Same record and same math as the calendar, so the two cannot disagree. */
+function oneOnOneLine(cohort, student) {
+  const slot = studentSlot(cohort, student);
+  if (!slot) return "Not set yet. Aden sets it after your first call.";
+  return slotSummary(slot, displayZone(student));
 }

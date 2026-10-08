@@ -4,9 +4,9 @@
   "start": "2026-08-24",
   "weeks": 8,
   "spots": 5,
-  "timezoneLabel": "MT",
+  "tz": "America/Denver",
   "season": "us-home",
-  "seasonNote": "Wall-clock for live blocks. us-home = Aden evenings MT. ph-season = swap times per ops/solution-set.md (US evenings do not fit wake-14:00/work-22:00 PHT). Students always see timezoneLabel; operators swap season without changing ritual shape.",
+  "seasonNote": "Shared rules are wall-clock in tz (Aden's zone). Each student's 1:1 is their own seat record (students.oneone: weekday, time, tz, studentTz, mins, every, link) and every board shows times in the student's own zone. The oneone rule below only supplies wording, and its day/time only for the demo tour and seed files.",
   "recurring": [
     {
       "id": "oneone",
@@ -15,13 +15,12 @@
       "weekday": 3,
       "time": "19:00",
       "mins": 45,
-      "where": "Video call · Google Meet",
+      "where": "Discord voice",
       "who": "You and Aden",
       "agenda": "Your map: what moved, what's stuck, what's next.",
       "required": true,
       "perStudent": true,
-      "room": "oneOnOne",
-      "open": "Open the call"
+      "open": "Join your 1:1"
     },
     {
       "id": "ship",

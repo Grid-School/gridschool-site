@@ -9,9 +9,9 @@
  * data/students/<slug>.json.
  */
 
-import { loadBoard, boardCurriculum, libraryFor } from "./api.js?v=bcd643b-202610080645";
-import { buildGraph } from "./graph/model.js?v=bcd643b-202610080645";
-import { weekNumber, studentWeek, ownSchedule } from "./time.js?v=bcd643b-202610080645";
+import { loadBoard, boardCurriculum, libraryFor } from "./api.js?v=71f92ac-202610080806";
+import { buildGraph } from "./graph/model.js?v=71f92ac-202610080806";
+import { weekNumber, studentWeek, ownSchedule, hasOwnMap } from "./time.js?v=71f92ac-202610080806";
 import {
   read,
   clear as clearPersist,
@@ -21,10 +21,10 @@ import {
   mergeStudent,
   STUDENT_KEYS,
   INSTRUCTOR_KEYS,
-} from "./persist.js?v=bcd643b-202610080645";
-import { flushAfterLocalWrite, hydrateFromRemote, persistStatus, startPolling } from "./persist-remote.js?v=bcd643b-202610080645";
-import { validReviewReturn } from "./review.js?v=bcd643b-202610080645";
-import { isDevUnlock } from "./dev-mode.js?v=bcd643b-202610080645";
+} from "./persist.js?v=71f92ac-202610080806";
+import { flushAfterLocalWrite, hydrateFromRemote, persistStatus, startPolling } from "./persist-remote.js?v=71f92ac-202610080806";
+import { validReviewReturn } from "./review.js?v=71f92ac-202610080806";
+import { isDevUnlock } from "./dev-mode.js?v=71f92ac-202610080806";
 
 export { validReviewReturn };
 
@@ -72,19 +72,31 @@ export async function init(nextSlug, { tour = false } = {}) {
         curriculum: boardCurriculum({ universal: base.universal, student, slug: nextSlug, overrides: base.overrides, library }),
       };
     }
-    // And its 1:1 slot: set on the seat, it beats the seed file and the
-    // cohort default on the calendar and in reminders.
-    const seatSlot = snap?.identity?.oneone;
-    if (seatSlot && (seatSlot.weekday != null || seatSlot.time)) {
-      base = { ...base, student: { ...base.student, oneone: { ...(base.student.oneone ?? {}), ...seatSlot } } };
-    }
-    startPolling(nextSlug, () => {
+    // And its 1:1 record: set on the seat, it is the only source the calendar,
+    // Today, Profile and reminders read. The desk can change it any time, so
+    // every poll re-applies it.
+    applySeat(snap);
+    startPolling(nextSlug, (next) => {
+      applySeat(next);
       overlay = read(nextSlug);
       publish();
     });
   }
   overlay = read(nextSlug);
   return state();
+}
+
+/** The seat's 1:1 record and calendar feed, from a server snapshot. */
+function applySeat(snap) {
+  if (!snap || snap.skipped || !snap.identity) return;
+  const seatSlot = snap.identity.oneone;
+  if (seatSlot && typeof seatSlot === "object") {
+    // A cleared slot on the seat clears it here too; a seed file's slot only
+    // survives while the seat has never had one.
+    const hasSeat = Object.keys(seatSlot).length > 0 || hasOwnMap(base.student);
+    base = { ...base, student: { ...base.student, oneone: hasSeat ? seatSlot : base.student.oneone ?? {} } };
+  }
+  base = { ...base, calendarFeed: snap.calendarFeed ?? base.calendarFeed ?? null };
 }
 
 function syncFromPersist() {

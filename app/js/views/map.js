@@ -16,18 +16,18 @@
  * went with it, because on the floor position is derived from sequence.
  */
 
-import { el, mount } from "../dom.js?v=bcd643b-202610080645";
-import { btn, toast } from "../ui.js?v=bcd643b-202610080645";
-import { createScene3d } from "../graph/scene3d/index.js?v=bcd643b-202610080645";
-import { createRezScene } from "../graph/rez/index.js?v=bcd643b-202610080645";
-import { STATUS, nextUp, progress, visibleGraph, stepNumber } from "../graph/model.js?v=bcd643b-202610080645";
-import { LEGEND, STANDING, STANDING_LABEL, standingOf, legendKeyOf } from "../graph/standing.js?v=bcd643b-202610080645";
-import { trackLabel } from "../copy.js?v=bcd643b-202610080645";
-import { mapList } from "./map-list.js?v=bcd643b-202610080645";
-import { dueLabel } from "./from-aden.js?v=bcd643b-202610080645";
-import { createGridState, hashFor, RESERVED_ARGS, VIEW } from "./grid-state.js?v=bcd643b-202610080645";
-import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=bcd643b-202610080645";
-import { isProgressReadOnly } from "../store.js?v=bcd643b-202610080645";
+import { el, mount } from "../dom.js?v=71f92ac-202610080806";
+import { btn, toast } from "../ui.js?v=71f92ac-202610080806";
+import { createScene3d } from "../graph/scene3d/index.js?v=71f92ac-202610080806";
+import { createRezScene } from "../graph/rez/index.js?v=71f92ac-202610080806";
+import { STATUS, nextUp, progress, visibleGraph, stepNumber } from "../graph/model.js?v=71f92ac-202610080806";
+import { LEGEND, STANDING, STANDING_LABEL, standingOf, legendKeyOf } from "../graph/standing.js?v=71f92ac-202610080806";
+import { trackLabel } from "../copy.js?v=71f92ac-202610080806";
+import { mapList } from "./map-list.js?v=71f92ac-202610080806";
+import { dueLabel } from "./from-aden.js?v=71f92ac-202610080806";
+import { createGridState, hashFor, RESERVED_ARGS, VIEW } from "./grid-state.js?v=71f92ac-202610080806";
+import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=71f92ac-202610080806";
+import { isProgressReadOnly } from "../store.js?v=71f92ac-202610080806";
 
 /** Right side clears the control column, top clears the legend bar. */
 const INSETS = { top: 76, right: 132, bottom: 72, left: 40 };

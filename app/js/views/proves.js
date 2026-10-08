@@ -8,7 +8,7 @@
  * a lesson with no falsification is a lecture, not a proof.
  */
 
-import { el } from "../dom.js?v=bcd643b-202610080645";
+import { el } from "../dom.js?v=71f92ac-202610080806";
 
 export const PROVES_FIELDS = [
   ["claim", "Claim"],

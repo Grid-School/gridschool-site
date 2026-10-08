@@ -10,29 +10,29 @@
  * aliases so links already in the wild still land somewhere true.
  */
 
-import { el, mount, download } from "./dom.js?v=bcd643b-202610080645";
-import * as store from "./store.js?v=bcd643b-202610080645";
-import { resolveSlug, slugFromUrl, currentSession, signOut, setPersistToken, inviteFromUrl, persistToken } from "./session.js?v=bcd643b-202610080645";
-import { tryStoredKey } from "./gate.js?v=bcd643b-202610080645";
-import { createRouter } from "./router.js?v=bcd643b-202610080645";
-import { createChrome } from "./chrome.js?v=bcd643b-202610080645";
-import { toast } from "./ui.js?v=bcd643b-202610080645";
-import { isTestSeat } from "./test-seats.js?v=bcd643b-202610080645";
-import { renderLogin } from "./views/login.js?v=bcd643b-202610080645";
-import { renderToday } from "./views/today.js?v=bcd643b-202610080645";
-import { renderMap } from "./views/map.js?v=bcd643b-202610080645";
-import { renderStep, isStepArgs, moduleIdFromArgs } from "./views/step.js?v=bcd643b-202610080645";
-import { renderTasks } from "./views/tasks.js?v=bcd643b-202610080645";
-import { renderCalendar } from "./views/calendar.js?v=bcd643b-202610080645";
-import { renderLibrary } from "./views/library.js?v=bcd643b-202610080645";
-import { renderPosts } from "./views/posts.js?v=bcd643b-202610080645";
-import { toggleDevUnlock, setDevUnlock } from "./dev-mode.js?v=bcd643b-202610080645";
-import { togglePreviewMedia, setPreviewMedia, isPreviewMedia } from "./preview-mode.js?v=bcd643b-202610080645";
-import { isInstructorDevice } from "./instructor-mode.js?v=bcd643b-202610080645";
-import { startReminders } from "./reminders.js?v=bcd643b-202610080645";
-import { watchReviewArrivals } from "./review-arrivals.js?v=bcd643b-202610080645";
-import { enterView, leaveView } from "./transitions.js?v=bcd643b-202610080645";
-import { gateRoutes } from "./features.js?v=bcd643b-202610080645";
+import { el, mount, download } from "./dom.js?v=71f92ac-202610080806";
+import * as store from "./store.js?v=71f92ac-202610080806";
+import { resolveSlug, slugFromUrl, currentSession, signOut, setPersistToken, inviteFromUrl, persistToken } from "./session.js?v=71f92ac-202610080806";
+import { tryStoredKey } from "./gate.js?v=71f92ac-202610080806";
+import { createRouter } from "./router.js?v=71f92ac-202610080806";
+import { createChrome } from "./chrome.js?v=71f92ac-202610080806";
+import { toast } from "./ui.js?v=71f92ac-202610080806";
+import { isTestSeat } from "./test-seats.js?v=71f92ac-202610080806";
+import { renderLogin } from "./views/login.js?v=71f92ac-202610080806";
+import { renderToday } from "./views/today.js?v=71f92ac-202610080806";
+import { renderMap } from "./views/map.js?v=71f92ac-202610080806";
+import { renderStep, isStepArgs, moduleIdFromArgs } from "./views/step.js?v=71f92ac-202610080806";
+import { renderTasks } from "./views/tasks.js?v=71f92ac-202610080806";
+import { renderCalendar } from "./views/calendar.js?v=71f92ac-202610080806";
+import { renderLibrary } from "./views/library.js?v=71f92ac-202610080806";
+import { renderPosts } from "./views/posts.js?v=71f92ac-202610080806";
+import { toggleDevUnlock, setDevUnlock } from "./dev-mode.js?v=71f92ac-202610080806";
+import { togglePreviewMedia, setPreviewMedia, isPreviewMedia } from "./preview-mode.js?v=71f92ac-202610080806";
+import { isInstructorDevice } from "./instructor-mode.js?v=71f92ac-202610080806";
+import { startReminders } from "./reminders.js?v=71f92ac-202610080806";
+import { watchReviewArrivals } from "./review-arrivals.js?v=71f92ac-202610080806";
+import { enterView, leaveView } from "./transitions.js?v=71f92ac-202610080806";
+import { gateRoutes } from "./features.js?v=71f92ac-202610080806";
 
 /* Coach (today) and Posts are gated in features.js: switched off, they are
    not routes at all, so their links land on the Map. */
@@ -103,6 +103,7 @@ function syncChrome() {
   const state = ctx.state;
   chrome.setActive(route.name);
   chrome.setBanner(state);
+  chrome.setCall(state);
   chrome.setSignals(state);
   const identityKey = [
     state.slug,

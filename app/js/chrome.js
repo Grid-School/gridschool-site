@@ -8,14 +8,16 @@
  *   rail.js              the doors and the avatar
  *   instructor-strip.js  dev unlock, media preview, admin, leave
  *   profile.js           the sheet behind the avatar
+ *   call-band.js         the 1:1 within a day, with the join link
  */
 
-import { el, mount } from "./dom.js?v=bcd643b-202610080645";
-import { signOut } from "./session.js?v=bcd643b-202610080645";
-import { lock } from "./gate.js?v=bcd643b-202610080645";
-import { createRail } from "./rail.js?v=bcd643b-202610080645";
-import { createInstructorStrip } from "./instructor-strip.js?v=bcd643b-202610080645";
-import { createProfile } from "./profile.js?v=bcd643b-202610080645";
+import { el, mount } from "./dom.js?v=71f92ac-202610080806";
+import { signOut } from "./session.js?v=71f92ac-202610080806";
+import { lock } from "./gate.js?v=71f92ac-202610080806";
+import { createRail } from "./rail.js?v=71f92ac-202610080806";
+import { createInstructorStrip } from "./instructor-strip.js?v=71f92ac-202610080806";
+import { createProfile } from "./profile.js?v=71f92ac-202610080806";
+import { createCallBand } from "./call-band.js?v=71f92ac-202610080806";
 
 export function createChrome({
   onNavigate,
@@ -29,7 +31,8 @@ export function createChrome({
 }) {
   const banner = el("div.demobar", { hidden: true, role: "status" });
   const outlet = el("main.outlet", { id: "outlet", tabindex: -1 });
-  const shellMain = el("div.shellmain", {}, banner, outlet);
+  const call = createCallBand(getState);
+  const shellMain = el("div.shellmain", {}, banner, call.root, outlet);
 
   const profile = createProfile({
     getState,
@@ -109,6 +112,7 @@ export function createChrome({
     setSignals: rail.setSignals,
     setIdentity,
     setBanner,
+    setCall: call.render,
     closeProfile: profile.close,
   };
 }

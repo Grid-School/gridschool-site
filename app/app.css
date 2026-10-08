@@ -308,6 +308,17 @@ body[data-view="step"] .view--step { flex: 1 1 auto; min-height: 0; }
 .nextbar__why { font-size: 14px; color: var(--muted); margin-top: 6px; max-width: 72ch; }
 .nextbar__focus { font-size: 13px; color: var(--cyan); margin-top: 8px; max-width: 72ch; }
 .nextbar__acts { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+/* The 1:1 within a day (call-band.js): a thin band above every view, louder when live. */
+.callstrip {
+  flex: none; display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;
+  padding: 8px 22px; border-bottom: 1px solid var(--line); font-size: 13px; color: var(--muted);
+}
+.callstrip[hidden] { display: none; }
+.callstrip b { color: var(--ok); }
+.callstrip.is-live { background: color-mix(in srgb, var(--ok) 12%, transparent); color: #fff; }
+.callstrip__note { font-size: 12px; }
+.cal__feed a { color: var(--cyan); }
+.ev.is-live .ev__what { border-color: var(--ok); }
 
 .thread {
   flex: 1 1 auto; min-height: 0; overflow-y: auto;

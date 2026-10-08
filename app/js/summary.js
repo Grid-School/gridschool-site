@@ -3,13 +3,14 @@
  * board, built from the same model the student sees so the two can never disagree.
  */
 
-import { loadRoster, loadStudent, loadCurriculum, loadCohort, boardCurriculum, libraryFor } from "./api.js?v=bcd643b-202610080645";
-import { readOverlay, mergeStudent, listEvents } from "./overlay.js?v=bcd643b-202610080645";
-import { hydrateFromRemote, remoteEnabled } from "./persist-remote.js?v=bcd643b-202610080645";
-import { listPersistSlugs } from "./persist-admin.js?v=bcd643b-202610080645";
-import { buildGraph, progress, nextUp, STATUS } from "./graph/model.js?v=bcd643b-202610080645";
-import { quotaStatus, waitingOn, buildQueue } from "./tasks.js?v=bcd643b-202610080645";
-import { weekNumber, studentWeek, ownSchedule } from "./time.js?v=bcd643b-202610080645";
+import { loadRoster, loadStudent, loadCurriculum, loadCohort, boardCurriculum, libraryFor } from "./api.js?v=71f92ac-202610080806";
+import { readOverlay, mergeStudent, listEvents } from "./overlay.js?v=71f92ac-202610080806";
+import { hydrateFromRemote, remoteEnabled } from "./persist-remote.js?v=71f92ac-202610080806";
+import { listPersistSlugs } from "./persist-admin.js?v=71f92ac-202610080806";
+import { buildGraph, progress, nextUp, STATUS } from "./graph/model.js?v=71f92ac-202610080806";
+import { quotaStatus, waitingOn, buildQueue } from "./tasks.js?v=71f92ac-202610080806";
+import { weekNumber, studentWeek, ownSchedule, hasOwnMap } from "./time.js?v=71f92ac-202610080806";
+import { quietSignal } from "./last-seen.js?v=71f92ac-202610080806";
 
 export async function loadCohortBoards() {
   const [roster, curriculum, cohort, persistSlugs] = await Promise.all([
@@ -25,10 +26,19 @@ export async function loadCohortBoards() {
   const boards = await Promise.all(
     slugs.map(async (slug) => {
       try {
-        const file = await loadStudent(slug);
+        let file = await loadStudent(slug);
+        let lastSeen; // undefined: unknown; null: never opened their board
         if (remoteEnabled(slug)) {
           try {
-            await hydrateFromRemote(slug);
+            const snap = await hydrateFromRemote(slug);
+            if (snap && "last_seen_at" in snap) lastSeen = snap.last_seen_at ?? null;
+            // The 1:1 record lives on the seat and the desk edits it; the
+            // loaded file is cached, so take the slot from the fresh snapshot.
+            const seat = snap?.identity?.oneone;
+            // An empty seat record is a cleared slot on a real seat; on a seed
+            // file with no map of its own it just means "never set".
+            if (seat && typeof seat === "object" && (Object.keys(seat).length || hasOwnMap(file))) file = { ...file, oneone: seat };
+            if (snap?.identity?.email) file = { ...file, email: snap.identity.email };
           } catch (error) {
             if (error.code !== "BAD_TOKEN") throw error;
           }
@@ -39,7 +49,7 @@ export async function loadCohortBoards() {
         const own = boardCurriculum({ universal: curriculum, student, slug, library: await libraryFor(student) });
         const graph = buildGraph(own, student);
         const attention = listEvents(slug, { attentionOnly: true });
-        return summarize({ slug, student, graph, curriculum: own, cohort: ownSchedule(cohort, student), week: studentWeek(student, week), attention });
+        return summarize({ slug, student, graph, curriculum: own, cohort: ownSchedule(cohort, student), week: studentWeek(student, week), attention, lastSeen });
       } catch (error) {
         return { slug, error: error.message };
       }
@@ -52,7 +62,7 @@ export async function loadCohortBoards() {
 /** Week N of this student's own program, from the day they joined (time.js). */
 export { studentWeek };
 
-function summarize({ slug, student, graph, curriculum, cohort, week, attention = [] }) {
+function summarize({ slug, student, graph, curriculum, cohort, week, attention = [], lastSeen }) {
   const prog = progress(graph);
   const quota = quotaStatus({ curriculum, student, cohort, week });
   const waiting = waitingOn({ graph, student });
@@ -74,7 +84,8 @@ function summarize({ slug, student, graph, curriculum, cohort, week, attention =
     attention,
     stage: stageFor(graph),
     /** The single line I need in a glance: is this person moving or stalled? */
-    signal: signalFor({ prog, quota, waiting, student, week, attention }),
+    lastSeen,
+    signal: signalFor({ prog, quota, waiting, student, week, attention, lastSeen }),
   };
 }
 
@@ -93,7 +104,10 @@ export function stageFor(graph) {
   return "shadowing";
 }
 
-function signalFor({ prog, quota, waiting, student, week, attention = [] }) {
+function signalFor({ prog, quota, waiting, student, week, attention = [], lastSeen }) {
+  // Silence first: a student who is not opening the board is the thing to act on.
+  const quiet = quietSignal(lastSeen);
+  if (quiet) return quiet;
   const missing = [!String(student.focus ?? "").trim() && "Focus", !String(student.next ?? "").trim() && "Next"].filter(Boolean);
   if (missing.length) return { tone: "warn", text: `No ${missing.join(" or ")} this week` };
   if (waiting.reviews.length) return { tone: "wait", text: `${waiting.reviews.length} waiting on me` };

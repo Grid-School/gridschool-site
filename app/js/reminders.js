@@ -1,8 +1,9 @@
 /**
- * Meeting reminders. One hour before, and fifteen minutes before, every live
- * room the student is in: their 1:1 (and a cohort call, if one is ever
+ * In-app meeting reminders. One hour before, and fifteen minutes before, every
+ * live room the student is in: their 1:1 (and a cohort call, if one is ever
  * scheduled again). Due dates and review returns are not meetings and do
- * not fire.
+ * not fire. The email at T-60 is the server's (server/call_reminders.py) and
+ * reaches the student with the site closed; this is the nudge while it is open.
  *
  * Two layers: a toast inside the app (always, while the app is open), and a
  * system notification when the browser has already been given permission.
@@ -12,8 +13,8 @@
  * `startReminders` is the clock.
  */
 
-import { eventsForWeek, weekNumber, parseDate } from "./time.js?v=bcd643b-202610080645";
-import { toast } from "./ui.js?v=bcd643b-202610080645";
+import { eventsForWeek, weekNumber } from "./time.js?v=71f92ac-202610080806";
+import { toast } from "./ui.js?v=71f92ac-202610080806";
 
 export const LEADS_MIN = [60, 15];
 const MEETING_KINDS = new Set(["cohort", "oneone"]);
@@ -26,11 +27,8 @@ export function upcomingMeetings(cohort, student, now = new Date()) {
   const out = [];
   for (let week = current; week <= current + LOOK_AHEAD_WEEKS; week += 1) {
     for (const event of eventsForWeek(cohort, student, week)) {
-      if (event.allDay || !MEETING_KINDS.has(event.kind)) continue;
-      const at = parseDate(event.date);
-      const [h, m] = (event.time || "00:00").split(":").map(Number);
-      at.setHours(h, m, 0, 0);
-      if (at >= now) out.push({ ...event, at });
+      if (event.allDay || !event.at || !MEETING_KINDS.has(event.kind)) continue;
+      if (event.at >= now) out.push(event);
     }
   }
   return out.sort((a, b) => a.at - b.at);
@@ -53,8 +51,11 @@ export function dueReminders(meetings, now = new Date()) {
   return due;
 }
 
-export function reminderText({ lead, meeting }) {
-  const when = lead === 60 ? "in 1 hour" : `in ${lead} minutes`;
+export function reminderText({ lead, meeting }, now = null) {
+  // A reminder that fires late (the board opened inside the window) says the
+  // real gap, not the tier: "in 6 minutes", never "in 15" five minutes out.
+  const left = now && meeting.at ? Math.max(1, Math.round((meeting.at - now) / 60000)) : lead;
+  const when = left >= 55 ? "in 1 hour" : `in ${left} minute${left === 1 ? "" : "s"}`;
   const where = meeting.where ? ` · ${meeting.where}` : "";
   return `${meeting.title} ${when}${where}`;
 }
@@ -85,7 +86,7 @@ export function startReminders({ getState, notify = defaultNotify, now = () => n
 }
 
 function defaultNotify(reminder) {
-  const text = reminderText(reminder);
+  const text = reminderText(reminder, new Date());
   toast(text, "warn", { ms: 12000 });
   if (typeof Notification !== "undefined" && Notification.permission === "granted") {
     try {
