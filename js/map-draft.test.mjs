@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { draftMap, draftRecord, routeFor, normalize, stepTitle, STAGES, ROLES, STOPS } from "./map-draft.js?v=43911d1-202610080529";
-import { instanceErrors, resolveMap } from "../app/js/modules.js?v=43911d1-202610080529";
+import { draftMap, draftRecord, routeFor, normalize, stepTitle, STAGES, ROLES, STOPS } from "./map-draft.js?v=1eba295-202610080607";
+import { instanceErrors, resolveMap } from "../app/js/modules.js?v=1eba295-202610080607";
 import { validateMap } from "../data/map-rules.mjs";
 import { readLibrary } from "../data/module-library.mjs";
 

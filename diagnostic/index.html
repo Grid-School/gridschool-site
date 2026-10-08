@@ -8,9 +8,10 @@
 <meta name="description" content="Four scores, two minutes. The four things hiring actually checks, and your number on each. Free, no email required.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../landing.css?v=43911d1-202610080529">
-<link rel="stylesheet" href="../funnel.css?v=43911d1-202610080529">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../landing.css?v=1eba295-202610080607">
+<link rel="stylesheet" href="../funnel.css?v=1eba295-202610080607">
+<link rel="stylesheet" href="../rez-funnel.css?v=1eba295-202610080607">
 <style>
   .diag__q { margin-bottom: 22px; }
   .diag__q h3 { font-size: 16px; margin-bottom: 4px; }
@@ -20,10 +21,11 @@
     flex: 1 1 0; min-width: 52px; text-align: center; cursor: pointer;
     border: 1px solid var(--line); border-radius: var(--radius-sm);
     background: var(--bg2); padding: 10px 4px;
-    font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 14px;
+    font-family: var(--font-mono); font-size: 14px;
     color: var(--muted); transition: border-color .15s ease, color .15s ease;
   }
-  .diag__scale input { position: absolute; opacity: 0; pointer-events: none; }
+  .diag__scale label { position: relative; }
+  .diag__scale input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; pointer-events: none; }
   .diag__scale label:has(input:checked) {
     border-color: var(--cyan); color: var(--cyan);
     box-shadow: inset 0 0 0 1px var(--hair-cyan);
@@ -38,7 +40,7 @@
   .scorecard__head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
   .scorecard__name { font-weight: 700; font-size: 18px; }
   .scorecard__total {
-    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-family: var(--font-mono);
     font-size: 34px; font-weight: 600; color: var(--cyan);
   }
   .scorecard__total small { font-size: 15px; color: var(--muted); }
@@ -47,9 +49,9 @@
   .scorebar__label { color: var(--text); }
   .scorebar__track { display: block; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
   .scorebar__fill { display: block; height: 100%; background: var(--cyan); border-radius: 3px; }
-  .scorebar__n { font-family: "IBM Plex Mono", ui-monospace, monospace; color: var(--muted); text-align: right; }
+  .scorebar__n { font-family: var(--font-mono); color: var(--muted); text-align: right; }
   .scorecard__verdict { font-size: 15px; line-height: 1.65; }
-  .scorecard__date { color: var(--muted); font-size: 12px; margin-top: 12px; font-family: "IBM Plex Mono", ui-monospace, monospace; }
+  .scorecard__date { color: var(--muted); font-size: 12px; margin-top: 12px; font-family: var(--font-mono); }
 </style>
 </head>
 <body>
@@ -127,7 +129,7 @@
   </div>
 </main>
 
-<script type="module" src="../js/site-chrome.js?v=43911d1-202610080529"></script>
-<script type="module" src="diagnostic.js?v=43911d1-202610080529"></script>
+<script type="module" src="../js/site-chrome.js?v=1eba295-202610080607"></script>
+<script type="module" src="diagnostic.js?v=1eba295-202610080607"></script>
 </body>
 </html>

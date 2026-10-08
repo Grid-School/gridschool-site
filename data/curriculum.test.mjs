@@ -18,12 +18,12 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { MODES } from "../app/js/modes.js?v=43911d1-202610080529";
-import { ARTIFACTS } from "../app/js/artifacts.js?v=43911d1-202610080529";
-import { walkReadings } from "../app/js/reading-order.js?v=43911d1-202610080529";
-import { buildGraph, STATUS, isSpine, nextUp, ancestorsOf } from "../app/js/graph/model.js?v=43911d1-202610080529";
+import { MODES } from "../app/js/modes.js?v=1eba295-202610080607";
+import { ARTIFACTS } from "../app/js/artifacts.js?v=1eba295-202610080607";
+import { walkReadings } from "../app/js/reading-order.js?v=1eba295-202610080607";
+import { buildGraph, STATUS, isSpine, nextUp, ancestorsOf } from "../app/js/graph/model.js?v=1eba295-202610080607";
 import { validateMap } from "./map-rules.mjs";
-import { resolveMap, instanceErrors } from "../app/js/modules.js?v=43911d1-202610080529";
+import { resolveMap, instanceErrors } from "../app/js/modules.js?v=1eba295-202610080607";
 import { readLibrary } from "./module-library.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));

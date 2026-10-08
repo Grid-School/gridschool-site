@@ -3,8 +3,8 @@
  * yet rather than taking their money, and hands the record to lead.js.
  */
 
-import { submit, ingestLead } from "../js/lead.js?v=43911d1-202610080529";
-import { draftMap, draftRecord, stepTitle, STAGES, STOPS } from "../js/map-draft.js?v=43911d1-202610080529";
+import { submit, ingestLead } from "../js/lead.js?v=1eba295-202610080607";
+import { draftMap, draftRecord, stepTitle, STAGES, STOPS } from "../js/map-draft.js?v=1eba295-202610080607";
 
 const form = document.getElementById("form");
 const screen = document.getElementById("screen");
@@ -49,6 +49,8 @@ async function showDraft() {
   );
   card.querySelector(".draftcard__note a").href = `../?${new URLSearchParams(map.answers)}#top`;
   card.hidden = false;
+  // The machine check matters when the map starts in the practice codebase.
+  if (map.route === "build") document.getElementById("ready").open = true;
   const prefill = (name, value) => {
     const field = form.elements[name];
     if (value && field && !field.value && [...field.options].some((option) => option.value === value || option.text === value)) field.value = value;

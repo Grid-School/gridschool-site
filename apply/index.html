@@ -8,9 +8,10 @@
 <meta name="description" content="Five founding spots. Eight weeks, then I stay until you're hired. Tell me what you have shipped. This takes about four minutes.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../landing.css?v=43911d1-202610080529">
-<link rel="stylesheet" href="../funnel.css?v=43911d1-202610080529">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../landing.css?v=1eba295-202610080607">
+<link rel="stylesheet" href="../funnel.css?v=1eba295-202610080607">
+<link rel="stylesheet" href="../rez-funnel.css?v=1eba295-202610080607">
 </head>
 <body>
 <div class="gridbg" aria-hidden="true"></div>
@@ -35,7 +36,7 @@
   <div class="fhead">
     <div class="chip">Founding · 5 spots</div>
     <h1>Tell me what you have actually shipped.</h1>
-    <p class="muted">Four minutes. I read every application myself. The residency starts from work that already runs. If you have that, you belong here. If you're still getting there, I'll point you at a free next step instead of taking money for a spot you wouldn't enjoy yet.</p>
+    <p class="muted">Four minutes, and I read every application myself. New grad or ten years in, the call starts from work that already runs. If you're still getting there, I'll point you at a free next step instead of taking money for a spot that wouldn't help yet.</p>
   </div>
 
   <div id="screen"></div>
@@ -47,8 +48,8 @@
     <p class="muted draftcard__note">This comes with your application. On the call we finish it from your resume and where your last interviews stopped. <a href="../">Change the answers</a></p>
   </div>
 
-  <div class="fcard ready">
-    <span class="feyebrow">What you'll need to do the work</span>
+  <details class="fcard ready" id="ready">
+    <summary><span><span class="feyebrow">If your map starts in the practice codebase</span><b>What your laptop needs</b></span></summary>
     <p>You'll run a live production system on your own laptop. A quick check now means week 1 is spent on the work, not on setup.</p>
     <ul>
       <li><b>Machine.</b> A 64-bit laptop from around 2019 or newer, 8 GB RAM (16 GB is more comfortable; Docker is the reason), 20 GB free disk. macOS, Windows with WSL2, or Linux. A working mic and camera, because reviews are spoken and the defense is on camera.</li>
@@ -58,7 +59,7 @@
       <li><b>Taught inside, assumed nowhere.</b> Pull requests, the ticket board, scrum, and reviews are all covered in week 1 with films. You bring a working language; the professional loop is the curriculum.</li>
     </ul>
     <p class="ready__note">Close, but rusty? Touch these up between deposit and day one: <a href="https://learngitbranching.js.org" target="_blank" rel="noopener">learngitbranching</a> for git, MIT's <a href="https://missing.csail.mit.edu" target="_blank" rel="noopener">Missing Semester</a> lecture 1 for the terminal.</p>
-  </div>
+  </details>
 
   <form class="ff" id="form" novalidate>
     <label class="hp" aria-hidden="true">
@@ -116,6 +117,7 @@
           <option>Under a year of paid experience</option>
           <option>One to two years, want back in</option>
           <option>Two to five years, still not trusted with larger work</option>
+          <option>Five or more years, want a better seat</option>
           <option>More than two years, laid off</option>
         </select>
       </label>
@@ -200,7 +202,7 @@
   </noscript>
 </main>
 
-<script type="module" src="../js/site-chrome.js?v=43911d1-202610080529"></script>
-<script type="module" src="apply.js?v=43911d1-202610080529"></script>
+<script type="module" src="../js/site-chrome.js?v=1eba295-202610080607"></script>
+<script type="module" src="apply.js?v=1eba295-202610080607"></script>
 </body>
 </html>

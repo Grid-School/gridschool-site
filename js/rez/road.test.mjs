@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { layoutRoad, roadPath, roadSegments, phaseBands, wrapLabel, curve } from "./road.js?v=43911d1-202610080529";
+import { layoutRoad, roadPath, roadSegments, phaseBands, wrapLabel, curve } from "./road.js?v=1eba295-202610080607";
 
 test("depth is sequence, height is lane", () => {
   const points = layoutRoad([{ lane: 0 }, { lane: 2 }, { lane: 1 }], { x0: 0, x1: 100, laneY: (lane) => lane * 10 });
@@ -44,4 +44,16 @@ test("on a grid of half-lane cells, every lane and every step lands on a line", 
     assert.equal(p.x % cell, 0);
     assert.equal(p.y % cell, 0);
   }
+});
+
+test("the calmest lane order keeps the pins and cuts the up-and-down", async () => {
+  const { calmestLanes } = await import("./road.js?v=1eba295-202610080607");
+  const families = ["interview", "pipeline", "proof", "network", "presence"];
+  const sequence = ["presence", "network", "pipeline", "presence", "proof", "proof", "interview"];
+  const order = calmestLanes(families, sequence, { top: "interview", bottom: "presence" });
+  assert.equal(order[0], "interview");
+  assert.equal(order.at(-1), "presence");
+  assert.equal(new Set(order).size, 5);
+  const travel = (o) => sequence.slice(1).reduce((sum, id, i) => sum + Math.abs(o.indexOf(id) - o.indexOf(sequence[i])), 0);
+  assert.ok(travel(order) <= travel(families));
 });

@@ -1,0 +1,71 @@
+/* ================================================================
+   REZ skin for the funnel (apply, applied, enroll, start, diagnostic,
+   terms, privacy). Loaded after landing.css + funnel.css, so the pages a
+   reader reaches after "Book a call" look like the page they clicked on.
+   Same tokens as rez.css; the app keeps landing.css until its own pass.
+   ================================================================ */
+:root {
+  --bg: #02050a;
+  --bg2: #050a12;
+  --surface: #050a12;
+  --surface-2: #050a12;
+  --line: #101c2c;
+  --grid: #101c2c;
+  --cyan: #2be4ff;
+  --text: #d9e4ef;
+  --muted: #8d9db0;
+  --ghost: #4d5f74;
+  --white: #effdff;
+  --cta-ink: #021219;
+  --font-sans: "Geist", "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "Geist Mono", "IBM Plex Mono", ui-monospace, monospace;
+  --radius: 12px;
+  --radius-sm: 7px;
+}
+
+body { font-family: var(--font-sans); font-weight: 400; background: var(--bg); -webkit-font-smoothing: antialiased; }
+.gridbg { display: none; } /* the grid lives in maps, in their own units (BRAND.md 2026-10-07) */
+
+/* nav: the landing's bar */
+.nav { height: 64px; padding: 0 max(16px, calc((100% - 1200px) / 2)); }
+.nav::after { background: color-mix(in srgb, var(--text) 7%, transparent); }
+.nav__name { font-size: 13px; letter-spacing: .22em; color: #a9b8c8; font-weight: 500; }
+.nav__name b, .nav__name em { font-style: normal; color: var(--white); font-weight: 500; }
+.nav .btn--ghost { border: 0; padding: 0; font-weight: 400; font-size: 13.5px; letter-spacing: 0; color: var(--muted); }
+.nav .btn--ghost:hover { color: var(--white); }
+
+/* type */
+h1, .fhead h1 { font-weight: 400; letter-spacing: -0.03em; line-height: 1.08; color: var(--white); text-wrap: balance; }
+.fcard h2, .fcard h3, .pick b, .nextlist h3, .plan__price { color: var(--white); }
+.fhead .muted { color: #a9b8c8; line-height: 1.6; }
+.feyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; color: var(--muted); }
+.fsteps { font-family: var(--font-mono); }
+.chip { font-family: var(--font-mono); }
+
+/* surfaces: hairline, no borders that shout */
+.fcard, .plan, .demonote, .receipt {
+  border: 0; background: var(--surface);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--text) 7%, transparent);
+}
+.fcard--lit, .plan--best { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--cyan) 26%, transparent); }
+
+/* the one action: a solid cyan button, as on the landing */
+.btn--cta {
+  display: inline-flex; align-items: center; gap: 10px; height: 48px; padding: 0 22px;
+  background: var(--cyan); color: var(--cta-ink); border: 0; border-radius: var(--radius-sm);
+  font: 500 15px/1 var(--font-sans); letter-spacing: 0; text-transform: none; text-shadow: none;
+}
+.btn--cta:hover { background: var(--white); color: var(--cta-ink); }
+.btn--cta:disabled { opacity: .45; cursor: not-allowed; }
+
+/* inputs */
+.ff input, .ff textarea, .ff select { font-family: var(--font-sans); background: #03070d; border-color: var(--line); border-radius: var(--radius-sm); }
+.ff input:focus, .ff textarea:focus, .ff select:focus { border-color: color-mix(in srgb, var(--cyan) 60%, var(--line)); box-shadow: 0 0 0 3px color-mix(in srgb, var(--cyan) 12%, transparent); outline: none; }
+
+/* the machine check, folded unless the map needs it */
+details.ready > summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: 16px; align-items: baseline; }
+details.ready > summary::-webkit-details-marker { display: none; }
+details.ready > summary::after { content: "+"; font: 400 18px var(--font-mono); color: var(--ghost); transition: transform .3s cubic-bezier(.2,.8,.2,1); }
+details.ready[open] > summary::after { transform: rotate(45deg); color: var(--cyan); }
+details.ready > summary b { color: var(--white); font-weight: 500; font-size: 15px; }
+details.ready > summary .feyebrow { display: block; margin-bottom: 4px; }

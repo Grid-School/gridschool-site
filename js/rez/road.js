@@ -46,6 +46,40 @@ export function roadSegments(points) {
   return out;
 }
 
+/**
+ * The lane order that makes the calmest road: the permutation of `families`
+ * that minimises the total vertical travel along `sequence` (family ids in
+ * walking order), with `top` pinned to row 0 and `bottom` (if given) pinned
+ * to the last row, so the road still climbs from where you are toward the
+ * offer. Brute force: five lanes are 120 orders. Ties keep the given order.
+ */
+export function calmestLanes(families, sequence, { top = null, bottom = null } = {}) {
+  const free = families.filter((id) => id !== top && id !== bottom);
+  let best = null;
+  let bestCost = Infinity;
+  for (const middle of permutations(free)) {
+    const order = [...(top ? [top] : []), ...middle, ...(bottom ? [bottom] : [])];
+    const row = new Map(order.map((id, index) => [id, index]));
+    let cost = 0;
+    for (let i = 1; i < sequence.length; i += 1) cost += Math.abs(row.get(sequence[i]) - row.get(sequence[i - 1]));
+    if (cost < bestCost) {
+      bestCost = cost;
+      best = order;
+    }
+  }
+  return best ?? families;
+}
+
+function* permutations(items) {
+  if (items.length <= 1) {
+    yield items;
+    return;
+  }
+  for (let i = 0; i < items.length; i += 1) {
+    for (const rest of permutations([...items.slice(0, i), ...items.slice(i + 1)])) yield [items[i], ...rest];
+  }
+}
+
 /** Phase bands: the x extent of each phase's steps, padded. Order follows `phases`. */
 export function phaseBands(points, phases, pad = 28) {
   return phases

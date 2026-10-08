@@ -145,7 +145,37 @@ a { color: inherit; }
   grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
   align-items: start; /* the words never wait for the map's list */
 }
-@media (max-width: 1020px) { .hero__grid { grid-template-columns: 1fr; } }
+@media (max-width: 1020px) {
+  /* One column, and the map in the first screen: on a phone (where the ads
+     land) the order is claim, sentence, map, action, then the explanation. */
+  .hero__grid { grid-template-columns: minmax(0, 1fr); row-gap: 0; }
+  .hero__words, .compiler { display: contents; }
+  .hero__words .eyebrow { order: 1; }
+  .hero h1 { order: 2; margin-bottom: 18px; }
+  .prompt { order: 3; }
+  .map { order: 4; margin-top: 4px; }
+  .readout { order: 5; }
+  .hero__cta { order: 6; margin-top: 20px; }
+  .hero__fine { order: 7; }
+  .hero__sub { order: 8; margin: 28px 0 0; }
+  .steps { order: 9; }
+  .steps__more { order: 10; }
+  .caption { order: 11; }
+}
+@media (max-width: 600px) {
+  .hero { padding-top: 20px; }
+  .hero h1 { margin-top: 10px; }
+  .prompt { line-height: 1.95; font-size: 13.5px; }
+  .readout .draft { display: none; }
+  .hero__cta .btn { width: 100%; justify-content: center; }
+  .hero__cta { gap: 14px; }
+  .steps.is-collapsed li:nth-child(n + 5) { display: none; }
+  .caption { display: none; } /* no hover on a phone */
+}
+.steps__more {
+  margin: 10px 0 0; padding: 8px 0; background: none; border: 0; cursor: pointer;
+  font: 500 12.5px var(--font-mono); color: var(--cyan); text-align: left;
+}
 
 .hero h1 {
   margin: 16px 0 20px;
@@ -434,3 +464,16 @@ footer a { color: var(--muted); }
   .steps li { opacity: 1; transform: none; }
   .horizon { transform: scaleX(1); }
 }
+
+/* A phone's road: one column per step, so rings and numbers stay readable. */
+.map svg.is-narrow .node .ring { r: 11px; }
+.map svg.is-narrow .node .halo { r: 15px; }
+.map svg.is-narrow .node .num { font-size: 10px; }
+.map svg.is-narrow .phase-pace { display: none; }
+
+/* A step the last change of answers added: lit until the next change. */
+.node.is-new .ring { fill: rgba(var(--cyan-rgb), .22); stroke: var(--lumen); stroke-width: 2; }
+.node.is-new .num { fill: var(--lumen); }
+.node.is-new .halo { opacity: .5; }
+.steps li.is-new { background: rgba(var(--cyan-rgb), .05); }
+.steps li.is-new .n { color: var(--lumen); }

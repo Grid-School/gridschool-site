@@ -18,7 +18,7 @@
 .fsteps {
   display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
   margin: 0 0 34px; padding: 0; list-style: none;
-  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11px; letter-spacing: .12em;
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em;
   text-transform: uppercase; color: var(--muted);
 }
 .fsteps li { display: flex; align-items: center; gap: 8px; }
@@ -56,7 +56,7 @@
 .ready .ready__note { margin-top: 16px; font-size: 14px; line-height: 1.65; }
 
 .feyebrow {
-  display: block; font-family: "IBM Plex Mono", ui-monospace, monospace;
+  display: block; font-family: var(--font-mono);
   font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase; color: var(--cyan);
   margin-bottom: 8px;
 }
@@ -104,7 +104,7 @@
 
 .wired {
   display: inline-flex; align-items: center; gap: 7px;
-  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11px; letter-spacing: .1em;
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em;
   color: var(--amber);
 }
 .wired::before {
@@ -119,7 +119,7 @@
   border-radius: var(--radius); padding: 14px 16px; margin-bottom: 22px;
   background: rgba(255, 179, 43, .03);
 }
-.demonote b { color: var(--amber); font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11px; letter-spacing: .12em; }
+.demonote b { color: var(--amber); font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; }
 .demonote p { color: var(--muted); font-size: 13.5px; margin-top: 5px; }
 
 /* ---------- plans ---------- */
@@ -131,7 +131,7 @@
 }
 .plan--best { border-color: color-mix(in srgb, var(--cyan) 40%, var(--line)); box-shadow: inset 0 0 0 1px var(--hair-cyan); }
 .plan__tag {
-  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 10.5px;
+  font-family: var(--font-mono); font-size: 10.5px;
   letter-spacing: .16em; text-transform: uppercase; color: var(--cyan);
 }
 .plan__price { font-size: 30px; color: #fff; font-weight: 800; line-height: 1.1; }
@@ -144,7 +144,7 @@
 /* ---------- receipt / summary ---------- */
 
 .receipt {
-  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12.5px;
+  font-family: var(--font-mono); font-size: 12.5px;
   line-height: 1.7; color: var(--muted); white-space: pre-wrap;
   background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius-sm);
   padding: 16px; max-height: 340px; overflow: auto;
@@ -157,7 +157,7 @@
 .nextlist b {
   width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%;
   border: 1.5px solid color-mix(in srgb, var(--cyan) 45%, var(--line));
-  color: var(--cyan); font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11px;
+  color: var(--cyan); font-family: var(--font-mono); font-size: 11px;
 }
 .nextlist h3 { font-size: 15.5px; color: #fff; margin-bottom: 3px; }
 .nextlist p { color: var(--muted); font-size: 14px; }
@@ -172,11 +172,11 @@
 
 .legalwho { display: grid; grid-template-columns: auto 1fr; gap: 7px 18px; margin-top: 4px; }
 .legalwho dt {
-  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11px;
+  font-family: var(--font-mono); font-size: 11px;
   letter-spacing: .12em; text-transform: uppercase; color: var(--cyan); padding-top: 3px;
 }
 .legalwho dd { color: var(--text); font-size: 14px; }
-.legalwho__gap { color: var(--amber); font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12.5px; }
+.legalwho__gap { color: var(--amber); font-family: var(--font-mono); font-size: 12.5px; }
 
 /* ---------- day one steps ---------- */
 
@@ -191,7 +191,7 @@
 .step__n {
   width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%;
   border: 1.5px solid color-mix(in srgb, var(--cyan) 45%, var(--line));
-  color: var(--cyan); font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12px;
+  color: var(--cyan); font-family: var(--font-mono); font-size: 12px;
 }
 .step h3 { font-size: 16px; color: #fff; margin-bottom: 4px; }
 .step p { color: var(--muted); font-size: 14.5px; }

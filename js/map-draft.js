@@ -40,9 +40,9 @@ export const FAMILIES = [
 ];
 
 export const PHASES = [
-  { id: "position", label: "Get findable", pace: "weeks 1 to 2" },
-  { id: "prove", label: "Ship the proof", pace: "weeks 2 to 5" },
-  { id: "land", label: "Land the seat", pace: "weeks 5 to 8, then until hired" },
+  { id: "position", label: "Get findable", short: "Findable", pace: "weeks 1 to 2" },
+  { id: "prove", label: "Ship the proof", short: "Proof", pace: "weeks 2 to 5" },
+  { id: "land", label: "Land the seat", short: "Land", pace: "weeks 5 to 8, then until hired" },
 ];
 
 /** The call cheat sheet's routes, picked from the same answers. */
@@ -72,10 +72,11 @@ export function draftMap(input) {
   // Get findable
   if (early) add("position", "pr.codebase", "inherited-codebase", "proof");
   else add("position", "p.questionnaire", "proof-questionnaire", "presence", "Answer the six proof questions about work you already shipped");
+  // The rewrite follows the proof questions: they decide what the profile may claim.
+  if (!early || stop === "replies") add("position", "p.rewrite", "profile-rewrite", "presence", "LinkedIn rewritten for the role you want next");
   add("position", "n.targets", "target-list", "network", `List 25 to 30 people in ${want} roles`);
   if (stage === "laidoff") add("position", "pi.engine", "application-engine", "pipeline");
   else if (!early) add("position", "pi.titles", "title-cluster", "pipeline");
-  if (!early || stop === "replies") add("position", "p.rewrite", "profile-rewrite", "presence", "LinkedIn rewritten for the role you want next");
 
   // Ship the proof
   if (early) add("prove", "pr.change", "reviewed-change", "proof");
