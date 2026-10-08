@@ -18,7 +18,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="rez.css?v=1eba295-202610080607">
+<link rel="stylesheet" href="rez.css?v=6ffcb17-202610080629">
+<script>/* First view of a session gets the arrival; a repeat starts drawn (js/landing-map.js). */
+try { if (!sessionStorage.getItem("gridschool.arrived") && !matchMedia("(prefers-reduced-motion: reduce)").matches) document.documentElement.classList.add("first-view"); } catch (e) {}</script>
 </head>
 <body class="rez-page">
 
@@ -49,13 +51,12 @@
   <div class="wrap hero__grid">
     <div class="hero__words">
       <p class="eyebrow">GridSchool Residency</p>
-      <h1>Your next engineering role, <em>mapped from where you stand.</em></h1>
-      <p class="hero__sub">New grad or eight years in, teams now hire what they can open and check. Tell the map where you are. It draws the route: the work to ship, the people to reach, the rounds to rehearse. Then I walk it with you every week until a company hires you.</p>
+      <h1><span>Your next engineering role,</span> <em>mapped from where you stand.</em></h1>
+      <p class="hero__sub">A route built around your goal, and a working engineer who reviews every step with you until a company hires you.</p>
       <div class="hero__cta">
         <a class="btn btn--solid" id="cta" href="apply/" data-book>Book a call to walk this map <span class="arr" aria-hidden="true">→</span></a>
-        <a class="link" href="app/?s=demo#/map">Open the platform</a>
       </div>
-      <p class="hero__fine">20-minute call · five founding spots · no price on this page</p>
+      <p class="hero__fine">20-minute call · we finish your map on it · five founding spots</p>
     </div>
 
     <div class="compiler" aria-label="Draft your map">
@@ -89,17 +90,17 @@
 
       <div class="map" id="map">
         <div class="map__floor" aria-hidden="true"></div>
+        <div class="step-card" id="step-card" role="tooltip" hidden></div>
         <svg id="map-svg" viewBox="0 0 760 330" role="img" aria-labelledby="map-title">
           <title id="map-title">Your draft map</title>
         </svg>
       </div>
       <div class="readout" aria-live="polite">
-        <span>route <b id="r-route">defense-first</b> · <b id="r-count">12</b> steps · 8 weeks, then weekly until hired</span>
-        <span class="draft">draft · finalized with Aden on your call</span>
+        <span><b id="r-route">defense-first</b> · <b id="r-count">11</b> steps</span>
+        <span class="checks" id="r-checks"></span>
       </div>
-      <ol class="steps" id="steps"></ol>
-      <button class="steps__more" id="steps-more" type="button" hidden></button>
-      <p class="caption" id="caption" aria-live="polite">Hover a step to see what you leave it with.</p>
+      <p class="caption" id="caption" aria-live="polite"></p>
+      <ol class="sr-only" id="steps" aria-label="Your draft map, step by step"></ol>
     </div>
   </div>
 </section>
@@ -109,7 +110,14 @@
 <!-- ============ STATEMENT + WHO ============ -->
 <section class="sec" id="who">
   <div class="wrap">
-    <p class="statement" id="statement">Companies stopped training juniors, and a resume line no longer proves much. <span class="lit">They hire what they can open.</span></p>
+    <p class="statement" id="statement">AI made code cheap to write. <span class="lit">Teams now hire the engineers they can trust with what it writes.</span></p>
+
+    <div class="bets" aria-label="What GridSchool bets on">
+      <div><span class="k">bet 01</span><h3>Proof over credentials</h3><p>A reviewed change and a public case study say more than a certificate or a list of tools.</p></div>
+      <div><span class="k">bet 02</span><h3>AI with judgment</h3><p>Agents, evals, and the structure of a codebase are the new fundamentals. Using AI well means being able to check what it did.</p></div>
+      <div><span class="k">bet 03</span><h3>A route, not a curriculum</h3><p>Your map is built from your goal and rebuilt from what happens: a rejection, a new target, an interview that went sideways.</p></div>
+      <div><span class="k">bet 04</span><h3>Review over content</h3><p>Tutorials are free. An engineer reading your work every week and sending it back is not.</p></div>
+    </div>
 
     <div class="who">
       <div>
@@ -142,7 +150,7 @@
   <div class="wrap">
     <p class="eyebrow">What you leave with</p>
     <h2>Four things a hiring manager can open in under a minute.</h2>
-    <p class="lede">Every step on your map ends in one of these. Shown here as empty specimens, because nobody can buy them filled in.</p>
+    <p class="lede">What your map builds toward. Shown here as empty specimens, because nobody can buy them filled in.</p>
 
     <div class="specimens">
       <article class="spec rez">
@@ -186,11 +194,11 @@
 
       <article class="spec rez">
         <div class="spec__bar eyebrow"><span>04 · Defense</span><span class="tag">specimen</span></div>
-        <h3>Two hours on tape, under real pressure</h3>
-        <p>Thirty minutes explaining your strongest change with AI closed. Ninety minutes handling a change you did not see coming, with AI open.</p>
+        <h3>A recorded defense, judged by an outside engineer</h3>
+        <p>You explain your strongest work, then handle a change you did not see coming, in front of an engineer who did not help you. The recording is yours to send.</p>
         <div class="spec__body tape">
           <div class="tape__track"><div class="tape__wave" id="wave" aria-hidden="true"></div><span class="tape__split" aria-hidden="true"></span></div>
-          <div class="tape__legend"><span><b>0:00</b>AI closed</span><span><b>0:30</b>surprise change, AI open</span></div>
+          <div class="tape__legend"><span><b>part 1</b>your work, explained</span><span><b>part 2</b>a change you did not see coming</span></div>
         </div>
       </article>
     </div>
@@ -221,12 +229,10 @@
   <div class="wrap split">
     <div class="founder">
       <p class="eyebrow">Who you work with</p>
-      <h2>I'm Aden. Check everything on this page.</h2>
-      <p>I'm a working software engineer, not a placement shop. I paid twenty thousand dollars for a bootcamp on my way in and built this around what that money should have bought: a senior engineer who reads your code, real systems to change, and proof you can show. There is no alumni wall yet. The founding five build it.</p>
-      <ul class="receipts">
-        <li><a href="app/?s=demo#/map">The platform, walkable</a></li>
-        <li><a href="path/">The full syllabus</a></li>
-      </ul>
+      <h2>I'm Aden. I build applied AI systems for engineering teams.</h2>
+      <p>My work is applied AI and agentic graph engineering: systems that map how a codebase fits together, and agents that make changes a team can check before it trusts them. These are problems engineering teams have right now, and they are the problems your map is aimed at.</p>
+      <p>I learned to build before the AI era, writing systems from scratch and shipping software people depended on before LLMs arrived. When the wave hit, it was clear engineers would need help. The tools changed faster than anyone could explain them, and it got harder for a team to tell who was good.</p>
+      <p>So this is where my time goes. I automate the busywork of a search with the same kind of systems I build, and I plan a map for each engineer around their own goal, so no week goes to work that does not move you toward the role you want.</p>
     </div>
     <div>
       <p class="eyebrow">Founding terms</p>
@@ -250,7 +256,8 @@
       <details><summary>Will you get me a job?</summary><p>I make you the candidate a team can evaluate and trust: reviewed work on real systems, a public case study, an outside engineer's verdict, and my reference. I prepare every interview from your own work and keep working with you until you land. A company's yes is still theirs.</p></details>
       <details><summary>I already have years of experience. Is this too junior for me?</summary><p>Your map starts where you are. For working engineers it usually skips the practice codebase and goes straight to turning past work into public proof, a project aimed at the role you want, and rehearsing the rounds where you stall.</p></details>
       <details><summary>How is the map decided?</summary><p>The sentence at the top of this page drafts it from three answers, using the same steps the platform runs. On the call we finish it from your resume, your target companies, and where your last interviews stopped. Every step ends in something a stranger can open.</p></details>
-      <details><summary>Is this a bootcamp?</summary><p>No. Bootcamps teach beginners a stack. You already write software. This is closer to a first month on a good team: real work, written review, a defense.</p></details>
+      <details><summary>Why not follow the map on my own?</summary><p>You can, and the draft is yours to keep. What a list cannot do is read your work and send it back, change the plan when an interview goes sideways, or sign a verdict as someone who did not help you. Most steps on your map end in a written review from me, and the defense is judged by an outside engineer. That part is what you pay for.</p></details>
+      <details><summary>Is this a bootcamp?</summary><p>No. A bootcamp teaches a stack to beginners. This starts from software you can already write and works on what gets you hired next, planned around you and reviewed every week.</p></details>
       <details><summary>Why founding, with no placements yet?</summary><p>The first five get me at full attention while the method is tuned on them, at the lowest rate anyone will pay. Week 2 is the exit.</p></details>
     </div>
   </div>
@@ -271,6 +278,6 @@
   <div class="wrap">GridSchool Residency · <a href="mailto:support@gridschool.org">support@gridschool.org</a> · © 2026 GRID SCHOOL LLC · Boise, Idaho<br>A company's yes is theirs. Your evidence won't be.</div>
 </footer>
 
-<script type="module" src="landing.js?v=1eba295-202610080607"></script>
+<script type="module" src="landing.js?v=6ffcb17-202610080629"></script>
 </body>
 </html>

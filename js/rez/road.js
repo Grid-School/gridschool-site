@@ -132,12 +132,13 @@ export function prefersReducedMotion() {
 /**
  * Run current along `path` once. `stops` are `{ at, arrive }` with `at` a
  * fraction of the path's length; each `arrive` fires once as the light
- * passes. Returns a cancel function. Reduced motion: everything arrives now.
+ * passes. `delay` holds the light at the start; `instant` (a repeat visit)
+ * and reduced motion make everything arrive now. Returns a cancel function.
  */
-export function runCurrent({ path, spark = null, stops = [], duration = 1700, onDone = null }) {
+export function runCurrent({ path, spark = null, stops = [], duration = 1700, delay = 0, instant = false, onDone = null }) {
   const length = path.getTotalLength();
   const fire = () => stops.forEach((stop) => stop.arrive());
-  if (prefersReducedMotion() || !length) {
+  if (instant || prefersReducedMotion() || !length) {
     path.style.strokeDasharray = "none";
     path.style.strokeDashoffset = "0";
     spark?.remove();
@@ -148,13 +149,13 @@ export function runCurrent({ path, spark = null, stops = [], duration = 1700, on
   path.style.strokeDasharray = `${length} ${length}`;
   path.style.strokeDashoffset = String(length);
   const pending = [...stops].sort((a, b) => a.at - b.at);
-  const start = performance.now();
+  const start = performance.now() + delay;
   let frame = 0;
   let cancelled = false;
   const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
   const tick = (now) => {
     if (cancelled) return;
-    const t = Math.min(1, (now - start) / duration);
+    const t = Math.max(0, Math.min(1, (now - start) / duration));
     const e = ease(t);
     path.style.strokeDashoffset = String(length * (1 - e));
     if (spark) {

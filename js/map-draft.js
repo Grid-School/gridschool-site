@@ -45,6 +45,28 @@ export const PHASES = [
   { id: "land", label: "Land the seat", short: "Land", pace: "weeks 5 to 8, then until hired" },
 ];
 
+/**
+ * Who checks a step. This is what a free list cannot give: most steps end in
+ * Aden's written review, the defense is judged by an engineer who did not
+ * help, and a few are run alone (Aden sees the numbers in the weekly 1:1).
+ */
+export const CHECK = { ADEN: "aden", OUTSIDE: "outside", ALONE: "alone" };
+const RUN_ALONE = new Set(["target-list", "title-cluster", "application-engine"]);
+
+export function checkOf(node) {
+  if (node.id === "iv.defense") return CHECK.OUTSIDE;
+  return RUN_ALONE.has(node.module.split("@")[0]) ? CHECK.ALONE : CHECK.ADEN;
+}
+
+/** "8 reviewed by me · 1 judged by an outside engineer · 2 you run alone" */
+export function checkSummary(nodes) {
+  const count = (kind) => nodes.filter((node) => checkOf(node) === kind).length;
+  const parts = [`${count(CHECK.ADEN)} reviewed by me`, `${count(CHECK.OUTSIDE)} judged by an outside engineer`];
+  const alone = count(CHECK.ALONE);
+  if (alone) parts.push(`${alone} you run alone`);
+  return parts.join(" · ");
+}
+
 /** The call cheat sheet's routes, picked from the same answers. */
 export function routeFor({ stage, stop }) {
   if (stage === "laidoff") return "career-first, sprint";

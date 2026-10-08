@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { draftMap, draftRecord, routeFor, normalize, stepTitle, STAGES, ROLES, STOPS } from "./map-draft.js?v=1eba295-202610080607";
-import { instanceErrors, resolveMap } from "../app/js/modules.js?v=1eba295-202610080607";
+import { draftMap, draftRecord, routeFor, normalize, stepTitle, STAGES, ROLES, STOPS } from "./map-draft.js?v=6ffcb17-202610080629";
+import { instanceErrors, resolveMap } from "../app/js/modules.js?v=6ffcb17-202610080629";
 import { validateMap } from "../data/map-rules.mjs";
 import { readLibrary } from "../data/module-library.mjs";
 
@@ -62,4 +62,14 @@ test("the apply record is small and names every step", () => {
   assert.equal(record.route, "defense-first");
   assert.equal(record.steps.length, map.nodes.length);
   assert.ok(JSON.stringify(record).length < 2000);
+});
+
+test("every map says who checks each step, and the defense is judged outside", async () => {
+  const { checkOf, checkSummary, CHECK } = await import("./map-draft.js?v=6ffcb17-202610080629");
+  for (const answers of every) {
+    const map = draftMap(answers);
+    assert.equal(map.nodes.filter((node) => checkOf(node) === CHECK.OUTSIDE).length, 1);
+    assert.ok(map.nodes.filter((node) => checkOf(node) === CHECK.ADEN).length >= map.nodes.length / 2);
+  }
+  assert.match(checkSummary(draftMap({ stage: "working", role: "ai", stop: "technical" }).nodes), /^\d+ reviewed by me · 1 judged by an outside engineer · \d+ you run alone$/);
 });
