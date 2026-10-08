@@ -215,3 +215,11 @@
 @media (max-width: 640px) {
   .ff__row { grid-template-columns: 1fr; }
 }
+
+/* The draft map carried over from the landing (js/map-draft.js). */
+.draftcard__route { font-family: var(--font-mono); font-size: var(--fs-label); color: var(--muted); margin: 8px 0 12px; }
+.draftcard__route b { color: var(--text); font-weight: 600; }
+.draftcard__steps { margin: 0 0 12px; padding-left: 0; list-style: none; display: grid; gap: 6px; counter-reset: step; }
+.draftcard__steps li { counter-increment: step; display: grid; grid-template-columns: 28px 1fr; gap: 8px; font-size: 14.5px; }
+.draftcard__steps li::before { content: counter(step, decimal-leading-zero); font-family: var(--font-mono); font-size: 12px; color: var(--cyan); padding-top: 2px; }
+.draftcard__note { font-size: 13.5px; margin: 0; }

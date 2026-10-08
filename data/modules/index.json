@@ -148,6 +148,27 @@
       "purpose": "A recorded mock with written feedback; Aden's notes say which kind."
     },
     {
+      "id": "inherited-codebase",
+      "version": 1,
+      "title": "Run and trace a codebase you did not write",
+      "lane": "proof",
+      "purpose": "A messy practice system running on your machine, and a ticket traced through it end to end."
+    },
+    {
+      "id": "reviewed-change",
+      "version": 1,
+      "title": "Ship a reviewed change to code you inherited",
+      "lane": "proof",
+      "purpose": "A pull request that fixes a real defect, with the test that catches it and the review thread."
+    },
+    {
+      "id": "application-engine",
+      "version": 1,
+      "title": "Application engine running in week 1",
+      "lane": "pipeline",
+      "purpose": "A daily cadence of tailored applications, tracked, so the search moves while the proof is built."
+    },
+    {
       "id": "reading",
       "version": 1,
       "title": "Side quest: a reading",

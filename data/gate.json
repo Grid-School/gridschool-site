@@ -2,9 +2,9 @@
   "v": 1,
   "kdf": "PBKDF2-SHA256",
   "iterations": 300000,
-  "salt": "X8za0rZ6pUsUz/FVpfRgVQ==",
+  "salt": "bGY9wlUwg5fMLFAgBYh0gA==",
   "canary": {
-    "iv": "E/hMACM3+hz55gup",
-    "ct": "ScHPJI0Oih+Af7HlhI+nKyElLtG+sBtPvMaOHhE="
+    "iv": "MbA2b0DS1Lg4sNa5",
+    "ct": "GIoTVyg+kxfGB0Sd4PZVsC545I1j5ywWK/ftBAs="
   }
 }

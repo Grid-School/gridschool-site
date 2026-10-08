@@ -3,11 +3,60 @@
  * yet rather than taking their money, and hands the record to lead.js.
  */
 
-import { submit, ingestLead } from "../js/lead.js?v=b6ca108-202610080352";
+import { submit, ingestLead } from "../js/lead.js?v=43911d1-202610080529";
+import { draftMap, draftRecord, stepTitle, STAGES, STOPS } from "../js/map-draft.js?v=43911d1-202610080529";
 
 const form = document.getElementById("form");
 const screen = document.getElementById("screen");
 const formError = document.getElementById("formerr");
+
+/**
+ * The draft map from the landing, when the visitor drew one (?stage=&role=&stop=).
+ * Shown back to them, prefilled where the answers overlap, and sent with the
+ * application so the desk opens on the map they drew.
+ */
+let draft = null;
+const YEARS_FOR = {
+  grad: "CS degree, never held a software job",
+  self: "Self-taught, never held a software job",
+  laidoff: "More than two years, laid off",
+};
+const SEARCH_FOR = {
+  replies: "Sending a lot. Almost no reply.",
+  technical: "Interviews happen, then they stall.",
+  final: "Interviews happen, then they stall.",
+};
+
+async function showDraft() {
+  const params = new URLSearchParams(location.search);
+  const stage = params.get("stage");
+  const stop = params.get("stop");
+  if (!(stage in STAGES) || !(stop in STOPS)) return;
+  const map = draftMap({ stage, role: params.get("role"), stop });
+  draft = draftRecord(map);
+  let library = {};
+  try {
+    const { modules } = await (await fetch("../data/modules/index.json")).json();
+    library = Object.fromEntries(modules.map((module) => [module.id, module]));
+  } catch {
+    /* titles fall back to the module ref */
+  }
+  const card = document.getElementById("draft");
+  const route = card.querySelector(".draftcard__route");
+  route.replaceChildren("route ", Object.assign(document.createElement("b"), { textContent: map.route }), ` · ${map.nodes.length} steps`);
+  card.querySelector(".draftcard__steps").replaceChildren(
+    ...map.nodes.map((node) => Object.assign(document.createElement("li"), { textContent: stepTitle(node, library) }))
+  );
+  card.querySelector(".draftcard__note a").href = `../?${new URLSearchParams(map.answers)}#top`;
+  card.hidden = false;
+  const prefill = (name, value) => {
+    const field = form.elements[name];
+    if (value && field && !field.value && [...field.options].some((option) => option.value === value || option.text === value)) field.value = value;
+  };
+  prefill("years", YEARS_FOR[map.answers.stage]);
+  prefill("search", map.answers.stage === "working" && map.answers.stop === "replies" ? "" : SEARCH_FOR[map.answers.stop]);
+}
+showDraft();
 
 const REQUIRED_TEXT = ["name", "email", "work", "shipped", "blocking"];
 const REQUIRED_PICK = ["years", "search"];
@@ -68,7 +117,7 @@ function validate(data) {
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   const raw = Object.fromEntries(new FormData(form).entries());
-  const data = { ...raw, commit: form.elements.commit.checked ? "yes" : "" };
+  const data = { ...raw, commit: form.elements.commit.checked ? "yes" : "", ...(draft ? { route: draft.route, draft } : {}) };
 
   const problems = validate(data);
   if (problems.length) {

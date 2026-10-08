@@ -1503,3 +1503,91 @@ pre.diagram--failed { border-color: var(--amber); }
 .fromaden__notes blockquote p:last-child { margin-bottom: 0; }
 .fromaden__notes > :last-child { margin-bottom: 0; }
 .fromaden__links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: var(--sp-2); }
+
+/* ---------- the Route: the board on the landing's road (graph/rez/) ----------
+   Same standings and tokens as the floor. Light is done; cyan is where you
+   are; ahead is a dim line. Only current moves, once, when a step lights. */
+
+.rez-host {
+  position: absolute; inset: 0; overflow: auto; cursor: grab;
+  padding: 72px 140px 64px 0; /* clear the legend bar and the side controls */
+  /* The grid is drawn inside the SVG in the board's units (graph/rez); this is only light. */
+  background: radial-gradient(60% 50% at 40% 45%, color-mix(in srgb, var(--cyan) 4%, transparent), transparent 75%);
+  scrollbar-width: thin; scrollbar-color: var(--line) transparent;
+}
+.rez-host.is-dragging { cursor: grabbing; user-select: none; }
+.rez-board { display: block; overflow: visible; }
+
+.rz-band { fill: color-mix(in srgb, var(--cyan) 2.5%, transparent); }
+.rz-band__label { font: 500 11px var(--font-mono); letter-spacing: .14em; text-transform: uppercase; fill: var(--muted); }
+.rz-band__pace { font: 400 11px var(--font-mono); fill: var(--locked); }
+.rez-grid__line { stroke: color-mix(in srgb, var(--line) 70%, transparent); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.rz-lane { stroke: color-mix(in srgb, var(--cyan) 14%, var(--line)); stroke-width: 1; vector-effect: non-scaling-stroke; } /* a lane is a major grid line */
+.rz-lane__label { font: 500 9.5px var(--font-mono); letter-spacing: .14em; fill: var(--locked); }
+
+.rz-seg { fill: none; stroke: var(--line); stroke-width: 1.6; stroke-linecap: round; transition: stroke .3s, opacity .3s; }
+.rz-seg.is-done { stroke: color-mix(in srgb, var(--ok) 70%, transparent); }
+.rz-seg.is-live { stroke: var(--cyan); filter: drop-shadow(0 0 4px color-mix(in srgb, var(--cyan) 55%, transparent)); }
+.rz-tie { fill: none; stroke: var(--cyan); stroke-width: 1; stroke-dasharray: 3 6; opacity: .12; }
+.rz-current { fill: none; stroke: var(--cyan); stroke-width: 2; stroke-linecap: round; filter: drop-shadow(0 0 5px var(--cyan)); }
+.rz-spark { fill: #fff; filter: drop-shadow(0 0 6px var(--cyan)) drop-shadow(0 0 14px var(--cyan)); }
+
+.rz-node { cursor: pointer; outline: none; }
+.rz-node__body { transform-box: fill-box; transform-origin: center; transition: transform .22s cubic-bezier(.2,.8,.2,1); }
+.rz-ring { fill: var(--bg); stroke: var(--locked); stroke-width: 1.5; transition: fill .14s, stroke .14s, stroke-width .14s; }
+.rz-halo { fill: none; stroke: var(--cyan); stroke-width: 1; opacity: 0; transition: opacity .14s; }
+.rz-num { font: 500 10.5px var(--font-mono); fill: var(--muted); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.rz-title { font: 400 12px var(--font-sans); fill: var(--muted); text-anchor: middle; pointer-events: none; }
+.rz-here { font: 600 9.5px var(--font-mono); letter-spacing: .14em; fill: var(--cyan); text-anchor: middle; opacity: 0; pointer-events: none; }
+
+/* Ahead: a dashed dim ring, words quiet. */
+.rz-node.is-locked .rz-ring, .rz-node.is-future .rz-ring { stroke-dasharray: 3 4; }
+.rz-node.is-locked .rz-title, .rz-node.is-future .rz-title { fill: color-mix(in srgb, var(--muted) 70%, transparent); }
+/* Open: a cyan ring. Offered: the same, dashed (a door, not a wall). */
+.rz-node.is-open .rz-ring, .rz-node.is-offered .rz-ring { stroke: var(--cyan); }
+.rz-node.is-offered .rz-ring { stroke-dasharray: 3 3; }
+.rz-node.is-open .rz-num, .rz-node.is-offered .rz-num { fill: var(--text); }
+.rz-node.is-open .rz-title { fill: var(--text); }
+/* Next: the one lit-up place on the road. */
+.rz-node.is-next .rz-ring { fill: #fff; stroke: #fff; filter: drop-shadow(0 0 9px var(--cyan)); }
+.rz-node.is-next .rz-num { fill: #021219; }
+.rz-node.is-next .rz-title { fill: #fff; font-weight: 500; }
+.rz-node.is-next .rz-here { opacity: 1; }
+/* Done: green, settled. */
+.rz-node.is-lit .rz-ring { fill: color-mix(in srgb, var(--ok) 18%, var(--bg)); stroke: var(--ok); }
+.rz-node.is-lit .rz-num { fill: var(--ok); }
+.rz-node.is-lit .rz-title { fill: var(--text); }
+/* Review and sent back: amber, only when true. */
+.rz-node.is-review .rz-ring { stroke: var(--amber); fill: color-mix(in srgb, var(--amber) 14%, var(--bg)); }
+.rz-node.is-fix .rz-ring { stroke: var(--amber); stroke-width: 2.2; }
+.rz-node.is-review .rz-num, .rz-node.is-fix .rz-num { fill: var(--amber); }
+
+.rz-node:hover .rz-halo, .rz-node:focus-visible .rz-halo, .rz-node.is-trace .rz-halo { opacity: .45; }
+.rz-node:hover .rz-ring, .rz-node:focus-visible .rz-ring { stroke-width: 2.2; }
+.rz-node:focus-visible .rz-halo { opacity: .8; }
+.rz-node.is-approach .rz-node__body { transform: scale(1.35); }
+
+/* Tracing a node: its route stays, the rest steps back. */
+.rez-board.is-tracing .rz-node:not(.is-trace) { opacity: .45; }
+.rez-board.is-tracing .rz-seg:not(.is-trace) { opacity: .35; }
+.rz-seg.is-trace { stroke: var(--cyan); opacity: 1; }
+.rz-tie.is-trace { opacity: .6; }
+
+/* The style switch and the one-time invite. */
+.style-invite {
+  position: absolute; z-index: 3; left: 18px; bottom: 64px; max-width: 360px;
+  padding: 16px 18px; border-radius: var(--radius);
+  background: rgba(6, 10, 18, .96); backdrop-filter: blur(8px);
+  box-shadow: inset 0 0 0 1px var(--hair-cyan), 0 18px 48px rgba(0, 0, 0, .45);
+}
+.style-invite b { display: block; color: #fff; font-size: 14.5px; margin-bottom: 4px; }
+.style-invite p { margin: 0 0 12px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.style-invite__actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rz-node__body, .rz-seg, .rz-ring { transition: none; }
+}
+@media (max-width: 720px) {
+  .rez-host { padding: 132px 12px 120px 0; }
+  .style-invite { left: 12px; right: 12px; bottom: 72px; max-width: none; }
+}

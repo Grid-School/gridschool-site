@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { PRIVATE_LINK_KEYS, isPrivateLinkKey } from "../config.js?v=b6ca108-202610080352";
-import { isLocalHost, redactPrivateLinks, selectPrivateLinks } from "./site-overrides.js?v=b6ca108-202610080352";
+import { PRIVATE_LINK_KEYS, isPrivateLinkKey } from "../config.js?v=43911d1-202610080529";
+import { isLocalHost, redactPrivateLinks, selectPrivateLinks } from "./site-overrides.js?v=43911d1-202610080529";
 
 const leaked = {
   links: {

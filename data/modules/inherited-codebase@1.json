@@ -1,0 +1,40 @@
+{
+  "id": "inherited-codebase",
+  "version": 1,
+  "title": "Run and trace a codebase you did not write",
+  "purpose": "A messy practice system running on your machine, and a ticket traced through it end to end.",
+  "lane": "proof",
+  "phase": "position",
+  "kind": "core",
+  "completion": "tasks",
+  "why": "Day one on a team is code someone else wrote. Reading a system before changing it is the skill a hiring manager is trying to see.",
+  "evidence": "Your trace notes: how one request moves through the system, and where you would change it.",
+  "tasks": [
+    {
+      "id": "run",
+      "title": "Get the practice system running locally",
+      "kind": "record",
+      "est": 90,
+      "done_when": "It runs, and you wrote down the one thing that did not work the first time.",
+      "fields": [
+        {
+          "id": "link",
+          "label": "Link to your setup notes",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "trace",
+      "title": "Trace one ticket from the request to the database and back",
+      "kind": "write",
+      "est": 120,
+      "done_when": "A page another engineer could follow without asking you a question."
+    }
+  ],
+  "slots": [
+    "notes",
+    "links",
+    "due"
+  ]
+}

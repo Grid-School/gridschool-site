@@ -1,0 +1,42 @@
+{
+  "id": "application-engine",
+  "version": 1,
+  "title": "Application engine running in week 1",
+  "purpose": "A daily cadence of tailored applications, tracked, so the search moves while the proof is built.",
+  "lane": "pipeline",
+  "phase": "position",
+  "kind": "core",
+  "completion": "tasks",
+  "why": "Between roles, time is the cost. A small daily number of tailored applications beats a weekend of spraying, and the tracker shows where the search stalls.",
+  "evidence": "Tracker link with this week's applications, replies and screens.",
+  "tasks": [
+    {
+      "id": "tracker",
+      "title": "Set up the tracker: company, role, date, link, reply",
+      "kind": "record",
+      "est": 30,
+      "done_when": "Tracker link saved.",
+      "fields": [
+        {
+          "id": "link",
+          "label": "Tracker link",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "daily",
+      "title": "Send tailored applications, each pointing at one piece of proof",
+      "kind": "count",
+      "target": 15,
+      "per": "week",
+      "est": 20,
+      "done_when": "15 a week, each with a line written for that company."
+    }
+  ],
+  "slots": [
+    "notes",
+    "links",
+    "due"
+  ]
+}

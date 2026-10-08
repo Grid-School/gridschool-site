@@ -4,39 +4,127 @@
  * owns that view. This file is the floor and the list only.
  *
  * `#/map` is the floor, `#/map/list` is the list. "list" and "3d" are reserved.
+ *
+ * The map draws one of two ways, and the student picks (BRAND.md 2026-10-07):
+ * the Floor (3D, scene3d) or the Route (2D, graph/rez, the same road the
+ * landing draws). Both take the same graph and give the same node proxies, so
+ * everything below is shared. The pick is saved on the seat (prefs.mapStyle);
+ * until a student picks, the Floor stays and a one-time card offers the
+ * Route. The demo opens on the Route, the look the landing promises.
  * The SVG board this replaced lives on in `site/path/` (the public, empty
  * path) and in git history; the per-student drag layout and the admin editor
  * went with it, because on the floor position is derived from sequence.
  */
 
-import { el, mount } from "../dom.js?v=b6ca108-202610080352";
-import { btn, toast } from "../ui.js?v=b6ca108-202610080352";
-import { createScene3d } from "../graph/scene3d/index.js?v=b6ca108-202610080352";
-import { STATUS, nextUp, progress, visibleGraph, stepNumber } from "../graph/model.js?v=b6ca108-202610080352";
-import { LEGEND, STANDING, STANDING_LABEL, standingOf, legendKeyOf } from "../graph/standing.js?v=b6ca108-202610080352";
-import { trackLabel } from "../copy.js?v=b6ca108-202610080352";
-import { mapList } from "./map-list.js?v=b6ca108-202610080352";
-import { dueLabel } from "./from-aden.js?v=b6ca108-202610080352";
-import { createGridState, hashFor, RESERVED_ARGS, VIEW } from "./grid-state.js?v=b6ca108-202610080352";
-import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=b6ca108-202610080352";
+import { el, mount } from "../dom.js?v=43911d1-202610080529";
+import { btn, toast } from "../ui.js?v=43911d1-202610080529";
+import { createScene3d } from "../graph/scene3d/index.js?v=43911d1-202610080529";
+import { createRezScene } from "../graph/rez/index.js?v=43911d1-202610080529";
+import { STATUS, nextUp, progress, visibleGraph, stepNumber } from "../graph/model.js?v=43911d1-202610080529";
+import { LEGEND, STANDING, STANDING_LABEL, standingOf, legendKeyOf } from "../graph/standing.js?v=43911d1-202610080529";
+import { trackLabel } from "../copy.js?v=43911d1-202610080529";
+import { mapList } from "./map-list.js?v=43911d1-202610080529";
+import { dueLabel } from "./from-aden.js?v=43911d1-202610080529";
+import { createGridState, hashFor, RESERVED_ARGS, VIEW } from "./grid-state.js?v=43911d1-202610080529";
+import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=43911d1-202610080529";
+import { isProgressReadOnly } from "../store.js?v=43911d1-202610080529";
 
 /** Right side clears the control column, top clears the legend bar. */
 const INSETS = { top: 76, right: 132, bottom: 72, left: 40 };
-/** How to move on the floor. Shown while nothing is hovered. */
+/** How to move. Shown while nothing is hovered. */
 const WALK_HINT = "Arrow keys walk the floor · drag to pan · wheel to rise · click a ring to open it";
+const ROUTE_HINT = "Scroll or drag along the road · click a step to open it";
+
+export const MAP_STYLE = { FLOOR: "floor", ROUTE: "route" };
+const STYLE_KEY = "gridschool.mapStyle";
+
+/** A pick kept in this browser only: the demo, and an admin viewing a seat. */
+function localStyle() {
+  try {
+    const value = localStorage.getItem(STYLE_KEY);
+    return Object.values(MAP_STYLE).includes(value) ? value : null;
+  } catch {
+    return null;
+  }
+}
+
+/** The style this board draws in: the seat's pick, else the demo's Route, else the Floor. */
+export function mapStyleFor(state, local = localStyle()) {
+  const picked = state.student?.prefs?.mapStyle;
+  if (state.slug === "demo" || isProgressReadOnly()) return local ?? (state.slug === "demo" ? MAP_STYLE.ROUTE : picked ?? MAP_STYLE.FLOOR);
+  return Object.values(MAP_STYLE).includes(picked) ? picked : MAP_STYLE.FLOOR;
+}
 
 export function renderMap(ctx, initialArg) {
   const hudTop = el("div.hud.hud--top");
   const hudSide = el("div.hud.hud--side");
   const status = el("div.hud.hud--status", { role: "status" });
   const lockFloat = el("div.lock-float", { hidden: true });
+  const invite = el("div.style-invite", { hidden: true, role: "dialog", "aria-label": "A new way to see your map" });
   const world = el("div.world3d-host", { role: "application", "aria-label": "Your path" });
-  const canvas = el("div.view.view--map", {}, world, hudTop, hudSide, status);
+  const canvas = el("div.view.view--map", {}, world, hudTop, hudSide, status, invite);
   const list = el("div.view.view--maplist", { hidden: true });
   const root = el("div.mapview", {}, canvas, list, lockFloat);
 
   let current = ctx;
   let signature = "";
+  let inviteDismissed = false;
+
+  const style = () => mapStyleFor(current.state);
+  const hint = () => (style() === MAP_STYLE.ROUTE ? ROUTE_HINT : WALK_HINT);
+
+  /** Save the pick on the seat; the demo and a read-only viewer keep it in this browser. */
+  function chooseStyle(next) {
+    inviteDismissed = true;
+    if (current.state.slug === "demo" || isProgressReadOnly()) {
+      try {
+        localStorage.setItem(STYLE_KEY, next);
+      } catch {
+        /* the pick lasts this page only */
+      }
+      draw();
+      return;
+    }
+    if (next !== current.state.student?.prefs?.mapStyle) current.store.setMapStyle(next);
+    else draw();
+  }
+
+  function styleToggle() {
+    const seg = (value, label) =>
+      el(
+        "button.seg__b",
+        {
+          type: "button",
+          class: style() === value ? "is-on" : null,
+          "aria-pressed": String(style() === value),
+          onclick: () => chooseStyle(value),
+        },
+        label
+      );
+    return el("div.seg", { role: "group", "aria-label": "How the map is drawn" }, seg(MAP_STYLE.FLOOR, "Floor"), seg(MAP_STYLE.ROUTE, "Route"));
+  }
+
+  /** Once, until they pick: the Route is offered, the Floor stays. */
+  function renderInvite() {
+    const show = !isList() && !inviteDismissed && current.state.slug !== "demo" && !isProgressReadOnly() && !current.state.student?.prefs?.mapStyle;
+    invite.hidden = !show;
+    if (!show) return mount(invite);
+    mount(
+      invite,
+      el("b", {}, "New: the Route"),
+      el(
+        "p",
+        {},
+        "The same map, drawn flat, so every step's name reads at a glance. Your progress does not change, and the Floor / Route switch above lets you go back any time."
+      ),
+      el(
+        "div.style-invite__actions",
+        {},
+        btn({ label: "Try the Route", variant: "solid", onclick: () => chooseStyle(MAP_STYLE.ROUTE) }),
+        btn({ label: "Keep the Floor", variant: "quiet", onclick: () => chooseStyle(MAP_STYLE.FLOOR) })
+      )
+    );
+  }
 
   /** The single writer: every transition redraws and rewrites the hash. */
   const ui = createGridState({
@@ -114,18 +202,34 @@ export function renderMap(ctx, initialArg) {
     return el("div.seg", { role: "group", "aria-label": "How to see the map" }, seg(VIEW.MAP, "Map"), seg(VIEW.LIST, "List"));
   }
 
-  /* ---------- the floor ---------- */
+  /* ---------- the floor (or the route: one surface, two renderers) ---------- */
 
   let floor = null;
   let floorLoading = null;
+  let floorStyle = null;
 
   function loadFloor() {
+    const want = style();
+    if (floorStyle !== want) {
+      floor?.destroy();
+      floor = null;
+      floorLoading = null;
+      floorStyle = want;
+      signature = "";
+    }
     if (floor) return Promise.resolve(floor);
     if (!floorLoading) {
-      floorLoading = createScene3d(world)
+      const create = want === MAP_STYLE.ROUTE ? createRezScene : createScene3d;
+      floorLoading = create(world)
         .then((made) => {
+          // The student switched while this one was loading: drop it.
+          if (floorStyle !== want) {
+            made.destroy();
+            return loadFloor();
+          }
           floor = made;
           signature = "";
+          world.dataset.style = want;
           return made;
         })
         .catch((error) => {
@@ -235,10 +339,10 @@ export function renderMap(ctx, initialArg) {
       });
       proxy.addEventListener("mouseleave", () => {
         painter();
-        setStatus(WALK_HINT);
+        setStatus(hint());
       });
       proxy.addEventListener("focus", () => setStatus(hoverLine(id)));
-      proxy.addEventListener("blur", () => setStatus(WALK_HINT));
+      proxy.addEventListener("blur", () => setStatus(hint()));
     });
   }
 
@@ -254,6 +358,7 @@ export function renderMap(ctx, initialArg) {
         "div.hud__group",
         {},
         modeToggle(),
+        styleToggle(),
         el("b.hud__count", {}, `Required ${prog.spine.lit} of ${prog.spine.total}`),
         // A personal map has no elective depth; "No depth picked yet" would
         // read as a choice the student cannot make.
@@ -285,7 +390,8 @@ export function renderMap(ctx, initialArg) {
       btn({ label: "−", variant: "quiet", title: "Zoom out", onclick: () => floor?.zoomBy(0.8) })
     );
 
-    setStatus(isList() ? null : WALK_HINT);
+    setStatus(isList() ? null : hint());
+    renderInvite();
   }
 
   /**

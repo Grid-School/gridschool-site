@@ -19,7 +19,7 @@ import {
   STUDENT_KEYS,
   INSTRUCTOR_KEYS,
   seedFromSnapshot,
-} from "./persist.js?v=b6ca108-202610080352";
+} from "./persist.js?v=43911d1-202610080529";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "../../data");
 const demo = JSON.parse(readFileSync(join(root, "students/demo.json"), "utf8"));
@@ -149,7 +149,7 @@ test("replace refuses to overwrite a pending domain", () => {
 });
 
 test("replace writes a split remote snapshot into the local cache", async () => {
-  const { replace, readDoc } = await import("./persist.js?v=b6ca108-202610080352");
+  const { replace, readDoc } = await import("./persist.js?v=43911d1-202610080529");
   const slug = "t-replace";
   clear(slug);
   replace(slug, {
@@ -374,7 +374,7 @@ test("a student's published map rides the seed and the merge, never the overlay"
 });
 
 test("the board uses a student's map when there is one, and the universal curriculum otherwise", async () => {
-  const { boardCurriculum, usableMap } = await import("./api.js?v=b6ca108-202610080352");
+  const { boardCurriculum, usableMap } = await import("./api.js?v=43911d1-202610080529");
   const universal = { version: "u", families: [], phases: [], nodes: [{ id: "u.1", n: 0 }], weekly: [] };
   const map = { version: "m", title: "Zed", families: [], phases: [], nodes: [{ id: "m.1", n: 0 }], weekly: [] };
   assert.equal(boardCurriculum({ universal, student: { map }, slug: "zed" }).nodes[0].id, "m.1");

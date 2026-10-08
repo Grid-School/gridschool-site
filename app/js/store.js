@@ -9,9 +9,9 @@
  * data/students/<slug>.json.
  */
 
-import { loadBoard, boardCurriculum, libraryFor } from "./api.js?v=b6ca108-202610080352";
-import { buildGraph } from "./graph/model.js?v=b6ca108-202610080352";
-import { weekNumber, studentWeek, ownSchedule } from "./time.js?v=b6ca108-202610080352";
+import { loadBoard, boardCurriculum, libraryFor } from "./api.js?v=43911d1-202610080529";
+import { buildGraph } from "./graph/model.js?v=43911d1-202610080529";
+import { weekNumber, studentWeek, ownSchedule } from "./time.js?v=43911d1-202610080529";
 import {
   read,
   clear as clearPersist,
@@ -21,10 +21,10 @@ import {
   mergeStudent,
   STUDENT_KEYS,
   INSTRUCTOR_KEYS,
-} from "./persist.js?v=b6ca108-202610080352";
-import { flushAfterLocalWrite, hydrateFromRemote, persistStatus, startPolling } from "./persist-remote.js?v=b6ca108-202610080352";
-import { validReviewReturn } from "./review.js?v=b6ca108-202610080352";
-import { isDevUnlock } from "./dev-mode.js?v=b6ca108-202610080352";
+} from "./persist.js?v=43911d1-202610080529";
+import { flushAfterLocalWrite, hydrateFromRemote, persistStatus, startPolling } from "./persist-remote.js?v=43911d1-202610080529";
+import { validReviewReturn } from "./review.js?v=43911d1-202610080529";
+import { isDevUnlock } from "./dev-mode.js?v=43911d1-202610080529";
 
 export { validReviewReturn };
 
@@ -249,6 +249,19 @@ export function setFocusNext({ focus, next }) {
     if (focus !== undefined) overlay.focus = focus;
     if (next !== undefined) overlay.next = next;
   });
+}
+
+/* ---------- how the map is drawn ---------- */
+
+/**
+ * The student's own pick between the floor (3D) and the route (2D, the same
+ * road the landing draws). A preference, not progress: it never touches
+ * evidence, and the desk reads it to know when the floor can retire.
+ */
+export function setMapStyle(style) {
+  return commitStudent(() => {
+    overlay.prefs = { ...(mergedStudent().prefs ?? {}), ...(overlay.prefs ?? {}), mapStyle: style, mapStyleAt: new Date().toISOString() };
+  }, { kind: "prefs.map_style", payload: { style } });
 }
 
 /* ---------- map editing ---------- */

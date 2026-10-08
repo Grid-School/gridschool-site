@@ -1,0 +1,33 @@
+{
+  "id": "reviewed-change",
+  "version": 1,
+  "title": "Ship a reviewed change to code you inherited",
+  "purpose": "A pull request that fixes a real defect, with the test that catches it and the review thread.",
+  "lane": "proof",
+  "phase": "prove",
+  "kind": "core",
+  "completion": "link",
+  "why": "A merged change with a review thread is the closest thing to work history a stranger can open.",
+  "evidence": "Pull request URL with the review thread and the failing-then-passing test.",
+  "tasks": [
+    {
+      "id": "pr",
+      "title": "Open the pull request: the defect, the test that catches it, the fix",
+      "kind": "ship",
+      "est": 240,
+      "done_when": "The test fails without your change and passes with it."
+    },
+    {
+      "id": "review",
+      "title": "Take the review: answer every comment in writing, change what needs changing",
+      "kind": "practice",
+      "est": 90,
+      "done_when": "Accepted, with every comment answered in the thread."
+    }
+  ],
+  "slots": [
+    "notes",
+    "links",
+    "due"
+  ]
+}

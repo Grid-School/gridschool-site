@@ -19,6 +19,7 @@ export const STUDENT_KEYS = [
   "readReviews",
   "questions",
   "chosen",
+  "prefs",
 ];
 
 export const INSTRUCTOR_KEYS = [
