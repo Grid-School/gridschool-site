@@ -10,11 +10,11 @@
  * in their own mail app, the call is their phone, LinkedIn is their click.
  */
 
-import { el, mount } from "../dom.js?v=022c412-202610100125";
-import { btn, copy, toast, field } from "../ui.js?v=022c412-202610100125";
-import { createModal } from "../modal.js?v=022c412-202610100125";
-import { DAY0, FOLLOWUP_DAYS, nextTouch, fillLinks, peopleLinks } from "../search.js?v=022c412-202610100125";
-import { draftCampaign } from "../roles-remote.js?v=022c412-202610100125";
+import { el, mount } from "../dom.js?v=5802f60-202610100134";
+import { btn, copy, toast, field } from "../ui.js?v=5802f60-202610100134";
+import { createModal } from "../modal.js?v=5802f60-202610100134";
+import { DAY0, FOLLOWUP_DAYS, nextTouch, fillLinks, peopleLinks } from "../search.js?v=5802f60-202610100134";
+import { draftCampaign } from "../roles-remote.js?v=5802f60-202610100134";
 
 export function createCampaignDrawer({ slug, getTarget, onPatch, onTouch, getPortfolio, readOnly = () => false }) {
   const modal = createModal({ label: "Target campaign", size: "reading", onClose: () => close() });
@@ -34,7 +34,7 @@ export function createCampaignDrawer({ slug, getTarget, onPatch, onTouch, getPor
     render();
     if (needsDraft) {
       try {
-        const result = await draftCampaign(slug, target.roleKey ? { roleKey: target.roleKey, insider: target.insider, portfolio: getPortfolio() } : { role: { company: target.company, title: target.role, url: target.link, description: target.why }, insider: target.insider, portfolio: getPortfolio() });
+        const result = await draftCampaign(slug, target.roleKey ? { roleKey: target.roleKey, insider: target.insider, portfolio: getPortfolio() } : { role: { company: target.company, title: target.role, url: target.link, description: target.posting || target.why }, insider: target.insider, portfolio: getPortfolio() });
         onPatch(targetId, { campaign: result.campaign });
         if (typeof result.left === "number" && result.left <= 3) toast(`${result.left} campaign drafts left today.`, "warn");
       } catch (error) {

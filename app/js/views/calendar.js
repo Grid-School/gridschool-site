@@ -4,14 +4,14 @@
  * already answers where you are. This page does not teach those jobs again.
  */
 
-import { el } from "../dom.js?v=022c412-202610100125";
-import { panel, btn, empty } from "../ui.js?v=022c412-202610100125";
-import { eventsForWeek, weekRange, fmtShort, programPhase, relativeDay, displayZone } from "../time.js?v=022c412-202610100125";
-import { zoneLabel } from "../call-slot.js?v=022c412-202610100125";
-import { PERSIST, isPlaceholder } from "../../../config.js?v=022c412-202610100125";
-import { eventRow } from "./parts.js?v=022c412-202610100125";
-import { requestSystemReminders } from "../reminders.js?v=022c412-202610100125";
-import { toast } from "../ui.js?v=022c412-202610100125";
+import { el } from "../dom.js?v=5802f60-202610100134";
+import { panel, btn, empty } from "../ui.js?v=5802f60-202610100134";
+import { eventsForWeek, weekRange, fmtShort, programPhase, relativeDay, displayZone } from "../time.js?v=5802f60-202610100134";
+import { zoneLabel } from "../call-slot.js?v=5802f60-202610100134";
+import { PERSIST, isPlaceholder } from "../../../config.js?v=5802f60-202610100134";
+import { eventRow } from "./parts.js?v=5802f60-202610100134";
+import { requestSystemReminders } from "../reminders.js?v=5802f60-202610100134";
+import { toast } from "../ui.js?v=5802f60-202610100134";
 
 export function renderCalendar(ctx, weekArg) {
   const { state, navigate } = ctx;

@@ -10,30 +10,30 @@
  * aliases so links already in the wild still land somewhere true.
  */
 
-import { el, mount, download } from "./dom.js?v=022c412-202610100125";
-import * as store from "./store.js?v=022c412-202610100125";
-import { resolveSlug, slugFromUrl, currentSession, signOut, setPersistToken, inviteFromUrl, persistToken } from "./session.js?v=022c412-202610100125";
-import { tryStoredKey } from "./gate.js?v=022c412-202610100125";
-import { createRouter } from "./router.js?v=022c412-202610100125";
-import { createChrome } from "./chrome.js?v=022c412-202610100125";
-import { toast } from "./ui.js?v=022c412-202610100125";
-import { isTestSeat } from "./test-seats.js?v=022c412-202610100125";
-import { renderLogin } from "./views/login.js?v=022c412-202610100125";
-import { renderToday } from "./views/today.js?v=022c412-202610100125";
-import { renderMap } from "./views/map.js?v=022c412-202610100125";
-import { renderStep, isStepArgs, moduleIdFromArgs } from "./views/step.js?v=022c412-202610100125";
-import { renderTasks } from "./views/tasks.js?v=022c412-202610100125";
-import { renderCalendar } from "./views/calendar.js?v=022c412-202610100125";
-import { renderLibrary } from "./views/library.js?v=022c412-202610100125";
-import { renderPosts } from "./views/posts.js?v=022c412-202610100125";
-import { renderHire } from "./views/hire.js?v=022c412-202610100125";
-import { toggleDevUnlock, setDevUnlock } from "./dev-mode.js?v=022c412-202610100125";
-import { togglePreviewMedia, setPreviewMedia, isPreviewMedia } from "./preview-mode.js?v=022c412-202610100125";
-import { isInstructorDevice } from "./instructor-mode.js?v=022c412-202610100125";
-import { startReminders } from "./reminders.js?v=022c412-202610100125";
-import { watchReviewArrivals } from "./review-arrivals.js?v=022c412-202610100125";
-import { enterView, leaveView } from "./transitions.js?v=022c412-202610100125";
-import { gateRoutes } from "./features.js?v=022c412-202610100125";
+import { el, mount, download } from "./dom.js?v=5802f60-202610100134";
+import * as store from "./store.js?v=5802f60-202610100134";
+import { resolveSlug, slugFromUrl, currentSession, signOut, setPersistToken, inviteFromUrl, persistToken } from "./session.js?v=5802f60-202610100134";
+import { tryStoredKey } from "./gate.js?v=5802f60-202610100134";
+import { createRouter } from "./router.js?v=5802f60-202610100134";
+import { createChrome } from "./chrome.js?v=5802f60-202610100134";
+import { toast } from "./ui.js?v=5802f60-202610100134";
+import { isTestSeat } from "./test-seats.js?v=5802f60-202610100134";
+import { renderLogin } from "./views/login.js?v=5802f60-202610100134";
+import { renderToday } from "./views/today.js?v=5802f60-202610100134";
+import { renderMap } from "./views/map.js?v=5802f60-202610100134";
+import { renderStep, isStepArgs, moduleIdFromArgs } from "./views/step.js?v=5802f60-202610100134";
+import { renderTasks } from "./views/tasks.js?v=5802f60-202610100134";
+import { renderCalendar } from "./views/calendar.js?v=5802f60-202610100134";
+import { renderLibrary } from "./views/library.js?v=5802f60-202610100134";
+import { renderPosts } from "./views/posts.js?v=5802f60-202610100134";
+import { renderHire } from "./views/hire.js?v=5802f60-202610100134";
+import { toggleDevUnlock, setDevUnlock } from "./dev-mode.js?v=5802f60-202610100134";
+import { togglePreviewMedia, setPreviewMedia, isPreviewMedia } from "./preview-mode.js?v=5802f60-202610100134";
+import { isInstructorDevice } from "./instructor-mode.js?v=5802f60-202610100134";
+import { startReminders } from "./reminders.js?v=5802f60-202610100134";
+import { watchReviewArrivals } from "./review-arrivals.js?v=5802f60-202610100134";
+import { enterView, leaveView } from "./transitions.js?v=5802f60-202610100134";
+import { gateRoutes } from "./features.js?v=5802f60-202610100134";
 
 /* Coach (today) and Posts are gated in features.js: switched off, they are
    not routes at all, so their links land on the Map. */

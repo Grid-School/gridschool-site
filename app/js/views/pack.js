@@ -10,13 +10,13 @@
  * things that move the search: open the posting, and say it went out.
  */
 
-import { el, mount } from "../dom.js?v=022c412-202610100125";
-import { btn, copy, toast } from "../ui.js?v=022c412-202610100125";
-import { createModal } from "../modal.js?v=022c412-202610100125";
-import { peopleLinks, ageLabel } from "../search.js?v=022c412-202610100125";
-import { prepareRole } from "../roles-remote.js?v=022c412-202610100125";
+import { el, mount } from "../dom.js?v=5802f60-202610100134";
+import { btn, copy, toast } from "../ui.js?v=5802f60-202610100134";
+import { createModal } from "../modal.js?v=5802f60-202610100134";
+import { peopleLinks, ageLabel } from "../search.js?v=5802f60-202610100134";
+import { prepareRole } from "../roles-remote.js?v=5802f60-202610100134";
 
-export function createPackDrawer({ slug, getPack, savePack, onApplied, readOnly = () => false }) {
+export function createPackDrawer({ slug, getPack, savePack, onApplied, onTarget = null, readOnly = () => false }) {
   const modal = createModal({ label: "Prepare this role", size: "reading", onClose: () => modal.setOpen(false) });
   modal.layer.classList.add("modal--fixed", "pack-modal");
 
@@ -37,6 +37,17 @@ export function createPackDrawer({ slug, getPack, savePack, onApplied, readOnly 
       "footer.pack__foot",
       {},
       role.url ? btn({ label: "Open the posting ↗", variant: "ghost", href: role.url, target: "_blank" }) : null,
+      readOnly() || !onTarget
+        ? null
+        : btn({
+            label: "Make it a target",
+            variant: "ghost",
+            title: "Work this company on every channel: email with a Loom, LinkedIn, a call, follow-ups",
+            onclick: () => {
+              modal.setOpen(false);
+              onTarget({ key: target.key, title: role.title, company: role.company, url: role.url, description: role.description ?? "" });
+            },
+          }),
       readOnly()
         ? null
         : btn({

@@ -19,7 +19,7 @@ import {
   titleTerms,
   roleScore,
   matchRoles,
-} from "./search.js?v=022c412-202610100125";
+} from "./search.js?v=5802f60-202610100134";
 
 // Friday 2026-10-09; its week starts Monday 2026-10-05.
 const now = new Date(2026, 9, 9, 15, 0);
@@ -165,7 +165,7 @@ test("roles: title terms, scoring and matching", () => {
   assert.deepEqual(matchRoles(roles, titles, { appliedKeys: new Set(["d"]) }).map((r) => r.key), ["c", "b"]);
 });
 
-import { addPerson, movePerson, toAsk, peopleLinks, followUpText, referralText, dailyTargets, weekdaysLeft, markFollowed, keepPack, ageLabel, MAX_PACKS } from "./search.js?v=022c412-202610100125";
+import { addPerson, movePerson, toAsk, peopleLinks, followUpText, referralText, dailyTargets, weekdaysLeft, markFollowed, keepPack, ageLabel, MAX_PACKS } from "./search.js?v=5802f60-202610100134";
 
 test("people: warm first, then met, then cold; moving out of todo drops them", () => {
   let people = [];
@@ -231,7 +231,7 @@ test("packs keep the newest MAX_PACKS; ages read plainly", () => {
   assert.equal(ageLabel(null, now), "");
 });
 
-import { parseConnections, companyKey, insideConnections, insiderText } from "./search.js?v=022c412-202610100125";
+import { parseConnections, companyKey, insideConnections, insiderText } from "./search.js?v=5802f60-202610100134";
 
 test("LinkedIn connections export: notes preamble, quoted commas, missing companies dropped", () => {
   const csv = [
@@ -264,13 +264,13 @@ test("companyKey and insideConnections match a role to the people there", () => 
   assert.match(text, /My work is ships AI into old systems\./);
 });
 
-import { shortTitle } from "./search.js?v=022c412-202610100125";
+import { shortTitle } from "./search.js?v=5802f60-202610100134";
 test("shortTitle keeps parentheses whole", () => {
   assert.equal(shortTitle("Software Engineers (Product, Applied AI), Designers"), "Software Engineers (Product, Applied AI)");
   assert.equal(shortTitle("Forward Deployed Engineer"), "Forward Deployed Engineer");
 });
 
-import { addTarget, touchTarget, patchTarget, dueTouches, nextTouch, targetCandidates, fillLinks, MAX_ACTIVE_TARGETS } from "./search.js?v=022c412-202610100125";
+import { addTarget, touchTarget, patchTarget, dueTouches, nextTouch, targetCandidates, fillLinks, MAX_ACTIVE_TARGETS } from "./search.js?v=5802f60-202610100134";
 
 test("targets: one active per company, day 0 first, then the cadence", () => {
   const day0 = new Date(2026, 9, 5, 9);
@@ -313,4 +313,11 @@ test("fillLinks puts in the Loom and drops an unused portfolio line", () => {
   const body = "Here's a 90-second walkthrough: [Loom link]\nPortfolio: [portfolio link]\nThanks";
   assert.equal(fillLinks(body, { loom: "https://loom.com/share/x" }), "Here's a 90-second walkthrough: https://loom.com/share/x\nThanks");
   assert.match(fillLinks(body, { loom: "L", portfolio: "P" }), /Portfolio: P/);
+});
+
+test("a target made by hand keeps what they pasted for the campaign", () => {
+  const [t] = addTarget([], { company: "Acme", role: "FDE", posting: "We build agents for claims. ".repeat(20) }, now);
+  assert.equal(t.roleKey, undefined);
+  assert.match(t.posting, /^We build agents for claims\./);
+  assert.equal(addTarget([], { company: "X", posting: "y".repeat(20000) }, now)[0].posting.length, 12000);
 });

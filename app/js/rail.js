@@ -14,12 +14,12 @@
  * rail without a mode.
  */
 
-import { el, mount } from "./dom.js?v=022c412-202610100125";
-import { gmark } from "../../js/brand.js?v=022c412-202610100125";
-import { icon } from "./icons.js?v=022c412-202610100125";
-import { returnedUnread } from "./tasks.js?v=022c412-202610100125";
-import { progress } from "./graph/model.js?v=022c412-202610100125";
-import { enabledViews, isViewEnabled } from "./features.js?v=022c412-202610100125";
+import { el, mount } from "./dom.js?v=5802f60-202610100134";
+import { gmark } from "../../js/brand.js?v=5802f60-202610100134";
+import { icon } from "./icons.js?v=5802f60-202610100134";
+import { returnedUnread } from "./tasks.js?v=5802f60-202610100134";
+import { progress } from "./graph/model.js?v=5802f60-202610100134";
+import { enabledViews, isViewEnabled } from "./features.js?v=5802f60-202610100134";
 
 export const DOORS = [
   { id: "hire", label: "Hire", icon: "search", hint: "Today's run: who to ask, what to apply to, what's due" },

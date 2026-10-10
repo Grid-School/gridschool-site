@@ -16,10 +16,10 @@
  * half-typed form. Aden sees it read-only from the desk.
  */
 
-import { el, mount } from "../dom.js?v=022c412-202610100125";
-import { panel, btn, field, toast, copy } from "../ui.js?v=022c412-202610100125";
-import { isoDate, fmtDay } from "../time.js?v=022c412-202610100125";
-import { STATUS } from "../graph/model.js?v=022c412-202610100125";
+import { el, mount } from "../dom.js?v=5802f60-202610100134";
+import { panel, btn, field, toast, copy } from "../ui.js?v=5802f60-202610100134";
+import { isoDate, fmtDay } from "../time.js?v=5802f60-202610100134";
+import { STATUS } from "../graph/model.js?v=5802f60-202610100134";
 import {
   STAGES,
   RELATIONS,
@@ -62,13 +62,15 @@ import {
   DAY0,
   FOLLOWUP_DAYS,
   MAX_ACTIVE_TARGETS,
-} from "../search.js?v=022c412-202610100125";
-import { searchRoute, weekBlock, storyCard, appRow } from "./search-parts.js?v=022c412-202610100125";
-import { matchedRoles, radarReady, fetchPacks } from "../roles-remote.js?v=022c412-202610100125";
-import { createPackDrawer } from "./pack.js?v=022c412-202610100125";
-import { createCampaignDrawer } from "./campaign.js?v=022c412-202610100125";
+} from "../search.js?v=5802f60-202610100134";
+import { searchRoute, weekBlock, storyCard, appRow } from "./search-parts.js?v=5802f60-202610100134";
+import { matchedRoles, radarReady, fetchPacks } from "../roles-remote.js?v=5802f60-202610100134";
+import { createPackDrawer } from "./pack.js?v=5802f60-202610100134";
+import { createCampaignDrawer } from "./campaign.js?v=5802f60-202610100134";
 
 const RUN_FAMILIES = ["proof", "presence", "network", "interview"];
+/** How many moves the day leads with. More than this reads as a wall, not a plan. */
+const RUN_SHOWN = 7;
 
 /** The next open step on their map in a lane that builds proof or presence. */
 export function nextBuildStep(graph) {
@@ -94,6 +96,7 @@ export function renderHire(ctx) {
     getPack: packFor,
     savePack: (key, entry) => save((s) => ({ packs: keepPack(s.packs, key, entry) })),
     onApplied: (role) => logApplied(role),
+    onTarget: (role) => makeTarget({ role }),
   });
 
   const portfolio = () => searchOf(student()).portfolio || careerOf(student()).portfolio || "";
@@ -109,7 +112,8 @@ export function renderHire(ctx) {
 
   function makeTarget({ role, reasons = [], insider = "" }) {
     if (activeTargets(student()).length >= MAX_ACTIVE_TARGETS) return toast(`Five active targets is the most that get real attention. Close one first.`, "warn");
-    save((x) => ({ targets: addTarget(x.targets, { company: role.company, role: role.title, roleKey: role.key, link: role.apply_url || role.url, insider, why: reasons.join(", ") }) }), { kind: "search.target", payload: { company: role.company } });
+    if (!String(role.company ?? "").trim()) return toast("A target needs the company.", "warn");
+    save((x) => ({ targets: addTarget(x.targets, { company: role.company, role: role.title, roleKey: role.key, link: role.apply_url || role.url, insider, why: reasons.join(", "), posting: role.description ?? "" }) }), { kind: "search.target", payload: { company: role.company } });
     const made = activeTargets(student()).find((t) => (role.key && t.roleKey === role.key) || t.company === role.company);
     if (made) camp.open(made.id);
   }
@@ -210,7 +214,7 @@ export function renderHire(ctx) {
       );
     }
     const activeCount = activeTargets(s).length;
-    if (activeCount < MAX_ACTIVE_TARGETS && radar.roles.length && !targetsOf(s).length) {
+    if (activeCount < MAX_ACTIVE_TARGETS && !targetsOf(s).length) {
       items.push(
         runItem({
           kind: "target",
@@ -366,6 +370,30 @@ export function renderHire(ctx) {
 
   /* ---------- targets ---------- */
 
+  // Any company they choose: found on a site, a Discord, a friend's tip, or a place they simply want to work.
+  const tCompany = field({ label: "Company", id: "tg-company", placeholder: "Acme AI" });
+  const tRole = field({ label: "Role (or the team you want)", id: "tg-role", placeholder: "Forward Deployed Engineer" });
+  const tLink = field({ label: "Link", id: "tg-link", type: "url", placeholder: "Their posting or their site" });
+  const tText = field({ label: "What you know (paste the posting, or a few lines on what they build)", id: "tg-text", textarea: true });
+  tText.input.rows = 5;
+  const targetForm = el(
+    "form.slog",
+    {
+      onsubmit: (event) => {
+        event.preventDefault();
+        const company = tCompany.input.value.trim();
+        if (!company) return toast("Add the company.", "warn");
+        makeTarget({ role: { company, title: tRole.input.value.trim(), url: tLink.input.value.trim(), description: tText.input.value.trim() } });
+        for (const f of [tCompany, tRole, tLink, tText]) f.input.value = "";
+      },
+    },
+    el("div.slog__grid", {}, tCompany.node, tRole.node, tLink.node),
+    tText.node,
+    el("div.row", {}, el("button.b.b--solid", { type: "submit" }, "Make it a target"))
+  );
+
+  const targetAny = el("details.hire__more.tany", {}, el("summary", {}, "Target any company"), el("p.muted", {}, "A company you found yourself, or simply want to work for. The campaign is written from what you paste here."), targetForm);
+
   function targetsBlock() {
     const s = student();
     const active = activeTargets(s);
@@ -407,7 +435,8 @@ export function renderHire(ctx) {
             )
           )
         : null,
-      others.length ? el("p.tpick__done", {}, `${others.filter((t) => t.state === "replied").length} replied · ${others.filter((t) => t.state === "closed").length} closed`) : null
+      others.length ? el("p.tpick__done", {}, `${others.filter((t) => t.state === "replied").length} replied · ${others.filter((t) => t.state === "closed").length} closed`) : null,
+      active.length < MAX_ACTIVE_TARGETS && !readOnly() ? targetAny : null
     );
   }
 
@@ -584,7 +613,8 @@ export function renderHire(ctx) {
     const { items, doneToday, targets } = runList();
     const stall = diagnose({ student: s, now });
     const toDo = items.filter((i) => !i.classList.contains("is-done")).length;
-    headTitle.textContent = toDo ? `${toDo} moves today` : "Today's run is done";
+    // The run is ordered by leverage; the first few are the day. The rest wait one click away.
+    headTitle.textContent = !toDo ? "Today's run is done" : toDo > RUN_SHOWN ? `${RUN_SHOWN} moves first, ${toDo - RUN_SHOWN} if you have time` : `${toDo} moves today`;
     headSub.textContent = stall.text;
     headSub.className = `hire__sub hire__sub--${stall.tone}`;
     runCount.textContent = doneToday ? `${doneToday} sent today` : "";
@@ -593,7 +623,17 @@ export function renderHire(ctx) {
     mount(adenOn, working.length ? [el("b", {}, "Aden is on"), el("ul", {}, working.slice(0, 4).map((w) => el("li", {}, w.text)))] : null);
     adenOn.hidden = !working.length;
 
-    mount(runBox, items.length ? el("ol.run", {}, items) : el("p.muted", {}, "Nothing left for today. Rest is part of a long search."));
+    const first = items.slice(0, RUN_SHOWN);
+    const later = items.slice(RUN_SHOWN);
+    mount(
+      runBox,
+      items.length
+        ? [
+            el("ol.run", {}, first),
+            later.length ? el("details.run__more", {}, el("summary", {}, `${later.length} more if you have time`), el("ol.run.run--later", { start: String(RUN_SHOWN + 1) }, later)) : null,
+          ]
+        : el("p.muted", {}, "Nothing left for today. Rest is part of a long search.")
+    );
     mount(routeBox, searchRoute({ student: s, graph: current.state.graph, now }));
     mount(weekBox, weekBlock({ student: s, now }));
     mount(peopleBox, peopleList());

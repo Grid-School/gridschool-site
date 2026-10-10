@@ -13,7 +13,7 @@
  * calendar draws.
  */
 
-import { isoDate, weekStart, addDays, parseDate } from "./time.js?v=022c412-202610100125";
+import { isoDate, weekStart, addDays, parseDate } from "./time.js?v=5802f60-202610100134";
 
 /** How far one application got. Each stage implies every stage before it. */
 export const STAGES = [
@@ -605,6 +605,7 @@ export function newTarget(raw = {}, now = new Date()) {
     link: clip(raw.link, 600),
     insider: clip(raw.insider, 160),
     why: clip(raw.why, 300),
+    posting: String(raw.posting ?? "").trim().slice(0, 12000),
     state: "active",
     openedAt: isoDate(now),
     touches: {},
