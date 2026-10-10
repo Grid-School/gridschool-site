@@ -19,7 +19,7 @@ import {
   titleTerms,
   roleScore,
   matchRoles,
-} from "./search.js?v=15fea56-202610100117";
+} from "./search.js?v=022c412-202610100125";
 
 // Friday 2026-10-09; its week starts Monday 2026-10-05.
 const now = new Date(2026, 9, 9, 15, 0);
@@ -165,7 +165,7 @@ test("roles: title terms, scoring and matching", () => {
   assert.deepEqual(matchRoles(roles, titles, { appliedKeys: new Set(["d"]) }).map((r) => r.key), ["c", "b"]);
 });
 
-import { addPerson, movePerson, toAsk, peopleLinks, followUpText, referralText, dailyTargets, weekdaysLeft, markFollowed, keepPack, ageLabel, MAX_PACKS } from "./search.js?v=15fea56-202610100117";
+import { addPerson, movePerson, toAsk, peopleLinks, followUpText, referralText, dailyTargets, weekdaysLeft, markFollowed, keepPack, ageLabel, MAX_PACKS } from "./search.js?v=022c412-202610100125";
 
 test("people: warm first, then met, then cold; moving out of todo drops them", () => {
   let people = [];
@@ -231,7 +231,7 @@ test("packs keep the newest MAX_PACKS; ages read plainly", () => {
   assert.equal(ageLabel(null, now), "");
 });
 
-import { parseConnections, companyKey, insideConnections, insiderText } from "./search.js?v=15fea56-202610100117";
+import { parseConnections, companyKey, insideConnections, insiderText } from "./search.js?v=022c412-202610100125";
 
 test("LinkedIn connections export: notes preamble, quoted commas, missing companies dropped", () => {
   const csv = [
@@ -264,8 +264,53 @@ test("companyKey and insideConnections match a role to the people there", () => 
   assert.match(text, /My work is ships AI into old systems\./);
 });
 
-import { shortTitle } from "./search.js?v=15fea56-202610100117";
+import { shortTitle } from "./search.js?v=022c412-202610100125";
 test("shortTitle keeps parentheses whole", () => {
   assert.equal(shortTitle("Software Engineers (Product, Applied AI), Designers"), "Software Engineers (Product, Applied AI)");
   assert.equal(shortTitle("Forward Deployed Engineer"), "Forward Deployed Engineer");
+});
+
+import { addTarget, touchTarget, patchTarget, dueTouches, nextTouch, targetCandidates, fillLinks, MAX_ACTIVE_TARGETS } from "./search.js?v=022c412-202610100125";
+
+test("targets: one active per company, day 0 first, then the cadence", () => {
+  const day0 = new Date(2026, 9, 5, 9);
+  let targets = addTarget([], { company: "Rebar", role: "Applied AI", roleKey: "hn:x:1" }, day0);
+  targets = addTarget(targets, { company: "Rebar, Inc.", role: "Other" }, day0);
+  assert.equal(targets.length, 1, "same company once");
+  const id = targets[0].id;
+  assert.deepEqual(dueTouches(targets, day0).map((d) => [d.kind, d.channels.join("+")]), [["day0", "email+linkedin+call"]]);
+  targets = touchTarget(targets, id, "email", day0);
+  targets = touchTarget(targets, id, "linkedin", day0);
+  assert.equal(nextTouch(targets[0], day0), "Day 0: Call");
+  targets = touchTarget(targets, id, "call", day0);
+  assert.equal(dueTouches(targets, new Date(2026, 9, 7)).length, 0, "day 2: nothing due");
+  assert.equal(nextTouch(targets[0], new Date(2026, 9, 7)), "Day 3 follow-up in 1 day");
+  assert.equal(dueTouches(targets, new Date(2026, 9, 8))[0].day, 3);
+  targets = touchTarget(targets, id, "d3", new Date(2026, 9, 8));
+  assert.equal(dueTouches(targets, new Date(2026, 9, 12))[0].day, 7);
+  targets = patchTarget(targets, id, { state: "replied" });
+  assert.equal(dueTouches(targets, new Date(2026, 9, 30)).length, 0);
+  assert.equal(nextTouch(targets[0]), "Replied");
+  assert.equal(MAX_ACTIVE_TARGETS, 5);
+});
+
+test("targetCandidates: strong fits and insiders first, weak and taken left out", () => {
+  const roles = [
+    { key: "a", company: "Alpha", title: "FDE", score: 2 },
+    { key: "b", company: "Beta", title: "FDE", score: 2 },
+    { key: "c", company: "Gamma", title: "FDE", score: 3 },
+    { key: "d", company: "Delta", title: "FDE", score: 2, ats: "hn" },
+  ];
+  const packs = { a: { pack: { fit_level: "strong" } }, c: { pack: { fit_level: "weak" } } };
+  const network = [["Jo Insider", "Beta", "EM", "u"]];
+  const out = targetCandidates({ roles, packs, network, targets: [{ company: "Delta", state: "active" }] });
+  assert.deepEqual(out.map((c) => c.role.key), ["a", "b"]);
+  assert.deepEqual(out[1].reasons, ["you know Jo Insider"]);
+  assert.equal(out[1].insider, "Jo Insider");
+});
+
+test("fillLinks puts in the Loom and drops an unused portfolio line", () => {
+  const body = "Here's a 90-second walkthrough: [Loom link]\nPortfolio: [portfolio link]\nThanks";
+  assert.equal(fillLinks(body, { loom: "https://loom.com/share/x" }), "Here's a 90-second walkthrough: https://loom.com/share/x\nThanks");
+  assert.match(fillLinks(body, { loom: "L", portfolio: "P" }), /Portfolio: P/);
 });

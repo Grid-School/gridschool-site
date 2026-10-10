@@ -120,6 +120,13 @@
       "purpose": "Twenty warm contacts, five notes a week that lead with the case study."
     },
     {
+      "id": "target-campaign",
+      "version": 1,
+      "title": "Target campaigns: five companies, every channel, on a cadence",
+      "lane": "pipeline",
+      "purpose": "Pick the five companies where hiring, size and fit overlap, then work each one by email with a Loom, LinkedIn and a phone call, with follow-ups on day 3, 7 and 14."
+    },
+    {
       "id": "company-prep",
       "version": 1,
       "title": "Prep notes for your top 5 companies",

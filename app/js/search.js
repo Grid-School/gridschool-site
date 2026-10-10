@@ -13,7 +13,7 @@
  * calendar draws.
  */
 
-import { isoDate, weekStart, addDays, parseDate } from "./time.js?v=15fea56-202610100117";
+import { isoDate, weekStart, addDays, parseDate } from "./time.js?v=022c412-202610100125";
 
 /** How far one application got. Each stage implies every stage before it. */
 export const STAGES = [
@@ -79,6 +79,7 @@ export function searchOf(student) {
   return {
     resume: search.resume ?? null,
     profileAt: search.profileAt ?? null,
+    portfolio: search.portfolio ?? "",
     linkedin: search.linkedin ?? "",
     apps: Array.isArray(search.apps) ? search.apps : [],
   };
@@ -100,6 +101,7 @@ export function careerOf(student) {
     targets: { ...DEFAULT_TARGETS, ...(career.targets ?? {}) },
     notes: career.notes ?? "",
     years: Number.isInteger(career.years) ? career.years : null,
+    portfolio: career.portfolio ?? "",
     working: Array.isArray(career.working) ? career.working : [],
     updatedAt: career.updatedAt ?? null,
   };
@@ -568,4 +570,148 @@ export function insiderText(person, role, student) {
   const first = String(student?.name ?? "").split(/\s+/)[0];
   const them = String(person?.name ?? "").split(/\s+/)[0] || "there";
   return `Hi ${them}, I saw ${role.company} is hiring for ${shortTitle(role.title)} and I'm applying. ${careerOf(student).story.what ? `My work is ${careerOf(student).story.what.charAt(0).toLowerCase()}${careerOf(student).story.what.slice(1).replace(/\.$/, "")}. ` : ""}Would you be open to telling me a bit about the team, or referring me if it seems like a fit? Happy to send a two-line summary.${first ? `\n\n${first}` : ""}`;
+}
+
+/* ---------- targets: a few companies, worked on every channel ----------
+   Where hiring, size and fit overlap, the student stops applying and starts a
+   campaign: day 0 an email with a Loom, a LinkedIn request and a call; then
+   follow-ups on day 3, 7 and 14 (campaign_draft.py writes all of it around the
+   high-stakes problem that company needs owned). Kept on their own search
+   record as `targets`. Five active at a time: depth beats breadth. */
+
+export const MAX_ACTIVE_TARGETS = 5;
+export const DAY0 = [
+  { id: "email", label: "Email + Loom" },
+  { id: "linkedin", label: "LinkedIn" },
+  { id: "call", label: "Call" },
+];
+export const FOLLOWUP_DAYS = [3, 7, 14];
+
+export function targetsOf(student) {
+  const targets = student?.search?.targets;
+  return Array.isArray(targets) ? targets : [];
+}
+
+export function activeTargets(student) {
+  return targetsOf(student).filter((t) => t.state === "active");
+}
+
+export function newTarget(raw = {}, now = new Date()) {
+  return {
+    id: clip(raw.id, 40) || newId(now).replace(/^a/, "t"),
+    company: clip(raw.company, 120),
+    role: clip(raw.role, 200),
+    roleKey: clip(raw.roleKey, 200) || undefined,
+    link: clip(raw.link, 600),
+    insider: clip(raw.insider, 160),
+    why: clip(raw.why, 300),
+    state: "active",
+    openedAt: isoDate(now),
+    touches: {},
+    contact: { name: "", email: "", phone: "", linkedin: "" },
+    loomUrl: "",
+    campaign: null,
+    at: now.toISOString(),
+  };
+}
+
+export function addTarget(targets, raw, now = new Date()) {
+  const list = targets ?? [];
+  if (list.some((t) => t.state === "active" && ((raw.roleKey && t.roleKey === raw.roleKey) || companyKey(t.company) === companyKey(raw.company)))) return list;
+  return [newTarget(raw, now), ...list];
+}
+
+export function patchTarget(targets, id, patch) {
+  return (targets ?? []).map((t) => (t.id === id ? { ...t, ...patch, contact: { ...t.contact, ...(patch.contact ?? {}) }, touches: { ...t.touches, ...(patch.touches ?? {}) } } : t));
+}
+
+export function touchTarget(targets, id, channel, now = new Date()) {
+  return patchTarget(targets, id, { touches: { [channel]: isoDate(now) } });
+}
+
+/** Days since the campaign opened (day 0 = the day the email went out, else the day it was picked). */
+function dayOf(target, now) {
+  const start = parseDate(target.touches?.email || target.openedAt);
+  return Math.floor((startOfDayLocal(now) - start) / 86400000);
+}
+function startOfDayLocal(date) {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+/** Touches due today across active targets: day-0 channels not sent yet, then follow-ups whose day has come. */
+export function dueTouches(targets, now = new Date()) {
+  const due = [];
+  for (const target of targets ?? []) {
+    if (target.state !== "active") continue;
+    const missing = DAY0.filter((c) => !target.touches?.[c.id]);
+    if (missing.length) {
+      due.push({ target, kind: "day0", channels: missing.map((c) => c.id), label: missing.map((c) => c.label).join(", ") });
+      continue;
+    }
+    const day = dayOf(target, now);
+    const next = FOLLOWUP_DAYS.find((d) => !target.touches?.[`d${d}`]);
+    if (next && day >= next) due.push({ target, kind: "follow", day: next, label: `Day ${next} follow-up` });
+  }
+  return due;
+}
+
+/** The next touch for a target, as words: what's due, or when the next one is. */
+export function nextTouch(target, now = new Date()) {
+  if (target.state !== "active") return target.state === "replied" ? "Replied" : "Closed";
+  const missing = DAY0.filter((c) => !target.touches?.[c.id]);
+  if (missing.length) return `Day 0: ${missing.map((c) => c.label).join(", ")}`;
+  const next = FOLLOWUP_DAYS.find((d) => !target.touches?.[`d${d}`]);
+  if (!next) return "Cadence done. Rest it, or one last new proof.";
+  const left = next - dayOf(target, now);
+  return left <= 0 ? `Day ${next} follow-up due` : `Day ${next} follow-up in ${left} day${left === 1 ? "" : "s"}`;
+}
+
+/**
+ * Where to aim: the overlap of hiring for their titles, fit, and a way in.
+ * Strong fits from Prepare score highest, someone they know inside adds a lot,
+ * freshness and a founder-posted (HN) role add a little. Weak fits, companies
+ * already targeted or applied to are left out.
+ */
+export function targetCandidates({ roles = [], packs = {}, network = [], apps = [], targets = [] }, limit = 8) {
+  const taken = new Set(targets.filter((t) => t.state === "active").map((t) => companyKey(t.company)));
+  const applied = new Set(apps.map((a) => a.roleKey).filter(Boolean));
+  const inside = new Map(insideConnections(roles, network).map(({ role, people }) => [role.key, people]));
+  return roles
+    .filter((role) => !taken.has(companyKey(role.company)) && !applied.has(role.key))
+    .map((role) => {
+      const level = packs[role.key]?.pack?.fit_level;
+      if (level === "weak") return null;
+      const people = inside.get(role.key) ?? [];
+      const reasons = [];
+      let score = role.score ?? 1;
+      if (level === "strong") {
+        score += 6;
+        reasons.push("strong fit");
+      } else if (level === "possible") {
+        score += 2;
+        reasons.push("possible fit");
+      }
+      if (people.length) {
+        score += 5;
+        reasons.push(`you know ${people[0].name}`);
+      }
+      if (role.ats === "hn") {
+        score += 1;
+        reasons.push("founder-posted");
+      }
+      return { role, score, reasons, insider: people[0]?.name ?? "" };
+    })
+    .filter(Boolean)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit);
+}
+
+/** Put their real links into a draft: the Loom and the portfolio, or drop the placeholder line. */
+export function fillLinks(text, { loom = "", portfolio = "" } = {}) {
+  let out = String(text ?? "");
+  out = loom ? out.replaceAll("[Loom link]", loom) : out;
+  out = portfolio ? out.replaceAll("[portfolio link]", portfolio) : out.replace(/^.*\[portfolio link\].*\n?/gim, "").replaceAll("[portfolio link]", "");
+  return out;
 }

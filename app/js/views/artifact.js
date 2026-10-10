@@ -3,8 +3,8 @@
  * three owned artifacts render it. Data lives in ../artifacts.js.
  */
 
-import { el } from "../dom.js?v=15fea56-202610100117";
-import { artifactOf } from "../artifacts.js?v=15fea56-202610100117";
+import { el } from "../dom.js?v=022c412-202610100125";
+import { artifactOf } from "../artifacts.js?v=022c412-202610100125";
 
 export function artifactLine(node) {
   const artifact = artifactOf(node);

@@ -10,8 +10,8 @@
  * The parsing and formatting are pure and tested; the DOM builders sit on top.
  */
 
-import { el } from "../dom.js?v=15fea56-202610100117";
-import { isHttpUrl, isValidDate } from "../modules.js?v=15fea56-202610100117";
+import { el } from "../dom.js?v=022c412-202610100125";
+import { isHttpUrl, isValidDate } from "../modules.js?v=022c412-202610100125";
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];

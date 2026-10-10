@@ -1,0 +1,42 @@
+{
+  "id": "target-campaign",
+  "version": 1,
+  "title": "Target campaigns: five companies, every channel, on a cadence",
+  "purpose": "Pick the five companies where hiring, size and fit overlap, then work each one by email with a Loom, LinkedIn and a phone call, with follow-ups on day 3, 7 and 14.",
+  "lane": "pipeline",
+  "phase": "position",
+  "kind": "core",
+  "completion": "tasks",
+  "why": "Anyone can now say they build with AI, and managers are flooded with it. What they still trust a person with is a high-stakes problem: an agent acting inside real systems, data that has to be right, approvals, reliability, legacy integrations, owning the outcome with a customer. Five companies worked on every channel, each told which of those problems you'd own and why you're trusted with it, beat fifty cold applications.",
+  "evidence": "Your Hire page's Targets: five companies, every touch logged, replies tracked.",
+  "tasks": [
+    {
+      "id": "pick",
+      "title": "Choose five targets on your Hire page",
+      "kind": "write",
+      "est": 20,
+      "done_when": "Five companies hiring for your titles, the right size, a strong fit, ideally someone inside, each marked as a target."
+    },
+    {
+      "id": "open",
+      "title": "Day 0 on each target: email with your Loom, a LinkedIn request, a call",
+      "kind": "count",
+      "target": 5,
+      "per": "week",
+      "est": 45,
+      "done_when": "Every channel sent on five targets, each logged on Hire."
+    },
+    {
+      "id": "follow",
+      "title": "Follow up on day 3, 7 and 14, one new thing each time",
+      "kind": "practice",
+      "est": 15,
+      "done_when": "No target goes silent before day 14 without a follow-up."
+    }
+  ],
+  "slots": [
+    "notes",
+    "links",
+    "due"
+  ]
+}

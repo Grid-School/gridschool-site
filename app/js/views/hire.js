@@ -16,10 +16,10 @@
  * half-typed form. Aden sees it read-only from the desk.
  */
 
-import { el, mount } from "../dom.js?v=15fea56-202610100117";
-import { panel, btn, field, toast, copy } from "../ui.js?v=15fea56-202610100117";
-import { isoDate, fmtDay } from "../time.js?v=15fea56-202610100117";
-import { STATUS } from "../graph/model.js?v=15fea56-202610100117";
+import { el, mount } from "../dom.js?v=022c412-202610100125";
+import { panel, btn, field, toast, copy } from "../ui.js?v=022c412-202610100125";
+import { isoDate, fmtDay } from "../time.js?v=022c412-202610100125";
+import { STATUS } from "../graph/model.js?v=022c412-202610100125";
 import {
   STAGES,
   RELATIONS,
@@ -51,10 +51,22 @@ import {
   insideConnections,
   insiderText,
   shortTitle,
-} from "../search.js?v=15fea56-202610100117";
-import { searchRoute, weekBlock, storyCard, appRow } from "./search-parts.js?v=15fea56-202610100117";
-import { matchedRoles, radarReady, fetchPacks } from "../roles-remote.js?v=15fea56-202610100117";
-import { createPackDrawer } from "./pack.js?v=15fea56-202610100117";
+  targetsOf,
+  activeTargets,
+  addTarget,
+  patchTarget,
+  touchTarget,
+  dueTouches,
+  nextTouch,
+  targetCandidates,
+  DAY0,
+  FOLLOWUP_DAYS,
+  MAX_ACTIVE_TARGETS,
+} from "../search.js?v=022c412-202610100125";
+import { searchRoute, weekBlock, storyCard, appRow } from "./search-parts.js?v=022c412-202610100125";
+import { matchedRoles, radarReady, fetchPacks } from "../roles-remote.js?v=022c412-202610100125";
+import { createPackDrawer } from "./pack.js?v=022c412-202610100125";
+import { createCampaignDrawer } from "./campaign.js?v=022c412-202610100125";
 
 const RUN_FAMILIES = ["proof", "presence", "network", "interview"];
 
@@ -83,6 +95,24 @@ export function renderHire(ctx) {
     savePack: (key, entry) => save((s) => ({ packs: keepPack(s.packs, key, entry) })),
     onApplied: (role) => logApplied(role),
   });
+
+  const portfolio = () => searchOf(student()).portfolio || careerOf(student()).portfolio || "";
+  const camp = createCampaignDrawer({
+    slug: ctx.state.slug,
+    readOnly,
+    getPortfolio: portfolio,
+    getTarget: (id) => targetsOf(student()).find((t) => t.id === id),
+    onPatch: (id, patch) => save((x) => ({ targets: patchTarget(x.targets, id, patch) })),
+    onTouch: (id, channel, entry) =>
+      save((x) => ({ targets: touchTarget(x.targets, id, channel), apps: addApp(x.apps, entry) }), { kind: "search.logged", payload: { kind: "warm", company: entry.company, from: `target:${channel}` } }),
+  });
+
+  function makeTarget({ role, reasons = [], insider = "" }) {
+    if (activeTargets(student()).length >= MAX_ACTIVE_TARGETS) return toast(`Five active targets is the most that get real attention. Close one first.`, "warn");
+    save((x) => ({ targets: addTarget(x.targets, { company: role.company, role: role.title, roleKey: role.key, link: role.apply_url || role.url, insider, why: reasons.join(", ") }) }), { kind: "search.target", payload: { company: role.company } });
+    const made = activeTargets(student()).find((t) => (role.key && t.roleKey === role.key) || t.company === role.company);
+    if (made) camp.open(made.id);
+  }
 
   function logApplied(role) {
     save(
@@ -163,6 +193,30 @@ export function renderHire(ctx) {
             person.link ? btn({ label: "Profile ↗", variant: "quiet", href: person.link, target: "_blank" }) : null,
             ro ? null : btn({ label: "Sent", variant: "solid", onclick: () => insiderSent(person, role) }),
           ],
+        })
+      );
+    }
+
+    // 0b2. Target campaigns: today's touches, then the nudge to pick targets.
+    for (const touch of dueTouches(targetsOf(s), now)) {
+      const t = touch.target;
+      items.push(
+        runItem({
+          kind: "target",
+          title: touch.kind === "day0" ? `${t.company}: ${touch.label}` : `${t.company}: ${touch.label}`,
+          sub: touch.kind === "day0" ? "Day 0 of your campaign. The drafts are written around what they need owned; record the Loom in your words." : "One new thing on the same thread. The drafts are ready.",
+          actions: [btn({ label: "Open campaign", variant: "solid", onclick: () => camp.open(t.id) })],
+        })
+      );
+    }
+    const activeCount = activeTargets(s).length;
+    if (activeCount < MAX_ACTIVE_TARGETS && radar.roles.length && !targetsOf(s).length) {
+      items.push(
+        runItem({
+          kind: "target",
+          title: "Choose your five targets",
+          sub: "Where hiring, size and fit overlap, stop applying and start a campaign: email with a Loom, LinkedIn, a call, and follow-ups.",
+          actions: [btn({ label: "Choose", variant: "ghost", onclick: () => document.querySelector(".hire__targets")?.scrollIntoView({ behavior: "smooth" }) })],
         })
       );
     }
@@ -308,6 +362,53 @@ export function renderHire(ctx) {
       { kind: "search.logged", payload: { kind: "warm", company: person.company } }
     );
     toast(`Logged. ${person.name || "They"} moved to Asked.`);
+  }
+
+  /* ---------- targets ---------- */
+
+  function targetsBlock() {
+    const s = student();
+    const active = activeTargets(s);
+    const others = targetsOf(s).filter((t) => t.state !== "active");
+    const cards = active.map((t) =>
+      el(
+        "button.tcard",
+        { type: "button", onclick: () => camp.open(t.id) },
+        el("div.tcard__top", {}, el("b", {}, t.company), el("span.tcard__next", {}, nextTouch(t))),
+        el("span.tcard__role", {}, [shortTitle(t.role), t.campaign?.size].filter(Boolean).join(" · ")),
+        t.campaign?.problem ? el("span.tcard__problem", {}, t.campaign.problem) : t.why ? el("span.tcard__problem", {}, t.why) : null,
+        el(
+          "div.tcard__dots",
+          { "aria-label": "Touches sent" },
+          [...DAY0.map((c) => [c.id, c.label.split(" ")[0]]), ...FOLLOWUP_DAYS.map((d) => [`d${d}`, `D${d}`])].map(([key, label]) => el("span.tcard__dot", { class: t.touches?.[key] ? "is-on" : null, title: t.touches?.[key] ? `${label}: ${t.touches[key]}` : label }, label))
+        )
+      )
+    );
+    const pick =
+      active.length < MAX_ACTIVE_TARGETS && !readOnly()
+        ? targetCandidates({ roles: radar.roles, packs: { ...packsOf(s), ...serverPacks }, network: networkOf(s), apps: searchOf(s).apps, targets: targetsOf(s) }, 6)
+        : [];
+    return el(
+      "div",
+      {},
+      cards.length ? el("div.tcards", {}, cards) : el("p.muted", {}, "No targets yet. Pick up to five below: the overlap of hiring for your titles, a strong fit, and a way in."),
+      pick.length
+        ? el(
+            "div.tpick",
+            {},
+            el("b.tpick__h", {}, active.length ? `Add a target (${active.length} of ${MAX_ACTIVE_TARGETS})` : "Best overlap right now"),
+            pick.map((c) =>
+              el(
+                "div.tpick__row",
+                {},
+                el("div.tpick__main", {}, el("b", {}, c.role.company), el("span", {}, shortTitle(c.role.title)), c.reasons.length ? el("span.tpick__why", {}, c.reasons.join(" · ")) : null),
+                btn({ label: "Make target", variant: "ghost", onclick: () => makeTarget(c) })
+              )
+            )
+          )
+        : null,
+      others.length ? el("p.tpick__done", {}, `${others.filter((t) => t.state === "replied").length} replied · ${others.filter((t) => t.state === "closed").length} closed`) : null
+    );
   }
 
   /* ---------- people ---------- */
@@ -458,8 +559,9 @@ export function renderHire(ctx) {
   const rLink = field({ label: "Resume link", id: "s-resume-link", type: "url", placeholder: "Google Drive or Dropbox link to the PDF" });
   const rText = field({ label: "Resume text", id: "s-resume-text", textarea: true, placeholder: "Paste the whole resume. Prepare reads it for every role." });
   rText.input.rows = 8;
+  const rPortfolio = field({ label: "Portfolio link (optional)", id: "s-portfolio", type: "url", placeholder: "Your site or the project page that proves it" });
   const rStamp = el("span.muted.sresume__stamp");
-  const rSave = btn({ label: "Save resume", variant: "ghost", onclick: () => { save(() => ({ resume: cleanResume({ text: rText.input.value, link: rLink.input.value }) }), { kind: "search.resume", payload: {} }); toast("Resume saved."); } });
+  const rSave = btn({ label: "Save resume", variant: "ghost", onclick: () => { save(() => ({ resume: cleanResume({ text: rText.input.value, link: rLink.input.value }), portfolio: rPortfolio.input.value.trim().slice(0, 300) }), { kind: "search.resume", payload: {} }); toast("Resume saved."); } });
 
   /* ---------- layout ---------- */
 
@@ -471,6 +573,7 @@ export function renderHire(ctx) {
   const routeBox = el("div");
   const weekBox = el("div");
   const peopleBox = el("div");
+  const targetsBox = el("div");
   const liveBox = el("div");
   const allBox = el("div");
   const storyBox = el("div");
@@ -494,6 +597,7 @@ export function renderHire(ctx) {
     mount(routeBox, searchRoute({ student: s, graph: current.state.graph, now }));
     mount(weekBox, weekBlock({ student: s, now }));
     mount(peopleBox, peopleList());
+    mount(targetsBox, targetsBlock());
     mount(importSlot, importBox());
     const { apps } = searchOf(s);
     const live = active(apps);
@@ -503,6 +607,7 @@ export function renderHire(ctx) {
     const resume = searchOf(s).resume;
     if (document.activeElement !== rLink.input) rLink.input.value = resume?.link ?? "";
     if (document.activeElement !== rText.input) rText.input.value = resume?.text ?? "";
+    if (document.activeElement !== rPortfolio.input) rPortfolio.input.value = searchOf(s).portfolio ?? "";
     rStamp.textContent = resume?.at ? `Saved ${new Date(resume.at).toLocaleDateString()}` : "";
     for (const form of [peopleForm, pasteForm, logForm]) form.querySelectorAll("input, select, textarea, button").forEach((n) => n.toggleAttribute("disabled", readOnly()));
     rSave.disabled = readOnly();
@@ -520,6 +625,7 @@ export function renderHire(ctx) {
       adenOn
     ),
     el("section.hire__run", {}, el("header.hire__runhead", {}, el("h2", {}, "The run"), runCount), runBox),
+    el("section.hire__targets", {}, el("header.hire__runhead", {}, el("h2", {}, "Targets"), el("span.hire__count.hire__count--quiet", {}, "Email with a Loom · LinkedIn · a call · day 3, 7, 14")), targetsBox),
     el("section.hire__route", {}, el("header.hire__runhead", {}, el("h2", {}, "Where you stand")), routeBox, weekBox),
     el(
       "div.hire__cols",
@@ -533,10 +639,11 @@ export function renderHire(ctx) {
       el("details.hire__fold", {}, el("summary", {}, "Bring a posting from anywhere"), el("p.muted", {}, "Found a role on a company site, a Discord or a Who's Hiring thread? Paste it and Prepare reads it against your record."), pasteForm),
       el("details.hire__fold", {}, el("summary", {}, "Log something you sent"), logForm),
       el("details.hire__fold", {}, el("summary", {}, "Your story, from Aden"), storyBox),
-      el("details.hire__fold", {}, el("summary", {}, "Your resume"), el("div.sresume", {}, rLink.node, rText.node, el("div.row", {}, rSave, rStamp))),
+      el("details.hire__fold", {}, el("summary", {}, "Your resume"), el("div.sresume", {}, rLink.node, rPortfolio.node, rText.node, el("div.row", {}, rSave, rStamp))),
       el("details.hire__fold", {}, el("summary", {}, "Everything you've sent"), allBox)
     ),
-    drawer.layer
+    drawer.layer,
+    camp.layer
   );
 
   draw();
@@ -547,6 +654,7 @@ export function renderHire(ctx) {
     update(next) {
       current = next;
       draw();
+      camp.refresh();
     },
   };
 }

@@ -10,11 +10,11 @@
  * things that move the search: open the posting, and say it went out.
  */
 
-import { el, mount } from "../dom.js?v=15fea56-202610100117";
-import { btn, copy, toast } from "../ui.js?v=15fea56-202610100117";
-import { createModal } from "../modal.js?v=15fea56-202610100117";
-import { peopleLinks, ageLabel } from "../search.js?v=15fea56-202610100117";
-import { prepareRole } from "../roles-remote.js?v=15fea56-202610100117";
+import { el, mount } from "../dom.js?v=022c412-202610100125";
+import { btn, copy, toast } from "../ui.js?v=022c412-202610100125";
+import { createModal } from "../modal.js?v=022c412-202610100125";
+import { peopleLinks, ageLabel } from "../search.js?v=022c412-202610100125";
+import { prepareRole } from "../roles-remote.js?v=022c412-202610100125";
 
 export function createPackDrawer({ slug, getPack, savePack, onApplied, readOnly = () => false }) {
   const modal = createModal({ label: "Prepare this role", size: "reading", onClose: () => modal.setOpen(false) });

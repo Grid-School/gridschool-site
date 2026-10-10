@@ -10,8 +10,8 @@
  * When the radar is off the match is simply empty and the page says so.
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=15fea56-202610100117";
-import { persistToken } from "./session.js?v=15fea56-202610100117";
+import { PERSIST, isPlaceholder } from "../../config.js?v=022c412-202610100125";
+import { persistToken } from "./session.js?v=022c412-202610100125";
 
 export function radarReady() {
   return Boolean(persistToken() && PERSIST?.endpoint && !isPlaceholder(PERSIST.endpoint));
@@ -59,4 +59,9 @@ export async function fetchPacks(slug) {
   if (!radarReady()) return {};
   const payload = await call("GET", `/students/${encodeURIComponent(slug)}/roles/packs`);
   return payload.packs ?? {};
+}
+
+/** A multi-channel campaign for one target (campaign_draft.py): radar roleKey, or a role {company, title, url, description}. */
+export function draftCampaign(slug, { roleKey, role, insider = "", portfolio = "" }) {
+  return call("POST", `/students/${encodeURIComponent(slug)}/campaign/draft`, { ...(roleKey ? { roleKey } : { role }), insider, portfolio });
 }
