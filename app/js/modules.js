@@ -20,7 +20,7 @@
 export const SLOTS = ["notes", "links", "due", "readings"];
 export const INSTANCE_KEYS = ["id", "n", "requires", "module", "family", "phase", "title", "fill"];
 /** Module keys copied onto the resolved node (title, family, phase and tasks are handled apart). */
-export const CONTENT_KEYS = ["kind", "completion", "why", "evidence", "lesson", "modules", "signoff"];
+export const CONTENT_KEYS = ["kind", "completion", "why", "evidence", "lesson", "modules", "signoff", "video"];
 export const MAX_NOTES = 8000;
 export const MAX_LINKS = 10;
 export const MAX_READINGS = 6;

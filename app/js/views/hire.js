@@ -16,10 +16,10 @@
  * half-typed form. Aden sees it read-only from the desk.
  */
 
-import { el, mount } from "../dom.js?v=5802f60-202610100134";
-import { panel, btn, field, toast, copy } from "../ui.js?v=5802f60-202610100134";
-import { isoDate, fmtDay } from "../time.js?v=5802f60-202610100134";
-import { STATUS } from "../graph/model.js?v=5802f60-202610100134";
+import { el, mount } from "../dom.js?v=d696edf-202610102057";
+import { panel, btn, field, toast, copy } from "../ui.js?v=d696edf-202610102057";
+import { isoDate, fmtDay } from "../time.js?v=d696edf-202610102057";
+import { STATUS } from "../graph/model.js?v=d696edf-202610102057";
 import {
   STAGES,
   RELATIONS,
@@ -46,6 +46,8 @@ import {
   keepPack,
   ageLabel,
   diagnose,
+  thisWeek,
+  funnel,
   parseConnections,
   networkOf,
   insideConnections,
@@ -62,15 +64,36 @@ import {
   DAY0,
   FOLLOWUP_DAYS,
   MAX_ACTIVE_TARGETS,
-} from "../search.js?v=5802f60-202610100134";
-import { searchRoute, weekBlock, storyCard, appRow } from "./search-parts.js?v=5802f60-202610100134";
-import { matchedRoles, radarReady, fetchPacks } from "../roles-remote.js?v=5802f60-202610100134";
-import { createPackDrawer } from "./pack.js?v=5802f60-202610100134";
-import { createCampaignDrawer } from "./campaign.js?v=5802f60-202610100134";
+} from "../search.js?v=d696edf-202610102057";
+import { storyCard, appRow } from "./search-parts.js?v=d696edf-202610102057";
+import { TOOLS } from "../engine.js?v=d696edf-202610102057";
+import { PERSIST } from "../../../config.js?v=d696edf-202610102057";
+import { matchedRoles, radarReady, fetchPacks } from "../roles-remote.js?v=d696edf-202610102057";
+import { createPackDrawer } from "./pack.js?v=d696edf-202610102057";
+import { createCampaignDrawer } from "./campaign.js?v=d696edf-202610102057";
 
 const RUN_FAMILIES = ["proof", "presence", "network", "interview"];
 /** How many moves the day leads with. More than this reads as a wall, not a plan. */
-const RUN_SHOWN = 7;
+const TOOL_IDS = ["today", "targets", "people", "applications", "profile"];
+/** The map steps each tool works on (by module), listed on the tool's page. */
+const TOOL_STEPS = {
+  applications: ["application-engine", "title-cluster"],
+  targets: ["target-campaign", "company-prep"],
+  people: ["warm-path", "target-list", "network-sprint"],
+  profile: ["profile-rewrite", "profile-images", "proof-questionnaire"],
+  today: [],
+};
+const TOOL_WHY = {
+  today: "Every move for today, in the order that gets interviews: a booked conversation, someone you know inside, today's target touches, warm asks, follow-ups, fresh roles, then your next build step.",
+  targets: "Five companies where hiring, size and fit overlap, worked on every channel: an email with a Loom, a LinkedIn request, a call, and follow-ups on day 3, 7 and 14.",
+  people: "Referrals turn into interviews far more often than applications. Former colleagues first, then people you've met, then people in the seat.",
+  applications: "Fresh roles that match your titles, strongest fits first. Prepare reads each one against your record; any posting you find can be prepared too.",
+  profile: "Recruiters search all day. Your story, headline and About from Aden, and the resume and portfolio every tool reads.",
+};
+
+/** Which lane of the grid each kind of move works. */
+const LANE_OF = { prep: "interview", inside: "network", target: "pipeline", profile: "presence", warm: "network", follow: "pipeline", apply: "pipeline" };
+
 
 /** The next open step on their map in a lane that builds proof or presence. */
 export function nextBuildStep(graph) {
@@ -79,7 +102,7 @@ export function nextBuildStep(graph) {
     .sort((a, b) => (a.n ?? 0) - (b.n ?? 0))[0];
 }
 
-export function renderHire(ctx) {
+export function renderHire(ctx, initialTool) {
   let current = ctx;
   const readOnly = () => current.store.isProgressReadOnly?.() ?? false;
   const save = (change, event = null) => current.store.updateSearch(change, event);
@@ -126,8 +149,25 @@ export function renderHire(ctx) {
     toast(`Logged: ${role.company}. Now find one person there.`);
   }
 
+  /** How the radar is doing, in words: the place for "how", off the map. */
+  async function loadRadarNote() {
+    try {
+      const health = await (await fetch(`${String(PERSIST.endpoint).replace(/\/$/, "")}/health`, { cache: "no-store" })).json();
+      const r = health?.roles;
+      if (!r || r.state === "off") radarNote.textContent = "The job radar is off right now";
+      else if (!r.last_poll) radarNote.textContent = "The job radar is starting";
+      else {
+        const mins = Math.max(0, Math.round((Date.now() - new Date(r.last_poll)) / 60000));
+        radarNote.textContent = mins > 15 ? "The job radar is paused" : `Watching employer job boards for your titles · checked ${mins ? `${mins} min ago` : "just now"}`;
+      }
+    } catch {
+      radarNote.textContent = "";
+    }
+  }
+
   async function loadRadar() {
     if (!radarReady()) return;
+    void loadRadarNote();
     fetchPacks(ctx.state.slug)
       .then((packs) => {
         serverPacks = packs;
@@ -145,10 +185,15 @@ export function renderHire(ctx) {
 
   /* ---------- the run ---------- */
 
-  function runItem({ kind, title, sub, actions, done = false }) {
+  /** A move: what to do, why, the buttons, and the lane of the grid it belongs to. */
+  function runItem(move) {
+    return { lane: LANE_OF[move.kind], ...move };
+  }
+
+  function renderMove({ kind, title, sub, actions }) {
     return el(
       "li.run__item",
-      { class: done ? "is-done" : null, "data-kind": kind },
+      { "data-kind": kind },
       el("span.run__dot", { "aria-hidden": "true" }),
       el("div.run__text", {}, el("b.run__title", {}, title), sub ? el("span.run__sub", {}, sub) : null),
       el("div.run__acts", {}, actions)
@@ -172,7 +217,7 @@ export function renderHire(ctx) {
           title: `Prepare for your ${app.company} ${app.stage === "screen" ? "screen" : "interview"}`,
           sub: "The questions this loop asks, your two-minute story, and one thing about their product to bring up.",
           actions: [
-            btn({ label: "Prep", variant: "solid", onclick: () => drawer.open(target) }),
+            btn({ label: "Prep", variant: "solid", onclick: () => drawer.open(target, { node: "ready" }) }),
             app.link ? btn({ label: "Posting ↗", variant: "quiet", href: app.link, target: "_blank" }) : null,
           ],
         })
@@ -335,6 +380,8 @@ export function renderHire(ctx) {
       items.push(
         runItem({
           kind: "build",
+          lane: step.family,
+          stepId: step.id,
           title: step.title,
           sub: "Your map's next build step. Proof is what makes the messages land.",
           actions: [btn({ label: "Open step", variant: "ghost", onclick: () => current.navigate("map", step.id) })],
@@ -594,48 +641,67 @@ export function renderHire(ctx) {
 
   /* ---------- layout ---------- */
 
-  const headTitle = el("h1.hire__title");
-  const headSub = el("p.hire__sub");
   const adenOn = el("div.hire__aden");
   const runBox = el("div");
   const runCount = el("span.hire__count");
-  const routeBox = el("div");
-  const weekBox = el("div");
   const peopleBox = el("div");
   const targetsBox = el("div");
   const liveBox = el("div");
   const allBox = el("div");
   const storyBox = el("div");
+  const freshBox = el("div");
+  const radarNote = el("span.hire__count.hire__count--quiet");
+  const headBox = el("div");
+
+  /** Which tool this page is (#/do/<tool>). */
+  let focus = TOOL_IDS.includes(initialTool) ? initialTool : "today";
+
+  /** The node's own header, like a step page: back to the map, what this is, why, and the steps it powers. */
+  function nodeHead(doneToday) {
+    const tool = TOOLS[focus];
+    const modules = TOOL_STEPS[focus] ?? [];
+    const steps = (current.state.graph?.nodes ?? []).filter((node) => modules.includes(String(node.moduleRef ?? "").split("@")[0]));
+    return el(
+      "header.tool__head",
+      {},
+      el("div.row.tool__nav", {}, btn({ label: "← Map", variant: "quiet", onclick: () => current.navigate("map") }), el("span.tool__crumb", {}, "Every day · in parallel")),
+      el("h1.tool__title", {}, tool.label),
+      el("p.tool__why", {}, TOOL_WHY[focus]),
+      steps.length
+        ? el(
+            "div.tool__steps",
+            {},
+            el("span", {}, "Works on these map steps:"),
+            steps.map((node) => el("button.chip2.tool__step", { type: "button", class: node.status === STATUS.LIT ? "is-lit" : null, onclick: () => current.navigate("map", node.id) }, `${String(node.n).padStart(2, "0")} ${node.title}`))
+          )
+        : null,
+      focus === "today" && doneToday ? el("p.tool__count", {}, `${doneToday} sent today`) : null
+    );
+  }
 
   function draw() {
     const s = student();
     const now = new Date();
-    const { items, doneToday, targets } = runList();
-    const stall = diagnose({ student: s, now });
-    const toDo = items.filter((i) => !i.classList.contains("is-done")).length;
-    // The run is ordered by leverage; the first few are the day. The rest wait one click away.
-    headTitle.textContent = !toDo ? "Today's run is done" : toDo > RUN_SHOWN ? `${RUN_SHOWN} moves first, ${toDo - RUN_SHOWN} if you have time` : `${toDo} moves today`;
-    headSub.textContent = stall.text;
-    headSub.className = `hire__sub hire__sub--${stall.tone}`;
-    runCount.textContent = doneToday ? `${doneToday} sent today` : "";
+    const { items: moves, doneToday } = runList();
+    mount(headBox, nodeHead(doneToday));
 
     const working = (careerOf(s).working ?? []).filter((w) => !w.done && w.text);
     mount(adenOn, working.length ? [el("b", {}, "Aden is on"), el("ul", {}, working.slice(0, 4).map((w) => el("li", {}, w.text)))] : null);
-    adenOn.hidden = !working.length;
+    adenOn.hidden = !working.length || focus !== "today";
 
-    const first = items.slice(0, RUN_SHOWN);
-    const later = items.slice(RUN_SHOWN);
+    // Today: every move, in order, the first one is the next move the map marks.
     mount(
       runBox,
-      items.length
-        ? [
-            el("ol.run", {}, first),
-            later.length ? el("details.run__more", {}, el("summary", {}, `${later.length} more if you have time`), el("ol.run.run--later", { start: String(RUN_SHOWN + 1) }, later)) : null,
-          ]
+      moves.length
+        ? el("ol.run", {}, moves.map((m, i) => { const item = renderMove(m); if (!i) item.classList.add("is-first"); return item; }))
         : el("p.muted", {}, "Nothing left for today. Rest is part of a long search.")
     );
-    mount(routeBox, searchRoute({ student: s, graph: current.state.graph, now }));
-    mount(weekBox, weekBlock({ student: s, now }));
+    runCount.textContent = doneToday ? `${doneToday} sent today` : "";
+
+    // Applications: the fresh roles from the run, then everything in flight.
+    const fresh = moves.filter((m) => m.kind === "apply");
+    mount(freshBox, fresh.length ? el("ol.run", {}, fresh.map(renderMove)) : el("p.muted", {}, radar.loading ? "Looking for fresh roles…" : "No fresh roles match your titles right now. Bring one in below: any posting can be prepared."));
+
     mount(peopleBox, peopleList());
     mount(targetsBox, targetsBlock());
     mount(importSlot, importBox());
@@ -651,49 +717,53 @@ export function renderHire(ctx) {
     rStamp.textContent = resume?.at ? `Saved ${new Date(resume.at).toLocaleDateString()}` : "";
     for (const form of [peopleForm, pasteForm, logForm]) form.querySelectorAll("input, select, textarea, button").forEach((n) => n.toggleAttribute("disabled", readOnly()));
     rSave.disabled = readOnly();
+    for (const [tool, section] of Object.entries(sections)) section.hidden = tool !== focus;
+    document.title = `${TOOLS[focus].label} · ${s.name} · GridSchool`;
   }
 
-  const node = el(
-    "div.view.view--hire",
-    {},
-    el(
-      "header.hire__head",
+  const profileStep = () => {
+    const career = careerOf(student());
+    if (!career.headline) return el("p.muted", {}, "Aden writes your headline and story with you on your next call. They show up here.");
+    return el(
+      "div.row",
       {},
-      el("b.eyebrow", {}, `Today · ${fmtDay(new Date())}`),
-      headTitle,
-      headSub,
-      adenOn
-    ),
-    el("section.hire__run", {}, el("header.hire__runhead", {}, el("h2", {}, "The run"), runCount), runBox),
-    el("section.hire__targets", {}, el("header.hire__runhead", {}, el("h2", {}, "Targets"), el("span.hire__count.hire__count--quiet", {}, "Email with a Loom · LinkedIn · a call · day 3, 7, 14")), targetsBox),
-    el("section.hire__route", {}, el("header.hire__runhead", {}, el("h2", {}, "Where you stand")), routeBox, weekBox),
-    el(
-      "div.hire__cols",
-      {},
-      panel({ eyebrow: "Your way in", title: "People", note: "Former colleagues first. Mark someone Sent from the run and it's logged." }, peopleBox, el("details.hire__more", {}, el("summary", {}, "Add someone"), peopleForm), importSlot),
-      panel({ eyebrow: "Moving", title: "Live conversations" }, liveBox)
-    ),
-    el(
-      "div.hire__quiet",
-      {},
-      el("details.hire__fold", {}, el("summary", {}, "Bring a posting from anywhere"), el("p.muted", {}, "Found a role on a company site, a Discord or a Who's Hiring thread? Paste it and Prepare reads it against your record."), pasteForm),
-      el("details.hire__fold", {}, el("summary", {}, "Log something you sent"), logForm),
-      el("details.hire__fold", {}, el("summary", {}, "Your story, from Aden"), storyBox),
-      el("details.hire__fold", {}, el("summary", {}, "Your resume"), el("div.sresume", {}, rLink.node, rPortfolio.node, rText.node, el("div.row", {}, rSave, rStamp))),
-      el("details.hire__fold", {}, el("summary", {}, "Everything you've sent"), allBox)
-    ),
-    drawer.layer,
-    camp.layer
-  );
+      btn({ label: "Copy headline", variant: "ghost", onclick: () => copy(career.headline, "Headline copied.") }),
+      career.about ? btn({ label: "Copy About", variant: "ghost", onclick: () => copy(career.about, "About copied.") }) : null,
+      readOnly() || searchOf(student()).profileAt ? null : btn({ label: "It's live on LinkedIn", variant: "solid", onclick: () => save(() => ({ profileAt: new Date().toISOString() }), { kind: "search.profile", payload: {} }) })
+    );
+  };
+  const profileActions = el("div");
 
-  draw();
+  const sections = {
+    today: el("section.tool__body", {}, adenOn, el("header.hire__runhead", {}, el("h2", {}, "In order"), runCount), runBox),
+    targets: el("section.tool__body", {}, targetsBox),
+    people: el("section.tool__body", {}, el("div.hire__cols", {}, panel({ eyebrow: "Your way in", title: "People" }, peopleBox, el("details.hire__more", {}, el("summary", {}, "Add someone"), peopleForm)), panel({ eyebrow: "Who you already know", title: "Connections" }, importSlot))),
+    applications: el(
+      "section.tool__body",
+      {},
+      el("header.hire__runhead", {}, el("h2", {}, "Fresh roles for your titles"), radarNote),
+      freshBox,
+      el("div.hire__quiet", {}, el("details.hire__fold", { open: "" }, el("summary", {}, "Bring a posting from anywhere"), pasteForm), el("details.hire__fold", {}, el("summary", {}, "Live conversations"), liveBox), el("details.hire__fold", {}, el("summary", {}, "Log something you sent"), logForm), el("details.hire__fold", {}, el("summary", {}, "Everything you've sent"), allBox))
+    ),
+    profile: el("section.tool__body", {}, panel({ eyebrow: "From Aden", title: "Your story" }, storyBox, profileActions), panel({ eyebrow: "Keep it current", title: "Resume and portfolio" }, el("div.sresume", {}, rLink.node, rPortfolio.node, rText.node, el("div.row", {}, rSave, rStamp)))),
+  };
+
+  const node = el("div.view.view--hire.view--tool", {}, headBox, ...Object.values(sections), drawer.layer, camp.layer);
+
+  function redraw() {
+    mount(profileActions, profileStep());
+    draw();
+  }
+
+  redraw();
   void loadRadar();
 
   return {
     node,
-    update(next) {
+    update(next, tool) {
       current = next;
-      draw();
+      if (TOOL_IDS.includes(tool)) focus = tool;
+      redraw();
       camp.refresh();
     },
   };

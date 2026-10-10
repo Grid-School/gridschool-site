@@ -1,5 +1,5 @@
 {
-  "version": "2026-09-15",
+  "version": "2026-10-09",
   "note": "Written from how the program actually runs. Every claim here has to match the offer lock in companies/gridschool-phase0; if the offer changes, this file changes in the same commit.",
   "documents": {
     "terms": {
@@ -92,6 +92,7 @@
           "heading": "What I collect",
           "body": [
             "From the application: your name, email, links to your work and profile, and your written answers about what you have shipped and what you think is blocking you.",
+            "If you answer an ad or message GridSchool: your name, the email and phone you give, your Instagram or Facebook account id, the messages we exchange, your answers on the ad's form, which ad you came from, and whether you booked or attended a call.",
             "From the program: your board, meaning the URLs you attach as evidence, task state, review requests and the written reviews I return, and your weekly quota numbers.",
             "That is all. No tracking profile, no data enrichment, nothing bought from a third party."
           ]
@@ -99,14 +100,31 @@
         {
           "heading": "Why",
           "body": [
-            "To decide whether the program fits you, to run the residency, and to know where you are so a review is useful. Your email is used to talk to you about your own program, not to run a newsletter."
+            "To decide whether the program fits you, to run the residency, and to know where you are so a review is useful.",
+            "Your email and phone are used to talk to you about the program you asked about: replies, follow-ups, and reminders for calls you booked. If you don't enrol, I may email you about the program a few more times; every email has a one-click unsubscribe. No newsletter, and no list sold or rented to anyone."
           ]
         },
         {
           "heading": "Where it lives",
           "body": [
             "While the platform is pre-backend, your board lives in your own browser's storage and in a file I keep in the project repository when you or I export it. Nothing about your board is sent to a third-party analytics service.",
-            "Payments go through the checkout partner named on the checkout page, scheduling through Cal.com, the room through Discord, and email through my mail provider. Each of them sees only what it needs: the checkout partner sees the payment, Cal.com sees the booking, Discord sees what you post there."
+            "Lead details and messages are kept in my own database on a private server I rent.",
+            "Services that see only what they need: Meta (ads, lead forms, Instagram and Messenger), HighLevel (the messaging service that carries texts, emails and direct messages), Calendly (bookings), Fathom (call notes), the checkout partner named on the checkout page (payments), Discord (the room), Telegram (where I'm notified about new messages), and my mail provider."
+          ]
+        },
+        {
+          "heading": "Messages, and the assistant that helps answer them",
+          "body": [
+            "Replies to Instagram, Facebook, text and email messages are written with the help of an AI assistant I set up. It works only from facts I wrote and approved, it never claims to be a person, and if you ask whether you're talking to a bot it tells you. I read the conversations and I take every call myself.",
+            "To write a reply, the text of the conversation is sent to the AI providers that run the assistant (currently Anthropic and xAI) through their business APIs. Nothing is sent to them for advertising."
+          ]
+        },
+        {
+          "heading": "Text messages",
+          "body": [
+            "You only get texts if you ticked the box agreeing to them. The details are on the text message terms page: what you'll get, how often, and how to stop.",
+            "Mobile numbers and text message consent are never shared with or sold to third parties or affiliates for marketing or promotional purposes. The messaging service and its carrier partners handle your number only to deliver the texts.",
+            "Reply STOP to any text and the texts end, along with the other follow-ups."
           ]
         },
         {
@@ -120,6 +138,7 @@
           "heading": "How long I keep it",
           "body": [
             "Applications I turn down are deleted within ninety days. If you enrol, your board and review history are kept while you are in the program and for a year after it ends, because a reference request later is common and the record is what makes it credible.",
+            "If you messaged me or filled in a form and didn't enrol, your messages and details are deleted within twelve months of our last contact. If you opted out, I keep only your number or email and the date, so you are never contacted again.",
             "Ask me to delete any of it earlier and I will, except for what I am required to keep for payment records."
           ]
         },
@@ -143,6 +162,44 @@
           "heading": "Age",
           "body": [
             "This program is for adults. Do not apply if you are under 18."
+          ]
+        }
+      ]
+    },
+    "sms": {
+      "title": "Text messages",
+      "lede": "What you agreed to if you ticked the box to get texts from GridSchool, and how to stop them.",
+      "sections": [
+        {
+          "heading": "What you'll get",
+          "body": [
+            "Texts from GridSchool (GRID SCHOOL LLC) about the program you asked about: replies to your questions, follow-ups, and reminders for calls you booked. Some are sent automatically. Nothing from anyone else."
+          ]
+        },
+        {
+          "heading": "How often",
+          "body": [
+            "Message frequency varies: usually a few texts around a conversation or a booked call, then nothing. Message and data rates may apply."
+          ]
+        },
+        {
+          "heading": "Stopping, and help",
+          "body": [
+            "Reply STOP to any text. You get one confirmation and no more texts, and the other follow-ups stop too.",
+            "Reply HELP, or email inquire@gridschool.org, and a person answers."
+          ]
+        },
+        {
+          "heading": "Not required",
+          "body": [
+            "Agreeing to texts is not a condition of applying, booking a call, or enrolling."
+          ]
+        },
+        {
+          "heading": "Your number",
+          "body": [
+            "Your number and your consent are never shared with or sold to anyone for marketing. See the privacy page for everything else.",
+            "Carriers are not liable for delayed or undelivered messages."
           ]
         }
       ]

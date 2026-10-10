@@ -16,24 +16,25 @@
  * went with it, because on the floor position is derived from sequence.
  */
 
-import { el, mount } from "../dom.js?v=5802f60-202610100134";
-import { btn, toast } from "../ui.js?v=5802f60-202610100134";
-import { createScene3d } from "../graph/scene3d/index.js?v=5802f60-202610100134";
-import { createRezScene } from "../graph/rez/index.js?v=5802f60-202610100134";
-import { STATUS, nextUp, progress, visibleGraph, stepNumber } from "../graph/model.js?v=5802f60-202610100134";
-import { LEGEND, STANDING, STANDING_LABEL, standingOf, legendKeyOf } from "../graph/standing.js?v=5802f60-202610100134";
-import { trackLabel } from "../copy.js?v=5802f60-202610100134";
-import { mapList } from "./map-list.js?v=5802f60-202610100134";
-import { dueLabel } from "./from-aden.js?v=5802f60-202610100134";
-import { createGridState, hashFor, RESERVED_ARGS, VIEW } from "./grid-state.js?v=5802f60-202610100134";
-import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=5802f60-202610100134";
-import { isProgressReadOnly } from "../store.js?v=5802f60-202610100134";
+import { el, mount } from "../dom.js?v=d696edf-202610102057";
+import { btn, toast } from "../ui.js?v=d696edf-202610102057";
+import { createScene3d } from "../graph/scene3d/index.js?v=d696edf-202610102057";
+import { createRezScene } from "../graph/rez/index.js?v=d696edf-202610102057";
+import { STATUS, nextUp, progress, visibleGraph, stepNumber } from "../graph/model.js?v=d696edf-202610102057";
+import { LEGEND, STANDING, STANDING_LABEL, standingOf, legendKeyOf } from "../graph/standing.js?v=d696edf-202610102057";
+import { trackLabel } from "../copy.js?v=d696edf-202610102057";
+import { mapList } from "./map-list.js?v=d696edf-202610102057";
+import { dueLabel } from "./from-aden.js?v=d696edf-202610102057";
+import { createGridState, hashFor, RESERVED_ARGS, VIEW } from "./grid-state.js?v=d696edf-202610102057";
+import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=d696edf-202610102057";
+import { isProgressReadOnly } from "../store.js?v=d696edf-202610102057";
+import { doneForYou, nextMove, movesAfterNext } from "../engine.js?v=d696edf-202610102057";
+import { matchedRoles, fetchPacks, radarReady } from "../roles-remote.js?v=d696edf-202610102057";
+import { careerOf } from "../search.js?v=d696edf-202610102057";
+import { isoDate } from "../time.js?v=d696edf-202610102057";
 
 /** Right side clears the control column, top clears the legend bar. */
 const INSETS = { top: 76, right: 132, bottom: 72, left: 40 };
-/** How to move. Shown while nothing is hovered. */
-const WALK_HINT = "Arrow keys walk the floor · drag to pan · wheel to rise · click a ring to open it";
-const ROUTE_HINT = "Scroll or drag along the road · click a step to open it";
 
 export const MAP_STYLE = { FLOOR: "floor", ROUTE: "route" };
 const STYLE_KEY = "gridschool.mapStyle";
@@ -59,72 +60,21 @@ export function renderMap(ctx, initialArg) {
   const hudTop = el("div.hud.hud--top");
   const hudSide = el("div.hud.hud--side");
   const status = el("div.hud.hud--status", { role: "status" });
+  const nextCard = el("div.nextbar", { role: "region", "aria-label": "Do this next" });
+  const adenLine = el("div.adenline", { hidden: true });
   const lockFloat = el("div.lock-float", { hidden: true });
   const invite = el("div.style-invite", { hidden: true, role: "dialog", "aria-label": "A new way to see your map" });
   const world = el("div.world3d-host", { role: "application", "aria-label": "Your path" });
-  const canvas = el("div.view.view--map", {}, world, hudTop, hudSide, status, invite);
+  const canvas = el("div.view.view--map", {}, world, hudTop, adenLine, hudSide, status, nextCard, invite);
   const list = el("div.view.view--maplist", { hidden: true });
   const root = el("div.mapview", {}, canvas, list, lockFloat);
 
   let current = ctx;
   let signature = "";
-  let inviteDismissed = false;
 
-  const style = () => mapStyleFor(current.state);
-  const hint = () => (style() === MAP_STYLE.ROUTE ? ROUTE_HINT : WALK_HINT);
-
-  /** Save the pick on the seat; the demo and a read-only viewer keep it in this browser. */
-  function chooseStyle(next) {
-    inviteDismissed = true;
-    if (current.state.slug === "demo" || isProgressReadOnly()) {
-      try {
-        localStorage.setItem(STYLE_KEY, next);
-      } catch {
-        /* the pick lasts this page only */
-      }
-      draw();
-      return;
-    }
-    if (next !== current.state.student?.prefs?.mapStyle) current.store.setMapStyle(next);
-    else draw();
-  }
-
-  function styleToggle() {
-    const seg = (value, label) =>
-      el(
-        "button.seg__b",
-        {
-          type: "button",
-          class: style() === value ? "is-on" : null,
-          "aria-pressed": String(style() === value),
-          onclick: () => chooseStyle(value),
-        },
-        label
-      );
-    return el("div.seg", { role: "group", "aria-label": "How the map is drawn" }, seg(MAP_STYLE.FLOOR, "Floor"), seg(MAP_STYLE.ROUTE, "Route"));
-  }
-
-  /** Once, until they pick: the Route is offered, the Floor stays. */
-  function renderInvite() {
-    const show = !isList() && !inviteDismissed && current.state.slug !== "demo" && !isProgressReadOnly() && !current.state.student?.prefs?.mapStyle;
-    invite.hidden = !show;
-    if (!show) return mount(invite);
-    mount(
-      invite,
-      el("b", {}, "New: the Route"),
-      el(
-        "p",
-        {},
-        "The same map, drawn flat, so every step's name reads at a glance. Your progress does not change, and the Floor / Route switch above lets you go back any time."
-      ),
-      el(
-        "div.style-invite__actions",
-        {},
-        btn({ label: "Try the Route", variant: "solid", onclick: () => chooseStyle(MAP_STYLE.ROUTE) }),
-        btn({ label: "Keep the Floor", variant: "quiet", onclick: () => chooseStyle(MAP_STYLE.FLOOR) })
-      )
-    );
-  }
+  // The Route only, for now (2026-10-10): one 2D map, the one the landing draws.
+  // The Floor (scene3d) and the per-seat pick stay in the code for a later return.
+  const style = () => MAP_STYLE.ROUTE;
 
   /** The single writer: every transition redraws and rewrites the hash. */
   const ui = createGridState({
@@ -160,8 +110,91 @@ export function renderMap(ctx, initialArg) {
   /** A student sees the spine, what they picked and what is on offer. */
   const shown = () => visibleGraph(current.state.graph);
 
+  /** Ready nodes and the next move ride on every real board (not the public demo). */
+  const hasBand = () => current.state.slug !== "demo";
+
+  /* What's ready comes from the server: radar matches (for people they know inside) and prepared roles. */
+  const live = { roles: [], packs: {}, loaded: false };
+  async function loadLive() {
+    if (!hasBand() || !radarReady()) return;
+    const career = careerOf(current.state.student);
+    const titles = career.titles.length ? career.titles : ["Software Engineer"];
+    const [roles, packs] = await Promise.all([
+      matchedRoles({ titles, years: career.years ?? null, limit: 60 }).then((r) => r.roles ?? []).catch(() => []),
+      fetchPacks(current.state.slug).catch(() => ({})),
+    ]);
+    live.roles = roles;
+    live.packs = packs;
+    live.loaded = true;
+    if (!isList()) drawFloor(shown(), paintOptions());
+    renderNext();
+  }
+
+  const move = () => nextMove({ student: current.state.student, graph: current.state.graph, roles: live.roles, packs: live.packs });
+
+  /** What a ready thing is, in the words an app would use. */
+  const TAG = { insider: "Found for you", campaign: "Drafted for you", prepared: "Prepared for you" };
+  const LANE_OF = { insider: "network", campaign: "pipeline", prepared: "pipeline" };
+  const titleOf = (item) =>
+    item.kind === "insider" ? `Ask ${item.person.name} at ${item.role.company}` : item.kind === "campaign" ? `Send the ${item.target.company} campaign` : `Apply to ${item.label.replace(/^Prepared: /, "")}`;
+
+  /** The next move (white) and up to two more things made for them, as nodes beside "you are here". */
+  function readyNodes() {
+    const next = move();
+    const column = doneForYou({ student: current.state.student, roles: live.roles, packs: live.packs });
+    const items = [];
+    let skipFed = Boolean(next.fed);
+    if (!next.stepId && next.lane) {
+      const tag = next.fed ? TAG[next.fed] : /^Prepare for your/.test(next.title) ? "Booked" : null;
+      items.push({ title: next.title, tag, tool: next.tool, lane: next.lane, isNext: true });
+    }
+    for (const item of column.ready) {
+      if (items.length >= 3) break;
+      if (skipFed && item.kind === next.fed) {
+        skipFed = false;
+        continue;
+      }
+      items.push({ title: titleOf(item), tag: TAG[item.kind], tool: item.tool, lane: LANE_OF[item.kind], isNext: false });
+    }
+    return { items };
+  }
+
   function paintOptions(extra = {}) {
-    return { nextId: nextUp(current.state.graph)?.id ?? null, ...extra };
+    const nextId = nextUp(current.state.graph)?.id ?? null;
+    if (!hasBand()) return { nextId, ...extra };
+    return { nextId, ready: readyNodes(), onTool: (tool) => current.navigate("do", tool), ...extra };
+  }
+
+  /** Aden's current work for them, as a plain sentence under the top bar. */
+  function renderAden() {
+    const item = (careerOf(current.state.student).working ?? []).find((w) => !w.done && w.text);
+    adenLine.hidden = !hasBand() || isList() || !item;
+    if (item) mount(adenLine, el("span.adenline__dot", { "aria-hidden": "true" }), el("span", {}, `Aden is working on: ${item.text}`));
+  }
+
+  /** The bottom bar: the one next move, docked, so it never covers the map. Agrees with the white ring. */
+  function renderNext() {
+    if (!hasBand() || isList()) {
+      nextCard.hidden = true;
+      return;
+    }
+    const next = move();
+    // "+N more today" only after they've done something today: the first look is one move, not a list.
+    const today = isoDate(new Date());
+    const doneToday = (current.state.student?.search?.apps ?? []).some((a) => a.date === today) || String(current.state.student?.search?.profileAt ?? "").startsWith(today);
+    const more = doneToday ? movesAfterNext({ student: current.state.student, roles: live.roles, packs: live.packs }) : 0;
+    nextCard.hidden = false;
+    mount(
+      nextCard,
+      el("span.nextbar__dot", { "aria-hidden": "true" }),
+      el("div.nextbar__text", {}, el("b.nextbar__title", {}, next.title), el("span.nextbar__why", {}, next.why)),
+      more ? btn({ label: `+${more} more today`, variant: "quiet", onclick: () => current.navigate("do", "today") }) : null,
+      btn({
+        label: next.stepId ? "Open the step" : "Open",
+        variant: "solid",
+        onclick: () => (next.stepId ? current.navigate("map", next.stepId) : current.navigate("do", next.tool)),
+      })
+    );
   }
 
   function draw() {
@@ -339,10 +372,10 @@ export function renderMap(ctx, initialArg) {
       });
       proxy.addEventListener("mouseleave", () => {
         painter();
-        setStatus(hint());
+        setStatus(null);
       });
       proxy.addEventListener("focus", () => setStatus(hoverLine(id)));
-      proxy.addEventListener("blur", () => setStatus(hint()));
+      proxy.addEventListener("blur", () => setStatus(null));
     });
   }
 
@@ -352,24 +385,7 @@ export function renderMap(ctx, initialArg) {
     const { graph } = current.state;
     const prog = progress(graph);
 
-    mount(
-      hudTop,
-      el(
-        "div.hud__group",
-        {},
-        modeToggle(),
-        styleToggle(),
-        el("b.hud__count", {}, `Required ${prog.spine.lit} of ${prog.spine.total}`),
-        // A personal map has no elective depth; "No depth picked yet" would
-        // read as a choice the student cannot make.
-        hasDepth(graph, prog) ? el("span.hud__depth", {}, depthLine(prog.depth)) : null,
-        prog.side.total ? el("span.hud__side", {}, `Side quests ${prog.side.lit} of ${prog.side.total}`) : null
-      ),
-      el("div.hud__group", {}, ...legendFor(graph).map((standing) => legendKey(standing, STANDING_LABEL[standing])))
-    );
-
-    mount(
-      hudSide,
+    const controls = [
       btn({ label: "Fit", variant: "quiet", title: "The whole path", onclick: () => floor?.fit({ insets: INSETS }) }),
       btn({
         label: "Here",
@@ -377,7 +393,7 @@ export function renderMap(ctx, initialArg) {
         title: "Stand behind the node you are on",
         onclick: () => standHere(shown(), { glide: true }),
       }),
-      btn({
+      hasBand() ? null : btn({
         label: "Next",
         variant: "quiet",
         title: "Open the node you are on",
@@ -387,11 +403,38 @@ export function renderMap(ctx, initialArg) {
         },
       }),
       btn({ label: "+", variant: "quiet", title: "Zoom in", onclick: () => floor?.zoomBy(1.25) }),
-      btn({ label: "−", variant: "quiet", title: "Zoom out", onclick: () => floor?.zoomBy(0.8) })
+      btn({ label: "−", variant: "quiet", title: "Zoom out", onclick: () => floor?.zoomBy(0.8) }),
+    ];
+    mount(
+      hudTop,
+      el(
+        "div.hud__group",
+        {},
+        modeToggle(),
+        el("b.hud__count", {}, hasBand() ? `${prog.spine.lit} of ${prog.spine.total} steps done` : `Required ${prog.spine.lit} of ${prog.spine.total}`),
+        // A personal map has no elective depth; "No depth picked yet" would
+        // read as a choice the student cannot make.
+        hasDepth(graph, prog) ? el("span.hud__depth", {}, depthLine(prog.depth)) : null,
+        prog.side.total ? el("span.hud__side", {}, `Side quests ${prog.side.lit} of ${prog.side.total}`) : null
+      ),
+      hasBand() ? el("div.hud__group.hud__controls", {}, controls) : null,
+      hasBand()
+        ? el(
+            "div.hud__group.hud__key",
+            {},
+            el("span.legend", {}, el("i.key.key--done"), "done"),
+            el("span.legend", {}, el("i.key.key--next"), "do this next"),
+            el("span.legend", {}, el("i.key.key--tag", {}, "tag"), "made for you")
+          )
+        : el("div.hud__group", {}, ...legendFor(graph).map((standing) => legendKey(standing, STANDING_LABEL[standing])))
     );
 
-    setStatus(isList() ? null : hint());
-    renderInvite();
+    mount(hudSide, ...(hasBand() ? [] : controls));
+
+    setStatus(null);
+    renderNext();
+    renderAden();
+    invite.hidden = true;
   }
 
   /**
@@ -463,6 +506,8 @@ export function renderMap(ctx, initialArg) {
     syncHash();
     draw();
   });
+  // Don't wait for a frame: what's ready starts loading the moment the map mounts.
+  void loadLive();
 
   const onResize = () => {
     if (!isList()) floor?.resize();

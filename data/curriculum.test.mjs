@@ -8,7 +8,7 @@
  * path. No map's ids are hard-coded there.
  *
  * Part two is the demo map's content contract (ops/curriculum-operating-plan.md
- * §1.3, ops/founding-path-audit.md §A): per-node proves/video/review fields,
+ * §1.3, archive/2026-10-10-residency-curriculum/ops/founding-path-audit.md §A): per-node proves/video/review fields,
  * the reading catalog, and copy rules, so a node without a falsification line
  * or a summary cannot land on the demo board by accident.
  */
@@ -18,12 +18,12 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { MODES } from "../app/js/modes.js?v=5802f60-202610100134";
-import { ARTIFACTS } from "../app/js/artifacts.js?v=5802f60-202610100134";
-import { walkReadings } from "../app/js/reading-order.js?v=5802f60-202610100134";
-import { buildGraph, STATUS, isSpine, nextUp, ancestorsOf } from "../app/js/graph/model.js?v=5802f60-202610100134";
+import { MODES } from "../app/js/modes.js?v=d696edf-202610102057";
+import { ARTIFACTS } from "../app/js/artifacts.js?v=d696edf-202610102057";
+import { walkReadings } from "../app/js/reading-order.js?v=d696edf-202610102057";
+import { buildGraph, STATUS, isSpine, nextUp, ancestorsOf } from "../app/js/graph/model.js?v=d696edf-202610102057";
 import { validateMap } from "./map-rules.mjs";
-import { resolveMap, instanceErrors } from "../app/js/modules.js?v=5802f60-202610100134";
+import { resolveMap, instanceErrors } from "../app/js/modules.js?v=d696edf-202610102057";
 import { readLibrary } from "./module-library.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));

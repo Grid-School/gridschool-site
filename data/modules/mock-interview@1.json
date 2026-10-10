@@ -22,5 +22,12 @@
     "notes",
     "links",
     "due"
-  ]
+  ],
+  "video": {
+    "id": "v.mock-interview",
+    "title": "\"I didn't know, so here's what I did\"",
+    "mins": 5,
+    "youtube": "",
+    "summary": "Aden answers the questions that make people freeze: a gap, a short stint, a skill they don't have yet. Each answer ends on something you did, not something you lack."
+  }
 }

@@ -1,30 +1,28 @@
 /**
  * The rail: one thin column of icons, one width, no toggle.
  *
- * The mark at the top is the way home. Then the doors, Hire first (the day's
- * run), then the Map, each an
+ * The mark at the top is the way home. Then the doors: the Map (the one home:
+ * the path, the every-day tools on it, and what to do next), then the Calendar, each an
  * icon with its word under it so nothing needs a tooltip to be understood,
  * and the Map carrying the one count that matters (required lit / total).
  * Under a hairline, Posts: the day's LinkedIn comments.
  * Coach and Posts are drawn only when they work (features.js); otherwise the
- * rail is Hire, Map, Tasks, Calendar, and You.
+ * rail is Map, Calendar, and You.
  * At the bottom, the student, as an avatar that opens the profile sheet.
  * Nothing about instructors or dev lives here; that is instructor-strip.js,
  * mounted only when the device is flagged, so a student rail is a student
  * rail without a mode.
  */
 
-import { el, mount } from "./dom.js?v=5802f60-202610100134";
-import { gmark } from "../../js/brand.js?v=5802f60-202610100134";
-import { icon } from "./icons.js?v=5802f60-202610100134";
-import { returnedUnread } from "./tasks.js?v=5802f60-202610100134";
-import { progress } from "./graph/model.js?v=5802f60-202610100134";
-import { enabledViews, isViewEnabled } from "./features.js?v=5802f60-202610100134";
+import { el, mount } from "./dom.js?v=d696edf-202610102057";
+import { gmark } from "../../js/brand.js?v=d696edf-202610102057";
+import { icon } from "./icons.js?v=d696edf-202610102057";
+import { returnedUnread } from "./tasks.js?v=d696edf-202610102057";
+import { progress } from "./graph/model.js?v=d696edf-202610102057";
+import { enabledViews, isViewEnabled } from "./features.js?v=d696edf-202610102057";
 
 export const DOORS = [
-  { id: "hire", label: "Hire", icon: "search", hint: "Today's run: who to ask, what to apply to, what's due" },
-  { id: "map", label: "Map", icon: "map", hint: "Where you are and what is next" },
-  { id: "tasks", label: "Tasks", icon: "tasks", hint: "Every checkbox on the path" },
+  { id: "map", label: "Map", icon: "map", hint: "Your path, the tools you use every day, and what to do next" },
   { id: "calendar", label: "Calendar", icon: "calendar", hint: "The week's clock" },
   { id: "today", label: "Coach", icon: "coach", hint: "Talk a next move through" },
 ];

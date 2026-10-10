@@ -10,30 +10,30 @@
  * aliases so links already in the wild still land somewhere true.
  */
 
-import { el, mount, download } from "./dom.js?v=5802f60-202610100134";
-import * as store from "./store.js?v=5802f60-202610100134";
-import { resolveSlug, slugFromUrl, currentSession, signOut, setPersistToken, inviteFromUrl, persistToken } from "./session.js?v=5802f60-202610100134";
-import { tryStoredKey } from "./gate.js?v=5802f60-202610100134";
-import { createRouter } from "./router.js?v=5802f60-202610100134";
-import { createChrome } from "./chrome.js?v=5802f60-202610100134";
-import { toast } from "./ui.js?v=5802f60-202610100134";
-import { isTestSeat } from "./test-seats.js?v=5802f60-202610100134";
-import { renderLogin } from "./views/login.js?v=5802f60-202610100134";
-import { renderToday } from "./views/today.js?v=5802f60-202610100134";
-import { renderMap } from "./views/map.js?v=5802f60-202610100134";
-import { renderStep, isStepArgs, moduleIdFromArgs } from "./views/step.js?v=5802f60-202610100134";
-import { renderTasks } from "./views/tasks.js?v=5802f60-202610100134";
-import { renderCalendar } from "./views/calendar.js?v=5802f60-202610100134";
-import { renderLibrary } from "./views/library.js?v=5802f60-202610100134";
-import { renderPosts } from "./views/posts.js?v=5802f60-202610100134";
-import { renderHire } from "./views/hire.js?v=5802f60-202610100134";
-import { toggleDevUnlock, setDevUnlock } from "./dev-mode.js?v=5802f60-202610100134";
-import { togglePreviewMedia, setPreviewMedia, isPreviewMedia } from "./preview-mode.js?v=5802f60-202610100134";
-import { isInstructorDevice } from "./instructor-mode.js?v=5802f60-202610100134";
-import { startReminders } from "./reminders.js?v=5802f60-202610100134";
-import { watchReviewArrivals } from "./review-arrivals.js?v=5802f60-202610100134";
-import { enterView, leaveView } from "./transitions.js?v=5802f60-202610100134";
-import { gateRoutes } from "./features.js?v=5802f60-202610100134";
+import { el, mount, download } from "./dom.js?v=d696edf-202610102057";
+import * as store from "./store.js?v=d696edf-202610102057";
+import { resolveSlug, slugFromUrl, currentSession, signOut, setPersistToken, inviteFromUrl, persistToken } from "./session.js?v=d696edf-202610102057";
+import { tryStoredKey } from "./gate.js?v=d696edf-202610102057";
+import { createRouter } from "./router.js?v=d696edf-202610102057";
+import { createChrome } from "./chrome.js?v=d696edf-202610102057";
+import { toast } from "./ui.js?v=d696edf-202610102057";
+import { isTestSeat } from "./test-seats.js?v=d696edf-202610102057";
+import { renderLogin } from "./views/login.js?v=d696edf-202610102057";
+import { renderToday } from "./views/today.js?v=d696edf-202610102057";
+import { renderMap } from "./views/map.js?v=d696edf-202610102057";
+import { renderStep, isStepArgs, moduleIdFromArgs } from "./views/step.js?v=d696edf-202610102057";
+import { renderTasks } from "./views/tasks.js?v=d696edf-202610102057";
+import { renderCalendar } from "./views/calendar.js?v=d696edf-202610102057";
+import { renderLibrary } from "./views/library.js?v=d696edf-202610102057";
+import { renderPosts } from "./views/posts.js?v=d696edf-202610102057";
+import { renderHire } from "./views/hire.js?v=d696edf-202610102057";
+import { toggleDevUnlock, setDevUnlock } from "./dev-mode.js?v=d696edf-202610102057";
+import { togglePreviewMedia, setPreviewMedia, isPreviewMedia } from "./preview-mode.js?v=d696edf-202610102057";
+import { isInstructorDevice } from "./instructor-mode.js?v=d696edf-202610102057";
+import { startReminders } from "./reminders.js?v=d696edf-202610102057";
+import { watchReviewArrivals } from "./review-arrivals.js?v=d696edf-202610102057";
+import { enterView, leaveView } from "./transitions.js?v=d696edf-202610102057";
+import { gateRoutes } from "./features.js?v=d696edf-202610102057";
 
 /* Coach (today) and Posts are gated in features.js: switched off, they are
    not routes at all, so their links land on the Map. */
@@ -44,7 +44,7 @@ const VIEWS = gateRoutes({
   calendar: { render: renderCalendar },
   library: { render: renderLibrary },
   posts: { render: renderPosts },
-  hire: { render: renderHire, persistent: true },
+  do: { render: renderHire, persistent: true },
 });
 
 /** Old links keep working after surfaces folded. */
@@ -53,9 +53,11 @@ const ALIASES = {
   repos: ["map", "list"],
   work: ["map", "list"],
   coach: ["today"],
-  grid: ["map"],
   welcome: ["map", "or.start"],
-  search: ["hire"],
+  grid: ["map"],
+  search: ["do", "today"],
+  hire: ["do", "today"],
+  tasks: ["map"],
 };
 
 const app = document.getElementById("app");
@@ -104,7 +106,7 @@ let shownStep = null;
 function syncChrome() {
   const ctx = context();
   const state = ctx.state;
-  chrome.setActive(route.name);
+  chrome.setActive(route.name === "do" ? "map" : route.name);
   chrome.setBanner(state);
   chrome.setCall(state);
   chrome.setSignals(state);
@@ -247,7 +249,9 @@ async function start() {
   role = resolveRole();
   /* Admin console is excluded from the public deploy. Keep instructor role when
      ?admin=1 or ?dev=1 so Dev unlock still works; only hide the console link. */
-  const showAdminConsole = role === "admin" && (await adminSurfaceExists());
+  // Inside the console's "Their board" tab (?embed=1) the link back to the console is already around it.
+  const embedded = new URLSearchParams(location.search).get("embed") === "1";
+  const showAdminConsole = role === "admin" && !embedded && (await adminSurfaceExists());
   if (wantsDevUnlock()) setDevUnlock(true);
   /* ?preview=1 turns on the media preview for an instructor session, so a
      testing link can carry the stand-in clips without touching the rail. */
@@ -342,8 +346,7 @@ async function start() {
   router = createRouter({
     routes: VIEWS,
     aliases: ALIASES,
-    // A real seat opens on Hire, the day's run; the public demo tours the map.
-    fallback: slug === "demo" ? "map" : "hire",
+    fallback: "map",
     onNavigate: (next) => {
       route = next;
       renderRoute();
@@ -361,7 +364,7 @@ async function start() {
   window.addEventListener("keydown", (event) => {
     if (event.target.matches("input, textarea, select")) return;
     if (event.metaKey || event.ctrlKey || event.altKey) return;
-    const shortcuts = { h: "hire", m: "map", k: "tasks", c: "calendar" };
+    const shortcuts = { m: "map", c: "calendar" };
     if (shortcuts[event.key]) router.go(shortcuts[event.key]);
   });
 
