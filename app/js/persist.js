@@ -20,6 +20,8 @@ export const STUDENT_KEYS = [
   "questions",
   "chosen",
   "prefs",
+  "search",
+  "network",
 ];
 
 export const INSTRUCTOR_KEYS = [
@@ -31,6 +33,7 @@ export const INSTRUCTOR_KEYS = [
   "nodeOverrides",
   "quotaLog",
   "meetings",
+  "career",
 ];
 
 /** Kinds that Telegram Aden (email if Telegram is down). */

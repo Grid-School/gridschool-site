@@ -5,9 +5,9 @@
  * Task state lives on the student. Everything else here is derived.
  */
 
-import { STATUS, blockedBy, isSide, isSpine, stepNumber } from "./graph/model.js?v=71f92ac-202610080806";
-import { withSavedState } from "./task-state.js?v=71f92ac-202610080806";
-import { weekRange, isoDate } from "./time.js?v=71f92ac-202610080806";
+import { STATUS, blockedBy, isSide, isSpine, stepNumber } from "./graph/model.js?v=15fea56-202610100117";
+import { withSavedState } from "./task-state.js?v=15fea56-202610100117";
+import { weekRange, isoDate } from "./time.js?v=15fea56-202610100117";
 
 export const TASK_STATE = {
   TODO: "todo",
@@ -148,7 +148,12 @@ export function quotaStatus({ curriculum, student, cohort, week }) {
   };
 }
 
-/** What the student logged inside one program week. */
+/**
+ * What was logged inside one program week: Aden's tallies (quotaLog) plus the
+ * student's own Search log (search.apps; an application counts as an
+ * application, a warm message as outreach), so the quota and the Hire page
+ * never disagree about the same week.
+ */
 export function quotaCounts({ student, cohort, week }) {
   const { start, end } = weekRange(cohort.start, week);
   const from = isoDate(start);
@@ -157,6 +162,10 @@ export function quotaCounts({ student, cohort, week }) {
   for (const entry of student?.quotaLog ?? []) {
     if (!entry?.at || entry.at < from || entry.at > to) continue;
     if (counts[entry.kind] !== undefined) counts[entry.kind] += 1;
+  }
+  for (const app of student?.search?.apps ?? []) {
+    if (!app?.date || app.date < from || app.date > to) continue;
+    counts[app.kind === "warm" ? "outreach" : "applications"] += 1;
   }
   return counts;
 }

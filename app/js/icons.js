@@ -5,7 +5,7 @@
  * them (visible or as a tooltip and aria-label) carries the meaning.
  */
 
-import { el } from "./dom.js?v=71f92ac-202610080806";
+import { el } from "./dom.js?v=15fea56-202610100117";
 
 function svg(...children) {
   return el(
@@ -22,6 +22,8 @@ export const ICONS = {
   map: () => svg(el("circle", { cx: 6, cy: 18, r: 2.4 }), el("circle", { cx: 12, cy: 11, r: 2.4 }), el("circle", { cx: 18, cy: 5, r: 2.4 }), path("M7.6 16.2 10.4 12.8M13.6 9.2 16.4 6.8")),
   /** All tasks: a checked list. */
   tasks: () => svg(path("M4 7h2M9 7h11M4 12h2M9 12h11M4 17h2M9 17h11")),
+  /** The job search: a briefcase. */
+  search: () => svg(el("rect", { x: 3.5, y: 7.5, width: 17, height: 12, rx: 2 }), path("M9 7.5V6a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 6v1.5M3.5 12.5h17")),
   /** Calendar. */
   calendar: () => svg(el("rect", { x: 3.5, y: 5, width: 17, height: 15.5, rx: 2.5 }), path("M3.5 10h17M8 3v4M16 3v4")),
   /** The coach: a speech mark. */

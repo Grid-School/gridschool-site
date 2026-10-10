@@ -9,9 +9,9 @@
  * data/students/<slug>.json.
  */
 
-import { loadBoard, boardCurriculum, libraryFor } from "./api.js?v=71f92ac-202610080806";
-import { buildGraph } from "./graph/model.js?v=71f92ac-202610080806";
-import { weekNumber, studentWeek, ownSchedule, hasOwnMap } from "./time.js?v=71f92ac-202610080806";
+import { loadBoard, boardCurriculum, libraryFor } from "./api.js?v=15fea56-202610100117";
+import { buildGraph } from "./graph/model.js?v=15fea56-202610100117";
+import { weekNumber, studentWeek, ownSchedule, hasOwnMap } from "./time.js?v=15fea56-202610100117";
 import {
   read,
   clear as clearPersist,
@@ -21,10 +21,10 @@ import {
   mergeStudent,
   STUDENT_KEYS,
   INSTRUCTOR_KEYS,
-} from "./persist.js?v=71f92ac-202610080806";
-import { flushAfterLocalWrite, hydrateFromRemote, persistStatus, startPolling } from "./persist-remote.js?v=71f92ac-202610080806";
-import { validReviewReturn } from "./review.js?v=71f92ac-202610080806";
-import { isDevUnlock } from "./dev-mode.js?v=71f92ac-202610080806";
+} from "./persist.js?v=15fea56-202610100117";
+import { flushAfterLocalWrite, hydrateFromRemote, persistStatus, startPolling } from "./persist-remote.js?v=15fea56-202610100117";
+import { validReviewReturn } from "./review.js?v=15fea56-202610100117";
+import { isDevUnlock } from "./dev-mode.js?v=15fea56-202610100117";
 
 export { validReviewReturn };
 
@@ -274,6 +274,27 @@ export function setMapStyle(style) {
   return commitStudent(() => {
     overlay.prefs = { ...(mergedStudent().prefs ?? {}), ...(overlay.prefs ?? {}), mapStyle: style, mapStyleAt: new Date().toISOString() };
   }, { kind: "prefs.map_style", payload: { style } });
+}
+
+/* ---------- the job search (search.js holds the rules) ---------- */
+
+/**
+ * The student's own search record: their resume and their application log.
+ * Theirs like their progress, so Aden's desk reads it and never writes it.
+ * `change` gets the current record and returns the next one.
+ */
+export function updateSearch(change, event = null) {
+  return commitStudent(() => {
+    const current = { ...(mergedStudent().search ?? {}), ...(overlay.search ?? {}) };
+    overlay.search = { ...current, ...change(current), updatedAt: new Date().toISOString() };
+  }, event);
+}
+
+/** Their imported connections (search.js parseConnections). Written only on import. */
+export function setNetwork(rows) {
+  return commitStudent(() => {
+    overlay.network = { rows, importedAt: new Date().toISOString() };
+  }, { kind: "search.network", payload: { count: rows.length } });
 }
 
 /* ---------- map editing ---------- */

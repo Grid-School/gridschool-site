@@ -2,8 +2,8 @@
  * Admin persist calls. Desk only. Student boards never import this.
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=71f92ac-202610080806";
-import { persistToken } from "./session.js?v=71f92ac-202610080806";
+import { PERSIST, isPlaceholder } from "../../config.js?v=15fea56-202610100117";
+import { persistToken } from "./session.js?v=15fea56-202610100117";
 
 function endpoint() {
   return String(PERSIST.endpoint || "").replace(/\/$/, "");
@@ -152,4 +152,9 @@ export async function openMapDraft(slug, body, { signal } = {}) {
     throw error;
   }
   return res;
+}
+
+/** A positioning draft from a resume (server/career_draft.py). Saves nothing. */
+export function draftCareer({ resume = "", linkedin = "", goal = "", notes = "", name = "" }) {
+  return request("POST", "/career/draft", { resume, linkedin, goal, notes, name });
 }

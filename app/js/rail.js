@@ -1,26 +1,28 @@
 /**
  * The rail: one thin column of icons, one width, no toggle.
  *
- * The mark at the top is the way home. Then the doors, Map first, each an
+ * The mark at the top is the way home. Then the doors, Hire first (the day's
+ * run), then the Map, each an
  * icon with its word under it so nothing needs a tooltip to be understood,
  * and the Map carrying the one count that matters (required lit / total).
  * Under a hairline, Posts: the day's LinkedIn comments.
  * Coach and Posts are drawn only when they work (features.js); otherwise the
- * rail is Map, Tasks, Calendar, and You.
+ * rail is Hire, Map, Tasks, Calendar, and You.
  * At the bottom, the student, as an avatar that opens the profile sheet.
  * Nothing about instructors or dev lives here; that is instructor-strip.js,
  * mounted only when the device is flagged, so a student rail is a student
  * rail without a mode.
  */
 
-import { el, mount } from "./dom.js?v=71f92ac-202610080806";
-import { gmark } from "../../js/brand.js?v=71f92ac-202610080806";
-import { icon } from "./icons.js?v=71f92ac-202610080806";
-import { returnedUnread } from "./tasks.js?v=71f92ac-202610080806";
-import { progress } from "./graph/model.js?v=71f92ac-202610080806";
-import { enabledViews, isViewEnabled } from "./features.js?v=71f92ac-202610080806";
+import { el, mount } from "./dom.js?v=15fea56-202610100117";
+import { gmark } from "../../js/brand.js?v=15fea56-202610100117";
+import { icon } from "./icons.js?v=15fea56-202610100117";
+import { returnedUnread } from "./tasks.js?v=15fea56-202610100117";
+import { progress } from "./graph/model.js?v=15fea56-202610100117";
+import { enabledViews, isViewEnabled } from "./features.js?v=15fea56-202610100117";
 
 export const DOORS = [
+  { id: "hire", label: "Hire", icon: "search", hint: "Today's run: who to ask, what to apply to, what's due" },
   { id: "map", label: "Map", icon: "map", hint: "Where you are and what is next" },
   { id: "tasks", label: "Tasks", icon: "tasks", hint: "Every checkbox on the path" },
   { id: "calendar", label: "Calendar", icon: "calendar", hint: "The week's clock" },

@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { persistToken, resolveSlug, setPersistToken, signIn, signOut } from "./session.js?v=71f92ac-202610080806";
+import { persistToken, resolveSlug, setPersistToken, signIn, signOut } from "./session.js?v=15fea56-202610100117";
 
 function installMemoryStorage() {
   const map = new Map();
