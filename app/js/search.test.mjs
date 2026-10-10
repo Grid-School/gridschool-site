@@ -19,7 +19,7 @@ import {
   titleTerms,
   roleScore,
   matchRoles,
-} from "./search.js?v=d696edf-202610102057";
+} from "./search.js?v=8b71053-202610102102";
 
 // Friday 2026-10-09; its week starts Monday 2026-10-05.
 const now = new Date(2026, 9, 9, 15, 0);
@@ -165,7 +165,7 @@ test("roles: title terms, scoring and matching", () => {
   assert.deepEqual(matchRoles(roles, titles, { appliedKeys: new Set(["d"]) }).map((r) => r.key), ["c", "b"]);
 });
 
-import { addPerson, movePerson, toAsk, peopleLinks, followUpText, referralText, dailyTargets, weekdaysLeft, markFollowed, keepPack, ageLabel, MAX_PACKS } from "./search.js?v=d696edf-202610102057";
+import { addPerson, movePerson, toAsk, peopleLinks, followUpText, referralText, dailyTargets, weekdaysLeft, markFollowed, keepPack, ageLabel, MAX_PACKS } from "./search.js?v=8b71053-202610102102";
 
 test("people: warm first, then met, then cold; moving out of todo drops them", () => {
   let people = [];
@@ -231,7 +231,7 @@ test("packs keep the newest MAX_PACKS; ages read plainly", () => {
   assert.equal(ageLabel(null, now), "");
 });
 
-import { parseConnections, companyKey, insideConnections, insiderText } from "./search.js?v=d696edf-202610102057";
+import { parseConnections, companyKey, insideConnections, insiderText } from "./search.js?v=8b71053-202610102102";
 
 test("LinkedIn connections export: notes preamble, quoted commas, missing companies dropped", () => {
   const csv = [
@@ -264,13 +264,13 @@ test("companyKey and insideConnections match a role to the people there", () => 
   assert.match(text, /My work is ships AI into old systems\./);
 });
 
-import { shortTitle } from "./search.js?v=d696edf-202610102057";
+import { shortTitle } from "./search.js?v=8b71053-202610102102";
 test("shortTitle keeps parentheses whole", () => {
   assert.equal(shortTitle("Software Engineers (Product, Applied AI), Designers"), "Software Engineers (Product, Applied AI)");
   assert.equal(shortTitle("Forward Deployed Engineer"), "Forward Deployed Engineer");
 });
 
-import { addTarget, touchTarget, patchTarget, dueTouches, nextTouch, targetCandidates, fillLinks, MAX_ACTIVE_TARGETS } from "./search.js?v=d696edf-202610102057";
+import { addTarget, touchTarget, patchTarget, dueTouches, nextTouch, targetCandidates, fillLinks, MAX_ACTIVE_TARGETS } from "./search.js?v=8b71053-202610102102";
 
 test("targets: one active per company, day 0 first, then the cadence", () => {
   const day0 = new Date(2026, 9, 5, 9);
