@@ -29,5 +29,12 @@
     "notes",
     "links",
     "due"
-  ]
+  ],
+  "video": {
+    "id": "v.company-prep",
+    "title": "On camera: set up for the interview",
+    "mins": 6,
+    "youtube": "",
+    "summary": "Light in front of you, camera at eye level slightly above center, shoulders in frame, a clean background, sound you've tested. Then the human part: smile when you start, look at the lens when it matters, and what research says makes people warm to someone in the first minute."
+  }
 }

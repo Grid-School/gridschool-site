@@ -38,5 +38,12 @@
     "notes",
     "links",
     "due"
-  ]
+  ],
+  "video": {
+    "id": "v.story-bank",
+    "title": "Communication for engineers",
+    "mins": 12,
+    "youtube": "",
+    "summary": "How to put yourself in the other person's shoes before you answer: what they know, what they're worried about, what they need from you. Context engineering as a communication habit, for people and for models. Frameworks for interview calls: answer the question asked, give the context, the action and the result, then check it landed."
+  }
 }

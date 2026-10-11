@@ -6,8 +6,8 @@
  * where it stalls. The rules live in search.js; this file only draws them.
  */
 
-import { el } from "../dom.js?v=8b71053-202610102102";
-import { STATUS } from "../graph/model.js?v=8b71053-202610102102";
+import { el } from "../dom.js?v=fbad271-202610110101";
+import { STATUS } from "../graph/model.js?v=fbad271-202610110101";
 import {
   STAGES,
   KINDS,
@@ -18,7 +18,7 @@ import {
   searchOf,
   careerOf,
   stageIndex,
-} from "../search.js?v=8b71053-202610102102";
+} from "../search.js?v=fbad271-202610110101";
 
 /** Presence steps on their own map: the "findable" ring lights when they are all done. */
 export function presenceProgress(graph) {

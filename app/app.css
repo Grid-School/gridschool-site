@@ -1843,6 +1843,21 @@ pre.diagram--failed { border-color: var(--amber); }
 .tcard__dots { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
 .tcard__dot { font-family: var(--font-mono); font-size: 10.5px; padding: 2px 6px; border-radius: 999px; border: 1px solid var(--line); color: var(--ghost); }
 .tcard__dot.is-on { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 40%, transparent); }
+/* Your Looms: every company with a Loom written or sent (views/hire.js). */
+.looms { margin: 0 0 18px; padding: 12px 14px; border: 1px solid var(--hair); border-radius: var(--radius-sm, 7px); background: rgba(255, 255, 255, .02); }
+.looms__head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+.looms__head b { color: #fff; font-size: 14px; font-weight: 600; }
+.looms__head span { font-size: 12.5px; color: var(--ghost); }
+.looms__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.looms__row { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) auto auto; gap: 6px 12px; align-items: center; padding: 6px 0; border-top: 1px solid var(--hair); font-size: 13.5px; }
+.looms__row:first-child { border-top: 0; }
+.looms__who { display: grid; }
+.looms__who b { color: var(--text); font-weight: 500; }
+.looms__who span { font-size: 12px; color: var(--ghost); }
+.looms__status { color: var(--ghost); }
+.looms__row.is-sent .looms__status { color: var(--ok); }
+.looms__link { color: var(--cyan); font-size: 12.5px; }
+@media (max-width: 560px) { .looms__row { grid-template-columns: 1fr auto; } .looms__status { grid-column: 1; } }
 .tpick { margin-top: 16px; border: 1px dashed var(--line); border-radius: var(--radius); padding: 6px 16px; }
 .tpick__h { display: block; font-size: 12px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--ghost); margin: 10px 0 2px; }
 .tpick__row { display: flex; gap: 10px; align-items: center; justify-content: space-between; padding: 10px 0; border-top: 1px solid var(--hair); }

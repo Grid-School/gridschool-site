@@ -1,0 +1,74 @@
+{
+  "id": "in-person",
+  "version": 1,
+  "title": "Meet engineers in person: one event near you",
+  "purpose": "Go to a local meetup or event in the space you want to work in, meet people, and turn each conversation into a connection you follow up on.",
+  "lane": "network",
+  "phase": "position",
+  "kind": "core",
+  "completion": "tasks",
+  "why": "People hire people they've met. One evening at a meetup puts you in front of engineers and hiring managers who never see your applications, and a conversation about your project is easier to follow up on than a cold message. Do it once this month, then make it a habit every two weeks.",
+  "evidence": "The event link, the people you met, and the follow-ups you sent.",
+  "tasks": [
+    {
+      "id": "find",
+      "title": "Find one event near you in the space you want to work in, and register",
+      "kind": "write",
+      "est": 20,
+      "how": [
+        "Search Meetup, Eventbrite and Luma for your city plus words from your target roles: AI, agents, applied AI, your stack, or your industry (insurance, fintech, health). Founder and engineering meetups count. Online-only events don't count for this step."
+      ],
+      "done_when": "You're registered for an in-person event, and its link and date are saved here.",
+      "fields": [
+        {
+          "id": "event",
+          "label": "Event link",
+          "placeholder": "https://www.meetup.com/…",
+          "required": true
+        },
+        {
+          "id": "date",
+          "label": "Date",
+          "placeholder": "Thursday Oct 22, 6pm",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "go",
+      "title": "Go, and meet at least three people",
+      "kind": "write",
+      "est": 120,
+      "how": [
+        "Ask each person what they're working on and what's hard about it. When they ask you, describe your project in two sentences and offer to show it.",
+        "Before you leave, connect on LinkedIn or swap an email or number with each one."
+      ],
+      "done_when": "Three people's names and companies are saved here.",
+      "fields": [
+        {
+          "id": "people",
+          "label": "Who you met: name, company, what they're working on",
+          "placeholder": "Dana Lee, Outmarket, building broker workflows with agents",
+          "textarea": true,
+          "rows": 4,
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "follow",
+      "title": "Follow up within two days with one useful thing",
+      "kind": "write",
+      "est": 20,
+      "how": [
+        "Send each person a short note that names what you talked about and adds one thing: a link, an intro, or a look at your project. Add them to People on your Hire page so the follow-ups show up in your run."
+      ],
+      "done_when": "Each person you met has a follow-up from you."
+    }
+  ],
+  "slots": [
+    "notes",
+    "links",
+    "due"
+  ]
+}

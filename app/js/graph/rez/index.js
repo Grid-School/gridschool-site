@@ -18,9 +18,9 @@
  * view glides to it. Nothing idles. Reduced motion jumps.
  */
 
-import { el, clear } from "../../dom.js?v=8b71053-202610102102";
-import { traceSet, stepNumber } from "../model.js?v=8b71053-202610102102";
-import { STANDING, standingOf, inSequence } from "../standing.js?v=8b71053-202610102102";
+import { el, clear } from "../../dom.js?v=fbad271-202610110101";
+import { traceSet, stepNumber } from "../model.js?v=fbad271-202610110101";
+import { STANDING, standingOf, inSequence } from "../standing.js?v=fbad271-202610110101";
 import {
   svgEl,
   drawGrid,
@@ -31,7 +31,7 @@ import {
   runCurrent,
   rezIn,
   prefersReducedMotion,
-} from "../../../../js/rez/road.js?v=8b71053-202610102102";
+} from "../../../../js/rez/road.js?v=fbad271-202610110101";
 
 /*
  * One grid under everything, in the board's own units (as on the landing):

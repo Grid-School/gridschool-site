@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { NODE_IDS, SLIDES, nodeDone, doneNodes, firstOpen, nextNode, prevNode, partDone, scriptDone } from "./campaign-steps.js?v=8b71053-202610102102";
-import { BEATS } from "./loom-script.js?v=8b71053-202610102102";
+import { NODE_IDS, SLIDES, nodeDone, doneNodes, firstOpen, nextNode, prevNode, partDone, scriptDone } from "./campaign-steps.js?v=fbad271-202610110101";
+import { BEATS } from "./loom-script.js?v=fbad271-202610110101";
 
 const examples = Object.fromEntries(BEATS.flatMap((beat) => beat.blanks.map((b) => [b.id, b.example])));
 
@@ -40,4 +40,13 @@ test("a campaign from before the script builder opens where it really is", () =>
   const old = { contact: {}, loomUrl: "https://loom.com/share/x", touches: { email: "2026-10-08" } };
   assert.deepEqual(doneNodes(old), ["who", "script", "record", "email"]);
   assert.equal(firstOpen(old), "linkedin");
+});
+
+test("loomStatus says where each company's Loom stands", async () => {
+  const { loomStatus } = await import("./campaign-steps.js?v=fbad271-202610110101");
+  assert.equal(loomStatus({}), null);
+  assert.equal(loomStatus({ loomScript: { hello: "Hey ___" } }).key, "writing");
+  assert.equal(loomStatus({ loomScript: examples }).key, "script");
+  assert.equal(loomStatus({ loomScript: examples, loomUrl: "https://loom.com/share/x" }).key, "recorded");
+  assert.deepEqual(loomStatus({ loomUrl: "https://loom.com/share/x", touches: { email: "2026-10-12" } }), { key: "sent", label: "Sent 2026-10-12", done: true });
 });

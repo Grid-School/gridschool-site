@@ -25,11 +25,113 @@
       "done_when": "Uses the version your answers support."
     },
     {
-      "id": "about",
-      "title": "About in 3 sentences: your background → the problems you turn into systems → your current focus",
+      "id": "links",
+      "title": "Put your links at the top of your About: GitHub now, your own site later",
       "kind": "write",
-      "est": 30,
-      "done_when": "Three sentences, no buzzwords you can't explain."
+      "est": 10,
+      "how": [
+        "The first lines of your About are links, one per line, so a reader can see your work before reading anything else.",
+        "If you don't have your own domain for a portfolio site yet, leave that box empty. We set the site up later and add the link then."
+      ],
+      "done_when": "Your GitHub link is the first line of your About on LinkedIn.",
+      "fields": [
+        {
+          "id": "github",
+          "label": "Your GitHub profile link",
+          "placeholder": "https://github.com/your-name",
+          "required": true
+        },
+        {
+          "id": "site",
+          "label": "Your portfolio site (only once it's live)",
+          "placeholder": "https://your-name.com"
+        }
+      ]
+    },
+    {
+      "id": "about",
+      "title": "Write your About from the template, one part at a time",
+      "kind": "write",
+      "est": 45,
+      "how": [
+        "Fill in each box below in your own words, then paste them into your LinkedIn About in this order, under your links, with a blank line between parts.",
+        "The text in each empty box is a made-up example to show the shape. Replace it with your own story, and only claim what you can explain in an interview."
+      ],
+      "done_when": "Every part is filled in and pasted into your LinkedIn About under your links.",
+      "fields": [
+        {
+          "id": "hook",
+          "label": "1. One line on the problem you solve and what it gets the reader",
+          "placeholder": "I help small teams add AI to the systems they already run, without breaking what works.",
+          "textarea": true,
+          "rows": 2,
+          "required": true
+        },
+        {
+          "id": "who",
+          "label": "2. Who you are: your role, your years, what you're strongest at, and the kind of problem you like most",
+          "placeholder": "I'm a software engineer with 4 years across TypeScript, Python and cloud. My sweet spot is being dropped into a codebase I didn't write, making it work, then adding the feature people actually asked for.",
+          "textarea": true,
+          "rows": 3,
+          "required": true
+        },
+        {
+          "id": "building",
+          "label": "3. What you're building right now, and who it's for",
+          "placeholder": "Right now I'm building ClaimDesk, an assistant that drafts insurance claim decisions and waits for a person to approve anything that moves money. Every step is logged so a reviewer can check it.",
+          "textarea": true,
+          "rows": 3,
+          "required": true
+        },
+        {
+          "id": "background",
+          "label": "4. Your background: the stacks you've worked in and one concrete thing you shipped, with a result if you have one",
+          "placeholder": "Before this I kept client apps running through contract placements, set up CI and test automation for a five-person team, and taught web development to beginners for eight months.",
+          "textarea": true,
+          "rows": 4,
+          "required": true
+        },
+        {
+          "id": "care",
+          "label": "5. What you care about in how you work: three short bullets",
+          "placeholder": "- Changes you can trace and undo\n- Plain explanations for the people who use the system\n- AI that asks a person before it does anything risky",
+          "textarea": true,
+          "rows": 4,
+          "required": true
+        },
+        {
+          "id": "roles",
+          "label": "6. The roles and work you want next: three short bullets",
+          "placeholder": "- Forward deployed or integration work with customers\n- Owning a feature from the problem to production\n- Teams putting AI agents into real workflows",
+          "textarea": true,
+          "rows": 4,
+          "required": true
+        },
+        {
+          "id": "door",
+          "label": "7. Who should message you, and about what",
+          "placeholder": "If your team has a system that works but nobody wants to touch, or you're bringing AI into one, I'm always open to talk.",
+          "textarea": true,
+          "rows": 2,
+          "required": true
+        },
+        {
+          "id": "offers",
+          "label": "8. What you offer: three or four bullets, each an area and the specifics",
+          "placeholder": "- AI integrations: tool calls, approvals, audit trails\n- Legacy cleanup: tests, refactors, safer deploys\n- Full-stack delivery: TypeScript, Node, Python, REST APIs",
+          "textarea": true,
+          "rows": 4,
+          "required": true
+        },
+        {
+          "id": "tools",
+          "label": "9. Tools and tech, on one line, only ones you can talk about",
+          "placeholder": "TypeScript, Node.js, Python, Docker, PostgreSQL, GitHub Actions, AWS",
+          "textarea": true,
+          "rows": 2,
+          "required": true
+        }
+      ]
     },
     {
       "id": "roles",

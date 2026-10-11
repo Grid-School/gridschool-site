@@ -6,7 +6,7 @@
  * touch marked Sent), never by a flag we set for them. Pure, for node tests.
  */
 
-import { BEATS, tidyAnswers, blanksLeft } from "./loom-script.js?v=8b71053-202610102102";
+import { BEATS, tidyAnswers, blanksLeft } from "./loom-script.js?v=fbad271-202610110101";
 
 export const NODES = [
   { id: "who", label: "Research" },
@@ -75,3 +75,18 @@ export function prevNode(id) {
 }
 
 export const labelOf = (id) => NODES.find((n) => n.id === id)?.label ?? id;
+
+/**
+ * Where one company's Loom stands, for the "Your Looms" list on Hire:
+ * sent (with the date the email went), recorded, script ready, or script
+ * started. Null when the student hasn't started a Loom for it.
+ */
+export function loomStatus(target) {
+  const t = target ?? {};
+  const sentOn = t.touches?.email;
+  if (sentOn && t.loomUrl) return { key: "sent", label: `Sent ${sentOn}`, done: true };
+  if (t.loomUrl) return { key: "recorded", label: "Recorded, email not sent yet", done: false };
+  if (scriptDone(t.loomScript)) return { key: "script", label: "Script ready, not recorded yet", done: false };
+  if (Object.keys(tidyAnswers(t.loomScript)).length) return { key: "writing", label: "Script in progress", done: false };
+  return null;
+}

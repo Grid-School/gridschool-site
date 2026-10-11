@@ -181,6 +181,13 @@
       "title": "Side quest: a reading",
       "lane": "side",
       "purpose": "An optional reading; the step names which one and what to do with it."
+    },
+    {
+      "id": "in-person",
+      "version": 1,
+      "title": "Meet engineers in person: one event near you",
+      "lane": "network",
+      "purpose": "Go to a local meetup or event in the space you want to work in, meet people, and turn each conversation into a connection you follow up on."
     }
   ]
 }
