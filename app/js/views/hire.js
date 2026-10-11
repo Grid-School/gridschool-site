@@ -16,10 +16,10 @@
  * half-typed form. Aden sees it read-only from the desk.
  */
 
-import { el, mount } from "../dom.js?v=fbad271-202610110101";
-import { panel, btn, field, toast, copy } from "../ui.js?v=fbad271-202610110101";
-import { isoDate, fmtDay } from "../time.js?v=fbad271-202610110101";
-import { STATUS } from "../graph/model.js?v=fbad271-202610110101";
+import { el, mount } from "../dom.js?v=dc96989-202610110117";
+import { panel, btn, field, toast, copy } from "../ui.js?v=dc96989-202610110117";
+import { isoDate, fmtDay } from "../time.js?v=dc96989-202610110117";
+import { STATUS } from "../graph/model.js?v=dc96989-202610110117";
 import {
   STAGES,
   RELATIONS,
@@ -62,14 +62,14 @@ import {
   nextTouch,
   targetCandidates,
   MAX_ACTIVE_TARGETS,
-} from "../search.js?v=fbad271-202610110101";
-import { storyCard, appRow } from "./search-parts.js?v=fbad271-202610110101";
-import { TOOLS } from "../engine.js?v=fbad271-202610110101";
-import { PERSIST } from "../../../config.js?v=fbad271-202610110101";
-import { matchedRoles, radarReady, fetchPacks } from "../roles-remote.js?v=fbad271-202610110101";
-import { createPackDrawer } from "./pack.js?v=fbad271-202610110101";
-import { createCampaignDrawer } from "./campaign.js?v=fbad271-202610110101";
-import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=fbad271-202610110101";
+} from "../search.js?v=dc96989-202610110117";
+import { storyCard, appRow } from "./search-parts.js?v=dc96989-202610110117";
+import { TOOLS } from "../engine.js?v=dc96989-202610110117";
+import { PERSIST } from "../../../config.js?v=dc96989-202610110117";
+import { matchedRoles, radarReady, fetchPacks } from "../roles-remote.js?v=dc96989-202610110117";
+import { createPackDrawer } from "./pack.js?v=dc96989-202610110117";
+import { createCampaignDrawer } from "./campaign.js?v=dc96989-202610110117";
+import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=dc96989-202610110117";
 
 const RUN_FAMILIES = ["proof", "presence", "network", "interview"];
 /** How many moves the day leads with. More than this reads as a wall, not a plan. */
@@ -79,7 +79,7 @@ const TOOL_STEPS = {
   applications: ["application-engine", "title-cluster"],
   targets: ["target-campaign", "company-prep"],
   people: ["warm-path", "target-list", "network-sprint"],
-  profile: ["profile-rewrite", "profile-images", "proof-questionnaire"],
+  profile: ["profile-rewrite", "profile-images"],
   today: [],
 };
 const TOOL_WHY = {

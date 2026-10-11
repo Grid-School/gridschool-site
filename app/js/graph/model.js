@@ -16,7 +16,7 @@
  * never gate a node: a habit is kept, not finished.
  */
 
-import { taskIsComplete, isCountTask } from "../task-state.js?v=fbad271-202610110101";
+import { taskIsComplete, isCountTask } from "../task-state.js?v=dc96989-202610110117";
 
 export const STATUS = {
   LIT: "lit",

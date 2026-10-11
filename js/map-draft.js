@@ -93,8 +93,7 @@ export function draftMap(input) {
 
   // Get findable
   if (early) add("position", "pr.codebase", "inherited-codebase", "proof");
-  else add("position", "p.questionnaire", "proof-questionnaire", "presence", "Answer the six proof questions about work you already shipped");
-  // The rewrite follows the proof questions: they decide what the profile may claim.
+  // What the profile may honestly claim is settled with Aden on the first call, not by a form the student has to clear first.
   if (!early || stop === "replies") add("position", "p.rewrite", "profile-rewrite", "presence", "LinkedIn rewritten for the role you want next");
   add("position", "n.targets", "target-list", "network", `List 25 to 30 people in ${want} roles`);
   if (stage === "laidoff") add("position", "pi.engine", "application-engine", "pipeline");

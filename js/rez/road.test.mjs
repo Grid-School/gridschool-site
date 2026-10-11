@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { layoutRoad, roadPath, roadSegments, phaseBands, wrapLabel, curve } from "./road.js?v=fbad271-202610110101";
+import { layoutRoad, roadPath, roadSegments, phaseBands, wrapLabel, curve } from "./road.js?v=dc96989-202610110117";
 
 test("depth is sequence, height is lane", () => {
   const points = layoutRoad([{ lane: 0 }, { lane: 2 }, { lane: 1 }], { x0: 0, x1: 100, laneY: (lane) => lane * 10 });
@@ -47,7 +47,7 @@ test("on a grid of half-lane cells, every lane and every step lands on a line", 
 });
 
 test("the calmest lane order keeps the pins and cuts the up-and-down", async () => {
-  const { calmestLanes } = await import("./road.js?v=fbad271-202610110101");
+  const { calmestLanes } = await import("./road.js?v=dc96989-202610110117");
   const families = ["interview", "pipeline", "proof", "network", "presence"];
   const sequence = ["presence", "network", "pipeline", "presence", "proof", "proof", "interview"];
   const order = calmestLanes(families, sequence, { top: "interview", bottom: "presence" });
