@@ -2012,6 +2012,7 @@ pre.diagram--failed { border-color: var(--amber); }
 .rh__controls { display: flex; gap: 8px; flex-wrap: wrap; }
 .pack__block .row { margin-top: 10px; align-items: center; }
 .tany { margin-top: 14px; }
+.tany__h { display: block; margin-bottom: 4px; color: #fff; font-size: 14px; font-weight: 600; }
 .tany > p { margin: 0 0 10px; font-size: 13px; }
 
 .run__more { margin-top: 10px; }

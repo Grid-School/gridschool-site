@@ -22,7 +22,14 @@
       "title": "Headline: your role | the work you want next | three or four skills you can prove",
       "kind": "write",
       "est": 15,
-      "done_when": "Uses the version your answers support."
+      "done_when": "Uses the version your answers support.",
+      "open": {
+        "route": "do",
+        "args": [
+          "profile"
+        ],
+        "label": "Open your profile"
+      }
     },
     {
       "id": "links",

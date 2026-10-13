@@ -16,10 +16,10 @@
  * half-typed form. Aden sees it read-only from the desk.
  */
 
-import { el, mount } from "../dom.js?v=dc96989-202610110117";
-import { panel, btn, field, toast, copy } from "../ui.js?v=dc96989-202610110117";
-import { isoDate, fmtDay } from "../time.js?v=dc96989-202610110117";
-import { STATUS } from "../graph/model.js?v=dc96989-202610110117";
+import { el, mount } from "../dom.js?v=f9fe851-202610130013";
+import { panel, btn, field, toast, copy } from "../ui.js?v=f9fe851-202610130013";
+import { isoDate, fmtDay } from "../time.js?v=f9fe851-202610130013";
+import { STATUS } from "../graph/model.js?v=f9fe851-202610130013";
 import {
   STAGES,
   RELATIONS,
@@ -62,14 +62,14 @@ import {
   nextTouch,
   targetCandidates,
   MAX_ACTIVE_TARGETS,
-} from "../search.js?v=dc96989-202610110117";
-import { storyCard, appRow } from "./search-parts.js?v=dc96989-202610110117";
-import { TOOLS } from "../engine.js?v=dc96989-202610110117";
-import { PERSIST } from "../../../config.js?v=dc96989-202610110117";
-import { matchedRoles, radarReady, fetchPacks } from "../roles-remote.js?v=dc96989-202610110117";
-import { createPackDrawer } from "./pack.js?v=dc96989-202610110117";
-import { createCampaignDrawer } from "./campaign.js?v=dc96989-202610110117";
-import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=dc96989-202610110117";
+} from "../search.js?v=f9fe851-202610130013";
+import { storyCard, appRow } from "./search-parts.js?v=f9fe851-202610130013";
+import { TOOLS } from "../engine.js?v=f9fe851-202610130013";
+import { PERSIST } from "../../../config.js?v=f9fe851-202610130013";
+import { matchedRoles, radarReady, fetchPacks } from "../roles-remote.js?v=f9fe851-202610130013";
+import { createPackDrawer } from "./pack.js?v=f9fe851-202610130013";
+import { createCampaignDrawer } from "./campaign.js?v=f9fe851-202610130013";
+import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=f9fe851-202610130013";
 
 const RUN_FAMILIES = ["proof", "presence", "network", "interview"];
 /** How many moves the day leads with. More than this reads as a wall, not a plan. */
@@ -438,7 +438,14 @@ export function renderHire(ctx, initialTool) {
     el("div.row", {}, el("button.b.b--solid", { type: "submit" }, "Make it a target"))
   );
 
-  const targetAny = el("details.hire__more.tany", {}, el("summary", {}, "Target any company"), el("p.muted", {}, "A company you found yourself, or simply want to work for. The campaign is written from what you paste here."), targetForm);
+  // Always open: with the radar off, this is how most targets are added.
+  const targetAny = el(
+    "section.tany",
+    {},
+    el("b.tany__h", {}, "Add a company"),
+    el("p.muted", {}, "One you found yourself or simply want to work for. Paste their posting or what they build: the campaign, the Loom ideas and the email are written from it, so the more specific, the better."),
+    targetForm
+  );
 
   function targetsBlock() {
     const s = student();
@@ -467,7 +474,9 @@ export function renderHire(ctx, initialTool) {
       "div",
       {},
       looms(),
-      cards.length ? el("div.tcards", {}, cards) : el("p.muted", {}, "No targets yet. Pick up to five below: the overlap of hiring for your titles, a strong fit, and a way in."),
+      cards.length
+        ? el("div.tcards", {}, cards)
+        : el("p.muted", {}, pick.length ? "No targets yet. Pick up to five below: the overlap of hiring for your titles, a strong fit, and a way in." : "No targets yet. Add your first company below. Up to five at a time get a full campaign."),
       pick.length
         ? el(
             "div.tpick",

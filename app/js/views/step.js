@@ -8,31 +8,31 @@
  * reading as a shareable page).
  */
 
-import { el, mount } from "../dom.js?v=dc96989-202610110117";
-import { btn, placeholder, toast, field } from "../ui.js?v=dc96989-202610110117";
-import { STATUS, blockedBy, progress, isSpine, nextUp, stepNumber } from "../graph/model.js?v=dc96989-202610110117";
-import { taskRow, reviewScores } from "./parts.js?v=dc96989-202610110117";
-import { statusLabel, trackLabel, ccvvLabel, stepRule } from "../copy.js?v=dc96989-202610110117";
-import { videoCard, resolveMedia, filmSummary } from "./video.js?v=dc96989-202610110117";
-import { handoffDisclosure } from "./handoff.js?v=dc96989-202610110117";
-import { withSavedState, isCountTask } from "../task-state.js?v=dc96989-202610110117";
-import { renderMarkdown, splitTitle } from "../markdown.js?v=dc96989-202610110117";
-import { hydrateMermaid, mermaidSource } from "../mermaid.js?v=dc96989-202610110117";
-import { provesBlock } from "./proves.js?v=dc96989-202610110117";
-import { modeLine } from "./mode.js?v=dc96989-202610110117";
-import { artifactLine } from "./artifact.js?v=dc96989-202610110117";
-import { refsBlock } from "./refs.js?v=dc96989-202610110117";
-import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=dc96989-202610110117";
-import { electiveBlock } from "./elective.js?v=dc96989-202610110117";
-import { fromAdenCard } from "./from-aden.js?v=dc96989-202610110117";
-import { signoffNotice, submitLabel, linkHint } from "./signoff.js?v=dc96989-202610110117";
-import { stepSpine, isStepComplete, canAdvance, readyToSave, readFlag } from "./step-progress.js?v=dc96989-202610110117";
-import { createReadingModal } from "./reading-modal.js?v=dc96989-202610110117";
-import { bindDraft, clearDraft } from "../drafts.js?v=dc96989-202610110117";
-import { registerLeaveGuard, clearLeaveGuard, isLeaveDirty } from "../leave-guard.js?v=dc96989-202610110117";
-import { isPreviewMedia } from "../preview-mode.js?v=dc96989-202610110117";
-import { isViewEnabled } from "../features.js?v=dc96989-202610110117";
-import { siteOverridesDoc, dropSiteOverridesCache } from "../../../js/site-overrides.js?v=dc96989-202610110117";
+import { el, mount } from "../dom.js?v=f9fe851-202610130013";
+import { btn, placeholder, toast, field } from "../ui.js?v=f9fe851-202610130013";
+import { STATUS, blockedBy, progress, isSpine, nextUp, stepNumber } from "../graph/model.js?v=f9fe851-202610130013";
+import { taskRow, reviewScores } from "./parts.js?v=f9fe851-202610130013";
+import { statusLabel, trackLabel, ccvvLabel, stepRule } from "../copy.js?v=f9fe851-202610130013";
+import { videoCard, resolveMedia, filmSummary } from "./video.js?v=f9fe851-202610130013";
+import { handoffDisclosure } from "./handoff.js?v=f9fe851-202610130013";
+import { withSavedState, isCountTask } from "../task-state.js?v=f9fe851-202610130013";
+import { renderMarkdown, splitTitle } from "../markdown.js?v=f9fe851-202610130013";
+import { hydrateMermaid, mermaidSource } from "../mermaid.js?v=f9fe851-202610130013";
+import { provesBlock } from "./proves.js?v=f9fe851-202610130013";
+import { modeLine } from "./mode.js?v=f9fe851-202610130013";
+import { artifactLine } from "./artifact.js?v=f9fe851-202610130013";
+import { refsBlock } from "./refs.js?v=f9fe851-202610130013";
+import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=f9fe851-202610130013";
+import { electiveBlock } from "./elective.js?v=f9fe851-202610130013";
+import { fromAdenCard } from "./from-aden.js?v=f9fe851-202610130013";
+import { signoffNotice, submitLabel, linkHint } from "./signoff.js?v=f9fe851-202610130013";
+import { stepSpine, isStepComplete, canAdvance, readyToSave, readFlag } from "./step-progress.js?v=f9fe851-202610130013";
+import { createReadingModal } from "./reading-modal.js?v=f9fe851-202610130013";
+import { bindDraft, clearDraft } from "../drafts.js?v=f9fe851-202610130013";
+import { registerLeaveGuard, clearLeaveGuard, isLeaveDirty } from "../leave-guard.js?v=f9fe851-202610130013";
+import { isPreviewMedia } from "../preview-mode.js?v=f9fe851-202610130013";
+import { isViewEnabled } from "../features.js?v=f9fe851-202610130013";
+import { siteOverridesDoc, dropSiteOverridesCache } from "../../../js/site-overrides.js?v=f9fe851-202610130013";
 
 const FALLBACK_VIDEO = {
   title: "Lesson",
@@ -687,7 +687,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
       );
 
       async function save(entry) {
-        const { fetchSiteOverrides, saveSiteOverrides } = await import("../persist-admin.js?v=dc96989-202610110117");
+        const { fetchSiteOverrides, saveSiteOverrides } = await import("../persist-admin.js?v=f9fe851-202610130013");
         const current = await fetchSiteOverrides().catch(() => ({ doc: {} }));
         const doc = current.doc ?? {};
         const nodes = { ...(doc.copy?.nodes ?? {}) };

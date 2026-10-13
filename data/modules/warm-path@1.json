@@ -22,7 +22,14 @@
           "label": "Link to the list",
           "required": true
         }
-      ]
+      ],
+      "open": {
+        "route": "do",
+        "args": [
+          "people"
+        ],
+        "label": "Open your people"
+      }
     },
     {
       "id": "notes",
@@ -31,7 +38,14 @@
       "target": 5,
       "per": "week",
       "est": 15,
-      "done_when": "5 notes a week, each specific to the person."
+      "done_when": "5 notes a week, each specific to the person.",
+      "open": {
+        "route": "do",
+        "args": [
+          "people"
+        ],
+        "label": "Open your people"
+      }
     },
     {
       "id": "track",
@@ -45,7 +59,14 @@
           "label": "Tracker link",
           "required": true
         }
-      ]
+      ],
+      "open": {
+        "route": "do",
+        "args": [
+          "people"
+        ],
+        "label": "Open your people"
+      }
     }
   ],
   "slots": [

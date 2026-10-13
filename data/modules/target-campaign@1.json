@@ -15,7 +15,14 @@
       "title": "Choose five targets on your Hire page",
       "kind": "write",
       "est": 20,
-      "done_when": "Five companies hiring for your titles, the right size, a strong fit, ideally someone inside, each marked as a target."
+      "done_when": "Five companies hiring for your titles, the right size, a strong fit, ideally someone inside, each marked as a target.",
+      "open": {
+        "route": "do",
+        "args": [
+          "targets"
+        ],
+        "label": "Open your targets"
+      }
     },
     {
       "id": "open",
@@ -24,14 +31,28 @@
       "target": 5,
       "per": "week",
       "est": 45,
-      "done_when": "Every channel sent on five targets, each logged on Hire."
+      "done_when": "Every channel sent on five targets, each logged on Hire.",
+      "open": {
+        "route": "do",
+        "args": [
+          "targets"
+        ],
+        "label": "Open your targets"
+      }
     },
     {
       "id": "follow",
       "title": "Follow up on day 3, 7 and 14, one new thing each time",
       "kind": "practice",
       "est": 15,
-      "done_when": "No target goes silent before day 14 without a follow-up."
+      "done_when": "No target goes silent before day 14 without a follow-up.",
+      "open": {
+        "route": "do",
+        "args": [
+          "targets"
+        ],
+        "label": "Open your targets"
+      }
     }
   ],
   "slots": [

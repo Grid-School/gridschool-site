@@ -14,12 +14,12 @@
  * rail without a mode.
  */
 
-import { el, mount } from "./dom.js?v=dc96989-202610110117";
-import { gmark } from "../../js/brand.js?v=dc96989-202610110117";
-import { icon } from "./icons.js?v=dc96989-202610110117";
-import { returnedUnread } from "./tasks.js?v=dc96989-202610110117";
-import { progress } from "./graph/model.js?v=dc96989-202610110117";
-import { enabledViews, isViewEnabled } from "./features.js?v=dc96989-202610110117";
+import { el, mount } from "./dom.js?v=f9fe851-202610130013";
+import { gmark } from "../../js/brand.js?v=f9fe851-202610130013";
+import { icon } from "./icons.js?v=f9fe851-202610130013";
+import { returnedUnread } from "./tasks.js?v=f9fe851-202610130013";
+import { progress } from "./graph/model.js?v=f9fe851-202610130013";
+import { enabledViews, isViewEnabled } from "./features.js?v=f9fe851-202610130013";
 
 export const DOORS = [
   { id: "map", label: "Map", icon: "map", hint: "Your path, the tools you use every day, and what to do next" },

@@ -22,7 +22,14 @@
           "label": "Link to your notes",
           "required": true
         }
-      ]
+      ],
+      "open": {
+        "route": "do",
+        "args": [
+          "targets"
+        ],
+        "label": "Open your targets"
+      }
     }
   ],
   "slots": [

@@ -22,7 +22,14 @@
           "label": "Tracker link",
           "required": true
         }
-      ]
+      ],
+      "open": {
+        "route": "do",
+        "args": [
+          "applications"
+        ],
+        "label": "Open your applications"
+      }
     },
     {
       "id": "daily",
@@ -31,7 +38,14 @@
       "target": 15,
       "per": "week",
       "est": 20,
-      "done_when": "15 a week, each with a line written for that company."
+      "done_when": "15 a week, each with a line written for that company.",
+      "open": {
+        "route": "do",
+        "args": [
+          "applications"
+        ],
+        "label": "Open your applications"
+      }
     }
   ],
   "slots": [

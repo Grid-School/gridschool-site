@@ -22,7 +22,14 @@
           "label": "Link to your list (doc or sheet)",
           "required": true
         }
-      ]
+      ],
+      "open": {
+        "route": "do",
+        "args": [
+          "people"
+        ],
+        "label": "Open your people"
+      }
     }
   ],
   "slots": [
