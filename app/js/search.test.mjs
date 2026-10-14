@@ -19,7 +19,7 @@ import {
   titleTerms,
   roleScore,
   matchRoles,
-} from "./search.js?v=e8beb31-202610142035";
+} from "./search.js?v=d2f38a4-202610142159";
 
 // Friday 2026-10-09; its week starts Monday 2026-10-05.
 const now = new Date(2026, 9, 9, 15, 0);
@@ -165,7 +165,7 @@ test("roles: title terms, scoring and matching", () => {
   assert.deepEqual(matchRoles(roles, titles, { appliedKeys: new Set(["d"]) }).map((r) => r.key), ["c", "b"]);
 });
 
-import { addPerson, movePerson, toAsk, peopleLinks, followUpText, referralText, dailyTargets, weekdaysLeft, markFollowed, keepPack, ageLabel, MAX_PACKS } from "./search.js?v=e8beb31-202610142035";
+import { addPerson, movePerson, toAsk, peopleLinks, followUpText, referralText, dailyTargets, weekdaysLeft, markFollowed, keepPack, ageLabel, MAX_PACKS } from "./search.js?v=d2f38a4-202610142159";
 
 test("people: warm first, then met, then cold; moving out of todo drops them", () => {
   let people = [];
@@ -231,7 +231,7 @@ test("packs keep the newest MAX_PACKS; ages read plainly", () => {
   assert.equal(ageLabel(null, now), "");
 });
 
-import { parseConnections, companyKey, insideConnections, insiderText } from "./search.js?v=e8beb31-202610142035";
+import { parseConnections, companyKey, insideConnections, insiderText } from "./search.js?v=d2f38a4-202610142159";
 
 test("LinkedIn connections export: notes preamble, quoted commas, missing companies dropped", () => {
   const csv = [
@@ -264,13 +264,13 @@ test("companyKey and insideConnections match a role to the people there", () => 
   assert.match(text, /My work is ships AI into old systems\./);
 });
 
-import { shortTitle } from "./search.js?v=e8beb31-202610142035";
+import { shortTitle } from "./search.js?v=d2f38a4-202610142159";
 test("shortTitle keeps parentheses whole", () => {
   assert.equal(shortTitle("Software Engineers (Product, Applied AI), Designers"), "Software Engineers (Product, Applied AI)");
   assert.equal(shortTitle("Forward Deployed Engineer"), "Forward Deployed Engineer");
 });
 
-import { addTarget, touchTarget, patchTarget, dueTouches, nextTouch, targetCandidates, fillLinks, MAX_ACTIVE_TARGETS } from "./search.js?v=e8beb31-202610142035";
+import { addTarget, touchTarget, patchTarget, dueTouches, nextTouch, targetCandidates, fillLinks, MAX_ACTIVE_TARGETS } from "./search.js?v=d2f38a4-202610142159";
 
 test("targets: one active per company, day 0 first, then the cadence", () => {
   const day0 = new Date(2026, 9, 5, 9);
@@ -320,4 +320,20 @@ test("a target made by hand keeps what they pasted for the campaign", () => {
   assert.equal(t.roleKey, undefined);
   assert.match(t.posting, /^We build agents for claims\./);
   assert.equal(addTarget([], { company: "X", posting: "y".repeat(20000) }, now)[0].posting.length, 12000);
+});
+
+test("Aden's prepared campaigns show beside the student's own, and the student's copy wins once they act", async () => {
+  const { targetsOf, seedTarget, patchTarget } = await import("./search.js?v=d2f38a4-202610142159");
+  const prepared = { id: "t-acme", company: "Acme", role: "EM", campaign: { problem: "x" }, people: [{ name: "Pat", message: "hi" }] };
+  const student = { career: { campaigns: [prepared] }, search: { targets: [{ id: "t-own", company: "Own", state: "active", touches: {}, contact: {} }] } };
+  assert.deepEqual(targetsOf(student).map((t) => t.id), ["t-own", "t-acme"]);
+  assert.equal(targetsOf(student)[1].state, "active");
+  const seeded = patchTarget(seedTarget(student.search.targets, student, "t-acme"), "t-acme", { loomUrl: "https://loom.com/share/1" });
+  assert.deepEqual(seeded.map((t) => t.id), ["t-acme", "t-own"]);
+  assert.equal(seeded[0].loomUrl, "https://loom.com/share/1");
+  assert.equal(seeded[0].people[0].name, "Pat");
+  const after = { ...student, search: { targets: seeded } };
+  assert.deepEqual(targetsOf(after).map((t) => t.id), ["t-acme", "t-own"]);
+  assert.equal(seedTarget(seeded, after, "t-acme"), seeded);
+  assert.deepEqual(targetsOf({}), []);
 });

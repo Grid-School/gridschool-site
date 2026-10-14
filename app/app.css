@@ -1884,6 +1884,13 @@ pre.diagram--failed { border-color: var(--amber); }
 .camp__call b { display: block; font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--ghost); font-weight: 500; }
 .camp__call p { margin: 2px 0 0; }
 .camp__sent { font-size: 12.5px; color: var(--ok); align-self: center; }
+.camp__people { display: grid; gap: 14px; }
+.camp__person { border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; display: grid; gap: 6px; }
+.camp__person header { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; }
+.camp__person header span { color: var(--muted); font-size: 13px; }
+.camp__email { font: 400 12.5px var(--font-mono); color: var(--muted); margin: 0; }
+.camp__msg { margin: 4px 0; padding: 8px 12px; border-left: 2px solid color-mix(in srgb, var(--cyan) 50%, transparent); white-space: pre-wrap; }
+.camp__msg p { margin: 4px 0 0; }
 
 /* Campaign nodes: one row of rings, one node open (views/campaign.js). Green only means "you did it". */
 .cnodes { list-style: none; margin: 4px 0 0; padding: 0 0 4px; display: flex; gap: 0; overflow-x: auto; }

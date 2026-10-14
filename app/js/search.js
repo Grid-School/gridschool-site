@@ -13,7 +13,7 @@
  * calendar draws.
  */
 
-import { isoDate, weekStart, addDays, parseDate } from "./time.js?v=e8beb31-202610142035";
+import { isoDate, weekStart, addDays, parseDate } from "./time.js?v=d2f38a4-202610142159";
 
 /** How far one application got. Each stage implies every stage before it. */
 export const STAGES = [
@@ -587,9 +587,29 @@ export const DAY0 = [
 ];
 export const FOLLOWUP_DAYS = [3, 7, 14];
 
+/**
+ * The student's campaigns, plus any Aden prepared for them (career.campaigns,
+ * on the instructor side, since the admin key never writes a student's own
+ * record). A prepared campaign shows until the student acts on it; then their
+ * own copy (same id) is the one that counts.
+ */
 export function targetsOf(student) {
-  const targets = student?.search?.targets;
-  return Array.isArray(targets) ? targets : [];
+  const own = Array.isArray(student?.search?.targets) ? student.search.targets : [];
+  const ids = new Set(own.map((t) => t.id));
+  return [...own, ...preparedTargets(student).filter((t) => !ids.has(t.id))];
+}
+
+export function preparedTargets(student) {
+  const prepared = student?.career?.campaigns;
+  return Array.isArray(prepared) ? prepared.filter((t) => t && t.id && t.company).map((t) => ({ touches: {}, contact: {}, state: "active", ...t })) : [];
+}
+
+/** The student's own list, with a prepared campaign copied in the first time they act on it. */
+export function seedTarget(targets, student, id) {
+  const list = targets ?? [];
+  if (list.some((t) => t.id === id)) return list;
+  const seed = preparedTargets(student).find((t) => t.id === id);
+  return seed ? [structuredClone(seed), ...list] : list;
 }
 
 export function activeTargets(student) {

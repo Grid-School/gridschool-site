@@ -16,10 +16,10 @@
  * half-typed form. Aden sees it read-only from the desk.
  */
 
-import { el, mount } from "../dom.js?v=e8beb31-202610142035";
-import { panel, btn, field, toast, copy } from "../ui.js?v=e8beb31-202610142035";
-import { isoDate, fmtDay } from "../time.js?v=e8beb31-202610142035";
-import { STATUS } from "../graph/model.js?v=e8beb31-202610142035";
+import { el, mount } from "../dom.js?v=d2f38a4-202610142159";
+import { panel, btn, field, toast, copy } from "../ui.js?v=d2f38a4-202610142159";
+import { isoDate, fmtDay } from "../time.js?v=d2f38a4-202610142159";
+import { STATUS } from "../graph/model.js?v=d2f38a4-202610142159";
 import {
   STAGES,
   RELATIONS,
@@ -58,18 +58,19 @@ import {
   addTarget,
   patchTarget,
   touchTarget,
+  seedTarget,
   dueTouches,
   nextTouch,
   targetCandidates,
   MAX_ACTIVE_TARGETS,
-} from "../search.js?v=e8beb31-202610142035";
-import { storyCard, appRow } from "./search-parts.js?v=e8beb31-202610142035";
-import { TOOLS } from "../engine.js?v=e8beb31-202610142035";
-import { PERSIST } from "../../../config.js?v=e8beb31-202610142035";
-import { matchedRoles, radarReady, fetchPacks } from "../roles-remote.js?v=e8beb31-202610142035";
-import { createPackDrawer } from "./pack.js?v=e8beb31-202610142035";
-import { createCampaignDrawer } from "./campaign.js?v=e8beb31-202610142035";
-import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=e8beb31-202610142035";
+} from "../search.js?v=d2f38a4-202610142159";
+import { storyCard, appRow } from "./search-parts.js?v=d2f38a4-202610142159";
+import { TOOLS } from "../engine.js?v=d2f38a4-202610142159";
+import { PERSIST } from "../../../config.js?v=d2f38a4-202610142159";
+import { matchedRoles, radarReady, fetchPacks } from "../roles-remote.js?v=d2f38a4-202610142159";
+import { createPackDrawer } from "./pack.js?v=d2f38a4-202610142159";
+import { createCampaignDrawer } from "./campaign.js?v=d2f38a4-202610142159";
+import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=d2f38a4-202610142159";
 
 const RUN_FAMILIES = ["proof", "presence", "network", "interview"];
 /** How many moves the day leads with. More than this reads as a wall, not a plan. */
@@ -127,9 +128,9 @@ export function renderHire(ctx, initialTool) {
     readOnly,
     getPortfolio: portfolio,
     getTarget: (id) => targetsOf(student()).find((t) => t.id === id),
-    onPatch: (id, patch) => save((x) => ({ targets: patchTarget(x.targets, id, patch) })),
+    onPatch: (id, patch) => save((x) => ({ targets: patchTarget(seedTarget(x.targets, student(), id), id, patch) })),
     onTouch: (id, channel, entry) =>
-      save((x) => ({ targets: touchTarget(x.targets, id, channel), apps: addApp(x.apps, entry) }), { kind: "search.logged", payload: { kind: "warm", company: entry.company, from: `target:${channel}` } }),
+      save((x) => ({ targets: touchTarget(seedTarget(x.targets, student(), id), id, channel), apps: addApp(x.apps, entry) }), { kind: "search.logged", payload: { kind: "warm", company: entry.company, from: `target:${channel}` } }),
   });
 
   function makeTarget({ role, reasons = [], insider = "" }) {

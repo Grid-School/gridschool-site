@@ -11,14 +11,14 @@
  * in their own mail app, the call is their phone, LinkedIn is their click.
  */
 
-import { el, mount } from "../dom.js?v=e8beb31-202610142035";
-import { btn, copy, toast, field } from "../ui.js?v=e8beb31-202610142035";
-import { createModal } from "../modal.js?v=e8beb31-202610142035";
-import { DAY0, FOLLOWUP_DAYS, nextTouch, fillLinks, peopleLinks } from "../search.js?v=e8beb31-202610142035";
-import { draftCampaign } from "../roles-remote.js?v=e8beb31-202610142035";
-import { scriptWizard, recordNode, closeRehearsal } from "./loom-kit.js?v=e8beb31-202610142035";
-import { nodeRail, nodeIntro } from "./node-rail.js?v=e8beb31-202610142035";
-import { NODES, doneNodes, firstOpen, nextNode, prevNode, labelOf } from "../campaign-steps.js?v=e8beb31-202610142035";
+import { el, mount } from "../dom.js?v=d2f38a4-202610142159";
+import { btn, copy, toast, field } from "../ui.js?v=d2f38a4-202610142159";
+import { createModal } from "../modal.js?v=d2f38a4-202610142159";
+import { DAY0, FOLLOWUP_DAYS, nextTouch, fillLinks, peopleLinks } from "../search.js?v=d2f38a4-202610142159";
+import { draftCampaign } from "../roles-remote.js?v=d2f38a4-202610142159";
+import { scriptWizard, recordNode, closeRehearsal } from "./loom-kit.js?v=d2f38a4-202610142159";
+import { nodeRail, nodeIntro } from "./node-rail.js?v=d2f38a4-202610142159";
+import { NODES, doneNodes, firstOpen, nextNode, prevNode, labelOf } from "../campaign-steps.js?v=d2f38a4-202610142159";
 
 export function createCampaignDrawer({ slug, getTarget, onPatch, onTouch, getPortfolio, readOnly = () => false }) {
   const modal = createModal({ label: "Target campaign", size: "reading", onClose: () => closeRehearsal() || close() });
@@ -136,6 +136,48 @@ export function createCampaignDrawer({ slug, getTarget, onPatch, onTouch, getPor
     else modal.setOpen(true, { content });
   }
 
+  /**
+   * Everyone else Aden found at this company, each reached from a different
+   * angle (the recruiter, a peer, a leader, someone who knows your work), with
+   * the message written for them. Null when there are none.
+   */
+  function morePeople({ target, ro, links, markSent, sentChip }) {
+    const people = Array.isArray(target.people) ? target.people.filter((p) => p && p.name && p.message) : [];
+    if (!people.length) return null;
+    return section(
+      `More people at ${target.company}`,
+      null,
+      el(
+        "div.camp__people",
+        {},
+        el("p.pack__hint", {}, "Aden found these people and wrote each message. After the email above, send these from your own email or LinkedIn, starting with the ones marked send first. Email addresses follow the company's format and aren't confirmed: if one bounces, use LinkedIn. If you skipped the Loom for someone, delete the P.S. line."),
+        people.map((p, i) => {
+          const channel = `p${i + 1}`;
+          const message = fillLinks(p.message, links);
+          const profile = p.linkedin && /^https?:\/\//.test(p.linkedin) ? p.linkedin : null;
+          const mailto = p.email ? `mailto:${encodeURIComponent(p.email)}?subject=${encodeURIComponent(p.subject ?? "")}&body=${encodeURIComponent(message)}` : null;
+          return el(
+            "article.camp__person",
+            {},
+            el("header", {}, el("b", {}, p.name), el("span", {}, [p.title, p.angle].filter(Boolean).join(" · "))),
+            p.why ? el("p.pack__hint", {}, p.why) : null,
+            p.email ? el("p.camp__email", {}, `${p.email}${p.emailNote ? ` (${p.emailNote})` : ""}`) : null,
+            el("blockquote.camp__msg", {}, p.subject ? el("b", {}, p.subject) : null, el("p", {}, message)),
+            el(
+              "div.lkit__act",
+              {},
+              btn({ label: "Copy message", variant: "ghost", onclick: () => copy(message, "Message copied") }),
+              profile ? btn({ label: "Open their LinkedIn ↗", variant: "ghost", href: profile, target: "_blank" }) : null,
+              mailto ? btn({ label: "Email them", variant: "ghost", href: mailto }) : null,
+              markSent(channel, `${p.name}, ${p.angle || p.title || "contact"}`, { contact: p.name }),
+              sentChip(channel)
+            )
+          );
+        })
+      )
+    );
+  }
+
   /** One node's content. Each says what it's for, what to do, and what pressing its button does. */
   function nodeBody(id, { target, c, ro, links, sent, markSent, sentChip }) {
     const intro = nodeIntro;
@@ -204,7 +246,8 @@ export function createCampaignDrawer({ slug, getTarget, onPatch, onTouch, getPor
         !target.loomUrl ? el("p.pack__warn", {}, "Your Loom link isn't saved yet, so the email still shows [Loom link]. Finish the Record step first.") : null,
         section("Email", `${c.email.subject}\n\n${body}`, el("div", {}, el("p.camp__subject", {}, c.email.subject), el("p.pack__text", {}, body))),
         el("div.lkit__act", {}, btn({ label: "Open in my mail app", variant: "ghost", href: mailto }), markSent("email", "Email + Loom"), sentChip("email")),
-        sent("email") ? null : el("p.lkit__does", {}, "I sent it logs the email on your Hire page and starts the follow-up clock.")
+        sent("email") ? null : el("p.lkit__does", {}, "I sent it logs the email on your Hire page and starts the follow-up clock."),
+        morePeople({ target, ro, links, markSent, sentChip })
       );
     }
 
