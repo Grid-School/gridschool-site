@@ -1514,6 +1514,10 @@ pre.diagram--failed { border-color: var(--amber); }
 .fromaden__notes blockquote p:last-child { margin-bottom: 0; }
 .fromaden__notes > :last-child { margin-bottom: 0; }
 .fromaden__links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: var(--sp-2); }
+.fromaden__list { margin: var(--sp-2) 0 0; padding-left: 1.6em; display: grid; gap: 6px; }
+.fromaden__list li { color: var(--muted); }
+.fromaden__list a { color: var(--text); text-decoration: none; border-bottom: 1px solid color-mix(in srgb, var(--cyan) 35%, transparent); }
+.fromaden__list a:hover, .fromaden__list a:focus-visible { color: var(--cyan); border-bottom-color: var(--cyan); }
 
 /* ---------- the Route: the board on the landing's road (graph/rez/) ----------
    Same standings and tokens as the floor. Light is done; cyan is where you

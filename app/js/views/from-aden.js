@@ -10,10 +10,12 @@
  * The parsing and formatting are pure and tested; the DOM builders sit on top.
  */
 
-import { el } from "../dom.js?v=7fc57cb-202610141733";
-import { isHttpUrl, isValidDate } from "../modules.js?v=7fc57cb-202610141733";
+import { el } from "../dom.js?v=e8beb31-202610142035";
+import { isHttpUrl, isValidDate } from "../modules.js?v=e8beb31-202610142035";
 
-const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+/** Up to this many links show as buttons; more show as a numbered list. */
+const LINK_BUTTONS = 4;
+const DAYS =["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 /** "**a** b" → [{text:"a", bold:true}, {text:" b", bold:false}]. Unclosed ** stays literal. */
@@ -139,12 +141,19 @@ export function fromAdenCard(node) {
           })
         )
       : null,
-    model.links.length
+    // A few links are buttons; a long list (a company list) reads as rows.
+    model.links.length > LINK_BUTTONS
       ? el(
-          "div.fromaden__links",
+          "ol.fromaden__list",
           {},
-          model.links.map((link) => el("a.b.b--ghost", { href: link.url, target: "_blank", rel: "noopener noreferrer" }, `${link.label} ↗`))
+          model.links.map((link) => el("li", {}, el("a", { href: link.url, target: "_blank", rel: "noopener noreferrer" }, `${link.label} ↗`)))
         )
-      : null
+      : model.links.length
+        ? el(
+            "div.fromaden__links",
+            {},
+            model.links.map((link) => el("a.b.b--ghost", { href: link.url, target: "_blank", rel: "noopener noreferrer" }, `${link.label} ↗`))
+          )
+        : null
   );
 }
