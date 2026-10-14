@@ -9,7 +9,7 @@
  *   posts          shown when FEATURES.posts is true
  */
 
-import { COACH, FEATURES, isPlaceholder } from "../../config.js?v=72f7e6e-202610142247";
+import { COACH, FEATURES, isPlaceholder } from "../../config.js?v=184e8c3-202610142252";
 
 export function enabledViews({ coach = COACH, features = FEATURES } = {}) {
   return {
