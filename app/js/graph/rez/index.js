@@ -18,9 +18,9 @@
  * view glides to it. Nothing idles. Reduced motion jumps.
  */
 
-import { el, clear } from "../../dom.js?v=757a6a6-202610140704";
-import { traceSet, stepNumber } from "../model.js?v=757a6a6-202610140704";
-import { STANDING, standingOf, inSequence } from "../standing.js?v=757a6a6-202610140704";
+import { el, clear } from "../../dom.js?v=7fc57cb-202610141733";
+import { traceSet, stepNumber } from "../model.js?v=7fc57cb-202610141733";
+import { STANDING, standingOf, inSequence } from "../standing.js?v=7fc57cb-202610141733";
 import {
   svgEl,
   drawGrid,
@@ -31,7 +31,7 @@ import {
   runCurrent,
   rezIn,
   prefersReducedMotion,
-} from "../../../../js/rez/road.js?v=757a6a6-202610140704";
+} from "../../../../js/rez/road.js?v=7fc57cb-202610141733";
 
 /*
  * One grid under everything, in the board's own units (as on the landing):
@@ -48,6 +48,13 @@ const SIDE_GAP = 3 * CELL;
 /** Ready nodes stand this far right of you, in their lanes. */
 const READY_DX = 1.5 * CELL;
 const NODE_R = 15;
+/** The next-move pin: its stem starts above "YOU ARE HERE", its dot sits this high over the step. */
+const PIN_FOOT = -NODE_R - 30;
+const PIN_HEAD = -NODE_R - 52;
+/** No two labels closer than this; a label in the way moves by NUDGE until it's clear. */
+const LABEL_PAD = 4;
+const NUDGE = 6;
+const MAX_NUDGE = 8 * CELL;
 const MIN_ZOOM = 0.2;
 const MAX_ZOOM = 2.6;
 /** The canvas never loses the map entirely: at least this much of it stays on screen. */
@@ -82,6 +89,7 @@ export async function createRezScene(container) {
     arrived: false,
     ready: null,
     onTool: null,
+    movers: [],
   };
 
   function applyView() {
@@ -352,6 +360,7 @@ export async function createRezScene(container) {
 
   function drawReady(options) {
     view.querySelector(".rz-ready")?.remove();
+    state.movers = [];
     for (const g of state.nodeEls.values()) g.classList.remove("is-here-only");
     const p = state.plan;
     const ready = options.ready ?? state.ready;
@@ -369,31 +378,127 @@ export async function createRezScene(container) {
     view.insertBefore(group, view.querySelector(".rz-nodes"));
     const x = here.x + READY_DX;
     const used = new Map();
+    const movers = [];
     items.forEach((item) => {
-      const laneY = p.laneYOf(item.lane) ?? here.y;
-      const k = used.get(laneY) ?? 0;
-      used.set(laneY, k + 1);
-      const y = laneY + k * 0.9 * CELL;
-      // The line from you: these were made for where you are now.
-      svgEl("path", { class: `rz-ready__tie${item.isNext ? " is-next" : ""}`, d: `M ${here.x + 12} ${here.y} C ${here.x + 0.9 * CELL} ${here.y}, ${x - 0.9 * CELL} ${y}, ${x - 14} ${y}` }, group);
-      const g = svgEl("g", { class: `rz-ready__node${item.isNext ? " is-next" : ""}`, transform: `translate(${x} ${y})`, tabindex: 0, role: "button", "aria-label": `${item.isNext ? "Do this next: " : ""}${item.title}${item.tag ? `, ${item.tag}` : ""}` }, group);
-      if (item.isNext) svgEl("circle", { class: "rz-ready__halo", r: 22 }, g);
-      svgEl("circle", { class: "rz-ready__ring", r: item.isNext ? 14 : 11 }, g);
-      if (item.isNext) svgEl("text", { class: "rz-here rz-ready__next", y: -26 }, g).textContent = "DO THIS NEXT";
-      const title = svgEl("text", { class: "rz-ready__title", x: 22, y: item.tag ? -2 : 4 }, g);
-      title.textContent = item.title.length > 38 ? `${item.title.slice(0, 36).replace(/[,\s]+\S*$/, "")}…` : item.title;
-      if (item.tag) {
-        const w = 12 + item.tag.length * 6.3;
-        svgEl("rect", { class: "rz-ready__tag", x: 22, y: 6, width: w, height: 17, rx: 8.5 }, g);
-        svgEl("text", { class: "rz-ready__tagtext", x: 22 + w / 2, y: 15 }, g).textContent = item.tag;
-      }
+      const label = `${item.isNext ? "Do this next: " : ""}${item.title}${item.tag ? `, ${item.tag}` : ""}`;
       const open = (event) => {
         event.stopPropagation();
         state.onTool?.(item.tool);
       };
+      let g;
+      if (item.isNext) {
+        // The next move is a pin standing on the step you're on, not another
+        // stop on the road: a short stem up from "you are here" to a small
+        // white dot, the move stacked above it.
+        g = svgEl("g", { class: "rz-ready__node rz-pin is-next", transform: `translate(${here.x} ${here.y})`, tabindex: 0, role: "button", "aria-label": label }, group);
+        const stem = svgEl("line", { class: "rz-pin__stem", x1: 0, x2: 0, y1: PIN_FOOT }, g);
+        const head = svgEl("g", { class: "rz-pin__head" }, g);
+        svgEl("circle", { class: "rz-pin__halo", r: 9 }, head);
+        svgEl("circle", { class: "rz-pin__dot", r: 5 }, head);
+        let y = -14;
+        if (item.tag) {
+          const w = 12 + item.tag.length * 6.3;
+          svgEl("rect", { class: "rz-ready__tag", x: -w / 2, y: y - 17, width: w, height: 17, rx: 8.5 }, head);
+          svgEl("text", { class: "rz-ready__tagtext", x: 0, y: y - 8.5 }, head).textContent = item.tag;
+          y -= 23;
+        }
+        const lines = wrapLabel(item.title, 24, 3);
+        const title = svgEl("text", { class: "rz-pin__title", y: y - 4 - (lines.length - 1) * 15 }, head);
+        lines.forEach((line, index) => {
+          svgEl("tspan", { x: 0, dy: index ? 15 : 0 }, title).textContent = line;
+        });
+        y -= 4 + lines.length * 15;
+        svgEl("text", { class: "rz-here rz-ready__next", y: y - 2 }, head).textContent = "DO THIS NEXT";
+        const place = (lift) => {
+          head.setAttribute("transform", `translate(0 ${PIN_HEAD - lift})`);
+          stem.setAttribute("y2", PIN_HEAD - lift + 6);
+        };
+        place(0);
+        movers.push({ el: head, dir: -1, place });
+      } else {
+        const laneY = p.laneYOf(item.lane) ?? here.y;
+        const k = used.get(laneY) ?? 0;
+        used.set(laneY, k + 1);
+        const y0 = laneY + k * 0.9 * CELL;
+        // The line from you: these were made for where you are now.
+        const tie = svgEl("path", { class: "rz-ready__tie" }, group);
+        g = svgEl("g", { class: "rz-ready__node", tabindex: 0, role: "button", "aria-label": label }, group);
+        svgEl("circle", { class: "rz-ready__ring", r: 11 }, g);
+        const title = svgEl("text", { class: "rz-ready__title", x: 22, y: item.tag ? -2 : 4 }, g);
+        title.textContent = item.title.length > 38 ? `${item.title.slice(0, 36).replace(/[,\s]+\S*$/, "")}…` : item.title;
+        if (item.tag) {
+          const w = 12 + item.tag.length * 6.3;
+          svgEl("rect", { class: "rz-ready__tag", x: 22, y: 6, width: w, height: 17, rx: 8.5 }, g);
+          svgEl("text", { class: "rz-ready__tagtext", x: 22 + w / 2, y: 15 }, g).textContent = item.tag;
+        }
+        const place = (drop) => {
+          const y = y0 + drop;
+          g.setAttribute("transform", `translate(${x} ${y})`);
+          tie.setAttribute("d", `M ${here.x + 12} ${here.y} C ${here.x + 0.9 * CELL} ${here.y}, ${x - 0.9 * CELL} ${y}, ${x - 14} ${y}`);
+        };
+        place(0);
+        movers.push({ el: g, dir: 1, place });
+      }
       g.addEventListener("click", open);
       g.addEventListener("keydown", (event) => (event.key === "Enter" || event.key === " ") && open(event));
     });
+    state.movers = movers;
+  }
+
+  /* ---------- no text on text ---------- */
+
+  /** An element's box in board units, padded; null while it isn't laid out (hidden tab, no fonts yet). */
+  function boxOf(element, pad = LABEL_PAD) {
+    let b;
+    try {
+      b = element.getBBox();
+    } catch {
+      return null;
+    }
+    if (!b.width && !b.height) return null;
+    const m = element.getCTM();
+    const v = view.getCTM();
+    if (!m || !v) return null;
+    const t = v.inverse().multiply(m);
+    return { x0: t.e + b.x * t.a - pad, y0: t.f + b.y * t.d - pad, x1: t.e + (b.x + b.width) * t.a + pad, y1: t.f + (b.y + b.height) * t.d + pad };
+  }
+
+  const hits = (a, b) => a.x0 < b.x1 && b.x0 < a.x1 && a.y0 < b.y1 && b.y0 < a.y1;
+
+  /**
+   * Every label gets its own space. The road's labels and rings stand where the
+   * road puts them; a road title that would sit on another drops below it, and
+   * the pin rises and the ready nodes drop until nothing touches.
+   */
+  function declutter() {
+    const solid = [];
+    const take = (element) => {
+      const b = boxOf(element);
+      if (b) solid.push(b);
+    };
+    view.querySelectorAll(".rz-band__label, .rz-band__pace, .rz-lane__label").forEach(take);
+    for (const g of state.nodeEls.values()) {
+      take(g.querySelector(".rz-ring"));
+      if (g.classList.contains("is-next")) take(g.querySelector(".rz-here"));
+    }
+    for (const g of state.nodeEls.values()) {
+      const title = g.querySelector(".rz-title");
+      title.setAttribute("y", NODE_R + 22);
+      for (let drop = 0; drop <= MAX_NUDGE; drop += NUDGE) {
+        title.setAttribute("y", NODE_R + 22 + drop);
+        const b = boxOf(title);
+        if (!b || !solid.some((s) => hits(b, s))) break;
+      }
+      take(title);
+    }
+    for (const mover of state.movers ?? []) {
+      for (let shift = 0; shift <= MAX_NUDGE; shift += NUDGE) {
+        mover.place(shift);
+        const b = boxOf(mover.el);
+        if (!b || !solid.some((s) => hits(b, s))) break;
+      }
+      take(mover.el);
+    }
   }
 
   /* ---------- paint ---------- */
@@ -493,6 +598,8 @@ export async function createRezScene(container) {
       rebuild(graph);
       state.nextId = undefined;
       this.paint(graph, options);
+      // Label widths change when the web fonts land; settle again then.
+      document.fonts?.ready.then(() => state.graph === graph && declutter());
       // First sight: light runs from the start of the road to where you are, once.
       if (!state.arrived && options.nextId && state.plan.order[0] !== options.nextId) {
         state.arrived = true;
@@ -508,6 +615,7 @@ export async function createRezScene(container) {
       state.nextId = options.nextId ?? null;
       paintAll(graph, options);
       drawReady(options);
+      declutter();
       if (stepped) {
         runTo(previousId, options.nextId);
         scrollToPoint(state.plan.at.get(options.nextId), { glide: true });

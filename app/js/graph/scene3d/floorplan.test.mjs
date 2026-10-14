@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { planFloor, laneCenter, STEP, NODE_R, LANE_W } from "./floorplan.js?v=757a6a6-202610140704";
+import { planFloor, laneCenter, STEP, NODE_R, LANE_W } from "./floorplan.js?v=7fc57cb-202610141733";
 
 const families = [
   { id: "signal", lane: 0 },

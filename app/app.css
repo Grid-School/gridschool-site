@@ -2128,6 +2128,14 @@ pre.diagram--failed { border-color: var(--amber); }
 .rz-ready__next { opacity: 1 !important; }
 .rz-ready__title { font: 500 13px var(--font-sans); fill: var(--text); pointer-events: none; paint-order: stroke; stroke: var(--bg); stroke-width: 5px; stroke-linejoin: round; }
 .rz-ready__node.is-next .rz-ready__title { fill: #fff; }
+/* The next move: a small pin standing on the step you're on. */
+.rz-pin__head { pointer-events: bounding-box; cursor: pointer; }
+.rz-pin__stem { stroke: var(--cyan); stroke-width: 1.2; opacity: .8; }
+.rz-pin__dot { fill: #fff; filter: drop-shadow(0 0 6px var(--cyan)); }
+.rz-pin__halo { fill: none; stroke: var(--cyan); stroke-width: 1; opacity: .4; }
+.rz-pin:hover .rz-pin__halo, .rz-pin:focus-visible .rz-pin__halo { opacity: .9; stroke-width: 1.6; }
+.rz-pin__title { font: 500 12.5px var(--font-sans); fill: #fff; text-anchor: middle; pointer-events: none; paint-order: stroke; stroke: var(--bg); stroke-width: 5px; stroke-linejoin: round; }
+.rz-pin .rz-ready__next { font-size: 9px; }
 .rz-ready__tag { fill: color-mix(in srgb, var(--cyan) 14%, var(--bg)); stroke: color-mix(in srgb, var(--cyan) 40%, transparent); stroke-width: 1; }
 .rz-ready__tagtext { font: 500 10.5px var(--font-sans); fill: var(--cyan); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
 /* When the next move isn't a step, the step you're on is "you are here", not white: one white ring, ever. */
