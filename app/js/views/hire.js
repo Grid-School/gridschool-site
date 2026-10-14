@@ -16,10 +16,10 @@
  * half-typed form. Aden sees it read-only from the desk.
  */
 
-import { el, mount } from "../dom.js?v=d2f38a4-202610142159";
-import { panel, btn, field, toast, copy } from "../ui.js?v=d2f38a4-202610142159";
-import { isoDate, fmtDay } from "../time.js?v=d2f38a4-202610142159";
-import { STATUS } from "../graph/model.js?v=d2f38a4-202610142159";
+import { el, mount } from "../dom.js?v=fe10c31-202610142207";
+import { panel, btn, field, toast, copy } from "../ui.js?v=fe10c31-202610142207";
+import { isoDate, fmtDay } from "../time.js?v=fe10c31-202610142207";
+import { STATUS } from "../graph/model.js?v=fe10c31-202610142207";
 import {
   STAGES,
   RELATIONS,
@@ -63,14 +63,14 @@ import {
   nextTouch,
   targetCandidates,
   MAX_ACTIVE_TARGETS,
-} from "../search.js?v=d2f38a4-202610142159";
-import { storyCard, appRow } from "./search-parts.js?v=d2f38a4-202610142159";
-import { TOOLS } from "../engine.js?v=d2f38a4-202610142159";
-import { PERSIST } from "../../../config.js?v=d2f38a4-202610142159";
-import { matchedRoles, radarReady, fetchPacks } from "../roles-remote.js?v=d2f38a4-202610142159";
-import { createPackDrawer } from "./pack.js?v=d2f38a4-202610142159";
-import { createCampaignDrawer } from "./campaign.js?v=d2f38a4-202610142159";
-import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=d2f38a4-202610142159";
+} from "../search.js?v=fe10c31-202610142207";
+import { storyCard, appRow } from "./search-parts.js?v=fe10c31-202610142207";
+import { TOOLS } from "../engine.js?v=fe10c31-202610142207";
+import { PERSIST } from "../../../config.js?v=fe10c31-202610142207";
+import { matchedRoles, radarReady, fetchPacks } from "../roles-remote.js?v=fe10c31-202610142207";
+import { createPackDrawer } from "./pack.js?v=fe10c31-202610142207";
+import { createCampaignDrawer } from "./campaign.js?v=fe10c31-202610142207";
+import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=fe10c31-202610142207";
 
 const RUN_FAMILIES = ["proof", "presence", "network", "interview"];
 /** How many moves the day leads with. More than this reads as a wall, not a plan. */
@@ -459,6 +459,7 @@ export function renderHire(ctx, initialTool) {
         el("div.tcard__top", {}, el("b", {}, t.company), el("span.tcard__next", {}, nextTouch(t))),
         el("span.tcard__role", {}, [shortTitle(t.role), t.campaign?.size].filter(Boolean).join(" · ")),
         t.campaign?.problem ? el("span.tcard__problem", {}, t.campaign.problem) : t.why ? el("span.tcard__problem", {}, t.why) : null,
+        loomStatus(t) ? el("span.tcard__loom", { class: loomStatus(t).done ? "is-sent" : null }, `Loom: ${loomStatus(t).done ? "✓ " : ""}${loomStatus(t).label}`) : null,
         el(
           "div.tcard__dots",
           { "aria-label": "Campaign steps" },
@@ -503,17 +504,18 @@ export function renderHire(ctx, initialTool) {
    * where it stands (sent, recorded, script ready, script in progress), the
    * Loom itself, and the campaign it belongs to.
    */
+  /** Looms already sent, and those from campaigns that ended: a record to rewatch. Active ones show on their card. */
   function looms() {
     const rows = targetsOf(student())
       .map((t) => ({ t, status: loomStatus(t) }))
-      .filter((row) => row.status)
+      .filter((row) => row.status && (row.status.done || row.t.state !== "active"))
       .sort((a, b) => Number(b.status.done) - Number(a.status.done) || String(b.t.touches?.email ?? b.t.at ?? "").localeCompare(String(a.t.touches?.email ?? a.t.at ?? "")));
     if (!rows.length) return null;
     const sent = rows.filter((row) => row.status.done).length;
     return el(
       "section.looms",
       { "aria-label": "Your Looms" },
-      el("header.looms__head", {}, el("b", {}, "Your Looms"), el("span", {}, `${sent} sent · ${rows.length - sent} in progress`)),
+      el("header.looms__head", {}, el("b", {}, "Your Looms"), el("span", {}, `${sent} sent`)),
       el(
         "ul.looms__list",
         {},

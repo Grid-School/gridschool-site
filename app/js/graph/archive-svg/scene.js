@@ -4,10 +4,10 @@
  * decision stays in CSS where the brand system lives.
  */
 
-import { el, clear } from "../../dom.js?v=d2f38a4-202610142159";
-import { edgePath, bounds, phaseBands } from "./layout.js?v=d2f38a4-202610142159";
-import { spreadLabels } from "./labels.js?v=d2f38a4-202610142159";
-import { STATUS, traceSet, stepNumber } from "../model.js?v=d2f38a4-202610142159";
+import { el, clear } from "../../dom.js?v=fe10c31-202610142207";
+import { edgePath, bounds, phaseBands } from "./layout.js?v=fe10c31-202610142207";
+import { spreadLabels } from "./labels.js?v=fe10c31-202610142207";
+import { STATUS, traceSet, stepNumber } from "../model.js?v=fe10c31-202610142207";
 
 const LABEL_CHARS = 17;
 /**

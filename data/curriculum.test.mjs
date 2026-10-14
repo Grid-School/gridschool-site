@@ -18,12 +18,12 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { MODES } from "../app/js/modes.js?v=d2f38a4-202610142159";
-import { ARTIFACTS } from "../app/js/artifacts.js?v=d2f38a4-202610142159";
-import { walkReadings } from "../app/js/reading-order.js?v=d2f38a4-202610142159";
-import { buildGraph, STATUS, isSpine, nextUp, ancestorsOf } from "../app/js/graph/model.js?v=d2f38a4-202610142159";
+import { MODES } from "../app/js/modes.js?v=fe10c31-202610142207";
+import { ARTIFACTS } from "../app/js/artifacts.js?v=fe10c31-202610142207";
+import { walkReadings } from "../app/js/reading-order.js?v=fe10c31-202610142207";
+import { buildGraph, STATUS, isSpine, nextUp, ancestorsOf } from "../app/js/graph/model.js?v=fe10c31-202610142207";
 import { validateMap } from "./map-rules.mjs";
-import { resolveMap, instanceErrors } from "../app/js/modules.js?v=d2f38a4-202610142159";
+import { resolveMap, instanceErrors } from "../app/js/modules.js?v=fe10c31-202610142207";
 import { readLibrary } from "./module-library.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));

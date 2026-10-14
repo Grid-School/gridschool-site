@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { ageMinutes, formatAge, isFresh } from "./age.js?v=d2f38a4-202610142159";
+import { ageMinutes, formatAge, isFresh } from "./age.js?v=fe10c31-202610142207";
 
 test("relative labels inside a day stay fresh", () => {
   assert.equal(ageMinutes("just now"), 0);

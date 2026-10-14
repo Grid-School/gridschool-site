@@ -9,13 +9,13 @@
  * concatenate user text into the system prompt.
  */
 
-import { COACH } from "../../../config.js?v=d2f38a4-202610142159";
-import { nextAction } from "./next.js?v=d2f38a4-202610142159";
-import { retrieve, formatSnippets } from "./memory.js?v=d2f38a4-202610142159";
-import { credits, formatUsd } from "./credits.js?v=d2f38a4-202610142159";
-import { modeOf } from "../modes.js?v=d2f38a4-202610142159";
-import { artifactOf } from "../artifacts.js?v=d2f38a4-202610142159";
-import { stepNumber } from "../graph/model.js?v=d2f38a4-202610142159";
+import { COACH } from "../../../config.js?v=fe10c31-202610142207";
+import { nextAction } from "./next.js?v=fe10c31-202610142207";
+import { retrieve, formatSnippets } from "./memory.js?v=fe10c31-202610142207";
+import { credits, formatUsd } from "./credits.js?v=fe10c31-202610142207";
+import { modeOf } from "../modes.js?v=fe10c31-202610142207";
+import { artifactOf } from "../artifacts.js?v=fe10c31-202610142207";
+import { stepNumber } from "../graph/model.js?v=fe10c31-202610142207";
 
 const FENCE = "-----";
 
