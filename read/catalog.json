@@ -460,6 +460,15 @@
         "sg.habit"
       ],
       "walk": 47
+    },
+    {
+      "id": "readings/linear-process",
+      "title": "The standard linear agentic development process",
+      "series": "readings",
+      "mins": 9,
+      "attachesTo": [
+        "cv.delegate"
+      ]
     }
   ]
 }

@@ -85,6 +85,13 @@
       "purpose": "Choose one feature you can build in weeks and show clearly, with its done-when."
     },
     {
+      "id": "linear-build",
+      "version": 1,
+      "title": "Build it the standard linear way",
+      "lane": "proof",
+      "purpose": "Research, plan, build, test, ship: one system built with a coding agent, each phase proven before the next."
+    },
+    {
       "id": "build-agentic-feature",
       "version": 1,
       "title": "Build it: real tools, approval, traces, evals",

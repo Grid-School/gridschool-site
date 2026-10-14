@@ -4,8 +4,8 @@
  * only the sentence we put at the top of the page.
  */
 
-import { buildQueue, actionable, waitingOn, returnedUnread } from "../tasks.js?v=f9fe851-202610130013";
-import { nextUp } from "../graph/model.js?v=f9fe851-202610130013";
+import { buildQueue, actionable, waitingOn, returnedUnread } from "../tasks.js?v=757a6a6-202610140704";
+import { nextUp } from "../graph/model.js?v=757a6a6-202610140704";
 
 export function nextAction(state) {
   const { graph, student, curriculum, week } = state;

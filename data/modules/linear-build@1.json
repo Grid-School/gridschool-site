@@ -1,0 +1,66 @@
+{
+  "id": "linear-build",
+  "version": 1,
+  "title": "Build it the standard linear way",
+  "purpose": "Research, plan, build, test, ship: one system built with a coding agent, each phase proven before the next.",
+  "lane": "proof",
+  "phase": "prove",
+  "kind": "core",
+  "completion": "tasks",
+  "why": "The default process for building with an agent. Deciding before building, proving each piece, and leaving a record someone else can follow is what reviewers look for in a take-home and what teams look for in a hire.",
+  "evidence": "The repo: research note, plan, one commit per working piece, iteration log, README.",
+  "modules": [
+    {
+      "id": "readings/linear-process",
+      "title": "The standard linear agentic development process",
+      "href": "./read/?m=readings/linear-process"
+    },
+    {
+      "id": "disciplines/05-agentic-workflow-engineering",
+      "title": "05 · Agentic workflow engineering",
+      "href": "./read/?m=disciplines/05-agentic-workflow-engineering"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "research",
+      "title": "Research: rules checklist, constraints with numbers, options compared",
+      "kind": "write",
+      "est": 90,
+      "done_when": "A research note in the repo lists every rule in the brief, the time and money limits, the options you compared and your sources."
+    },
+    {
+      "id": "plan",
+      "title": "Plan in one context and answer what could go wrong",
+      "kind": "write",
+      "est": 60,
+      "done_when": "The plan names each piece, its order, the check that proves it and what is left out, and you can explain it without the agent."
+    },
+    {
+      "id": "build",
+      "title": "Build one proven piece at a time",
+      "kind": "ship",
+      "est": 240,
+      "done_when": "Each piece has its own commit and a check you can run."
+    },
+    {
+      "id": "test",
+      "title": "Test somewhere safe first, keep an iteration log",
+      "kind": "ship",
+      "est": 120,
+      "done_when": "Every line of the checklist passes and the log shows what you saw, why, and what you changed."
+    },
+    {
+      "id": "ship",
+      "title": "Ship it readable",
+      "kind": "ship",
+      "est": 60,
+      "done_when": "A stranger can run it from the README, follow your decisions, and find every required item."
+    }
+  ],
+  "slots": [
+    "notes",
+    "links",
+    "due"
+  ]
+}
