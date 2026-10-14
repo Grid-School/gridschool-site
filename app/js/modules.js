@@ -18,7 +18,9 @@
  */
 
 export const SLOTS = ["notes", "links", "due", "readings"];
-export const INSTANCE_KEYS = ["id", "n", "requires", "module", "family", "phase", "title", "fill"];
+export const INSTANCE_KEYS = ["id", "n", "requires", "module", "family", "phase", "title", "fill", "type", "group", "due", "track"];
+/** Map-placement keys an instance carries onto its resolved node (node types and parallel groups). */
+export const PLACEMENT_KEYS = ["type", "group", "due", "track"];
 /** Module keys copied onto the resolved node (title, family, phase and tasks are handled apart). */
 export const CONTENT_KEYS = ["kind", "completion", "why", "evidence", "lesson", "modules", "signoff", "video"];
 export const MAX_NOTES = 8000;
@@ -175,6 +177,7 @@ export function resolveNode(inst, library = {}, map = null) {
   };
   const phase = inst.phase ?? module.phase;
   if (phase !== undefined) node.phase = phase;
+  for (const key of PLACEMENT_KEYS) if (inst[key] !== undefined && inst[key] !== null) node[key] = inst[key];
   for (const key of CONTENT_KEYS) if (module[key] !== undefined) node[key] = clone(module[key]);
   node.kind ??= "core";
   node.completion ??= "tasks";

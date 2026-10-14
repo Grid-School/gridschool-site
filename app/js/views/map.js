@@ -16,22 +16,22 @@
  * went with it, because on the floor position is derived from sequence.
  */
 
-import { el, mount } from "../dom.js?v=fe10c31-202610142207";
-import { btn, toast } from "../ui.js?v=fe10c31-202610142207";
-import { createScene3d } from "../graph/scene3d/index.js?v=fe10c31-202610142207";
-import { createRezScene } from "../graph/rez/index.js?v=fe10c31-202610142207";
-import { STATUS, nextUp, progress, visibleGraph, stepNumber } from "../graph/model.js?v=fe10c31-202610142207";
-import { LEGEND, STANDING, STANDING_LABEL, standingOf, legendKeyOf } from "../graph/standing.js?v=fe10c31-202610142207";
-import { trackLabel } from "../copy.js?v=fe10c31-202610142207";
-import { mapList } from "./map-list.js?v=fe10c31-202610142207";
-import { dueLabel } from "./from-aden.js?v=fe10c31-202610142207";
-import { createGridState, hashFor, RESERVED_ARGS, VIEW } from "./grid-state.js?v=fe10c31-202610142207";
-import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=fe10c31-202610142207";
-import { isProgressReadOnly } from "../store.js?v=fe10c31-202610142207";
-import { doneForYou, nextMove, movesAfterNext } from "../engine.js?v=fe10c31-202610142207";
-import { matchedRoles, fetchPacks, radarReady } from "../roles-remote.js?v=fe10c31-202610142207";
-import { careerOf } from "../search.js?v=fe10c31-202610142207";
-import { isoDate } from "../time.js?v=fe10c31-202610142207";
+import { el, mount } from "../dom.js?v=92f80dc-202610142240";
+import { btn, toast } from "../ui.js?v=92f80dc-202610142240";
+import { createScene3d } from "../graph/scene3d/index.js?v=92f80dc-202610142240";
+import { createRezScene } from "../graph/rez/index.js?v=92f80dc-202610142240";
+import { STATUS, nextUp, progress, visibleGraph, stepNumber } from "../graph/model.js?v=92f80dc-202610142240";
+import { LEGEND, STANDING, STANDING_LABEL, standingOf, legendKeyOf } from "../graph/standing.js?v=92f80dc-202610142240";
+import { trackLabel } from "../copy.js?v=92f80dc-202610142240";
+import { mapList } from "./map-list.js?v=92f80dc-202610142240";
+import { dueLabel } from "./from-aden.js?v=92f80dc-202610142240";
+import { createGridState, hashFor, RESERVED_ARGS, VIEW } from "./grid-state.js?v=92f80dc-202610142240";
+import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=92f80dc-202610142240";
+import { isProgressReadOnly } from "../store.js?v=92f80dc-202610142240";
+import { doneForYou, nextMove, movesAfterNext, isTypedMap } from "../engine.js?v=92f80dc-202610142240";
+import { matchedRoles, fetchPacks, radarReady } from "../roles-remote.js?v=92f80dc-202610142240";
+import { careerOf } from "../search.js?v=92f80dc-202610142240";
+import { isoDate } from "../time.js?v=92f80dc-202610142240";
 
 /** Right side clears the control column, top clears the legend bar. */
 const INSETS = { top: 76, right: 132, bottom: 72, left: 40 };
@@ -159,10 +159,29 @@ export function renderMap(ctx, initialArg) {
     return { items };
   }
 
+  /**
+   * The map node that holds the next move, on a typed map: the step itself, or
+   * the campaign node whose touch is due. Null when the move isn't a node
+   * (a booked conversation, someone inside), which then shows as one pin.
+   */
+  function nextNodeId(next) {
+    if (next.stepId) return next.stepId;
+    if (next.targetId) return current.state.graph.nodes.find((node) => node.campaign === next.targetId)?.id ?? null;
+    return null;
+  }
+
   function paintOptions(extra = {}) {
-    const nextId = nextUp(current.state.graph)?.id ?? null;
-    if (!hasBand()) return { nextId, ...extra };
-    return { nextId, ready: readyNodes(), onTool: (tool) => current.navigate("do", tool), ...extra };
+    const graph = current.state.graph;
+    if (!hasBand()) return { nextId: nextUp(graph)?.id ?? null, ...extra };
+    if (isTypedMap(graph)) {
+      // One road: every move is a node, so nothing floats beside it. The white
+      // ring sits on the node the bottom bar names.
+      const next = move();
+      const onNode = nextNodeId(next);
+      const pin = onNode ? [] : [{ title: next.title, tag: next.fed ? TAG[next.fed] : null, tool: next.tool, lane: next.lane, isNext: true }];
+      return { nextId: onNode ?? nextUp(graph)?.id ?? null, ready: { items: pin }, onTool: (tool) => current.navigate("do", tool), ...extra };
+    }
+    return { nextId: nextUp(graph)?.id ?? null, ready: readyNodes(), onTool: (tool) => current.navigate("do", tool), ...extra };
   }
 
   /** Aden's current work for them, as a plain sentence under the top bar. */
@@ -190,9 +209,9 @@ export function renderMap(ctx, initialArg) {
       el("div.nextbar__text", {}, el("b.nextbar__title", {}, next.title), el("span.nextbar__why", {}, next.why)),
       more ? btn({ label: `+${more} more today`, variant: "quiet", onclick: () => current.navigate("do", "today") }) : null,
       btn({
-        label: next.stepId ? "Open the step" : "Open",
+        label: next.stepId ? "Open the step" : next.targetId ? "Open the campaign" : "Open",
         variant: "solid",
-        onclick: () => (next.stepId ? current.navigate("map", next.stepId) : current.navigate("do", next.tool)),
+        onclick: () => (next.stepId ? current.navigate("map", next.stepId) : next.targetId ? current.navigate("do", "targets", next.targetId) : current.navigate("do", next.tool)),
       })
     );
   }

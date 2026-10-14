@@ -16,10 +16,10 @@
  * half-typed form. Aden sees it read-only from the desk.
  */
 
-import { el, mount } from "../dom.js?v=fe10c31-202610142207";
-import { panel, btn, field, toast, copy } from "../ui.js?v=fe10c31-202610142207";
-import { isoDate, fmtDay } from "../time.js?v=fe10c31-202610142207";
-import { STATUS } from "../graph/model.js?v=fe10c31-202610142207";
+import { el, mount } from "../dom.js?v=92f80dc-202610142240";
+import { panel, btn, field, toast, copy } from "../ui.js?v=92f80dc-202610142240";
+import { isoDate, fmtDay } from "../time.js?v=92f80dc-202610142240";
+import { STATUS } from "../graph/model.js?v=92f80dc-202610142240";
 import {
   STAGES,
   RELATIONS,
@@ -63,14 +63,14 @@ import {
   nextTouch,
   targetCandidates,
   MAX_ACTIVE_TARGETS,
-} from "../search.js?v=fe10c31-202610142207";
-import { storyCard, appRow } from "./search-parts.js?v=fe10c31-202610142207";
-import { TOOLS } from "../engine.js?v=fe10c31-202610142207";
-import { PERSIST } from "../../../config.js?v=fe10c31-202610142207";
-import { matchedRoles, radarReady, fetchPacks } from "../roles-remote.js?v=fe10c31-202610142207";
-import { createPackDrawer } from "./pack.js?v=fe10c31-202610142207";
-import { createCampaignDrawer } from "./campaign.js?v=fe10c31-202610142207";
-import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=fe10c31-202610142207";
+} from "../search.js?v=92f80dc-202610142240";
+import { storyCard, appRow } from "./search-parts.js?v=92f80dc-202610142240";
+import { TOOLS } from "../engine.js?v=92f80dc-202610142240";
+import { PERSIST } from "../../../config.js?v=92f80dc-202610142240";
+import { matchedRoles, radarReady, fetchPacks } from "../roles-remote.js?v=92f80dc-202610142240";
+import { createPackDrawer } from "./pack.js?v=92f80dc-202610142240";
+import { createCampaignDrawer } from "./campaign.js?v=92f80dc-202610142240";
+import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=92f80dc-202610142240";
 
 const RUN_FAMILIES = ["proof", "presence", "network", "interview"];
 /** How many moves the day leads with. More than this reads as a wall, not a plan. */
@@ -102,7 +102,7 @@ export function nextBuildStep(graph) {
     .sort((a, b) => (a.n ?? 0) - (b.n ?? 0))[0];
 }
 
-export function renderHire(ctx, initialTool) {
+export function renderHire(ctx, initialTool, campaignId) {
   let current = ctx;
   const readOnly = () => current.store.isProgressReadOnly?.() ?? false;
   const save = (change, event = null) => current.store.updateSearch(change, event);
@@ -803,14 +803,24 @@ export function renderHire(ctx, initialTool) {
 
   redraw();
   void loadRadar();
+  // #/do/targets/<campaign id> opens that campaign (a campaign node on the map links here).
+  let openedFor = null;
+  const openFromRoute = (id) => {
+    if (!id || id === openedFor || !targetsOf(student()).some((t) => t.id === id)) return;
+    openedFor = id;
+    camp.open(id);
+  };
+  openFromRoute(campaignId);
 
   return {
     node,
-    update(next, tool) {
+    update(next, tool, id) {
       current = next;
       if (TOOL_IDS.includes(tool)) focus = tool;
       redraw();
       camp.refresh();
+      if (!id) openedFor = null;
+      openFromRoute(id);
     },
   };
 }

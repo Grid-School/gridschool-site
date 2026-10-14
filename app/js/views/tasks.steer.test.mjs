@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { steerNote } from "./tasks.js?v=fe10c31-202610142207";
+import { steerNote } from "./tasks.js?v=92f80dc-202610142240";
 
 test("steer shows only when Aden set something", (t) => {
   if (typeof document === "undefined") {

@@ -13,7 +13,7 @@
  * Pure: the map (graph/rez) draws these; the tools live in views/hire.js.
  */
 
-import { nextUp } from "./graph/model.js?v=fe10c31-202610142207";
+import { nextUp } from "./graph/model.js?v=92f80dc-202610142240";
 import {
   searchOf,
   careerOf,
@@ -27,7 +27,7 @@ import {
   networkOf,
   insideConnections,
   shortTitle,
-} from "./search.js?v=fe10c31-202610142207";
+} from "./search.js?v=92f80dc-202610142240";
 
 export const TOOLS = {
   today: { label: "Today", hint: "Every move for today, in order" },
@@ -78,9 +78,20 @@ export function doneForYou({ student, roles = [], packs = {} }) {
  * live, a warm ask, a follow-up, a prepared application, the next map step.
  * `fed` names the Ready kind that produced it (the map tags the node with it).
  */
+/**
+ * A typed map (node types or parallel groups) carries its own moves as nodes:
+ * the profile, the campaigns, the weekly applications. On one, the engine only
+ * adds what isn't a node (a booked conversation, someone inside, a touch or
+ * follow-up that's due), so the map and "do this next" never disagree.
+ */
+export function isTypedMap(graph) {
+  return Boolean(graph?.groups?.size) || (graph?.nodes ?? []).some((node) => node.type && node.type !== "step");
+}
+
 export function nextMove({ student, graph, now = new Date(), roles = [], packs = {} }) {
   const s = searchOf(student);
   const career = careerOf(student);
+  const typed = isTypedMap(graph);
   const make = (kind, title, why, fed = null) => ({ tool: kind === "insider" || kind === "follow" ? "today" : kind, kind, title, why, lane: LANE[kind], fed });
 
   const conversation = active(s.apps).find((a) => a.stage === "screen" || a.stage === "interview");
@@ -89,16 +100,16 @@ export function nextMove({ student, graph, now = new Date(), roles = [], packs =
   const insider = ready.find((r) => r.kind === "insider");
   if (insider) return make("insider", `Ask ${insider.person.name} at ${insider.role.company}`, `You know someone inside a company that's hiring for ${shortTitle(insider.role.title)}.`, "insider");
   const touch = dueTouches(student?.search?.targets ?? [], now)[0];
-  if (touch) return make("targets", `${touch.target.company}: ${touch.label}`, touch.kind === "day0" ? "The campaign is written. Today it goes out." : "A follow-up is due on a company you chose.", touch.target.campaign && !touch.target.touches?.email ? "campaign" : null);
-  if (career.headline && !s.profileAt) return make("profile", "Put your new headline and About on LinkedIn", "Recruiters search all day. Until this is live, they can't find you.");
+  if (touch) return { ...make("targets", `${touch.target.company}: ${touch.label}`, touch.kind === "day0" ? "The campaign is written. Today it goes out." : "A follow-up is due on a company you chose.", touch.target.campaign && !touch.target.touches?.email ? "campaign" : null), targetId: touch.target.id };
+  if (!typed && career.headline && !s.profileAt) return make("profile", "Put your new headline and About on LinkedIn", "Recruiters search all day. Until this is live, they can't find you.");
   const ask = toAsk(peopleOf(student))[0];
   if (ask) return make("people", `Ask ${ask.name}${ask.company ? ` at ${ask.company}` : ""}`, "Asking someone you know beats an application almost every time.");
   const due = followUps(s.apps, now)[0];
   if (due) return make("follow", `Follow up with ${due.company}`, "Most replies come after a follow-up, not the first message.");
   const prepared = ready.find((r) => r.kind === "prepared");
-  if (prepared && thisWeek(s.apps, now).apply < career.targets.apply) return make("applications", `Apply: ${prepared.label.replace(/^Prepared: /, "")}`, "Prepared for you: read it, send it, log it.", "prepared");
-  if (thisWeek(s.apps, now).apply < career.targets.apply) return make("applications", "Prepare and send today's applications", "Fresh roles that fit get read. Early and specific beats many.");
-  const step = nextUp(graph);
+  if (!typed && prepared && thisWeek(s.apps, now).apply < career.targets.apply) return make("applications", `Apply: ${prepared.label.replace(/^Prepared: /, "")}`, "Prepared for you: read it, send it, log it.", "prepared");
+  if (!typed && thisWeek(s.apps, now).apply < career.targets.apply) return make("applications", "Prepare and send today's applications", "Fresh roles that fit get read. Early and specific beats many.");
+  const step = nextUp(graph, now);
   if (step) return { stepId: step.id, title: step.title, why: step.why ?? "The next step on your map.", lane: step.family, fed: null, kind: "step" };
   return { tool: "today", kind: "rest", title: "You're clear for today", why: "Rest is part of a long search.", lane: null, fed: null };
 }

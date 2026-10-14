@@ -16,7 +16,15 @@
  * never gate a node: a habit is kept, not finished.
  */
 
-import { taskIsComplete, isCountTask } from "../task-state.js?v=fe10c31-202610142207";
+import { taskIsComplete, isCountTask } from "../task-state.js?v=92f80dc-202610142240";
+import { typeOf, specOf } from "../../../data/node-types.mjs";
+
+export { typeOf, specOf };
+
+/** A node's type allows it to be "do this next" (habits and references never are). */
+export const canBeNext = (node) => specOf(node).canBeNext !== false;
+/** A node of this type counts toward "X of Y steps done". */
+const counts = (node) => specOf(node).completes !== "never";
 
 export const STATUS = {
   LIT: "lit",
@@ -81,10 +89,17 @@ export function buildGraph(curriculum, student, { unlockAll = false } = {}) {
       node.sideNumber = `S${index + 1}`;
     });
 
+  // Parallel groups: nodes that share a place on the road, done in any order.
+  // A group id in `requires` stands for the group: "all" waits on every node
+  // in it, "pick" on `pick` of them. Lines are drawn from each member.
+  const groups = new Map((curriculum.groups ?? []).map((group) => [group.id, { mode: "all", ...group, members: [] }]));
+  for (const node of nodes) if (node.group && groups.has(node.group)) groups.get(node.group).members.push(node.id);
   const edges = [];
   for (const node of nodes) {
-    for (const from of node.requires ?? []) {
-      if (byId.has(from)) edges.push({ from, to: node.id, id: `${from}->${node.id}` });
+    for (const req of node.requires ?? []) {
+      for (const from of groups.has(req) ? groups.get(req).members : [req]) {
+        if (byId.has(from)) edges.push({ from, to: node.id, id: `${from}->${node.id}` });
+      }
     }
   }
 
@@ -100,6 +115,14 @@ export function buildGraph(curriculum, student, { unlockAll = false } = {}) {
     if (node.completion !== "tasks" || !gating.length) continue;
     const complete = gating.every((task) => taskIsComplete(task, taskState[task.id] ?? {}));
     if (complete) completionEvidence[node.id] = { url: `gridschool:tasks/${node.id}`, internal: true };
+  }
+  // A campaign node lights when its day-0 email has gone out (the student's own
+  // copy of the campaign records it; see search.js seedTarget).
+  const sent = new Map((student?.search?.targets ?? []).map((t) => [t.id, t.touches?.email]));
+  for (const node of nodes) {
+    if (typeOf(node) === "campaign" && node.campaign && sent.get(node.campaign)) {
+      completionEvidence[node.id] = { url: `gridschool:campaign/${node.campaign}`, internal: true };
+    }
   }
   const reviews = student?.reviews ?? [];
   for (const node of nodes) {
@@ -120,7 +143,7 @@ export function buildGraph(curriculum, student, { unlockAll = false } = {}) {
     if (node.needsFix) node.tasks = [...(node.tasks ?? []), fixTask(node, latest)];
   }
   for (const node of nodes) {
-    node.status = statusOf(node, byId, completionEvidence, reviews);
+    node.status = statusOf(node, byId, completionEvidence, reviews, groups);
     if (
       unlockAll &&
       (node.status === STATUS.LOCKED || node.status === STATUS.FUTURE)
@@ -150,7 +173,7 @@ export function buildGraph(curriculum, student, { unlockAll = false } = {}) {
     };
   }
 
-  return { nodes, byId, edges, phases: curriculum.phases, families: curriculum.families ?? [] };
+  return { nodes, byId, edges, groups, phases: curriculum.phases, families: curriculum.families ?? [] };
 }
 
 /**
@@ -207,13 +230,16 @@ export function satisfies(prereq, dependent, evidence, reviews = []) {
   return isSubmitted(prereq, evidence);
 }
 
-export function statusOf(node, byId, evidence, reviews = []) {
+export function statusOf(node, byId, evidence, reviews = [], groups = new Map()) {
   if (isLit(node, evidence, reviews)) return STATUS.LIT;
   if (node.kind === "future") return STATUS.FUTURE;
   const requires = node.requires ?? [];
+  const ok = (id) => !byId.has(id) || satisfies(byId.get(id), node, evidence, reviews);
   const ready = requires.every((id) => {
-    if (!byId.has(id)) return true;
-    return satisfies(byId.get(id), node, evidence, reviews);
+    const group = groups.get(id);
+    if (!group) return ok(id);
+    const done = group.members.filter(ok).length;
+    return group.mode === "pick" ? done >= (group.pick ?? group.members.length) : done === group.members.length;
   });
   return ready ? STATUS.OPEN : STATUS.LOCKED;
 }
@@ -272,18 +298,31 @@ export function blockedBy(graph, id) {
     .filter((node) => node && node.status !== STATUS.LIT);
 }
 
-function openCore(graph) {
+/** Days from `now` to a node's due date (local midnight to midnight). */
+function daysUntil(due, now) {
+  const [y, m, d] = String(due).split("-").map(Number);
+  const start = new Date(now);
+  start.setHours(0, 0, 0, 0);
+  return Math.round((new Date(y, m - 1, d) - start) / 86400000);
+}
+
+/** A due date this close (or past) moves a node to the front. */
+export const DUE_SOON_DAYS = 3;
+
+function openCore(graph, now = new Date()) {
+  const soon = (node) => (node.due ? daysUntil(node.due, now) <= DUE_SOON_DAYS : false);
   return graph.nodes
-    .filter((node) => node.status === STATUS.OPEN && node.kind !== "future" && !isSide(node))
-    .sort((a, b) => a.n - b.n);
+    .filter((node) => node.status === STATUS.OPEN && node.kind !== "future" && !isSide(node) && canBeNext(node))
+    .sort((a, b) => Number(soon(b)) - Number(soon(a)) || (soon(a) && soon(b) ? a.due.localeCompare(b.due) : 0) || a.n - b.n);
 }
 
 /**
- * The node the student should be working. Spine first; then depth they picked;
- * a merely offered depth node only when nothing else is open.
+ * The node the student should be working. A step due within three days
+ * first; then spine; then depth they picked; a merely offered depth node only
+ * when nothing else is open. Habits and references are never next.
  */
-export function nextUp(graph) {
-  const open = openCore(graph);
+export function nextUp(graph, now = new Date()) {
+  const open = openCore(graph, now);
   const spine = open.filter(isSpine);
   if (spine.length) return spine[0];
   const chosen = open.filter((node) => node.chosen);
@@ -308,7 +347,8 @@ function tally(nodes) {
  */
 export function progress(graph) {
   const sideNodes = graph.nodes.filter((node) => node.kind !== "future" && isSide(node));
-  const core = graph.nodes.filter((node) => node.kind !== "future" && !isSide(node));
+  // Habits are kept, not finished, so they never count toward "X of Y".
+  const core = graph.nodes.filter((node) => node.kind !== "future" && !isSide(node) && counts(node));
   const spineNodes = core.filter(isSpine);
   const depthNodes = core.filter((node) => !isSpine(node));
   const taken = depthNodes.filter((node) => node.chosen || node.status === STATUS.LIT);

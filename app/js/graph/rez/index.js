@@ -18,9 +18,18 @@
  * view glides to it. Nothing idles. Reduced motion jumps.
  */
 
-import { el, clear } from "../../dom.js?v=fe10c31-202610142207";
-import { traceSet, stepNumber } from "../model.js?v=fe10c31-202610142207";
-import { STANDING, standingOf, inSequence } from "../standing.js?v=fe10c31-202610142207";
+import { el, clear } from "../../dom.js?v=92f80dc-202610142240";
+import { traceSet, stepNumber } from "../model.js?v=92f80dc-202610142240";
+import { STANDING, standingOf, inSequence } from "../standing.js?v=92f80dc-202610142240";
+import { typeOf, specOf } from "../model.js?v=92f80dc-202610142240";
+import { isTypedMap } from "../../engine.js?v=92f80dc-202610142240";
+
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+/** "2026-10-16" → "Due Oct 16". */
+const dueText = (iso) => {
+  const [, m, d] = String(iso).split("-").map(Number);
+  return m && d ? `Due ${MONTHS[m - 1]} ${d}` : "";
+};
 import {
   svgEl,
   drawGrid,
@@ -31,7 +40,7 @@ import {
   runCurrent,
   rezIn,
   prefersReducedMotion,
-} from "../../../../js/rez/road.js?v=fe10c31-202610142207";
+} from "../../../../js/rez/road.js?v=92f80dc-202610142240";
 
 /*
  * One grid under everything, in the board's own units (as on the landing):
@@ -45,6 +54,12 @@ const TOP = 2 * CELL;
 const LEFT = 4 * CELL;
 const RIGHT = 4 * CELL;
 const SIDE_GAP = 3 * CELL;
+/** Typed maps lay out by dependency: one column per step of depth, this far apart. */
+const FLOW_SPACING = 3.6 * CELL;
+/** A column taller than this splits into sub-columns side by side. */
+const FLOW_MAX_STACK = 6;
+/** Below a node's label, the gap before the next node in its column. */
+const FLOW_STACK = 0.9 * CELL;
 /** Ready nodes stand this far right of you, in their lanes. */
 const READY_DX = 1.5 * CELL;
 const NODE_R = 15;
@@ -61,6 +76,86 @@ const MAX_ZOOM = 2.6;
 const KEEP_PX = 160;
 const APPROACH_MS = 220;
 const DRAG_SLOP = 5;
+
+/**
+ * The road (untyped maps): one stop per step in walking order, each joined to
+ * the next. Returns stops (arrays of nodes), placed points and the pairs the
+ * road draws.
+ */
+function roadLayout(road, laneOf, laneY) {
+  const stops = road.map((node) => [node]);
+  const placed = road.map((node, index) => ({ id: node.id, phase: node.phase, lane: laneOf.get(node.family) ?? 0, x: LEFT + index * SPACING, y: laneY(laneOf.get(node.family) ?? 0) }));
+  const pairs = road.slice(1).map((node, index) => [road[index].id, node.id]);
+  return { stops, placed, pairs };
+}
+
+/**
+ * Typed maps (node types, parallel groups) lay out by what each step waits on:
+ * a step's column is the longest chain of requirements before it, so steps
+ * that can be done together stand in one column, and every line is a real
+ * requirement. A group id in requires stands for its members. In a column,
+ * nodes keep their lane where they can and otherwise stack below, never
+ * touching. Each column takes the phase of its first step, so bands don't
+ * overlap.
+ */
+function flowLayout(road, laneOf, laneY) {
+  const ids = new Set(road.map((node) => node.id));
+  const members = new Map();
+  for (const node of road) if (node.group) members.set(node.group, [...(members.get(node.group) ?? []), node.id]);
+  const reqs = (node) => (node.requires ?? []).flatMap((req) => members.get(req) ?? [req]).filter((id) => ids.has(id));
+  const byId = new Map(road.map((node) => [node.id, node]));
+  const depth = new Map();
+  const depthOf = (node, seen = new Set()) => {
+    if (depth.has(node.id)) return depth.get(node.id);
+    if (seen.has(node.id)) return 0;
+    seen.add(node.id);
+    const d = Math.max(-1, ...reqs(node).map((id) => depthOf(byId.get(id), seen))) + 1;
+    depth.set(node.id, d);
+    return d;
+  };
+  road.forEach((node) => depthOf(node));
+  const columns = [];
+  for (const node of road) (columns[depth.get(node.id)] ??= []).push(node);
+  // A tall column splits into sub-columns side by side: a parallel group stays
+  // together in its own, the rest follow, at most FLOW_MAX_STACK to a column.
+  const byLane = (a, b) => (laneOf.get(a.family) ?? 0) - (laneOf.get(b.family) ?? 0) || a.n - b.n;
+  const stops = [];
+  for (const column of columns.filter(Boolean)) {
+    if (column.length <= FLOW_MAX_STACK) {
+      stops.push(column.sort(byLane));
+      continue;
+    }
+    const groups = new Map();
+    const loose = [];
+    for (const node of column) (node.group ? (groups.get(node.group) ?? groups.set(node.group, []).get(node.group)) : loose).push(node);
+    const parts = [...[...groups.values()].sort((a, b) => b.length - a.length || a[0].n - b[0].n), loose];
+    let current = [];
+    for (const part of parts) {
+      if (current.length && current.length + part.length > FLOW_MAX_STACK) {
+        stops.push(current.sort(byLane));
+        current = [];
+      }
+      current.push(...part);
+    }
+    if (current.length) stops.push(current.sort(byLane));
+  }
+  const placed = [];
+  stops.forEach((column, index) => {
+    const phase = [...column].sort((a, b) => a.n - b.n)[0].phase;
+    let floor = -Infinity;
+    for (const node of column) {
+      const lane = laneOf.get(node.family) ?? 0;
+      const y = Math.max(laneY(lane), floor);
+      // The next node in the column starts below this one's label: title lines,
+      // the tag or due line, and a gap.
+      const lines = wrapLabel(node.title, 19, 3).length + (node.due || (node.type && node.type !== "step") ? 1 : 0);
+      floor = y + NODE_R + 22 + 15 * (lines - 1) + FLOW_STACK;
+      placed.push({ id: node.id, phase, lane, x: LEFT + index * FLOW_SPACING, y });
+    }
+  });
+  const pairs = road.flatMap((node) => reqs(node).map((from) => [from, node.id]));
+  return { stops, placed, pairs };
+}
 
 export async function createRezScene(container) {
   const reducedMotion = prefersReducedMotion();
@@ -264,18 +359,17 @@ export async function createRezScene(container) {
     const lanes = Math.max(1, laneValues.length);
     const laneTop = TOP;
     const laneY = (lane) => laneTop + lane * LANE_GAP;
-    const placed = layoutRoad(
-      road.map((node) => ({ id: node.id, phase: node.phase, lane: laneOf.get(node.family) ?? 0 })),
-      { x0: LEFT, x1: LEFT, laneY, spacing: SPACING }
-    );
+    const { stops, placed, pairs } = isTypedMap(graph) ? flowLayout(road, laneOf, laneY) : roadLayout(road, laneOf, laneY);
     const at = new Map(placed.map((point) => [point.id, point]));
-    const roadBottom = laneY(lanes - 1);
+    const roadBottom = Math.max(laneY(lanes - 1), ...placed.map((point) => point.y));
     const sideY = roadBottom + SIDE_GAP;
     side.forEach((node, index) => at.set(node.id, { id: node.id, x: LEFT + index * SPACING, y: sideY, side: true }));
     const lastX = Math.max(LEFT, ...[...at.values()].map((point) => point.x));
     return {
       at,
-      order: road.map((node) => node.id),
+      order: stops.map((stop) => stop[0].id),
+      stops: stops.map((stop) => stop.map((node) => node.id)),
+      pairs,
       side: side.map((node) => node.id),
       rows: laneValues.map((lane, index) => ({
         y: laneY(index),
@@ -308,11 +402,19 @@ export async function createRezScene(container) {
     const back = svgEl("g", { class: "rz-back" }, view);
     // The grid runs far past the map in every direction: the canvas has no edge to find.
     drawGrid(back, { id: "route-grid", cell: CELL, x: -200 * CELL, y: -200 * CELL, width: p.width + 400 * CELL, height: p.height + 400 * CELL });
+    let labelEnd = -Infinity;
+    let drop = 0;
     for (const band of p.bands) {
       svgEl("rect", { class: "rz-band", x: band.x0, y: 24, width: band.x1 - band.x0, height: p.height - 48, rx: 10 }, back);
-      svgEl("text", { class: "rz-band__label", x: band.x0 + 14, y: 46 }, back).textContent = band.label ?? band.id;
+      // A narrow band's label would run into the next one: that label drops a line.
+      drop = band.x0 + 14 < labelEnd + 16 && !drop ? 34 : 0;
+      const label = svgEl("text", { class: "rz-band__label", x: band.x0 + 14, y: 46 + drop }, back);
+      label.textContent = band.label ?? band.id;
       // Pace reads up to its colon: "Phase 1 · weeks 1–3", not the whole sentence.
-      if (band.pace) svgEl("text", { class: "rz-band__pace", x: band.x0 + 14, y: 62 }, back).textContent = band.pace.split(":")[0];
+      const pace = band.pace ? svgEl("text", { class: "rz-band__pace", x: band.x0 + 14, y: 62 + drop }, back) : null;
+      if (pace) pace.textContent = band.pace.split(":")[0];
+      const width = Math.max(label.getComputedTextLength?.() ?? 0, pace?.getComputedTextLength?.() ?? 0);
+      labelEnd = band.x0 + 14 + (width || (band.label ?? band.id).length * 9);
     }
     for (const row of p.rows) {
       svgEl("line", { class: "rz-lane", x1: 24, x2: p.width - 24, y1: row.y, y2: row.y }, back);
@@ -322,7 +424,8 @@ export async function createRezScene(container) {
       svgEl("text", { class: "rz-lane__label", x: 24, y: p.sideY - 40 }, back).textContent = "SIDE QUESTS";
     }
     const ties = svgEl("g", { class: "rz-ties" }, view);
-    const consecutive = new Set(p.order.slice(1).map((id, index) => `${p.order[index]}->${id}`));
+    const roadPairs = p.pairs;
+    const consecutive = new Set(roadPairs.map(([from, to]) => `${from}->${to}`));
     for (const edge of graph.edges ?? []) {
       const key = `${edge.from}->${edge.to}`;
       const a = p.at.get(edge.from);
@@ -333,12 +436,13 @@ export async function createRezScene(container) {
     }
 
     const road = svgEl("g", { class: "rz-road" }, view);
-    for (const seg of roadSegments(p.order.map((id) => ({ ...p.at.get(id) })))) {
-      state.segFor.set(`${seg.from.id}->${seg.to.id}`, svgEl("path", { class: "rz-seg", d: seg.d }, road));
+    for (const [from, to] of roadPairs) {
+      const [seg] = roadSegments([p.at.get(from), p.at.get(to)]);
+      state.segFor.set(`${from}->${to}`, svgEl("path", { class: "rz-seg", d: seg.d }, road));
     }
 
     const nodes = svgEl("g", { class: "rz-nodes" }, view);
-    for (const id of [...p.order, ...p.side]) {
+    for (const id of [...p.stops.flat(), ...p.side]) {
       const node = graph.byId?.get(id) ?? graph.nodes.find((item) => item.id === id);
       const at = p.at.get(id);
       const g = svgEl("g", { class: "rz-node", transform: `translate(${at.x} ${at.y})`, tabindex: 0, role: "button", "data-id": id }, nodes);
@@ -346,10 +450,16 @@ export async function createRezScene(container) {
       svgEl("circle", { class: "rz-halo", r: NODE_R + 9 }, body);
       svgEl("circle", { class: "rz-ring", r: NODE_R }, body);
       svgEl("text", { class: "rz-num" }, body).textContent = stepNumber(node);
-      const title = svgEl("text", { class: "rz-title", y: NODE_R + 22 }, g);
+      // The type tag and a due date ride under the title, in the same text, so
+      // they move with it when labels make room for each other.
+      const base = NODE_R + 22;
+      const lx = 0;
+      const title = svgEl("text", { class: "rz-title", x: lx, y: base, "data-base": base }, g);
       wrapLabel(node.title, 19, 3).forEach((line, index) => {
-        svgEl("tspan", { x: 0, dy: index ? 15 : 0 }, title).textContent = line;
+        svgEl("tspan", { x: lx, dy: index ? 15 : 0 }, title).textContent = line;
       });
+      const meta = [specOf(node).tag && typeOf(node) !== "step" ? specOf(node).tag : null, node.due ? dueText(node.due) : null].filter(Boolean).join(" · ");
+      if (meta) svgEl("tspan", { class: `rz-meta${node.due ? " is-due" : ""}`, x: lx, dy: 15 }, title).textContent = meta;
       svgEl("text", { class: "rz-here", y: -NODE_R - 16 }, g).textContent = "YOU ARE HERE";
       state.nodeEls.set(id, g);
     }
@@ -483,9 +593,10 @@ export async function createRezScene(container) {
     }
     for (const g of state.nodeEls.values()) {
       const title = g.querySelector(".rz-title");
-      title.setAttribute("y", NODE_R + 22);
+      const base = Number(title.getAttribute("data-base") ?? NODE_R + 22);
+      title.setAttribute("y", base);
       for (let drop = 0; drop <= MAX_NUDGE; drop += NUDGE) {
-        title.setAttribute("y", NODE_R + 22 + drop);
+        title.setAttribute("y", base + drop);
         const b = boxOf(title);
         if (!b || !solid.some((s) => hits(b, s))) break;
       }
@@ -525,7 +636,9 @@ export async function createRezScene(container) {
       const a = graph.byId?.get(from);
       const b = graph.byId?.get(to);
       const done = settled(a) && settled(b);
-      const live = !done && (b?.status === "open" || b?.status === "lit" || b?.awaitingSignoff);
+      // Bright only into the step you're on (or work already in): a habit or a
+      // call that's always open doesn't light the road toward it.
+      const live = !done && (b?.id === options.nextId || b?.status === "lit" || b?.awaitingSignoff);
       path.classList.toggle("is-done", done);
       path.classList.toggle("is-live", live);
       path.classList.toggle("is-trace", Boolean(trace?.has(from) && trace?.has(to)));

@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { buildGraph, nextUp, progress, visibleGraph, isSide, isSpine, trackOf, stepNumber, STATUS, TRACK } from "./model.js?v=fe10c31-202610142207";
-import { buildQueue } from "../tasks.js?v=fe10c31-202610142207";
+import { buildGraph, nextUp, progress, visibleGraph, isSide, isSpine, trackOf, stepNumber, STATUS, TRACK } from "./model.js?v=92f80dc-202610142240";
+import { buildQueue } from "../tasks.js?v=92f80dc-202610142240";
 
 const families = [
   { id: "ccvv", track: "spine" },
@@ -396,4 +396,52 @@ test("side quests read S1, S2… in n order; path steps keep their padded n", ()
   assert.equal(stepNumber(graph.byId.get("s2")), "S2");
   assert.equal(graph.byId.get("s2").n, 105, "stored n is untouched");
   assert.equal(stepNumber({ n: 7 }), "07");
+});
+
+/* ---------- node types and parallel groups ---------- */
+
+function typedMap() {
+  const node = (id, n, requires = [], extra = {}) => ({ id, n, title: id, family: "p", requires, tasks: [{ id: `${id}.t`, title: "do it" }], kind: "core", completion: "tasks", ...extra });
+  return {
+    families: [{ id: "p", track: "spine", lane: 0 }],
+    phases: [],
+    groups: [{ id: "g.c", label: "Campaigns", mode: "all" }, { id: "g.p", mode: "pick", pick: 1 }],
+    nodes: [
+      node("live", 1),
+      node("call", 2, ["live"], { type: "meeting" }),
+      node("c.a", 3, ["call"], { type: "campaign", campaign: "t-a", group: "g.c", tasks: [] }),
+      node("c.b", 4, ["call"], { type: "campaign", campaign: "t-b", group: "g.c", tasks: [], due: "2026-10-16" }),
+      node("after", 5, ["g.c"]),
+      node("habit", 6, [], { type: "habit", tasks: [{ id: "habit.n", title: "10 a week", kind: "count", target: 10, per: "week" }] }),
+      node("p1", 7, ["live"], { group: "g.p" }),
+      node("p2", 8, ["live"], { group: "g.p" }),
+      node("pickdone", 9, ["g.p"]),
+    ],
+  };
+}
+
+test("a group in requires waits on every member (all) or on pick of them", () => {
+  const done = (ids) => Object.fromEntries(ids.map((id) => [`${id}.t`, { state: "done" }]));
+  let g = buildGraph(typedMap(), { tasks: done(["live", "call"]) });
+  assert.equal(g.byId.get("after").status, "locked");
+  assert.deepEqual(g.edges.filter((e) => e.to === "after").map((e) => e.from), ["c.a", "c.b"]);
+  g = buildGraph(typedMap(), { tasks: done(["live", "call", "p1"]) });
+  assert.equal(g.byId.get("pickdone").status, "open");
+});
+
+test("a campaign node lights when its day-0 email is sent", () => {
+  const student = { tasks: { "live.t": { state: "done" }, "call.t": { state: "done" } }, search: { targets: [{ id: "t-a", touches: { email: "2026-10-15" } }, { id: "t-b", touches: {} }] } };
+  const g = buildGraph(typedMap(), student);
+  assert.equal(g.byId.get("c.a").status, "lit");
+  assert.equal(g.byId.get("c.b").status, "open");
+  assert.equal(g.byId.get("after").status, "locked");
+});
+
+test("habits are never next and never counted; a step due soon goes first", () => {
+  const student = { tasks: { "live.t": { state: "done" }, "call.t": { state: "done" } } };
+  const g = buildGraph(typedMap(), student);
+  assert.equal(g.byId.get("habit").status, "open");
+  assert.equal(nextUp(g, new Date(2026, 9, 14)).id, "c.b");
+  assert.equal(nextUp(g, new Date(2026, 9, 1)).id, "c.a");
+  assert.equal(progress(g).total, 8);
 });

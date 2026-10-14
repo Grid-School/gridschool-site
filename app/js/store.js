@@ -9,9 +9,9 @@
  * data/students/<slug>.json.
  */
 
-import { loadBoard, boardCurriculum, libraryFor } from "./api.js?v=fe10c31-202610142207";
-import { buildGraph } from "./graph/model.js?v=fe10c31-202610142207";
-import { weekNumber, studentWeek, ownSchedule, hasOwnMap } from "./time.js?v=fe10c31-202610142207";
+import { loadBoard, boardCurriculum, libraryFor } from "./api.js?v=92f80dc-202610142240";
+import { buildGraph } from "./graph/model.js?v=92f80dc-202610142240";
+import { weekNumber, studentWeek, ownSchedule, hasOwnMap } from "./time.js?v=92f80dc-202610142240";
 import {
   read,
   clear as clearPersist,
@@ -21,10 +21,10 @@ import {
   mergeStudent,
   STUDENT_KEYS,
   INSTRUCTOR_KEYS,
-} from "./persist.js?v=fe10c31-202610142207";
-import { flushAfterLocalWrite, hydrateFromRemote, persistStatus, startPolling } from "./persist-remote.js?v=fe10c31-202610142207";
-import { validReviewReturn } from "./review.js?v=fe10c31-202610142207";
-import { isDevUnlock } from "./dev-mode.js?v=fe10c31-202610142207";
+} from "./persist.js?v=92f80dc-202610142240";
+import { flushAfterLocalWrite, hydrateFromRemote, persistStatus, startPolling } from "./persist-remote.js?v=92f80dc-202610142240";
+import { validReviewReturn } from "./review.js?v=92f80dc-202610142240";
+import { isDevUnlock } from "./dev-mode.js?v=92f80dc-202610142240";
 
 export { validReviewReturn };
 
@@ -55,11 +55,31 @@ function pick(source, keys) {
   return out;
 }
 
+const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "[::1]"]);
+
+/** The map named by &map= in the URL, on a local desk only; null anywhere else. */
+async function previewMap() {
+  if (typeof location === "undefined" || !LOCAL_HOSTS.has(location.hostname)) return null;
+  const name = new URLSearchParams(location.search).get("map");
+  if (!name || !/^[\w.-]+$/.test(name)) return null;
+  try {
+    const res = await fetch(new URL(`../../data/maps/${name}.json`, import.meta.url), { cache: "no-store" });
+    return res.ok ? await res.json() : null;
+  } catch {
+    return null;
+  }
+}
+
 export async function init(nextSlug, { tour = false } = {}) {
   slug = nextSlug;
   base = await loadBoard(nextSlug, { tour });
   if (!tour && nextSlug !== "demo") {
     const snap = await hydrateFromRemote(nextSlug, { force: true });
+    // On this Mac only: &map=<name> shows site/data/maps/<name>.json instead
+    // of the published map, so a map can be looked at before it's published.
+    // Those files never ship (deploy-site.sh leaves data/maps/ out).
+    const preview = await previewMap();
+    if (preview && snap) snap.map = preview;
     // A seat with a seed file still takes its published map from the server.
     if (snap?.map && snap.map !== base.student.map) {
       // Resolved like the seed's (its modules loaded) and with the same copy

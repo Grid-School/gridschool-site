@@ -1553,6 +1553,8 @@ pre.diagram--failed { border-color: var(--amber); }
 .rz-halo { fill: none; stroke: var(--cyan); stroke-width: 1; opacity: 0; transition: opacity .14s; }
 .rz-num { font: 500 10.5px var(--font-mono); fill: var(--muted); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
 .rz-title { font: 400 12px var(--font-sans); fill: var(--muted); text-anchor: middle; pointer-events: none; }
+.rz-meta { font: 500 10px var(--font-mono); letter-spacing: .06em; fill: var(--cyan); }
+.rz-meta.is-due { fill: var(--warn, #f5b14c); }
 .rz-here { font: 600 9.5px var(--font-mono); letter-spacing: .14em; fill: var(--cyan); text-anchor: middle; opacity: 0; pointer-events: none; }
 
 /* Ahead: a dashed dim ring, words quiet. */

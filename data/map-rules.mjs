@@ -11,7 +11,10 @@
  * Pure. Returns every error so a map is fixed in one pass.
  */
 
+import { NODE_TYPES } from "./node-types.mjs";
+
 export const TRACKS = new Set(["spine", "depth", "side"]);
+const DATE = /^\d{4}-\d{2}-\d{2}$/;
 export const NODE_KINDS = new Set(["core", "future"]);
 export const COUNT_PERIODS = new Set(["day", "week"]);
 export const REQUIRED_TOP = ["version", "title", "families", "phases", "nodes", "weekly"];
@@ -76,7 +79,11 @@ export function validateMap(doc) {
     if ("tasks" in node && !Array.isArray(node.tasks)) errors.push(`node ${nid}: tasks must be a list`);
   });
 
-  const requiresOf = (node) => (Array.isArray(node.requires) ? node.requires.filter((r) => typeof r === "string") : []);
+  const { groups, errors: groupErrors } = groupsOf(doc, byId);
+  errors.push(...groupErrors);
+  /** Prerequisite node ids; a group id stands for every node in the group. */
+  const requiresOf = (node) =>
+    (Array.isArray(node.requires) ? node.requires.filter((r) => typeof r === "string") : []).flatMap((r) => (groups.has(r) ? groups.get(r).members : [r]));
   const trackOf = (node) => (TRACKS.has(node.track) ? node.track : familyTrack.get(node.family));
 
   const seenN = new Map();
@@ -103,8 +110,79 @@ export function validateMap(doc) {
     }
   }
 
+  errors.push(...typeErrors(byId, groups, requiresOf, trackOf));
   errors.push(...cycleErrors(byId, requiresOf));
   errors.push(...taskErrors(byId, Array.isArray(doc.weekly) ? doc.weekly : []));
+  return errors;
+}
+
+/** Parallel groups: nodes that share a place on the road, done in any order. A port of maps.py `_groups`. */
+export function groupsOf(doc, byId) {
+  const modes = NODE_TYPES.groupModes ?? {};
+  const errors = [];
+  const groups = new Map();
+  const raw = doc.groups ?? [];
+  if (!Array.isArray(raw)) return { groups, errors: ["groups must be a list"] };
+  raw.forEach((group, index) => {
+    if (!isObject(group) || typeof group.id !== "string" || !group.id) return errors.push(`groups[${index}] needs a string id`);
+    const gid = group.id;
+    if (groups.has(gid) || byId.has(gid)) return errors.push(`group ${gid}: id is already used`);
+    if (!((group.mode ?? "all") in modes)) errors.push(`group ${gid}: mode must be one of ${Object.keys(modes).join(", ")}`);
+    groups.set(gid, { ...group, members: [] });
+  });
+  for (const [nid, node] of byId) {
+    if (node.group === undefined || node.group === null) continue;
+    if (!groups.has(node.group)) errors.push(`node ${nid}: group ${JSON.stringify(node.group)} does not exist`);
+    else groups.get(node.group).members.push(nid);
+  }
+  for (const [gid, group] of groups) {
+    const count = group.members.length;
+    if (count < 2) errors.push(`group ${gid}: a group needs at least 2 nodes (has ${count})`);
+    if (group.mode === "pick" && !(isInt(group.pick) && group.pick >= 1 && group.pick <= Math.max(count, 1))) {
+      errors.push(`group ${gid}: pick must be a whole number from 1 to ${count}`);
+    }
+  }
+  return { groups, errors };
+}
+
+/** The node-type rules (data/node-types.json). A port of maps.py `_type_errors`. */
+function typeErrors(byId, groups, requiresOf, trackOf) {
+  const types = NODE_TYPES.types;
+  const errors = [];
+  const typeOf = (node) => node.type ?? "step";
+  for (const [nid, node] of byId) {
+    const kind = typeOf(node);
+    const spec = types[kind];
+    if (!spec) {
+      errors.push(`node ${nid}: type ${JSON.stringify(kind)} is not one of ${Object.keys(types).join(", ")}`);
+      continue;
+    }
+    if (spec.needsField && !node[spec.needsField]) errors.push(`node ${nid}: a ${kind} node needs ${spec.needsField}`);
+    if (spec.onRoad === false && trackOf(node) !== "side") errors.push(`node ${nid}: a ${kind} node sits off the road (track: side)`);
+    if ("due" in node && !(typeof node.due === "string" && DATE.test(node.due))) errors.push(`node ${nid}: due must be a date like 2026-10-16`);
+    for (const req of requiresOf(node)) {
+      const prereq = byId.get(req);
+      if (prereq && types[typeOf(prereq)]?.gates === false) errors.push(`node ${nid}: nothing can wait on ${req}, a ${typeOf(prereq)} node`);
+    }
+    const before = spec.mustFollowOneOf;
+    if (before) {
+      const seen = new Set();
+      const stack = [...requiresOf(node)];
+      let found = false;
+      while (stack.length && !found) {
+        const current = stack.pop();
+        if (seen.has(current) || !byId.has(current)) continue;
+        seen.add(current);
+        found = before.includes(typeOf(byId.get(current)));
+        stack.push(...requiresOf(byId.get(current)));
+      }
+      if (!found) errors.push(`node ${nid}: a ${kind} node must come after a ${before.join(" or ")} node`);
+    }
+  }
+  for (const [gid, group] of groups) {
+    const tracks = new Set(group.members.filter((m) => byId.has(m)).map((m) => trackOf(byId.get(m))));
+    if (tracks.size > 1) errors.push(`group ${gid}: its nodes must share a track`);
+  }
   return errors;
 }
 

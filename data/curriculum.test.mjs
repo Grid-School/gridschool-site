@@ -18,12 +18,12 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { MODES } from "../app/js/modes.js?v=fe10c31-202610142207";
-import { ARTIFACTS } from "../app/js/artifacts.js?v=fe10c31-202610142207";
-import { walkReadings } from "../app/js/reading-order.js?v=fe10c31-202610142207";
-import { buildGraph, STATUS, isSpine, nextUp, ancestorsOf } from "../app/js/graph/model.js?v=fe10c31-202610142207";
+import { MODES } from "../app/js/modes.js?v=92f80dc-202610142240";
+import { ARTIFACTS } from "../app/js/artifacts.js?v=92f80dc-202610142240";
+import { walkReadings } from "../app/js/reading-order.js?v=92f80dc-202610142240";
+import { buildGraph, STATUS, isSpine, nextUp, ancestorsOf, specOf } from "../app/js/graph/model.js?v=92f80dc-202610142240";
 import { validateMap } from "./map-rules.mjs";
-import { resolveMap, instanceErrors } from "../app/js/modules.js?v=fe10c31-202610142207";
+import { resolveMap, instanceErrors } from "../app/js/modules.js?v=92f80dc-202610142240";
 import { readLibrary } from "./module-library.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -53,7 +53,12 @@ function shapeOf(map) {
   const familyTrack = new Map((map.families ?? []).map((family) => [family.id, family.track]));
   const trackOf = (node) => node.track ?? familyTrack.get(node.family);
   const core = map.nodes.filter((node) => node.kind !== "future");
-  return { byId, familyTrack, trackOf, core, spine: core.filter((node) => trackOf(node) === "spine") };
+  // A group id in `requires` stands for every node in that parallel group.
+  const members = new Map((map.groups ?? []).map((group) => [group.id, map.nodes.filter((node) => node.group === group.id).map((node) => node.id)]));
+  const requiresOf = (node) => (node.requires ?? []).flatMap((req) => members.get(req) ?? [req]);
+  // Habits and references are kept or read, never finished: the walk skips them.
+  const finishable = (node) => specOf(node).completes !== "never";
+  return { byId, familyTrack, trackOf, core, requiresOf, spine: core.filter((node) => trackOf(node) === "spine" && finishable(node)) };
 }
 
 /** Light a node the way a student would: answers for in-app steps, a URL and an accepted review otherwise. */
@@ -85,7 +90,7 @@ const RETIRED_GAME = /GridGlade|GridSeak|play\.gridschool|world server|ticket bo
 const RETIRED_STAGE = /\bStage\b/; // the game's staging world, capitalised; "a pipeline stage" is fine
 
 for (const [name, map] of MAPS) {
-  const { byId, trackOf, core, spine } = shapeOf(map);
+  const { byId, trackOf, core, spine, requiresOf } = shapeOf(map);
 
   test(`${name}: meets the map rules (ids, families, requires, acyclic, n order, side quests, task ids)`, () => {
     assert.deepEqual(validateMap(map), []);
@@ -106,7 +111,8 @@ for (const [name, map] of MAPS) {
   });
 
   test(`${name}: every core node has a why, an evidence line, and at least one task`, () => {
-    for (const node of core) {
+    // A reference is read, not done: it has no tasks.
+    for (const node of core.filter((item) => specOf(item).completes !== "never" || specOf(item).canBeNext !== false)) {
       assert.ok(node.why?.trim(), `${node.id} why`);
       assert.ok(node.evidence?.trim(), `${node.id} evidence`);
       assert.ok(Array.isArray(node.tasks) && node.tasks.length, `${node.id} tasks`);
@@ -116,7 +122,7 @@ for (const [name, map] of MAPS) {
   test(`${name}: side quests are never required, never next, and never gate a core node`, () => {
     for (const node of map.nodes) {
       if (trackOf(node) === "side") continue;
-      for (const req of node.requires ?? []) {
+      for (const req of requiresOf(node)) {
         assert.notEqual(trackOf(byId.get(req)), "side", `${node.id} requires side quest ${req}`);
       }
     }
@@ -127,7 +133,7 @@ for (const [name, map] of MAPS) {
   test(`${name}: no required node waits on an elective`, () => {
     const spineIds = new Set(spine.map((node) => node.id));
     for (const node of spine) {
-      for (const req of node.requires ?? []) {
+      for (const req of requiresOf(node)) {
         assert.ok(spineIds.has(req), `${node.id} (required) depends on ${req} (elective)`);
       }
     }
@@ -142,8 +148,10 @@ for (const [name, map] of MAPS) {
     const seen = [];
     while (seen.length < spine.length) {
       const graph = buildGraph(map, student);
-      const openSpine = graph.nodes.filter((node) => node.status === STATUS.OPEN && isSpine(node) && node.kind !== "future");
-      assert.ok(openSpine.length <= 8, `open required ${openSpine.map((n) => n.id).join(", ")}`);
+      const openSpine = graph.nodes.filter((node) => node.status === STATUS.OPEN && isSpine(node) && node.kind !== "future" && specOf(node).canBeNext !== false);
+      // A parallel group is one stop on the road, so it counts as one choice.
+      const choices = new Set(openSpine.map((n) => n.group ?? n.id));
+      assert.ok(choices.size <= 8, `open required ${openSpine.map((n) => n.id).join(", ")}`);
       const next = nextUp(graph);
       assert.ok(next && isSpine(next), `required path stalled after ${seen.join(" -> ") || "(start)"}`);
       const dark = [...ancestorsOf(graph, next.id)].filter((id) => graph.byId.get(id)?.status !== STATUS.LIT);
