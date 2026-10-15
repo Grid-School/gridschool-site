@@ -10,30 +10,30 @@
  * aliases so links already in the wild still land somewhere true.
  */
 
-import { el, mount, download } from "./dom.js?v=184e8c3-202610142252";
-import * as store from "./store.js?v=184e8c3-202610142252";
-import { resolveSlug, slugFromUrl, currentSession, signOut, setPersistToken, inviteFromUrl, persistToken } from "./session.js?v=184e8c3-202610142252";
-import { tryStoredKey } from "./gate.js?v=184e8c3-202610142252";
-import { createRouter } from "./router.js?v=184e8c3-202610142252";
-import { createChrome } from "./chrome.js?v=184e8c3-202610142252";
-import { toast } from "./ui.js?v=184e8c3-202610142252";
-import { isTestSeat } from "./test-seats.js?v=184e8c3-202610142252";
-import { renderLogin } from "./views/login.js?v=184e8c3-202610142252";
-import { renderToday } from "./views/today.js?v=184e8c3-202610142252";
-import { renderMap } from "./views/map.js?v=184e8c3-202610142252";
-import { renderStep, isStepArgs, moduleIdFromArgs } from "./views/step.js?v=184e8c3-202610142252";
-import { renderTasks } from "./views/tasks.js?v=184e8c3-202610142252";
-import { renderCalendar } from "./views/calendar.js?v=184e8c3-202610142252";
-import { renderLibrary } from "./views/library.js?v=184e8c3-202610142252";
-import { renderPosts } from "./views/posts.js?v=184e8c3-202610142252";
-import { renderHire } from "./views/hire.js?v=184e8c3-202610142252";
-import { toggleDevUnlock, setDevUnlock } from "./dev-mode.js?v=184e8c3-202610142252";
-import { togglePreviewMedia, setPreviewMedia, isPreviewMedia } from "./preview-mode.js?v=184e8c3-202610142252";
-import { isInstructorDevice } from "./instructor-mode.js?v=184e8c3-202610142252";
-import { startReminders } from "./reminders.js?v=184e8c3-202610142252";
-import { watchReviewArrivals } from "./review-arrivals.js?v=184e8c3-202610142252";
-import { enterView, leaveView } from "./transitions.js?v=184e8c3-202610142252";
-import { gateRoutes } from "./features.js?v=184e8c3-202610142252";
+import { el, mount, download } from "./dom.js?v=1bb36ba-202610151911";
+import * as store from "./store.js?v=1bb36ba-202610151911";
+import { resolveSlug, slugFromUrl, currentSession, signOut, setPersistToken, inviteFromUrl, persistToken } from "./session.js?v=1bb36ba-202610151911";
+import { tryStoredKey } from "./gate.js?v=1bb36ba-202610151911";
+import { createRouter } from "./router.js?v=1bb36ba-202610151911";
+import { createChrome } from "./chrome.js?v=1bb36ba-202610151911";
+import { toast } from "./ui.js?v=1bb36ba-202610151911";
+import { isTestSeat } from "./test-seats.js?v=1bb36ba-202610151911";
+import { renderLogin } from "./views/login.js?v=1bb36ba-202610151911";
+import { renderToday } from "./views/today.js?v=1bb36ba-202610151911";
+import { renderMap } from "./views/map.js?v=1bb36ba-202610151911";
+import { renderStep, isStepArgs, moduleIdFromArgs } from "./views/step.js?v=1bb36ba-202610151911";
+import { renderTasks } from "./views/tasks.js?v=1bb36ba-202610151911";
+import { renderCalendar } from "./views/calendar.js?v=1bb36ba-202610151911";
+import { renderLibrary } from "./views/library.js?v=1bb36ba-202610151911";
+import { renderPosts } from "./views/posts.js?v=1bb36ba-202610151911";
+import { renderHire } from "./views/hire.js?v=1bb36ba-202610151911";
+import { toggleDevUnlock, setDevUnlock } from "./dev-mode.js?v=1bb36ba-202610151911";
+import { togglePreviewMedia, setPreviewMedia, isPreviewMedia } from "./preview-mode.js?v=1bb36ba-202610151911";
+import { isInstructorDevice } from "./instructor-mode.js?v=1bb36ba-202610151911";
+import { startReminders } from "./reminders.js?v=1bb36ba-202610151911";
+import { watchReviewArrivals } from "./review-arrivals.js?v=1bb36ba-202610151911";
+import { enterView, leaveView } from "./transitions.js?v=1bb36ba-202610151911";
+import { gateRoutes } from "./features.js?v=1bb36ba-202610151911";
 
 /* Coach (today) and Posts are gated in features.js: switched off, they are
    not routes at all, so their links land on the Map. */
@@ -225,6 +225,15 @@ async function start() {
   /* Invite or return login injects both secrets. The student never types them.
      Demo stays the public tour: no account, no lesson text on the live site. */
   const invite = inviteFromUrl();
+  // Already signed in on this browser: the invite was used, so open the board.
+  const signedIn = currentSession();
+  if (invite && signedIn?.persistToken && signedIn.slug && signedIn.slug !== "demo") {
+    const url = new URL(location.href);
+    url.searchParams.delete("invite");
+    url.searchParams.set("s", signedIn.slug);
+    location.replace(url);
+    return;
+  }
   if (invite) {
     renderLogin(app, { invite });
     markReady();

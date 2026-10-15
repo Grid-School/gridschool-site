@@ -6,7 +6,7 @@
  * touch marked Sent), never by a flag we set for them. Pure, for node tests.
  */
 
-import { BEATS, tidyAnswers, blanksLeft } from "./loom-script.js?v=184e8c3-202610142252";
+import { BEATS, tidyAnswers, blanksLeft } from "./loom-script.js?v=1bb36ba-202610151911";
 
 export const NODES = [
   { id: "who", label: "Research" },

@@ -2,15 +2,15 @@
  * Invite set-password and return login. Demo never lands here.
  */
 
-import { el, mount } from "../dom.js?v=184e8c3-202610142252";
-import { gmark, wordmark } from "../../../js/brand.js?v=184e8c3-202610142252";
+import { el, mount } from "../dom.js?v=1bb36ba-202610151911";
+import { gmark, wordmark } from "../../../js/brand.js?v=1bb36ba-202610151911";
 import {
   enterSeat,
   loginWithPassword,
   peekInvite,
   redeemInvite,
   requestLoginLink,
-} from "../persist-auth.js?v=184e8c3-202610142252";
+} from "../persist-auth.js?v=1bb36ba-202610151911";
 
 const FIELD =
   "width:100%;font:inherit;font-size:15px;color:var(--text);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:11px 13px;";
@@ -100,8 +100,10 @@ function renderRedeem(app, invite) {
       if (!row.email) email.readOnly = false;
     })
     .catch((error) => {
-      err.textContent = error.message || "That invite is not valid or has expired.";
-      err.hidden = false;
+      // A used or expired link is not a dead end: it becomes the normal sign-in,
+      // which says why. Students often keep the first link as their board link.
+      const used = /not found|not valid/i.test(error.message || "");
+      renderReturn(app, "", used ? "This link was already used to set your password. Sign in with your email and that password." : "That link has expired. Sign in with your email and password, or get a new link below.");
     });
 
   const form = el(
@@ -149,7 +151,7 @@ function renderRedeem(app, invite) {
   );
 }
 
-function renderReturn(app, presetEmail) {
+function renderReturn(app, presetEmail, notice = "") {
   const email = input({
     id: "login-email",
     type: "email",
@@ -224,6 +226,6 @@ function renderReturn(app, presetEmail) {
 
   mount(
     app,
-    shell("Open your board", "Email and password. The keys stay on the school side.", form, forgot)
+    shell("Open your board", notice || "Email and password. The keys stay on the school side.", form, forgot)
   );
 }

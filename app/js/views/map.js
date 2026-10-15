@@ -16,22 +16,22 @@
  * went with it, because on the floor position is derived from sequence.
  */
 
-import { el, mount } from "../dom.js?v=184e8c3-202610142252";
-import { btn, toast } from "../ui.js?v=184e8c3-202610142252";
-import { createScene3d } from "../graph/scene3d/index.js?v=184e8c3-202610142252";
-import { createRezScene } from "../graph/rez/index.js?v=184e8c3-202610142252";
-import { STATUS, nextUp, progress, visibleGraph, stepNumber } from "../graph/model.js?v=184e8c3-202610142252";
-import { LEGEND, STANDING, STANDING_LABEL, standingOf, legendKeyOf } from "../graph/standing.js?v=184e8c3-202610142252";
-import { trackLabel } from "../copy.js?v=184e8c3-202610142252";
-import { mapList } from "./map-list.js?v=184e8c3-202610142252";
-import { dueLabel } from "./from-aden.js?v=184e8c3-202610142252";
-import { createGridState, hashFor, RESERVED_ARGS, VIEW } from "./grid-state.js?v=184e8c3-202610142252";
-import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=184e8c3-202610142252";
-import { isProgressReadOnly } from "../store.js?v=184e8c3-202610142252";
-import { doneForYou, nextMove, movesAfterNext, isTypedMap } from "../engine.js?v=184e8c3-202610142252";
-import { matchedRoles, fetchPacks, radarReady } from "../roles-remote.js?v=184e8c3-202610142252";
-import { careerOf } from "../search.js?v=184e8c3-202610142252";
-import { isoDate } from "../time.js?v=184e8c3-202610142252";
+import { el, mount } from "../dom.js?v=1bb36ba-202610151911";
+import { btn, toast } from "../ui.js?v=1bb36ba-202610151911";
+import { createScene3d } from "../graph/scene3d/index.js?v=1bb36ba-202610151911";
+import { createRezScene } from "../graph/rez/index.js?v=1bb36ba-202610151911";
+import { STATUS, nextUp, progress, visibleGraph, stepNumber } from "../graph/model.js?v=1bb36ba-202610151911";
+import { LEGEND, STANDING, STANDING_LABEL, standingOf, legendKeyOf } from "../graph/standing.js?v=1bb36ba-202610151911";
+import { trackLabel } from "../copy.js?v=1bb36ba-202610151911";
+import { mapList } from "./map-list.js?v=1bb36ba-202610151911";
+import { dueLabel } from "./from-aden.js?v=1bb36ba-202610151911";
+import { createGridState, hashFor, RESERVED_ARGS, VIEW } from "./grid-state.js?v=1bb36ba-202610151911";
+import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=1bb36ba-202610151911";
+import { isProgressReadOnly } from "../store.js?v=1bb36ba-202610151911";
+import { doneForYou, nextMove, movesAfterNext, isTypedMap } from "../engine.js?v=1bb36ba-202610151911";
+import { matchedRoles, fetchPacks, radarReady } from "../roles-remote.js?v=1bb36ba-202610151911";
+import { careerOf } from "../search.js?v=1bb36ba-202610151911";
+import { isoDate } from "../time.js?v=1bb36ba-202610151911";
 
 /** Right side clears the control column, top clears the legend bar. */
 const INSETS = { top: 76, right: 132, bottom: 72, left: 40 };
