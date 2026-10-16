@@ -18,11 +18,11 @@
  * view glides to it. Nothing idles. Reduced motion jumps.
  */
 
-import { el, clear } from "../../dom.js?v=e222672-202610160004";
-import { traceSet, stepNumber } from "../model.js?v=e222672-202610160004";
-import { STANDING, standingOf, inSequence } from "../standing.js?v=e222672-202610160004";
-import { typeOf, specOf } from "../model.js?v=e222672-202610160004";
-import { isTypedMap } from "../../engine.js?v=e222672-202610160004";
+import { el, clear } from "../../dom.js?v=0dac0a6-202610161920";
+import { traceSet, stepNumber } from "../model.js?v=0dac0a6-202610161920";
+import { STANDING, standingOf, inSequence } from "../standing.js?v=0dac0a6-202610161920";
+import { typeOf, specOf } from "../model.js?v=0dac0a6-202610161920";
+import { isTypedMap } from "../../engine.js?v=0dac0a6-202610161920";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 /** "2026-10-16" → "Due Oct 16". */
@@ -40,7 +40,7 @@ import {
   runCurrent,
   rezIn,
   prefersReducedMotion,
-} from "../../../../js/rez/road.js?v=e222672-202610160004";
+} from "../../../../js/rez/road.js?v=0dac0a6-202610161920";
 
 /*
  * One grid under everything, in the board's own units (as on the landing):
@@ -58,6 +58,8 @@ const SIDE_GAP = 3 * CELL;
 const FLOW_SPACING = 3.6 * CELL;
 /** A column taller than this splits into sub-columns side by side. */
 const FLOW_MAX_STACK = 6;
+/** Above every node, room for the YOU ARE HERE label it shows when it's next. */
+const HERE_ROOM = 28;
 /** Below a node's label, the gap before the next node in its column. */
 const FLOW_STACK = 0.9 * CELL;
 /** Ready nodes stand this far right of you, in their lanes. */
@@ -149,7 +151,9 @@ function flowLayout(road, laneOf, laneY) {
       // The next node in the column starts below this one's label: title lines,
       // the tag or due line, and a gap.
       const lines = wrapLabel(node.title, 19, 3).length + (node.due || (node.type && node.type !== "step") ? 1 : 0);
-      floor = y + NODE_R + 22 + 15 * (lines - 1) + FLOW_STACK;
+      // Any node can become "do this next", which puts YOU ARE HERE above it,
+      // so the room for that label is kept between every pair in a column.
+      floor = y + NODE_R + 22 + 15 * (lines - 1) + FLOW_STACK + HERE_ROOM;
       placed.push({ id: node.id, phase, lane, x: LEFT + index * FLOW_SPACING, y });
     }
   });

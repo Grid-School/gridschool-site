@@ -3,8 +3,8 @@
  * yet rather than taking their money, and hands the record to lead.js.
  */
 
-import { submit, ingestLead } from "../js/lead.js?v=e222672-202610160004";
-import { draftMap, draftRecord, stepTitle, STAGES, STOPS } from "../js/map-draft.js?v=e222672-202610160004";
+import { submit, ingestLead } from "../js/lead.js?v=0dac0a6-202610161920";
+import { draftMap, draftRecord, stepTitle, STAGES, STOPS } from "../js/map-draft.js?v=0dac0a6-202610161920";
 
 const form = document.getElementById("form");
 const screen = document.getElementById("screen");
