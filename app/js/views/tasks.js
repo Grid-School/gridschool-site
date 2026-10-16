@@ -3,12 +3,12 @@
  * Receipts live on the map list. Today owns what to do next.
  */
 
-import { el } from "../dom.js?v=1bb36ba-202610151911";
-import { panel, empty, btn } from "../ui.js?v=1bb36ba-202610151911";
-import { buildQueue, remainingMinutes, formatEstimate } from "../tasks.js?v=1bb36ba-202610151911";
-import { STATUS, stepNumber } from "../graph/model.js?v=1bb36ba-202610151911";
-import { taskRow } from "./parts.js?v=1bb36ba-202610151911";
-import { dueLabel, dueBadge } from "./from-aden.js?v=1bb36ba-202610151911";
+import { el } from "../dom.js?v=e222672-202610160004";
+import { panel, empty, btn } from "../ui.js?v=e222672-202610160004";
+import { buildQueue, remainingMinutes, formatEstimate } from "../tasks.js?v=e222672-202610160004";
+import { STATUS, stepNumber } from "../graph/model.js?v=e222672-202610160004";
+import { taskRow } from "./parts.js?v=e222672-202610160004";
+import { dueLabel, dueBadge } from "./from-aden.js?v=e222672-202610160004";
 
 export function renderTasks(ctx) {
   const { state, store, navigate } = ctx;
