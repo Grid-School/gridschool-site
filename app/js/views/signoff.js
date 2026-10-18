@@ -7,7 +7,7 @@
  * those states; the rule lives in graph/model.js (isLit, satisfies).
  */
 
-import { el } from "../dom.js?v=0dac0a6-202610161920";
+import { el } from "../dom.js?v=0a7d797-202610180703";
 
 export function signoffNotice(node) {
   if (!node.signoff) return null;

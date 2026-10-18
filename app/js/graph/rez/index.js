@@ -18,11 +18,11 @@
  * view glides to it. Nothing idles. Reduced motion jumps.
  */
 
-import { el, clear } from "../../dom.js?v=0dac0a6-202610161920";
-import { traceSet, stepNumber } from "../model.js?v=0dac0a6-202610161920";
-import { STANDING, standingOf, inSequence } from "../standing.js?v=0dac0a6-202610161920";
-import { typeOf, specOf } from "../model.js?v=0dac0a6-202610161920";
-import { isTypedMap } from "../../engine.js?v=0dac0a6-202610161920";
+import { el, clear } from "../../dom.js?v=0a7d797-202610180703";
+import { traceSet, stepNumber } from "../model.js?v=0a7d797-202610180703";
+import { STANDING, standingOf, inSequence } from "../standing.js?v=0a7d797-202610180703";
+import { typeOf, specOf } from "../model.js?v=0a7d797-202610180703";
+import { isTypedMap } from "../../engine.js?v=0a7d797-202610180703";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 /** "2026-10-16" → "Due Oct 16". */
@@ -40,7 +40,7 @@ import {
   runCurrent,
   rezIn,
   prefersReducedMotion,
-} from "../../../../js/rez/road.js?v=0dac0a6-202610161920";
+} from "../../../../js/rez/road.js?v=0a7d797-202610180703";
 
 /*
  * One grid under everything, in the board's own units (as on the landing):

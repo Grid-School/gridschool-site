@@ -10,6 +10,9 @@ export const LINKS = {
   application: "REPLACE_ME_TALLY_URL",
   foundingCheckout: "REPLACE_ME_CHECKOUT_FOUNDING",
   depositCheckout: "REPLACE_ME_CHECKOUT_DEPOSIT",
+  // GridSchool Complete (the self-serve plan). The free check (check/) shows
+  // "Unlock your full map" only once this is a real link.
+  completeCheckout: "REPLACE_ME_CHECKOUT_COMPLETE",
   fitCall: "REPLACE_ME_CALCOM_FIT_20MIN",
   oneOnOne: "REPLACE_ME_CALCOM_1ON1_45MIN",
   discord: "REPLACE_ME_DISCORD_INVITE",

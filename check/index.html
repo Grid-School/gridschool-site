@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free check. GridSchool</title>
+<!-- Dark launch: nothing links here yet. Remove noindex when the ads point at it. -->
+<meta name="robots" content="noindex">
+
+<meta name="description" content="Drop your resume and answer six quick questions. See what most likely stands between you and interviews, one thing to do today, and your map.">
+<meta property="og:title" content="What's stopping your search? A free check from GridSchool.">
+<meta property="og:description" content="Your resume and six quick questions. Your top suspected bottlenecks, one thing to do today, and your map.">
+<meta property="og:url" content="https://gridschool.org/check/">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://gridschool.org/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../rez.css?v=0a7d797-202610180703">
+<link rel="stylesheet" href="check.css?v=0a7d797-202610180703">
+</head>
+<body class="rez-page">
+
+<header class="nav" id="nav">
+  <a class="brand" href="../" aria-label="GridSchool home">
+    <svg viewBox="0 0 36 36" aria-hidden="true">
+      <g transform="translate(18 18) rotate(45) translate(-12.5 -12.5)">
+        <g class="g-off"><rect x="5.4" y="5.4" width="4.2" height="4.2" rx="1.2"/><rect x="10.4" y="5.4" width="4.2" height="4.2" rx="1.2"/><rect x="15.4" y="5.4" width="4.2" height="4.2" rx="1.2"/><rect x="20.4" y="5.4" width="4.2" height="4.2" rx="1.2"/><rect x="5.4" y="10.4" width="4.2" height="4.2" rx="1.2"/><rect x="10.4" y="10.4" width="4.2" height="4.2" rx="1.2"/><rect x="5.4" y="15.4" width="4.2" height="4.2" rx="1.2"/><rect x="10.4" y="15.4" width="4.2" height="4.2" rx="1.2"/><rect x="15.4" y="15.4" width="4.2" height="4.2" rx="1.2"/></g>
+        <g class="g-on"><rect x="0.4" y="0.4" width="4.2" height="4.2" rx="1.2"/><rect x="5.4" y="0.4" width="4.2" height="4.2" rx="1.2"/><rect x="10.4" y="0.4" width="4.2" height="4.2" rx="1.2"/><rect x="15.4" y="0.4" width="4.2" height="4.2" rx="1.2"/><rect x="20.4" y="0.4" width="4.2" height="4.2" rx="1.2"/><rect x="0.4" y="5.4" width="4.2" height="4.2" rx="1.2"/><rect x="0.4" y="10.4" width="4.2" height="4.2" rx="1.2"/><rect x="15.4" y="10.4" width="4.2" height="4.2" rx="1.2"/><rect x="20.4" y="10.4" width="4.2" height="4.2" rx="1.2"/><rect x="0.4" y="15.4" width="4.2" height="4.2" rx="1.2"/><rect x="20.4" y="15.4" width="4.2" height="4.2" rx="1.2"/><rect x="0.4" y="20.4" width="4.2" height="4.2" rx="1.2"/><rect x="5.4" y="20.4" width="4.2" height="4.2" rx="1.2"/><rect x="10.4" y="20.4" width="4.2" height="4.2" rx="1.2"/><rect x="15.4" y="20.4" width="4.2" height="4.2" rx="1.2"/><rect x="20.4" y="20.4" width="4.2" height="4.2" rx="1.2"/></g>
+      </g>
+    </svg>
+    <span>GRID<b>SCHOOL</b></span>
+  </a>
+  <span class="eyebrow">Free check</span>
+</header>
+
+<main class="check">
+  <div class="wrap check__grid">
+    <section class="card" id="card" aria-live="off">
+      <noscript><p class="card__lead">The check needs JavaScript to draw your map.</p></noscript>
+    </section>
+
+    <section class="check__map" aria-label="Your map">
+      <div class="map map--check" id="map">
+        <div class="map__floor" aria-hidden="true"></div>
+        <svg id="map-svg" role="img" aria-label="Your map: suspected bottlenecks and the areas still locked"></svg>
+        <div class="map-card" id="map-card" hidden></div>
+      </div>
+      <p class="map-caption" id="map-caption"></p>
+      <div class="map-key" aria-hidden="true"><span>Likely bottleneck</span><span class="key-locked">Opens up with a few questions</span></div>
+    </section>
+  </div>
+  <p class="sr-only" id="live" aria-live="polite"></p>
+</main>
+
+<footer>
+  <div class="wrap">GridSchool · <a href="mailto:support@gridschool.org">support@gridschool.org</a> · © 2026 GRID SCHOOL LLC · Boise, Idaho · <a href="../privacy/">Privacy</a><br>We can't promise anyone a job. The check suggests where your search may be stuck, based on what you tell it.</div>
+</footer>
+
+<script type="module" src="check.js?v=0a7d797-202610180703"></script>
+</body>
+</html>
