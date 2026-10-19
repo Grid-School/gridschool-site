@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { applyLayout, LANE_H, phaseBands, edgePath } from "./layout.js?v=59b2c4a-202610190812";
-import { CLEAR_Y } from "./relax.js?v=59b2c4a-202610190812";
+import { applyLayout, LANE_H, phaseBands, edgePath } from "./layout.js?v=aefa0fd-202610191723";
+import { CLEAR_Y } from "./relax.js?v=aefa0fd-202610191723";
 
 function graph(nodes, phases = []) {
   return { nodes: nodes.map((node) => ({ r: 33, ...node })), phases };

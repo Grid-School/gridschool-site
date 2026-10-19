@@ -13,11 +13,11 @@
  * this browser so a refresh loses nothing; the resume text never does.
  */
 
-import { PERSIST, link } from "../config.js?v=59b2c4a-202610190812";
-import * as I from "../data/intake/intake.mjs?v=59b2c4a-202610190812";
-import { mountCheckMap } from "./check-map.js?v=59b2c4a-202610190812";
-import * as Account from "./account.js?v=59b2c4a-202610190812";
-import { track, visitorId } from "./events.js?v=59b2c4a-202610190812";
+import { PERSIST, link } from "../config.js?v=aefa0fd-202610191723";
+import * as I from "../data/intake/intake.mjs?v=aefa0fd-202610191723";
+import { mountCheckMap } from "./check-map.js?v=aefa0fd-202610191723";
+import * as Account from "./account.js?v=aefa0fd-202610191723";
+import { track, visitorId } from "./events.js?v=aefa0fd-202610191723";
 
 const KEY = "gridschool.check.v1";
 const PDF_JS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs";

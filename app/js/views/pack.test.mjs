@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { PACK_NODES, packFirstOpen } from "./pack.js?v=59b2c4a-202610190812";
+import { PACK_NODES, packFirstOpen } from "./pack.js?v=aefa0fd-202610191723";
 
 test("Prepare runs fit, apply, reach out, get ready, and reopens at the first step not done", () => {
   assert.deepEqual(PACK_NODES.map((n) => n.id), ["fit", "apply", "reach", "ready"]);

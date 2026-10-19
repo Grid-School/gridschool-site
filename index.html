@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="rez.css?v=59b2c4a-202610190812">
+<link rel="stylesheet" href="rez.css?v=aefa0fd-202610191723">
 <script>/* First view of a session gets the arrival; a repeat starts drawn (js/landing-map.js). */
 try { if (!sessionStorage.getItem("gridschool.arrived") && !matchMedia("(prefers-reduced-motion: reduce)").matches) document.documentElement.classList.add("first-view"); } catch (e) {}</script>
 </head>
@@ -39,6 +39,7 @@ try { if (!sessionStorage.getItem("gridschool.arrived") && !matchMedia("(prefers
     <a href="#who">Who it's for</a>
     <a href="#proof">What you leave with</a>
     <a href="#week">How a week runs</a>
+    <a href="#plans">Two plans</a>
     <a href="#faq">Questions</a>
   </nav>
   <a class="nav__cta" href="apply/" data-book>Book a call <kbd>B</kbd></a>
@@ -57,6 +58,7 @@ try { if (!sessionStorage.getItem("gridschool.arrived") && !matchMedia("(prefers
         <a class="btn btn--solid" id="cta" href="apply/" data-book>Book a call to walk this map <span class="arr" aria-hidden="true">→</span></a>
       </div>
       <p class="hero__fine">20-minute call. We finish your map on it.</p>
+      <p class="hero__alt">Not ready for a call? <a class="link" href="check/?from=home">Take the free 2-minute check <span aria-hidden="true">→</span></a></p>
     </div>
 
     <div class="compiler" aria-label="Draft your map">
@@ -246,6 +248,49 @@ try { if (!sessionStorage.getItem("gridschool.arrived") && !matchMedia("(prefers
 
 <hr class="rule">
 
+<!-- ============ PLANS ============ -->
+<section class="sec" id="plans">
+  <div class="wrap">
+    <p class="eyebrow">Two ways to work with me</p>
+    <h2>The same map. How much of my time is in it is up to you.</h2>
+    <p class="lede">Both start from where you stand. In the Residency I review every step with you. In Complete you get your map and the first week's work prepared, and you run it yourself.</p>
+
+    <div class="plans">
+      <article class="plan">
+        <div class="plan__bar eyebrow"><span>GridSchool Residency</span><span class="tag">I review every step</span></div>
+        <h3>Your map, walked with me every week until a company hires you.</h3>
+        <ul class="plan__list">
+          <li>Starts with a 20-minute call, where we finish your map</li>
+          <li>A weekly 1:1, up to three written reviews a week, and a cohort call</li>
+          <li>Eight weeks of teaching and review, then the 1:1 keeps going until you're hired</li>
+          <li>The week-2 exit: wrong room, and unused tuition comes back</li>
+        </ul>
+        <div class="plan__foot">
+          <p class="plan__price"><b>Founding rate</b> quoted on the call<span>Up to five residents with me at a time.</span></p>
+          <a class="btn btn--solid" href="apply/" data-book>Book a call <span class="arr" aria-hidden="true">→</span></a>
+        </div>
+      </article>
+
+      <article class="plan plan--complete">
+        <div class="plan__bar eyebrow"><span>GridSchool Complete</span><span class="tag">you run it</span></div>
+        <h3>Your map from the free check, and the first week's work prepared for you.</h3>
+        <ul class="plan__list">
+          <li>Five fresh roles that fit your map</li>
+          <li>The hiring manager for each one</li>
+          <li>A short note to each, written in your voice</li>
+          <li>I approve every note before you send it</li>
+        </ul>
+        <div class="plan__foot">
+          <p class="plan__price"><b>$349</b> for 12 months, or 4 payments of $99<span>14-day refund, no questions.</span></p>
+          <a class="btn btn--line" href="check/?from=home-plans">Take the free 2-minute check <span class="arr" aria-hidden="true">→</span></a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
 <!-- ============ FAQ ============ -->
 <section class="sec sec--tight" id="faq">
   <div class="wrap">
@@ -276,6 +321,6 @@ try { if (!sessionStorage.getItem("gridschool.arrived") && !matchMedia("(prefers
   <div class="wrap">GridSchool Residency · <a href="mailto:support@gridschool.org">support@gridschool.org</a> · © 2026 GRID SCHOOL LLC · Boise, Idaho<br>A company's yes is theirs. Your evidence won't be.</div>
 </footer>
 
-<script type="module" src="landing.js?v=59b2c4a-202610190812"></script>
+<script type="module" src="landing.js?v=aefa0fd-202610191723"></script>
 </body>
 </html>

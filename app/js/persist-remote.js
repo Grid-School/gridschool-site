@@ -5,9 +5,9 @@
  * Spec: ops/student-data.md
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=59b2c4a-202610190812";
-import { persistToken } from "./session.js?v=59b2c4a-202610190812";
-import { readDoc, replace, pendingOf, hasPending, markFlushed } from "./persist.js?v=59b2c4a-202610190812";
+import { PERSIST, isPlaceholder } from "../../config.js?v=aefa0fd-202610191723";
+import { persistToken } from "./session.js?v=aefa0fd-202610191723";
+import { readDoc, replace, pendingOf, hasPending, markFlushed } from "./persist.js?v=aefa0fd-202610191723";
 
 const POLL_MS = 15000;
 let inflight = 0;

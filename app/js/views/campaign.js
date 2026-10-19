@@ -11,14 +11,14 @@
  * in their own mail app, the call is their phone, LinkedIn is their click.
  */
 
-import { el, mount } from "../dom.js?v=59b2c4a-202610190812";
-import { btn, copy, toast, field } from "../ui.js?v=59b2c4a-202610190812";
-import { createModal } from "../modal.js?v=59b2c4a-202610190812";
-import { DAY0, FOLLOWUP_DAYS, nextTouch, fillLinks, peopleLinks } from "../search.js?v=59b2c4a-202610190812";
-import { draftCampaign } from "../roles-remote.js?v=59b2c4a-202610190812";
-import { scriptWizard, recordNode, closeRehearsal } from "./loom-kit.js?v=59b2c4a-202610190812";
-import { nodeRail, nodeIntro } from "./node-rail.js?v=59b2c4a-202610190812";
-import { NODES, doneNodes, firstOpen, nextNode, prevNode, labelOf } from "../campaign-steps.js?v=59b2c4a-202610190812";
+import { el, mount } from "../dom.js?v=aefa0fd-202610191723";
+import { btn, copy, toast, field } from "../ui.js?v=aefa0fd-202610191723";
+import { createModal } from "../modal.js?v=aefa0fd-202610191723";
+import { DAY0, FOLLOWUP_DAYS, nextTouch, fillLinks, peopleLinks } from "../search.js?v=aefa0fd-202610191723";
+import { draftCampaign } from "../roles-remote.js?v=aefa0fd-202610191723";
+import { scriptWizard, recordNode, closeRehearsal } from "./loom-kit.js?v=aefa0fd-202610191723";
+import { nodeRail, nodeIntro } from "./node-rail.js?v=aefa0fd-202610191723";
+import { NODES, doneNodes, firstOpen, nextNode, prevNode, labelOf } from "../campaign-steps.js?v=aefa0fd-202610191723";
 
 export function createCampaignDrawer({ slug, getTarget, onPatch, onTouch, getPortfolio, readOnly = () => false }) {
   const modal = createModal({ label: "Target campaign", size: "reading", onClose: () => closeRehearsal() || close() });
