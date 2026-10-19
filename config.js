@@ -39,7 +39,7 @@ export const LEGAL = {
   entity: "GRID SCHOOL LLC",
   jurisdiction: "Idaho, United States",
   contactAddress: "3100 N. Lakeharbor Lane Ste 176 #160, Boise, Idaho 83703 US",
-  effective: "2026-10-09",
+  effective: "2026-10-18",
   /** Set true only once an ads pixel is actually installed. */
   adTracking: false,
 };

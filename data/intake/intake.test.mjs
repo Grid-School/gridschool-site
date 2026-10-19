@@ -18,7 +18,7 @@ import {
   diagnosisMap,
   questionOf,
   SIGNALS,
-} from "./intake.mjs?v=0a7d797-202610180703";
+} from "./intake.mjs?v=fd30196-202610190731";
 
 const catalog = JSON.parse(readFileSync(new URL("./questions.json", import.meta.url)));
 
@@ -159,3 +159,10 @@ test("the diagnosis map: bottlenecks open, the first is next, every other chunk 
   assert.ok(map.nodes.length <= 9);
   for (const node of map.nodes.filter((n) => n.state === "locked")) assert.ok(node.minutes >= 1 && node.questions >= 1);
 });
+
+const SHARED = JSON.parse(readFileSync(new URL("../../server/testdata/bottleneck-cases.json", import.meta.url)));
+for (const c of SHARED.cases) {
+  test(`bottlenecks, shared with server/intake_rules.py: ${c.name}`, () => {
+    assert.deepEqual(bottlenecks(catalog, c.state, c.read), c.expect);
+  });
+}

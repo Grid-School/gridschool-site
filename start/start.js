@@ -3,9 +3,9 @@
  * Three doors: the board, Discord, the 1:1. Week-1 work lives on the board.
  */
 
-import { link, LINKS } from "../config.js?v=0a7d797-202610180703";
-import { getEnrollment, getApplication } from "../js/lead.js?v=0a7d797-202610180703";
-import { applySiteOverrides } from "../js/site-overrides.js?v=0a7d797-202610180703";
+import { link, LINKS } from "../config.js?v=fd30196-202610190731";
+import { getEnrollment, getApplication } from "../js/lead.js?v=fd30196-202610190731";
+import { applySiteOverrides } from "../js/site-overrides.js?v=fd30196-202610190731";
 
 const params = new URLSearchParams(location.search);
 const slug = params.get("s") || "demo";

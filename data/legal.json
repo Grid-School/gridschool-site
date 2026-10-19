@@ -1,5 +1,5 @@
 {
-  "version": "2026-10-09",
+  "version": "2026-10-18",
   "note": "Written from how the program actually runs. Every claim here has to match the offer lock in companies/gridschool-phase0; if the offer changes, this file changes in the same commit.",
   "documents": {
     "terms": {
@@ -93,6 +93,7 @@
           "body": [
             "From the application: your name, email, links to your work and profile, and your written answers about what you have shipped and what you think is blocking you.",
             "If you answer an ad or message GridSchool: your name, the email and phone you give, your Instagram or Facebook account id, the messages we exchange, your answers on the ad's form, which ad you came from, and whether you booked or attended a call.",
+            "From the free check: your answers to its questions, the email you give if you ask us to send you your map, and where you came from (for example, the video). If you add your resume, its text is sent once to the AI provider that reads it (currently Anthropic or xAI, through their business APIs) and is not stored. We keep only what the read found, such as the job titles your experience supports.",
             "From the program: your board, meaning the URLs you attach as evidence, task state, review requests and the written reviews I return, and your weekly quota numbers.",
             "That is all. No tracking profile, no data enrichment, nothing bought from a third party."
           ]
@@ -139,6 +140,7 @@
           "body": [
             "Applications I turn down are deleted within ninety days. If you enrol, your board and review history are kept while you are in the program and for a year after it ends, because a reference request later is common and the record is what makes it credible.",
             "If you messaged me or filled in a form and didn't enrol, your messages and details are deleted within twelve months of our last contact. If you opted out, I keep only your number or email and the date, so you are never contacted again.",
+            "A free check you saved is kept with your lead details and deleted on the same schedule: within twelve months of our last contact if you don't enrol, or sooner if you ask.",
             "Ask me to delete any of it earlier and I will, except for what I am required to keep for payment records."
           ]
         },

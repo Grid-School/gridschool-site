@@ -16,8 +16,8 @@
  * never gate a node: a habit is kept, not finished.
  */
 
-import { taskIsComplete, isCountTask } from "../task-state.js?v=0a7d797-202610180703";
-import { typeOf, specOf } from "../../../data/node-types.mjs?v=0a7d797-202610180703";
+import { taskIsComplete, isCountTask } from "../task-state.js?v=fd30196-202610190731";
+import { typeOf, specOf } from "../../../data/node-types.mjs?v=fd30196-202610190731";
 
 export { typeOf, specOf };
 

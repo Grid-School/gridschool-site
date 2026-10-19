@@ -11,7 +11,7 @@
  * Pure. Returns every error so a map is fixed in one pass.
  */
 
-import { NODE_TYPES } from "./node-types.mjs?v=0a7d797-202610180703";
+import { NODE_TYPES } from "./node-types.mjs?v=fd30196-202610190731";
 
 export const TRACKS = new Set(["spine", "depth", "side"]);
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -146,6 +146,19 @@ export function groupsOf(doc, byId) {
 }
 
 /** The node-type rules (data/node-types.json). A port of maps.py `_type_errors`. */
+/** Optional `basis`: why we think this step matters, and how sure we are (GridSchool Complete maps). Same as maps.py. */
+function basisErrors(nid, node) {
+  if (!("basis" in node)) return [];
+  const basis = node.basis;
+  const confidences = Object.keys(NODE_TYPES.confidences ?? {});
+  if (!basis || typeof basis !== "object" || Array.isArray(basis) || !("confidence" in basis)) return [`node ${nid}: basis must be an object with a confidence`];
+  const errors = [];
+  if (!confidences.includes(basis.confidence)) errors.push(`node ${nid}: basis.confidence must be one of ${confidences.join(", ")}`);
+  const because = basis.because ?? [];
+  if (!(Array.isArray(because) && because.every((line) => typeof line === "string"))) errors.push(`node ${nid}: basis.because must be a list of sentences`);
+  return errors;
+}
+
 function typeErrors(byId, groups, requiresOf, trackOf) {
   const types = NODE_TYPES.types;
   const errors = [];
@@ -160,6 +173,7 @@ function typeErrors(byId, groups, requiresOf, trackOf) {
     if (spec.needsField && !node[spec.needsField]) errors.push(`node ${nid}: a ${kind} node needs ${spec.needsField}`);
     if (spec.onRoad === false && trackOf(node) !== "side") errors.push(`node ${nid}: a ${kind} node sits off the road (track: side)`);
     if ("due" in node && !(typeof node.due === "string" && DATE.test(node.due))) errors.push(`node ${nid}: due must be a date like 2026-10-16`);
+    errors.push(...basisErrors(nid, node));
     for (const req of requiresOf(node)) {
       const prereq = byId.get(req);
       if (prereq && types[typeOf(prereq)]?.gates === false) errors.push(`node ${nid}: nothing can wait on ${req}, a ${typeOf(prereq)} node`);

@@ -13,9 +13,9 @@
  * this browser so a refresh loses nothing; the resume text never does.
  */
 
-import { PERSIST, link } from "../config.js?v=0a7d797-202610180703";
-import * as I from "../data/intake/intake.mjs?v=0a7d797-202610180703";
-import { mountCheckMap } from "./check-map.js?v=0a7d797-202610180703";
+import { PERSIST, link } from "../config.js?v=fd30196-202610190731";
+import * as I from "../data/intake/intake.mjs?v=fd30196-202610190731";
+import { mountCheckMap } from "./check-map.js?v=fd30196-202610190731";
 
 const KEY = "gridschool.check.v1";
 const PDF_JS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs";
@@ -442,7 +442,14 @@ async function fileText(file) {
 function saveForm() {
   if (store.saved) {
     const done = h("div", "saved");
-    done.append(h("b", "", "Sent. Check your inbox."), h("p", "", "You can always get back to your map at this link:"), h("a", "saved__link", store.saved.link, { href: store.saved.link }));
+    // "Sent" only when the server says the email went out; otherwise the link on screen is how they keep it.
+    const sent = store.saved.emailed !== false;
+    done.classList.toggle("saved--unsent", !sent);
+    done.append(
+      h("b", "", sent ? "Sent. Check your inbox." : "Your map is saved."),
+      h("p", "", sent ? "You can always get back to your map at this link:" : "We couldn't send the email just now, so keep this link. It always opens your map:"),
+      h("a", "saved__link", store.saved.link, { href: store.saved.link })
+    );
     return done;
   }
   const form = h("form", "save", null, { novalidate: "" });
@@ -463,7 +470,7 @@ function saveForm() {
     error.textContent = "";
     if (!/^\S+@\S+\.\S+$/.test(email.value.trim())) return (error.textContent = "That email doesn't look right.");
     submit.disabled = true;
-    submit.textContent = "Saving…";
+    submit.textContent = "Sending…";
     try {
       const res = await fetch(`${API}/check/save`, {
         method: "POST",
@@ -480,13 +487,13 @@ function saveForm() {
       });
       const body = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(body.error || "We couldn't save that. Try again in a minute.");
-      store.saved = { id: body.id, link: body.link };
+      store.saved = { id: body.id, link: body.link, emailed: body.emailed !== false };
       persist();
       const params = new URLSearchParams(location.search);
       params.set("id", body.id);
       history.replaceState(null, "", `?${params}`);
       form.replaceWith(saveForm());
-      live.textContent = "Saved. Your map is on its way to your inbox.";
+      live.textContent = store.saved.emailed ? "Saved. Your map is on its way to your inbox." : "Saved. Keep the link on screen to get back to your map.";
     } catch (problem) {
       error.textContent = problem.message;
       submit.disabled = false;

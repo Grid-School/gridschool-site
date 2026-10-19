@@ -78,6 +78,11 @@ export const NODE_TYPES = {
   "groupModes": {
     "all": "Do all of these, in any order.",
     "pick": "Do at least `pick` of these, in any order."
+  },
+  "confidences": {
+    "verified": "Checked against proof: an interview result, a reviewed artifact, or a person's review.",
+    "probable": "Follows from what the student told us or their resume says, not yet checked.",
+    "unassessed": "We haven't asked about this yet."
   }
 };
 
