@@ -13,11 +13,11 @@
  * this browser so a refresh loses nothing; the resume text never does.
  */
 
-import { PERSIST, link } from "../config.js?v=88ea7f7-202610190752";
-import * as I from "../data/intake/intake.mjs?v=88ea7f7-202610190752";
-import { mountCheckMap } from "./check-map.js?v=88ea7f7-202610190752";
-import * as Account from "./account.js?v=88ea7f7-202610190752";
-import { track, visitorId } from "./events.js?v=88ea7f7-202610190752";
+import { PERSIST, link } from "../config.js?v=59b2c4a-202610190812";
+import * as I from "../data/intake/intake.mjs?v=59b2c4a-202610190812";
+import { mountCheckMap } from "./check-map.js?v=59b2c4a-202610190812";
+import * as Account from "./account.js?v=59b2c4a-202610190812";
+import { track, visitorId } from "./events.js?v=59b2c4a-202610190812";
 
 const KEY = "gridschool.check.v1";
 const PDF_JS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs";
@@ -36,6 +36,7 @@ const API = (() => {
 })();
 
 let catalog;
+let rubric = { dimensions: [] };
 let booted = false;
 let map;
 let store = fresh();
@@ -163,7 +164,7 @@ const VIEWS = {
     return [
       h("p", "eyebrow", "Optional · makes your result sharper"),
       h("h2", "card__title", "Have your resume handy?", { tabindex: -1 }),
-      h("p", "card__help", "We'll read it for what your answers can't show, like vague bullet points or a title that doesn't match. You can skip this."),
+      h("p", "card__help", "We'll read it the way a hiring manager does in the first 7 seconds, and tell you plainly what they'd conclude and why. You can skip this."),
       row(button("Show my result", skip, { solid: true, arrow: true, focus: true })),
       zone,
       input,
@@ -312,6 +313,8 @@ const VIEWS = {
     }
 
     // What's next, beside keeping it: the locked areas on one side, the save on the other.
+    if (store.read?.verdict) parts.push(verdictPanel(store.read.verdict));
+
     // Keeping it comes first (the one thing we ask them to do here); the locked areas beside it say what's next.
     const foot = h("div", "result__foot");
     const keep = h("section", "");
@@ -386,7 +389,7 @@ async function startRead() {
     const res = await fetch(`${API}/check/read`, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ resume: resumeText, role: store.state.answers.role }),
+      body: JSON.stringify({ resume: resumeText, role: store.state.answers.role, level: store.state.answers.level }),
     });
     const body = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(body.error || "read failed");
@@ -443,6 +446,56 @@ async function fileText(file) {
 }
 
 /* ---------- saving ---------- */
+
+/**
+ * The resume verdict: what a hiring manager concludes in 7 seconds, scored on
+ * a fixed rubric (data/intake/rubric.json), each score with the line behind it.
+ * Honest without being cruel; the peer comparison appears only from 30 resumes.
+ */
+function verdictPanel(verdict) {
+  const panel = h("section", "verdict");
+  const list = h("ul", "verdict__scores");
+  for (const dim of rubric.dimensions) {
+    const item = verdict.scores?.[dim.id];
+    if (!item) continue;
+    const bar = h("span", "verdict__bar", null, { "aria-hidden": "true" });
+    for (let n = 1; n <= 5; n += 1) bar.append(h("i", n <= item.score ? "on" : ""));
+    list.append(
+      h("li", `verdict__row verdict__row--${item.score <= 2 ? "low" : item.score >= 4 ? "high" : "mid"}`, null, {}, [
+        h("span", "verdict__label", dim.label),
+        bar,
+        h("span", "verdict__score", `${item.score}/5`, { "aria-label": `${dim.label}: ${item.score} out of 5` }),
+        h("p", "verdict__why", item.why),
+      ])
+    );
+  }
+  const peersLine = h("p", "verdict__peers", "Comparing with other resumes for this role…");
+  panel.append(
+    h("h3", "card__sub", "Your resume, read the way a hiring manager reads it"),
+    h("p", "verdict__line", verdict.line),
+    list,
+    h("div", "verdict__pair", null, {}, [
+      verdict.strongest ? h("p", "", null, {}, [h("b", "", "Strongest: "), verdict.strongest]) : null,
+      verdict.fixFirst ? h("p", "", null, {}, [h("b", "", "Fix first: "), verdict.fixFirst]) : null,
+    ]),
+    peersLine,
+    h("p", "card__fine", "Scored by AI against a fixed rubric. Every score names the line behind it, so you can check it yourself.")
+  );
+  const role = store.state.answers.role;
+  const roleWord = I.questionOf(catalog, "role")?.options.find((o) => o.value === role)?.label.toLowerCase() || "engineering";
+  if (role && role !== "unsure" && Number.isFinite(verdict.total)) {
+    fetch(`${API}/check/peers?role=${encodeURIComponent(role)}&total=${verdict.total}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((peers) => {
+        if (!peers) return peersLine.remove();
+        peersLine.textContent = peers.percentile === null
+          ? `Comparison with other ${roleWord} resumes starts at ${peers.minimum} of them; we've read ${peers.n} so far.`
+          : `Scored higher than ${peers.percentile}% of the ${peers.n} ${roleWord} resumes people have shared with us.`;
+      })
+      .catch(() => peersLine.remove());
+  } else peersLine.remove();
+  return panel;
+}
 
 /** Saves the answers as a check; the account email is attached so the map lives in their account. */
 async function saveCheck(email, { notify = false, trap = "" } = {}) {
@@ -739,6 +792,7 @@ function arrivedFrom() {
 
 async function boot() {
   catalog = await (await fetch("../data/intake/questions.json")).json();
+  rubric = await fetch("../data/intake/rubric.json").then((res) => res.json()).catch(() => rubric);
   map = mountCheckMap({ svg: $("#map-svg"), box: $("#map"), card: $("#map-card") });
   const params = new URLSearchParams(location.search);
   // The link in the sign-in email: sign in, then open their newest map.

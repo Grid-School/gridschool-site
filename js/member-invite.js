@@ -4,8 +4,8 @@
  * The public demo on gridschool.org has no token and never gets the href.
  */
 
-import { LINKS, PRIVATE_LINK_KEYS, isPlaceholder } from "../config.js?v=88ea7f7-202610190752";
-import { persistToken } from "../app/js/session.js?v=88ea7f7-202610190752";
+import { LINKS, PRIVATE_LINK_KEYS, isPlaceholder } from "../config.js?v=59b2c4a-202610190812";
+import { persistToken } from "../app/js/session.js?v=59b2c4a-202610190812";
 
 export const MEMBER_DISCORD_INVITE = "https://discord.gg/FjC83EUu6Q";
 

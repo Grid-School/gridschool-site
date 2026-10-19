@@ -1,0 +1,64 @@
+{
+  "version": 1,
+  "about": "The resume verdict's rubric: what a hiring manager checks in a first read. The resume reader (server/intake.py) scores each 1 to 5 against these anchors and the check page (check/check.js) shows the labels. Change it here and nowhere else; bump version when an anchor changes, since stored scores were made against the old one.",
+  "dimensions": [
+    {
+      "id": "target",
+      "label": "Says the role",
+      "anchors": {
+        "1": "No target visible: the title and summary point somewhere else, or nowhere.",
+        "3": "The target can be guessed from the history, but the top doesn't say it.",
+        "5": "The first lines name the role and level, and everything below supports it."
+      }
+    },
+    {
+      "id": "impact",
+      "label": "Shows impact",
+      "anchors": {
+        "1": "Duties only: what they were responsible for, never what changed.",
+        "3": "Some results, few numbers a reader can hold onto.",
+        "5": "Most bullets state a result, many with a number."
+      }
+    },
+    {
+      "id": "proof",
+      "label": "Proof to check",
+      "anchors": {
+        "1": "Nothing a reviewer can open.",
+        "3": "A link or two, but hard to judge or unrelated to the target.",
+        "5": "Links to shipped, relevant work, near the top."
+      }
+    },
+    {
+      "id": "scope",
+      "label": "Scope for the level",
+      "anchors": {
+        "1": "Ownership and scale well below the level they want.",
+        "3": "Mixed: some work at the level, much below it.",
+        "5": "Ownership and scale match or exceed the level they want."
+      }
+    },
+    {
+      "id": "skim",
+      "label": "Reads in 7 seconds",
+      "anchors": {
+        "1": "Dense walls of text; the key facts are buried.",
+        "3": "Readable, but the point takes a while to find.",
+        "5": "The role, the strongest result and the stack are visible at a glance."
+      }
+    },
+    {
+      "id": "fit",
+      "label": "Fits the target stack",
+      "anchors": {
+        "1": "Little overlap with what the target role usually asks for.",
+        "3": "Partial overlap, or the overlap isn't stated clearly.",
+        "5": "Strong overlap, stated where a reader sees it."
+      }
+    }
+  ],
+  "peers": {
+    "minimum": 30,
+    "note": "A percentile shows only when at least this many resumes for the same role have been read and saved; until then the page says how many there are."
+  }
+}
