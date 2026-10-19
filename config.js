@@ -39,7 +39,7 @@ export const LEGAL = {
   entity: "GRID SCHOOL LLC",
   jurisdiction: "Idaho, United States",
   contactAddress: "3100 N. Lakeharbor Lane Ste 176 #160, Boise, Idaho 83703 US",
-  effective: "2026-10-18",
+  effective: "2026-10-19",
   /** Set true only once an ads pixel is actually installed. */
   adTracking: false,
 };
@@ -98,6 +98,16 @@ export const MEDIA = {
  * Login and invite redeem inject that token. Students never paste it.
  * Hosted at lab.gridschool.org on GridSchool AWS (643600678330).
  */
+/**
+ * Sign-in (check/account.js). The Google client id is public by design (it is in
+ * every page that shows a Google button); the server checks tokens against the
+ * same id (GOOGLE_CLIENT_ID in persist.env). While it reads REPLACE_ME the Google
+ * button stays hidden and email sign-in does everything.
+ */
+export const AUTH = {
+  googleClientId: "REPLACE_ME_GOOGLE_CLIENT_ID",
+};
+
 export const PERSIST = {
   endpoint: "https://lab.gridschool.org",
 };

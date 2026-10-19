@@ -13,7 +13,7 @@
  * calendar draws.
  */
 
-import { isoDate, weekStart, addDays, parseDate } from "./time.js?v=fd30196-202610190731";
+import { isoDate, weekStart, addDays, parseDate } from "./time.js?v=88ea7f7-202610190752";
 
 /** How far one application got. Each stage implies every stage before it. */
 export const STAGES = [

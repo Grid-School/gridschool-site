@@ -1,5 +1,5 @@
 {
-  "version": "2026-10-18",
+  "version": "2026-10-19",
   "note": "Written from how the program actually runs. Every claim here has to match the offer lock in companies/gridschool-phase0; if the offer changes, this file changes in the same commit.",
   "documents": {
     "terms": {
@@ -153,7 +153,7 @@
         {
           "heading": "Cookies and measurement",
           "body": [
-            "The site sets no cookies and runs no analytics. The app uses your browser's local storage to remember which board you are on and any changes you have not exported yet. Clearing site data clears it."
+            "The site sets no cookies and uses no third-party analytics. The free check counts its own steps (opened, started, finished, saved, signed in) under a random id kept in your browser, along with where you came from (for example, the video), so we can see which parts work and which don't. It keeps no IP address and nothing you type. The app uses your browser's local storage to remember which board you are on and any changes you have not exported yet. Clearing site data clears it."
           ],
           "whenAdTracking": [
             "Advertising measurement is active: an ad platform pixel records that you visited and whether you applied, so I can tell which ads bring people who are actually a fit. It does not receive your application answers or your board.",

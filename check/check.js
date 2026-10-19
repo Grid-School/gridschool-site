@@ -13,9 +13,11 @@
  * this browser so a refresh loses nothing; the resume text never does.
  */
 
-import { PERSIST, link } from "../config.js?v=fd30196-202610190731";
-import * as I from "../data/intake/intake.mjs?v=fd30196-202610190731";
-import { mountCheckMap } from "./check-map.js?v=fd30196-202610190731";
+import { PERSIST, link } from "../config.js?v=88ea7f7-202610190752";
+import * as I from "../data/intake/intake.mjs?v=88ea7f7-202610190752";
+import { mountCheckMap } from "./check-map.js?v=88ea7f7-202610190752";
+import * as Account from "./account.js?v=88ea7f7-202610190752";
+import { track, visitorId } from "./events.js?v=88ea7f7-202610190752";
 
 const KEY = "gridschool.check.v1";
 const PDF_JS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs";
@@ -133,6 +135,7 @@ const VIEWS = {
       }
       resumeText = clean;
       store.resumeOffered = true;
+      count("check.resume");
       startRead();
       finish();
     };
@@ -193,6 +196,7 @@ const VIEWS = {
         for (const other of options.children) other.classList.remove("is-picked");
         choice.classList.add("is-picked");
         store.state = I.answer(store.state, question.id, option.value);
+        count("check.start");
         drawMap();
         setTimeout(next, prefersReduced() ? 0 : 200);
       });
@@ -357,6 +361,7 @@ function finish(now = false) {
   drawMap();
   if (store.read?.followups?.length && !store.followups.length) return show("follow");
   show("result");
+  count("check.done");
   live.textContent = "Your result is ready.";
 }
 
@@ -439,68 +444,183 @@ async function fileText(file) {
 
 /* ---------- saving ---------- */
 
-function saveForm() {
-  if (store.saved) {
-    const done = h("div", "saved");
-    // "Sent" only when the server says the email went out; otherwise the link on screen is how they keep it.
-    const sent = store.saved.emailed !== false;
-    done.classList.toggle("saved--unsent", !sent);
-    done.append(
-      h("b", "", sent ? "Sent. Check your inbox." : "Your map is saved."),
-      h("p", "", sent ? "You can always get back to your map at this link:" : "We couldn't send the email just now, so keep this link. It always opens your map:"),
-      h("a", "saved__link", store.saved.link, { href: store.saved.link })
-    );
-    return done;
-  }
-  const form = h("form", "save", null, { novalidate: "" });
-  const email = h("input", "", null, { name: "email", type: "email", autocomplete: "email", placeholder: "Email", "aria-label": "Email", required: "" });
-  const trap = h("input", "trap", null, { name: "company", tabindex: -1, autocomplete: "off", "aria-hidden": "true" });
-  const error = h("p", "card__error", "", { role: "alert" });
-  const submit = button("Email me my map", null, { solid: true, type: "submit" });
-  form.append(
-    h("h3", "card__sub card__sub--keep", "Keep your map"),
-    h("p", "card__help", "We'll email you this result and a link back to your map."),
-    h("div", "save__row", null, {}, [email, submit]),
-    trap,
-    error,
-    h("p", "card__fine", "We only use your answers to build your map, and we never sell or share them.")
-  );
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    error.textContent = "";
-    if (!/^\S+@\S+\.\S+$/.test(email.value.trim())) return (error.textContent = "That email doesn't look right.");
-    submit.disabled = true;
-    submit.textContent = "Sending…";
-    try {
-      const res = await fetch(`${API}/check/save`, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          email: email.value.trim(),
-          company: trap.value,
-          from: store.from,
-          state: { answers: store.state.answers, skipped: store.state.skipped },
-          read: store.read,
-          followups: store.followups,
-          top: I.bottlenecks(catalog, store.state, store.read).slice(0, 3).map((hit) => ({ id: hit.id, title: hit.title })),
-        }),
-      });
-      const body = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(body.error || "We couldn't save that. Try again in a minute.");
-      store.saved = { id: body.id, link: body.link, emailed: body.emailed !== false };
-      persist();
-      const params = new URLSearchParams(location.search);
-      params.set("id", body.id);
-      history.replaceState(null, "", `?${params}`);
-      form.replaceWith(saveForm());
-      live.textContent = store.saved.emailed ? "Saved. Your map is on its way to your inbox." : "Saved. Keep the link on screen to get back to your map.";
-    } catch (problem) {
-      error.textContent = problem.message;
-      submit.disabled = false;
-      submit.textContent = "Email me my map";
-    }
+/** Saves the answers as a check; the account email is attached so the map lives in their account. */
+async function saveCheck(email, { notify = false, trap = "" } = {}) {
+  const res = await fetch(`${API}/check/save`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      email,
+      notify,
+      visitor: visitorId(),
+      company: trap,
+      from: store.from,
+      state: { answers: store.state.answers, skipped: store.state.skipped },
+      read: store.read,
+      followups: store.followups,
+      top: I.bottlenecks(catalog, store.state, store.read).slice(0, 3).map((hit) => ({ id: hit.id, title: hit.title })),
+    }),
   });
-  return form;
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(body.error || "We couldn't save that. Try again in a minute.");
+  store.saved = { id: body.id, link: body.link, emailed: body.emailed, email };
+  persist();
+  const params = new URLSearchParams(location.search);
+  params.set("id", body.id);
+  history.replaceState(null, "", `?${params}`);
+  return body;
+}
+
+/**
+ * Keeping the map. Signed in: one tap. Otherwise: email (a code arrives, or a
+ * link in the same email) or Google where it works. If the code email can't go
+ * out, the saved link on screen is how they keep it, and we say so.
+ */
+function saveForm() {
+  const wrap = h("section", "keep");
+  const signed = Account.session();
+  const draw = (...nodes) => wrap.replaceChildren(...nodes);
+
+  const savedView = () => {
+    const done = h("div", "saved");
+    const inAccount = Account.session()?.email && Account.session().email === store.saved?.email;
+    const sent = store.saved.emailed;
+    done.classList.toggle("saved--unsent", !inAccount && sent === false);
+    done.append(
+      h("b", "", inAccount ? "Saved to your account." : sent ? "Sent. Check your inbox." : "Your map is saved."),
+      h("p", "", inAccount
+        ? `Come back any time at gridschool.org/check and sign in with ${store.saved.email}.`
+        : sent ? "You can always get back to your map at this link:" : "We couldn't send the email just now, so keep this link. It always opens your map:"),
+      ...(inAccount ? [] : [h("a", "saved__link", store.saved.link, { href: store.saved.link })])
+    );
+    draw(done);
+  };
+
+  const codeView = (email) => {
+    const form = h("form", "save", null, { novalidate: "" });
+    const code = h("input", "code-input", null, { name: "code", inputmode: "numeric", autocomplete: "one-time-code", maxlength: 6, placeholder: "6-digit code", "aria-label": "6-digit code", "data-focus": "" });
+    const error = h("p", "card__error", "", { role: "alert" });
+    const confirm = button("Confirm", null, { solid: true, type: "submit" });
+    form.append(
+      h("h3", "card__sub card__sub--keep", "Check your email"),
+      h("p", "card__help", `We sent a 6-digit code to ${email}. Enter it to keep your map in your account. The email also has a link if you'd rather tap.`),
+      h("div", "save__row", null, {}, [code, confirm]),
+      error,
+      row(
+        link_("Send a new code", async () => {
+          error.textContent = "";
+          try {
+            const { sent } = await Account.sendCode(API, email);
+            error.textContent = sent ? "A new code is on its way." : "We couldn't send a code just now.";
+          } catch (problem) {
+            error.textContent = problem.message;
+          }
+        }),
+        link_("Use a different email", () => draw(...emailView()))
+      )
+    );
+    code.addEventListener("input", () => {
+      code.value = code.value.replace(/\D/g, "").slice(0, 6);
+      if (code.value.length === 6) form.requestSubmit();
+    });
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      error.textContent = "";
+      if (!/^\d{6}$/.test(code.value)) return (error.textContent = "Enter the 6-digit code from the email.");
+      confirm.disabled = true;
+      try {
+        await Account.verifyCode(API, email, code.value, store.from);
+        showAccount();
+        savedView();
+        live.textContent = "Signed in. Your map is saved to your account.";
+      } catch (problem) {
+        error.textContent = problem.message;
+        confirm.disabled = false;
+      }
+    });
+    draw(form);
+    code.focus({ preventScroll: true });
+  };
+
+  const emailView = () => {
+    const form = h("form", "save", null, { novalidate: "" });
+    const email = h("input", "", null, { name: "email", type: "email", autocomplete: "email", placeholder: "Email", "aria-label": "Email", required: "" });
+    const trap = h("input", "trap", null, { name: "company", tabindex: -1, autocomplete: "off", "aria-hidden": "true" });
+    const error = h("p", "card__error", "", { role: "alert" });
+    const submit = button("Keep my map", null, { solid: true, type: "submit" });
+    const googleSlot = h("div", "google-slot");
+    form.append(
+      h("h3", "card__sub card__sub--keep", "Keep your map"),
+      h("p", "card__help", "Save it to an account so you can come back to it. No password: we email you a code."),
+      h("div", "save__row", null, {}, [email, submit]),
+      trap,
+      error,
+      googleSlot,
+      h("p", "card__fine", "We only use your answers to build your map, and we never sell or share them.")
+    );
+    Account.mountGoogle(googleSlot, async (credential) => {
+      error.textContent = "";
+      try {
+        const account = await Account.google(API, credential, store.from);
+        await saveCheck(account.email);
+        showAccount();
+        savedView();
+      } catch (problem) {
+        error.textContent = problem.message;
+      }
+    }).then((shown) => shown && googleSlot.prepend(h("span", "or", "or")));
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      error.textContent = "";
+      const value = email.value.trim();
+      if (!/^\S+@\S+\.\S+$/.test(value)) return (error.textContent = "That email doesn't look right.");
+      submit.disabled = true;
+      submit.textContent = "Saving…";
+      try {
+        await saveCheck(value, { trap: trap.value });
+        const { sent } = await Account.sendCode(API, value);
+        if (sent) return codeView(value);
+        store.saved.emailed = false; // the code couldn't go out: the link on screen is how they keep it
+        persist();
+        savedView();
+      } catch (problem) {
+        error.textContent = problem.message;
+        submit.disabled = false;
+        submit.textContent = "Keep my map";
+      }
+    });
+    return [form];
+  };
+
+  if (store.saved) savedView();
+  else if (signed) {
+    const keep = button(`Save to your account (${signed.email})`, async () => {
+      keep.disabled = true;
+      try {
+        await saveCheck(signed.email);
+        savedView();
+      } catch (problem) {
+        keep.disabled = false;
+        wrap.append(h("p", "card__error", problem.message, { role: "alert" }));
+      }
+    }, { solid: true });
+    draw(h("h3", "card__sub card__sub--keep", "Keep your map"), row(keep));
+  } else draw(...emailView());
+  return wrap;
+}
+
+/** The nav says who is signed in, with a way out. */
+function showAccount() {
+  const slot = $("#nav-account");
+  if (!slot) return;
+  const signed = Account.session();
+  if (!signed) return slot.replaceChildren();
+  const out = h("button", "textlink textlink--nav", "Sign out", { type: "button" });
+  out.addEventListener("click", async () => {
+    await Account.signOut(API);
+    showAccount();
+  });
+  slot.replaceChildren(h("span", "nav-account__who", signed.email), out);
 }
 
 async function reopen(id) {
@@ -596,6 +716,20 @@ addEventListener("keydown", (event) => {
 
 /* ---------- start ---------- */
 
+/** One funnel step, tagged with where they came from (server: events.py). */
+function count(name) {
+  track(API, name, { source: store.from, check: store.saved?.id || "" });
+}
+
+/** Anything answered in this browser that a returning sign-in shouldn't replace. */
+function localStorageHasProgress() {
+  try {
+    return Object.keys(JSON.parse(localStorage.getItem(KEY) || "null")?.state?.answers ?? {}).length > 0;
+  } catch {
+    return false;
+  }
+}
+
 /** Where they came from (?from=vsl, or an ad's utm tags), saved with the lead so each source can be measured. */
 function arrivedFrom() {
   const params = new URLSearchParams(location.search);
@@ -606,7 +740,22 @@ function arrivedFrom() {
 async function boot() {
   catalog = await (await fetch("../data/intake/questions.json")).json();
   map = mountCheckMap({ svg: $("#map-svg"), box: $("#map"), card: $("#map-card") });
-  const id = new URLSearchParams(location.search).get("id");
+  const params = new URLSearchParams(location.search);
+  // The link in the sign-in email: sign in, then open their newest map.
+  const signinLink = params.get("signin");
+  if (signinLink) {
+    params.delete("signin");
+    history.replaceState(null, "", `${location.pathname}${params.size ? `?${params}` : ""}`);
+    await Account.verifyLink(API, signinLink, store.from).catch(() => null);
+  }
+  showAccount();
+  let id = params.get("id");
+  if (!id && Account.session()) {
+    const mine = await Account.me(API);
+    const fresh = !Object.keys(store.state.answers).length && !localStorageHasProgress();
+    if (mine?.checks?.length && (signinLink || fresh)) id = mine.checks[0].id;
+    showAccount();
+  }
   if (id && (await reopen(id))) {
     show("result");
     booted = true;
@@ -617,6 +766,7 @@ async function boot() {
   if (store.view in VIEWS && store.view !== "wait" && (store.view !== "q" || store.qid)) show(store.view, store.qid);
   else next();
   booted = true;
+  count("check.view");
   drawMap({ first: true }); // after the view, so the map is drawn once, in the right shape, with its arrival
 }
 
