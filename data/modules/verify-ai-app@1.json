@@ -1,0 +1,66 @@
+{
+  "id": "verify-ai-app",
+  "version": 1,
+  "title": "Verification proof: audit an AI-built app and fix what it got wrong",
+  "purpose": "With the owner's permission, audit a real AI-built app for the mistakes AI makes and fix the critical ones.",
+  "lane": "proof",
+  "phase": "prove",
+  "kind": "core",
+  "completion": "link",
+  "why": "Anyone can generate an app now; catching what the AI got wrong is the scarce skill. AI-written code still fails security checks about half the time (Veracode, July 2026), and this year's breaches of AI-built apps came from access rules, inverted login logic and exposed keys. A dated audit with fixes shows exactly the judgment teams are hiring for.",
+  "evidence": "Audit report URL, shared with the owner's OK.",
+  "modules": [
+    {
+      "id": "disciplines/14-containment-and-accountability",
+      "title": "14 · Containment and accountability",
+      "href": "./read/?m=disciplines/14-containment-and-accountability"
+    },
+    {
+      "id": "disciplines/06-evaluation-engineering",
+      "title": "06 · Evaluation engineering",
+      "href": "./read/?m=disciplines/06-evaluation-engineering"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "permission",
+      "title": "Get the owner's written OK to audit their app and share the report",
+      "kind": "write",
+      "est": 15,
+      "done_when": "The owner said yes in writing, and you saved it."
+    },
+    {
+      "id": "audit",
+      "title": "Run the audit: access rules on every table, login logic, exposed keys, input handling, deploy and rollback",
+      "kind": "ship",
+      "est": 240,
+      "done_when": "Every item on the checklist is marked pass, fail or not applicable, with where you looked."
+    },
+    {
+      "id": "fix",
+      "title": "Fix the critical findings and show each one before and after",
+      "kind": "ship",
+      "est": 240,
+      "done_when": "Each critical finding has a fix the owner merged or accepted, and a check that proves it."
+    },
+    {
+      "id": "report",
+      "title": "Write the one-page report: what was wrong, the risk, the fix, how you verified it",
+      "kind": "write",
+      "est": 90,
+      "done_when": "A stranger can read it in 3 minutes and check one fix themselves."
+    },
+    {
+      "id": "defend",
+      "title": "Explain one finding out loud in 3 minutes, recorded",
+      "kind": "practice",
+      "est": 30,
+      "done_when": "A recording you'd send a hiring manager."
+    }
+  ],
+  "slots": [
+    "notes",
+    "links",
+    "due"
+  ]
+}

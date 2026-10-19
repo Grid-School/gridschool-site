@@ -72,10 +72,10 @@
       "prompt": "Which is closest to you right now?",
       "kind": "choice",
       "options": [
-        { "value":  "grad", "label":  "A new CS grad" },
-        { "value":  "self", "label":  "Self-taught or from a bootcamp" },
-        { "value":  "working", "label":  "Working as an engineer" },
-        { "value":  "laidoff", "label":  "Between roles" }
+        { "value": "grad", "label": "A new CS grad" },
+        { "value": "self", "label": "Self-taught or from a bootcamp" },
+        { "value": "working", "label": "Working as an engineer" },
+        { "value": "laidoff", "label": "Between roles" }
       ],
       "prefill": "stage",
       "affects": ["proof", "pipeline"]
@@ -86,12 +86,13 @@
       "prompt": "What role do you want next?",
       "kind": "choice",
       "options": [
-        { "value":  "fullstack", "label":  "Full-stack" },
-        { "value":  "backend", "label":  "Backend" },
-        { "value":  "ai", "label":  "Applied AI" },
-        { "value":  "frontend", "label":  "Frontend" },
-        { "value":  "platform", "label":  "Platform or DevOps" },
-        { "value":  "unsure", "label":  "Not sure yet" }
+        { "value": "fullstack", "label": "Full-stack" },
+        { "value": "backend", "label": "Backend" },
+        { "value": "ai", "label": "Applied AI" },
+        { "value": "fde", "label": "Forward-deployed or AI integration" },
+        { "value": "frontend", "label": "Frontend" },
+        { "value": "platform", "label": "Platform or DevOps" },
+        { "value": "unsure", "label": "Not sure yet" }
       ],
       "prefill": "role",
       "affects": ["pipeline", "presence"]
@@ -102,10 +103,10 @@
       "prompt": "What level are you aiming for?",
       "kind": "choice",
       "options": [
-        { "value":  "entry", "label":  "Entry or junior" },
-        { "value":  "mid", "label":  "Mid" },
-        { "value":  "senior", "label":  "Senior" },
-        { "value":  "staff", "label":  "Staff or above" }
+        { "value": "entry", "label": "Entry or junior" },
+        { "value": "mid", "label": "Mid" },
+        { "value": "senior", "label": "Senior" },
+        { "value": "staff", "label": "Staff or above" }
       ],
       "prefill": "level",
       "affects": ["pipeline"]
@@ -116,11 +117,11 @@
       "prompt": "How long have you been looking?",
       "kind": "choice",
       "options": [
-        { "value":  "lt1", "label":  "Under a month" },
-        { "value":  "1to3", "label":  "1 to 3 months" },
-        { "value":  "3to6", "label":  "3 to 6 months" },
-        { "value":  "6to12", "label":  "6 to 12 months" },
-        { "value":  "gt12", "label":  "Over a year" }
+        { "value": "lt1", "label": "Under a month" },
+        { "value": "1to3", "label": "1 to 3 months" },
+        { "value": "3to6", "label": "3 to 6 months" },
+        { "value": "6to12", "label": "6 to 12 months" },
+        { "value": "gt12", "label": "Over a year" }
       ],
       "affects": ["presence", "pipeline"]
     },
@@ -130,11 +131,11 @@
       "prompt": "About how many applications have you sent in that time?",
       "kind": "choice",
       "options": [
-        { "value":  "none", "label":  "None yet" },
-        { "value":  "1to20", "label":  "1 to 20" },
-        { "value":  "21to75", "label":  "21 to 75" },
-        { "value":  "76to200", "label":  "76 to 200" },
-        { "value":  "gt200", "label":  "Over 200" }
+        { "value": "none", "label": "None yet" },
+        { "value": "1to20", "label": "1 to 20" },
+        { "value": "21to75", "label": "21 to 75" },
+        { "value": "76to200", "label": "76 to 200" },
+        { "value": "gt200", "label": "Over 200" }
       ],
       "affects": ["pipeline"]
     },
@@ -144,11 +145,11 @@
       "prompt": "When you apply, how far do you usually get?",
       "kind": "choice",
       "options": [
-        { "value":  "replies", "label":  "I rarely hear back" },
-        { "value":  "screen", "label":  "I get a recruiter call, then nothing" },
-        { "value":  "technical", "label":  "I make it to the technical round" },
-        { "value":  "final", "label":  "I reach the final round, then get a no" },
-        { "value":  "offers", "label":  "I get offers, just not the right ones" }
+        { "value": "replies", "label": "I rarely hear back" },
+        { "value": "screen", "label": "I get a recruiter call, then nothing" },
+        { "value": "technical", "label": "I make it to the technical round" },
+        { "value": "final", "label": "I reach the final round, then get a no" },
+        { "value": "offers", "label": "I get offers, just not the right ones" }
       ],
       "askIf": [
         {
@@ -175,10 +176,10 @@
       "prompt": "Which ways of working are open to you?",
       "kind": "multi",
       "options": [
-        { "value":  "remote", "label":  "Remote" },
-        { "value":  "hybrid", "label":  "Hybrid" },
-        { "value":  "onsite", "label":  "On site" },
-        { "value":  "relocate", "label":  "I'm open to relocating" }
+        { "value": "remote", "label": "Remote" },
+        { "value": "hybrid", "label": "Hybrid" },
+        { "value": "onsite", "label": "On site" },
+        { "value": "relocate", "label": "I'm open to relocating" }
       ],
       "affects": ["pipeline"]
     },
@@ -202,10 +203,10 @@
       "prompt": "Do you need visa sponsorship to work in the US?",
       "kind": "choice",
       "options": [
-        { "value":  "no", "label":  "No" },
-        { "value":  "now", "label":  "Yes, I need it now" },
-        { "value":  "later", "label":  "Not now, but I will later" },
-        { "value":  "outside", "label":  "I live outside the US" }
+        { "value": "no", "label": "No" },
+        { "value": "now", "label": "Yes, I need it now" },
+        { "value": "later", "label": "Not now, but I will later" },
+        { "value": "outside", "label": "I live outside the US" }
       ],
       "affects": ["pipeline"]
     },
@@ -215,9 +216,9 @@
       "prompt": "How soon do you need income?",
       "kind": "choice",
       "options": [
-        { "value":  "now", "label":  "Within a month" },
-        { "value":  "soon", "label":  "Within 1 to 3 months" },
-        { "value":  "wait", "label":  "I can wait for the right role" }
+        { "value": "now", "label": "Within a month" },
+        { "value": "soon", "label": "Within 1 to 3 months" },
+        { "value": "wait", "label": "I can wait for the right role" }
       ],
       "affects": ["pipeline"]
     },
@@ -227,9 +228,9 @@
       "prompt": "Would contract or short-term work help in the meantime?",
       "kind": "choice",
       "options": [
-        { "value":  "yes", "label":  "Yes" },
-        { "value":  "maybe", "label":  "If it's the right work" },
-        { "value":  "no", "label":  "No" }
+        { "value": "yes", "label": "Yes" },
+        { "value": "maybe", "label": "If it's the right work" },
+        { "value": "no", "label": "No" }
       ],
       "askIf": [
         {
@@ -245,10 +246,10 @@
       "prompt": "How many hours a week can you give the search?",
       "kind": "choice",
       "options": [
-        { "value":  "lt5", "label":  "Under 5" },
-        { "value":  "5to10", "label":  "5 to 10" },
-        { "value":  "10to20", "label":  "10 to 20" },
-        { "value":  "gt20", "label":  "Over 20" }
+        { "value": "lt5", "label": "Under 5" },
+        { "value": "5to10", "label": "5 to 10" },
+        { "value": "10to20", "label": "10 to 20" },
+        { "value": "gt20", "label": "Over 20" }
       ],
       "affects": ["pipeline", "proof"]
     },
@@ -258,12 +259,12 @@
       "prompt": "Where have you been sending applications?",
       "kind": "multi",
       "options": [
-        { "value":  "portal", "label":  "Company job portals" },
-        { "value":  "easy", "label":  "LinkedIn Easy Apply" },
-        { "value":  "referral", "label":  "Referrals" },
-        { "value":  "manager", "label":  "Messages to hiring managers" },
-        { "value":  "recruiter", "label":  "Recruiters" },
-        { "value":  "startup", "label":  "Startup boards (Wellfound, YC, Hacker News)" }
+        { "value": "portal", "label": "Company job portals" },
+        { "value": "easy", "label": "LinkedIn Easy Apply" },
+        { "value": "referral", "label": "Referrals" },
+        { "value": "manager", "label": "Messages to hiring managers" },
+        { "value": "recruiter", "label": "Recruiters" },
+        { "value": "startup", "label": "Startup boards (Wellfound, YC, Hacker News)" }
       ],
       "askIf": [
         {
@@ -279,10 +280,10 @@
       "prompt": "About how many of those got a reply from an actual person?",
       "kind": "choice",
       "options": [
-        { "value":  "0", "label":  "None" },
-        { "value":  "1to3", "label":  "1 to 3" },
-        { "value":  "4to10", "label":  "4 to 10" },
-        { "value":  "gt10", "label":  "More than 10" }
+        { "value": "0", "label": "None" },
+        { "value": "1to3", "label": "1 to 3" },
+        { "value": "4to10", "label": "4 to 10" },
+        { "value": "gt10", "label": "More than 10" }
       ],
       "askIf": [
         {
@@ -298,9 +299,9 @@
       "prompt": "Do you tailor your resume for each role?",
       "kind": "choice",
       "options": [
-        { "value":  "always", "label":  "Every time" },
-        { "value":  "some", "label":  "For the ones I really want" },
-        { "value":  "never", "label":  "I use one resume for everything" }
+        { "value": "always", "label": "Every time" },
+        { "value": "some", "label": "For the ones I really want" },
+        { "value": "never", "label": "I use one resume for everything" }
       ],
       "affects": ["presence"]
     },
@@ -310,9 +311,9 @@
       "prompt": "How recently were the jobs you apply to usually posted?",
       "kind": "choice",
       "options": [
-        { "value":  "days", "label":  "Within the last few days" },
-        { "value":  "weeks", "label":  "One to three weeks ago" },
-        { "value":  "any", "label":  "I don't check" }
+        { "value": "days", "label": "Within the last few days" },
+        { "value": "weeks", "label": "One to three weeks ago" },
+        { "value": "any", "label": "I don't check" }
       ],
       "askIf": [
         {
@@ -363,10 +364,10 @@
       "prompt": "How do you use AI tools when you code?",
       "kind": "choice",
       "options": [
-        { "value":  "daily", "label":  "Daily, and I check what they write" },
-        { "value":  "some", "label":  "Sometimes" },
-        { "value":  "rarely", "label":  "Rarely or never" },
-        { "value":  "build", "label":  "I build AI features or agents" }
+        { "value": "daily", "label": "Daily, and I check what they write" },
+        { "value": "some", "label": "Sometimes" },
+        { "value": "rarely", "label": "Rarely or never" },
+        { "value": "build", "label": "I build AI features or agents" }
       ],
       "affects": ["proof"]
     },
@@ -377,9 +378,9 @@
       "help": "For example, being on call, fixing it when it broke, or monitoring it.",
       "kind": "choice",
       "options": [
-        { "value":  "yes", "label":  "Yes" },
-        { "value":  "some", "label":  "A little" },
-        { "value":  "no", "label":  "Not yet" }
+        { "value": "yes", "label": "Yes" },
+        { "value": "some", "label": "A little" },
+        { "value": "no", "label": "Not yet" }
       ],
       "affects": ["proof", "interview"]
     },
@@ -426,8 +427,8 @@
       "help": "It will still look like you, with the same face, age and features. You'll see it before anyone else does, and you decide whether to use it.",
       "kind": "choice",
       "options": [
-        { "value":  "yes", "label":  "Yes, I'll add 1 to 3 photos" },
-        { "value":  "no", "label":  "No, keep my photo" }
+        { "value": "yes", "label": "Yes, I'll add 1 to 3 photos" },
+        { "value": "no", "label": "No, keep my photo" }
       ],
       "affects": ["presence"]
     },
@@ -453,9 +454,9 @@
       "prompt": "How often do recruiters message you?",
       "kind": "choice",
       "options": [
-        { "value":  "never", "label":  "Almost never" },
-        { "value":  "monthly", "label":  "A few times a month" },
-        { "value":  "weekly", "label":  "Every week" }
+        { "value": "never", "label": "Almost never" },
+        { "value": "monthly", "label": "A few times a month" },
+        { "value": "weekly", "label": "Every week" }
       ],
       "affects": ["presence"]
     },
@@ -479,12 +480,12 @@
       "prompt": "Which parts of interviews are hardest for you?",
       "kind": "multi",
       "options": [
-        { "value":  "coding", "label":  "Live coding" },
-        { "value":  "design", "label":  "System design" },
-        { "value":  "behavioral", "label":  "Behavioral" },
-        { "value":  "takehome", "label":  "Take-homes" },
-        { "value":  "projects", "label":  "Talking about my own work" },
-        { "value":  "nerves", "label":  "Managing nerves" }
+        { "value": "coding", "label": "Live coding" },
+        { "value": "design", "label": "System design" },
+        { "value": "behavioral", "label": "Behavioral" },
+        { "value": "takehome", "label": "Take-homes" },
+        { "value": "projects", "label": "Talking about my own work" },
+        { "value": "nerves", "label": "Managing nerves" }
       ],
       "askIf": [
         {
@@ -500,9 +501,9 @@
       "prompt": "How have you practiced so far?",
       "kind": "choice",
       "options": [
-        { "value":  "none", "label":  "I haven't" },
-        { "value":  "alone", "label":  "On my own" },
-        { "value":  "people", "label":  "Mock interviews with people" }
+        { "value": "none", "label": "I haven't" },
+        { "value": "alone", "label": "On my own" },
+        { "value": "people", "label": "Mock interviews with people" }
       ],
       "affects": ["interview"]
     },
@@ -536,10 +537,10 @@
       "prompt": "What size of company suits you?",
       "kind": "multi",
       "options": [
-        { "value":  "startup", "label":  "An early-stage startup" },
-        { "value":  "growth", "label":  "A growing company" },
-        { "value":  "big", "label":  "A large company" },
-        { "value":  "any", "label":  "Any size" }
+        { "value": "startup", "label": "An early-stage startup" },
+        { "value": "growth", "label": "A growing company" },
+        { "value": "big", "label": "A large company" },
+        { "value": "any", "label": "Any size" }
       ],
       "affects": ["pipeline"]
     },

@@ -18,8 +18,8 @@
  * this file only draws it.
  */
 
-import { STANDING, STANDING_TONE, standingOf } from "../standing.js?v=4c582b7-202610191734";
-import { numberGlyph, titleGlyph, disposeGlyph } from "./glyphs.js?v=4c582b7-202610191734";
+import { STANDING, STANDING_TONE, standingOf } from "../standing.js?v=815d2ba-202610191746";
+import { numberGlyph, titleGlyph, disposeGlyph } from "./glyphs.js?v=815d2ba-202610191746";
 
 export const FULL_HEIGHT = 170;
 const REVIEW_HEIGHT = 110;

@@ -195,6 +195,13 @@
       "title": "Meet engineers in person: one event near you",
       "lane": "network",
       "purpose": "Go to a local meetup or event in the space you want to work in, meet people, and turn each conversation into a connection you follow up on."
+    },
+    {
+      "id": "verify-ai-app",
+      "version": 1,
+      "title": "Verification proof: audit an AI-built app and fix what it got wrong",
+      "lane": "proof",
+      "purpose": "With the owner's permission, audit a real AI-built app for the mistakes AI makes and fix the critical ones."
     }
   ]
 }
