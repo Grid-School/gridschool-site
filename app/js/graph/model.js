@@ -16,8 +16,9 @@
  * never gate a node: a habit is kept, not finished.
  */
 
-import { taskIsComplete, isCountTask } from "../task-state.js?v=aefa0fd-202610191723";
-import { typeOf, specOf } from "../../../data/node-types.mjs?v=aefa0fd-202610191723";
+import { taskIsComplete, isCountTask } from "../task-state.js?v=4c582b7-202610191734";
+import { typeOf, specOf } from "../../../data/node-types.mjs?v=4c582b7-202610191734";
+import { prepOf, prepHint, opensLater, shortDay } from "../prep.js?v=4c582b7-202610191734";
 
 export { typeOf, specOf };
 
@@ -73,7 +74,7 @@ export function stepNumber(node) {
   return String(node.n ?? "").padStart(2, "0");
 }
 
-export function buildGraph(curriculum, student, { unlockAll = false } = {}) {
+export function buildGraph(curriculum, student, { unlockAll = false, now = new Date() } = {}) {
   const extra = student?.extraNodes ?? [];
   const overrides = student?.nodeOverrides ?? {};
   const families = curriculum.families ?? [];
@@ -142,8 +143,23 @@ export function buildGraph(curriculum, student, { unlockAll = false } = {}) {
     );
     if (node.needsFix) node.tasks = [...(node.tasks ?? []), fixTask(node, latest)];
   }
+  // GridSchool Complete only (prep.js): the work we're doing for them, and a
+  // step that opens on a date. Residency maps carry neither field.
+  const prepState = student?.prep ?? {};
   for (const node of nodes) {
     node.status = statusOf(node, byId, completionEvidence, reviews, groups);
+    const prep = prepOf(node, prepState);
+    if (prep) {
+      node.prep = prep;
+      // Their tasks wait for our work, unless the step says they come first.
+      node.preparing = node.prepFirst !== false && !prep.ready;
+      if (node.status !== STATUS.LIT) node.hint = prepHint(prep);
+    }
+    if (node.opens && node.status !== STATUS.LIT && opensLater(node, now)) {
+      node.status = STATUS.FUTURE;
+      node.hint = `Opens ${shortDay(node.opens)}`;
+      node.coming = [`Opens ${shortDay(node.opens)}.`, node.coming].filter(Boolean).join(" ");
+    }
     if (
       unlockAll &&
       (node.status === STATUS.LOCKED || node.status === STATUS.FUTURE)
@@ -173,7 +189,7 @@ export function buildGraph(curriculum, student, { unlockAll = false } = {}) {
     };
   }
 
-  return { nodes, byId, edges, groups, phases: curriculum.phases, families: curriculum.families ?? [] };
+  return { nodes, byId, edges, groups, phases: curriculum.phases, families: curriculum.families ?? [], version: curriculum.version };
 }
 
 /**
@@ -312,7 +328,7 @@ export const DUE_SOON_DAYS = 3;
 function openCore(graph, now = new Date()) {
   const soon = (node) => (node.due ? daysUntil(node.due, now) <= DUE_SOON_DAYS : false);
   return graph.nodes
-    .filter((node) => node.status === STATUS.OPEN && node.kind !== "future" && !isSide(node) && canBeNext(node))
+    .filter((node) => node.status === STATUS.OPEN && node.kind !== "future" && !isSide(node) && canBeNext(node) && !node.preparing)
     .sort((a, b) => Number(soon(b)) - Number(soon(a)) || (soon(a) && soon(b) ? a.due.localeCompare(b.due) : 0) || a.n - b.n);
 }
 

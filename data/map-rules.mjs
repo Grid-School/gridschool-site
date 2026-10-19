@@ -11,7 +11,7 @@
  * Pure. Returns every error so a map is fixed in one pass.
  */
 
-import { NODE_TYPES } from "./node-types.mjs?v=aefa0fd-202610191723";
+import { NODE_TYPES } from "./node-types.mjs?v=4c582b7-202610191734";
 
 export const TRACKS = new Set(["spine", "depth", "side"]);
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -159,6 +159,21 @@ function basisErrors(nid, node) {
   return errors;
 }
 
+/** Optional `stages`: the prepared-work tracker on a Complete step, in order. Same as maps.py `_stage_errors`. */
+function stageErrors(nid, node) {
+  if (!("stages" in node)) return [];
+  const stages = node.stages;
+  const ok = (s) => isObject(s) && typeof s.id === "string" && s.id && typeof s.label === "string" && s.label;
+  if (!(Array.isArray(stages) && stages.length && stages.every(ok))) return [`node ${nid}: stages must be a list of {id, label}`];
+  const seen = new Set();
+  const errors = [];
+  for (const stage of stages) {
+    if (seen.has(stage.id)) errors.push(`node ${nid}: stage ${stage.id} is used twice`);
+    seen.add(stage.id);
+  }
+  return errors;
+}
+
 function typeErrors(byId, groups, requiresOf, trackOf) {
   const types = NODE_TYPES.types;
   const errors = [];
@@ -173,6 +188,8 @@ function typeErrors(byId, groups, requiresOf, trackOf) {
     if (spec.needsField && !node[spec.needsField]) errors.push(`node ${nid}: a ${kind} node needs ${spec.needsField}`);
     if (spec.onRoad === false && trackOf(node) !== "side") errors.push(`node ${nid}: a ${kind} node sits off the road (track: side)`);
     if ("due" in node && !(typeof node.due === "string" && DATE.test(node.due))) errors.push(`node ${nid}: due must be a date like 2026-10-16`);
+    if ("opens" in node && !(typeof node.opens === "string" && DATE.test(node.opens))) errors.push(`node ${nid}: opens must be a date like 2026-10-16`);
+    errors.push(...stageErrors(nid, node));
     errors.push(...basisErrors(nid, node));
     for (const req of requiresOf(node)) {
       const prereq = byId.get(req);

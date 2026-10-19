@@ -7,8 +7,8 @@
  * student's slot on a post.
  */
 
-import { PERSIST, isPlaceholder } from "../../../config.js?v=aefa0fd-202610191723";
-import { persistToken } from "../session.js?v=aefa0fd-202610191723";
+import { PERSIST, isPlaceholder } from "../../../config.js?v=4c582b7-202610191734";
+import { persistToken } from "../session.js?v=4c582b7-202610191734";
 
 const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1"]);
 

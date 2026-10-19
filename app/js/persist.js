@@ -34,6 +34,7 @@ export const INSTRUCTOR_KEYS = [
   "quotaLog",
   "meetings",
   "career",
+  "prep",
 ];
 
 /** Kinds that Telegram Aden (email if Telegram is down). */
@@ -51,7 +52,7 @@ export const ATTENTION_LABELS = {
   "chat.needs_human": "Coach needs you",
 };
 
-const MAP_KEYS = new Set(["evidence", "tasks", "layout", "nodeOverrides", "stepFlags"]);
+const MAP_KEYS = new Set(["evidence", "tasks", "layout", "nodeOverrides", "stepFlags", "prep"]);
 
 export const storageKey = (slug) => `gridschool.persist.v1.${slug}`;
 /** Pre-split overlay key. Migrated on read. */

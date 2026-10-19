@@ -1,0 +1,24 @@
+{
+  "about": "What the paid plan prepares for each finding, shown on the free check's offer. 'prepared' must match complete_map.PLANS (offer_test.py checks). Prices and refund are the public offer; change them only with BREAK-IN-LOCK.",
+  "price": {
+    "full": 349,
+    "instalments": 4,
+    "instalment": 99,
+    "months": 12,
+    "refundDays": 14
+  },
+  "payNote": "Less than one day of a typical software developer's pay.",
+  "payNoteSource": "BLS OEWS May 2025: software developers' median annual wage $135,980, about $523 per working day (260 days). Check the current release before changing.",
+  "prepared": {
+    "reach": "We find five fresh roles that fit you, the hiring manager for each, and a short note to each one in your voice.",
+    "story": "We rewrite your headline and the top of your resume from what you've told us, and flag any number we need you to confirm.",
+    "volume": "Every weekday we line up fresh roles under your exact title, with what to lead with for each.",
+    "target": "We compare your history with live postings and recommend the one title your experience supports best.",
+    "gap": "We draft a \"currently\" line for your resume and LinkedIn from what you're building or learning.",
+    "proof": "We pick the project that best fits your target and outline a short write-up of it for you to fill in.",
+    "screen": "We draft your 30-second answer to \"tell me about yourself\" for the role you want.",
+    "technical": "We line up practice problems shaped like the round that stopped you.",
+    "final": "We go through your last final round with you and find where it slipped.",
+    "level": "We find roles one level below your target to send alongside your usual ones."
+  }
+}

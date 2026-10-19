@@ -18,11 +18,12 @@
  * view glides to it. Nothing idles. Reduced motion jumps.
  */
 
-import { el, clear } from "../../dom.js?v=aefa0fd-202610191723";
-import { traceSet, stepNumber } from "../model.js?v=aefa0fd-202610191723";
-import { STANDING, standingOf, inSequence } from "../standing.js?v=aefa0fd-202610191723";
-import { typeOf, specOf } from "../model.js?v=aefa0fd-202610191723";
-import { isTypedMap } from "../../engine.js?v=aefa0fd-202610191723";
+import { el, clear } from "../../dom.js?v=4c582b7-202610191734";
+import { traceSet, stepNumber } from "../model.js?v=4c582b7-202610191734";
+import { STANDING, standingOf, inSequence } from "../standing.js?v=4c582b7-202610191734";
+import { typeOf, specOf } from "../model.js?v=4c582b7-202610191734";
+import { isTypedMap } from "../../engine.js?v=4c582b7-202610191734";
+import { isCompleteMap } from "../../prep.js?v=4c582b7-202610191734";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 /** "2026-10-16" → "Due Oct 16". */
@@ -40,7 +41,7 @@ import {
   runCurrent,
   rezIn,
   prefersReducedMotion,
-} from "../../../../js/rez/road.js?v=aefa0fd-202610191723";
+} from "../../../../js/rez/road.js?v=4c582b7-202610191734";
 
 /*
  * One grid under everything, in the board's own units (as on the landing):
@@ -100,7 +101,7 @@ function roadLayout(road, laneOf, laneY) {
  * touching. Each column takes the phase of its first step, so bands don't
  * overlap.
  */
-function flowLayout(road, laneOf, laneY) {
+function flowLayout(road, laneOf, laneY, { inOrder = false } = {}) {
   const ids = new Set(road.map((node) => node.id));
   const members = new Map();
   for (const node of road) if (node.group) members.set(node.group, [...(members.get(node.group) ?? []), node.id]);
@@ -123,6 +124,10 @@ function flowLayout(road, laneOf, laneY) {
   const byLane = (a, b) => (laneOf.get(a.family) ?? 0) - (laneOf.get(b.family) ?? 0) || a.n - b.n;
   const stops = [];
   for (const column of columns.filter(Boolean)) {
+    if (inOrder) {
+      stops.push(...orderedStops(column, byLane));
+      continue;
+    }
     if (column.length <= FLOW_MAX_STACK) {
       stops.push(column.sort(byLane));
       continue;
@@ -150,7 +155,7 @@ function flowLayout(road, laneOf, laneY) {
       const y = Math.max(laneY(lane), floor);
       // The next node in the column starts below this one's label: title lines,
       // the tag or due line, and a gap.
-      const lines = wrapLabel(node.title, 19, 3).length + (node.due || (node.type && node.type !== "step") ? 1 : 0);
+      const lines = wrapLabel(node.title, 19, 3).length + (node.due || node.hint || (node.type && node.type !== "step") ? 1 : 0);
       // Any node can become "do this next", which puts YOU ARE HERE above it,
       // so the room for that label is kept between every pair in a column.
       floor = y + NODE_R + 22 + 15 * (lines - 1) + FLOW_STACK + HERE_ROOM;
@@ -159,6 +164,30 @@ function flowLayout(road, laneOf, laneY) {
   });
   const pairs = road.flatMap((node) => reqs(node).map((from) => [from, node.id]));
   return { stops, placed, pairs };
+}
+
+/**
+ * A Complete map reads left to right in the order it was built (complete_map.py):
+ * what we're preparing, then today's ten minutes, then the questions, then the
+ * week-one check-in. Each group stands in its own column, and so does each
+ * step outside a group, in `n` order.
+ */
+function orderedStops(column, byLane) {
+  const parts = [];
+  const groupPart = new Map();
+  for (const node of [...column].sort((a, b) => a.n - b.n)) {
+    if (!node.group) {
+      parts.push([node]);
+      continue;
+    }
+    if (!groupPart.has(node.group)) parts.push(groupPart.set(node.group, []).get(node.group));
+    groupPart.get(node.group).push(node);
+  }
+  return parts.flatMap((part) => {
+    const out = [];
+    for (let i = 0; i < part.length; i += FLOW_MAX_STACK) out.push(part.slice(i, i + FLOW_MAX_STACK).sort(byLane));
+    return out;
+  });
 }
 
 export async function createRezScene(container) {
@@ -363,7 +392,7 @@ export async function createRezScene(container) {
     const lanes = Math.max(1, laneValues.length);
     const laneTop = TOP;
     const laneY = (lane) => laneTop + lane * LANE_GAP;
-    const { stops, placed, pairs } = isTypedMap(graph) ? flowLayout(road, laneOf, laneY) : roadLayout(road, laneOf, laneY);
+    const { stops, placed, pairs } = isTypedMap(graph) ? flowLayout(road, laneOf, laneY, { inOrder: isCompleteMap(graph) }) : roadLayout(road, laneOf, laneY);
     const at = new Map(placed.map((point) => [point.id, point]));
     const roadBottom = Math.max(laneY(lanes - 1), ...placed.map((point) => point.y));
     const sideY = roadBottom + SIDE_GAP;
@@ -462,8 +491,9 @@ export async function createRezScene(container) {
       wrapLabel(node.title, 19, 3).forEach((line, index) => {
         svgEl("tspan", { x: lx, dy: index ? 15 : 0 }, title).textContent = line;
       });
-      const meta = [specOf(node).tag && typeOf(node) !== "step" ? specOf(node).tag : null, node.due ? dueText(node.due) : null].filter(Boolean).join(" · ");
-      if (meta) svgEl("tspan", { class: `rz-meta${node.due ? " is-due" : ""}`, x: lx, dy: 15 }, title).textContent = meta;
+      // A Complete step's hint (prep.js): where our work for them stands, or the day it opens.
+      const meta = [specOf(node).tag && typeOf(node) !== "step" ? specOf(node).tag : null, node.due ? dueText(node.due) : null, node.hint ?? null].filter(Boolean).join(" · ");
+      if (meta) svgEl("tspan", { class: `rz-meta${node.due ? " is-due" : ""}${node.hint && !node.due ? " is-hint" : ""}`, x: lx, dy: 15 }, title).textContent = meta;
       svgEl("text", { class: "rz-here", y: -NODE_R - 16 }, g).textContent = "YOU ARE HERE";
       state.nodeEls.set(id, g);
     }

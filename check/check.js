@@ -13,27 +13,51 @@
  * this browser so a refresh loses nothing; the resume text never does.
  */
 
-import { PERSIST, link } from "../config.js?v=aefa0fd-202610191723";
-import * as I from "../data/intake/intake.mjs?v=aefa0fd-202610191723";
-import { mountCheckMap } from "./check-map.js?v=aefa0fd-202610191723";
-import * as Account from "./account.js?v=aefa0fd-202610191723";
-import { track, visitorId } from "./events.js?v=aefa0fd-202610191723";
+import { PERSIST, link } from "../config.js?v=4c582b7-202610191734";
+import * as I from "../data/intake/intake.mjs?v=4c582b7-202610191734";
+import { mountCheckMap } from "./check-map.js?v=4c582b7-202610191734";
+import * as Account from "./account.js?v=4c582b7-202610191734";
+import { track, visitorId } from "./events.js?v=4c582b7-202610191734";
 
 const KEY = "gridschool.check.v1";
 const PDF_JS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs";
 const PDF_WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs";
 const READ_WAIT_MS = 9000;
+const READ_TYPICAL_MS = 6000;
+// What the read checks, in rubric order (data/intake/rubric.json): target, impact, proof, scope, skim, fit.
+const READING = [
+  "The first line: what role does it say?",
+  "The top third: results, or duties?",
+  "Proof: anything a reviewer can open?",
+  "Scope: does it match the level you want?",
+  "The skim: what sticks in 7 seconds?",
+  "Fit: does your stack match the roles?",
+];
 
 const $ = (selector) => document.querySelector(selector);
 const cardEl = $("#card");
 const live = $("#live");
 
-/** Localhost may point the check at a local persist server: /check/?api=http://localhost:8768 */
+/**
+ * Localhost may point the check at a local persist server: /check/?api=http://localhost:8768
+ * Without ?api it uses the page's own origin, never production: a local test run
+ * must not count as real traffic or save real checks.
+ */
 const API = (() => {
   const local = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
   const asked = new URLSearchParams(location.search).get("api");
-  return local && asked ? asked.replace(/\/$/, "") : PERSIST.endpoint;
+  if (local) return (asked || location.origin).replace(/\/$/, "");
+  return PERSIST.endpoint;
 })();
+
+/** What a person sees when something fails: our words, never the browser's ("Failed to fetch"). */
+function say(problem) {
+  const text = String(problem?.message || "");
+  if (problem instanceof TypeError || /fetch|network|load failed/i.test(text) || !text) {
+    return "We couldn't reach our server. Your map is still here; try again in a moment.";
+  }
+  return text;
+}
 
 let catalog;
 let rubric = { dimensions: [] };
@@ -41,6 +65,32 @@ let booted = false;
 let map;
 let store = fresh();
 let resumeText = "";
+// Copy that lives in data/intake so it can be reviewed in one place (server/offer_test.py checks it).
+let insights = { lines: {} };
+let sources = { lines: {} };
+let offer = null;
+
+/**
+ * Rory's naming test: does an instrument's name ("hiring scan") make the free thing feel
+ * more valuable than "check"? Each visitor gets one name for good, counted with every step
+ * (events prop "variant"). ?name=check or ?name=scan pins it for a look.
+ */
+const NAMES = { check: "Free check", scan: "Free hiring scan" };
+const variant = (() => {
+  const pinned = new URLSearchParams(location.search).get("name");
+  if (pinned in NAMES) return pinned;
+  const id = visitorId();
+  let sum = 0;
+  for (const char of id) sum = (sum + char.charCodeAt(0)) % 997;
+  return sum % 2 ? "scan" : "check";
+})();
+const checkName = () => NAMES[variant];
+
+/** "Our read": one line back after each answer, so the two minutes teach something. */
+function insightLine() {
+  if (!store.insight) return null;
+  return h("p", "insight", null, {}, [h("span", "insight__label", "Our read"), h("span", "", store.insight)]);
+}
 
 function fresh() {
   return { view: "q", qid: null, state: I.emptyState(), read: null, readStatus: "idle", followups: [], saved: null, resumeOffered: false, from: "" };
@@ -107,7 +157,8 @@ function show(view, qid = null) {
   // A new card always starts with its top in view (the last one may have been taller),
   // just under the nav, or on a phone just under the map that rides above it.
   // The result opens at the top of the page, map first.
-  if (view === "result") return scrollTo({ top: 0, behavior: "auto" });
+  // The reading screen too: it replaces the taller resume card, so it starts at the top as well.
+  if (view === "result" || view === "wait") return scrollTo({ top: 0, behavior: "auto" });
   const floor = stacked.matches ? $(".check__map").getBoundingClientRect().bottom : 64;
   const top = cardEl.getBoundingClientRect().top;
   if (top < floor + 8 || top > innerHeight * 0.6) scrollBy({ top: top - floor - 16, behavior: prefersReduced() ? "auto" : "smooth" });
@@ -162,6 +213,7 @@ const VIEWS = {
       finish(true);
     };
     return [
+      insightLine(),
       h("p", "eyebrow", "Optional · makes your result sharper"),
       h("h2", "card__title", "Have your resume handy?", { tabindex: -1 }),
       h("p", "card__help", "We'll read it the way a hiring manager does in the first 7 seconds, and tell you plainly what they'd conclude and why. You can skip this."),
@@ -197,6 +249,7 @@ const VIEWS = {
         for (const other of options.children) other.classList.remove("is-picked");
         choice.classList.add("is-picked");
         store.state = I.answer(store.state, question.id, option.value);
+        store.insight = insights.lines?.[question.id]?.[option.value] || "";
         count("check.start");
         drawMap();
         setTimeout(next, prefersReduced() ? 0 : 200);
@@ -204,8 +257,11 @@ const VIEWS = {
       options.append(choice);
     });
     const opening = index === 0 && !Object.keys(store.state.answers).length;
+    const adLine = opening ? sources.lines?.[store.from] : "";
     return [
-      opening ? h("p", "eyebrow eyebrow--open", "Free check · 2 minutes") : null,
+      opening ? h("p", "eyebrow eyebrow--open", `${checkName()} · 2 minutes`) : null,
+      adLine ? h("p", "card__lede", adLine) : null,
+      opening ? null : insightLine(),
       progress(index + 1, asked.length),
       fromResume ? h("p", "tag tag--resume", "We filled this in from your resume. Is it right?") : null,
       h("h2", "card__title card__title--q", question.prompt, { tabindex: -1 }),
@@ -227,11 +283,31 @@ const VIEWS = {
     ].filter(Boolean);
   },
 
+  // The read, made visible (Rory's review: hidden effort is wasted effort). These are the six
+  // things the read really scores (rubric.json). It scores them in one pass, so the lines fill in
+  // evenly over the usual read time and the last one waits for the real answer; nothing is delayed.
   wait() {
+    const list = h("ul", "reading");
+    const items = READING.map((line) => {
+      const item = h("li", "", line);
+      list.append(item);
+      return item;
+    });
+    const paint = () => {
+      if (!list.isConnected) return clearInterval(timer);
+      const share = Math.min(1, (Date.now() - (store.readStartedAt || Date.now())) / READ_TYPICAL_MS);
+      const done = Math.min(items.length - 1, Math.floor(share * items.length));
+      items.forEach((item, n) => {
+        item.classList.toggle("is-done", n < done);
+        item.classList.toggle("is-now", n === done);
+      });
+    };
+    const timer = setInterval(paint, 300);
+    requestAnimationFrame(paint);
     return [
-      h("p", "eyebrow", "Almost there"),
-      h("h2", "card__title", "We're almost done reading your resume.", { tabindex: -1 }),
-      h("div", "dots", null, { "aria-hidden": "true" }),
+      h("p", "eyebrow", "Reading your resume"),
+      h("h2", "card__title", "Reading it the way a hiring manager would.", { tabindex: -1 }),
+      list,
       row(link_("Show my result now", () => finish(true))),
     ];
   },
@@ -315,12 +391,13 @@ const VIEWS = {
     // What's next, beside keeping it: the locked areas on one side, the save on the other.
     if (store.read?.verdict) parts.push(verdictPanel(store.read.verdict));
 
-    // Keeping it comes first (the one thing we ask them to do here); the locked areas beside it say what's next.
+    // The offer comes right after the diagnosis: the work we'd do, the price, the refund and the
+    // person, in that order (Rory's review). Keeping the map for later sits under it, second.
+    const checkout = link("completeCheckout");
+    if (checkout && offer && hits.length) parts.push(offerBlock(hits, checkout));
     const foot = h("div", "result__foot");
     const keep = h("section", "");
-    const checkout = link("completeCheckout");
-    if (checkout) keep.append(row(h("a", "btn btn--solid", "Unlock your full map →", { href: checkout })));
-    keep.append(saveForm());
+    keep.append(saveForm({ later: Boolean(checkout && offer && hits.length) }));
     foot.append(keep);
     if (locked.length) {
       const list = h("ul", "locked");
@@ -384,6 +461,7 @@ function restart(clear = false) {
 
 async function startRead() {
   store.readStatus = "reading";
+  store.readStartedAt = Date.now();
   render_readChip();
   try {
     const res = await fetch(`${API}/check/read`, {
@@ -529,8 +607,9 @@ async function saveCheck(email, { notify = false, trap = "" } = {}) {
  * link in the same email) or Google where it works. If the code email can't go
  * out, the saved link on screen is how they keep it, and we say so.
  */
-function saveForm() {
+function saveForm({ later = false } = {}) {
   const wrap = h("section", "keep");
+  const keepTitle = later ? "Not today? Keep your map" : "Keep your map";
   const signed = Account.session();
   const draw = (...nodes) => wrap.replaceChildren(...nodes);
 
@@ -566,7 +645,7 @@ function saveForm() {
             const { sent } = await Account.sendCode(API, email);
             error.textContent = sent ? "A new code is on its way." : "We couldn't send a code just now.";
           } catch (problem) {
-            error.textContent = problem.message;
+            error.textContent = say(problem);
           }
         }),
         link_("Use a different email", () => draw(...emailView()))
@@ -587,7 +666,7 @@ function saveForm() {
         savedView();
         live.textContent = "Signed in. Your map is saved to your account.";
       } catch (problem) {
-        error.textContent = problem.message;
+        error.textContent = say(problem);
         confirm.disabled = false;
       }
     });
@@ -603,7 +682,7 @@ function saveForm() {
     const submit = button("Keep my map", null, { solid: true, type: "submit" });
     const googleSlot = h("div", "google-slot");
     form.append(
-      h("h3", "card__sub card__sub--keep", "Keep your map"),
+      h("h3", "card__sub card__sub--keep", keepTitle),
       h("p", "card__help", "Save it to an account so you can come back to it. No password: we email you a code."),
       h("div", "save__row", null, {}, [email, submit]),
       trap,
@@ -619,7 +698,7 @@ function saveForm() {
         showAccount();
         savedView();
       } catch (problem) {
-        error.textContent = problem.message;
+        error.textContent = say(problem);
       }
     }).then((shown) => shown && googleSlot.prepend(h("span", "or", "or")));
     form.addEventListener("submit", async (event) => {
@@ -637,7 +716,7 @@ function saveForm() {
         persist();
         savedView();
       } catch (problem) {
-        error.textContent = problem.message;
+        error.textContent = say(problem);
         submit.disabled = false;
         submit.textContent = "Keep my map";
       }
@@ -654,12 +733,129 @@ function saveForm() {
         savedView();
       } catch (problem) {
         keep.disabled = false;
-        wrap.append(h("p", "card__error", problem.message, { role: "alert" }));
+        wrap.append(h("p", "card__error", say(problem), { role: "alert" }));
       }
     }, { solid: true });
-    draw(h("h3", "card__sub card__sub--keep", "Keep your map"), row(keep));
+    draw(h("h3", "card__sub card__sub--keep", keepTitle), row(keep));
   } else draw(...emailView());
   return wrap;
+}
+
+/**
+ * Off to checkout. The link carries this check's id (client_reference_id), so the
+ * payment finds this exact map, and the email (prefilled_email) so they don't type
+ * it twice. An unsaved check is saved first: signed in, with their account email;
+ * otherwise we ask for an email right here and go straight on (no code step), since
+ * the welcome page signs them in after they pay.
+ */
+async function goToCheckout(checkout, email = "") {
+  if (!store.saved?.id) await saveCheck(email);
+  const url = new URL(checkout);
+  url.searchParams.set("client_reference_id", store.saved.id);
+  if (store.saved.email) url.searchParams.set("prefilled_email", store.saved.email);
+  count("checkout.start");
+  location.href = url.toString();
+}
+
+/**
+ * The offer, in the order that makes the argument (Rory's review): the work we do for
+ * this person's top finding, who does it, the price, the refund, then the button. Every
+ * line here is something the paid map really delivers (offer.json, checked against
+ * complete_map.PLANS by server/offer_test.py).
+ */
+function offerBlock(hits, checkout) {
+  const price = offer.price;
+  const monthly = link("completeCheckoutMonthly");
+  const photo = link("adenPhoto");
+  const section = h("section", "offer", null, { "aria-labelledby": "offer-title" });
+  const error = h("p", "card__error", "", { role: "alert" });
+  const ask = h("form", "save offer__ask", null, { novalidate: "", hidden: "" });
+  const askEmail = h("input", "", null, { type: "email", autocomplete: "email", placeholder: "Email", "aria-label": "Email", required: "" });
+  let target = checkout;
+  ask.append(
+    h("p", "card__help", "Where should we send your map? It'll be waiting for you after you pay."),
+    h("div", "save__row", null, {}, [askEmail, button("Continue to payment", null, { solid: true, type: "submit" })])
+  );
+  const start = async (url) => {
+    error.textContent = "";
+    target = url;
+    const signed = Account.session();
+    if (store.saved?.id || signed) {
+      try {
+        return await goToCheckout(url, signed?.email || "");
+      } catch (problem) {
+        error.textContent = say(problem);
+        return;
+      }
+    }
+    ask.hidden = false;
+    askEmail.focus();
+  };
+  ask.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const value = askEmail.value.trim();
+    if (!/^\S+@\S+\.\S+$/.test(value)) return (error.textContent = "That email doesn't look right.");
+    try {
+      await goToCheckout(target, value);
+    } catch (problem) {
+      error.textContent = say(problem);
+    }
+  });
+
+  const who = h("div", "offer__who");
+  who.append(
+    photo ? h("img", "offer__face", null, { src: photo, alt: "Aden Jessee", width: 44, height: 44 }) : h("span", "offer__face offer__face--initials", "AJ", { "aria-hidden": "true" }),
+    h("p", "", null, {}, [h("b", "", "Aden Jessee reviews your map within 24 hours."), h("span", "", " He's a working applied-AI engineer, and he approves everything before you send it.")])
+  );
+  const prepared = offer.prepared[hits[0].id];
+  section.append(
+    h("p", "eyebrow", "Your full map"),
+    h("h3", "offer__title", "We'll do the first week's work for you.", { id: "offer-title" }),
+    who,
+    h("ul", "offer__list", null, {}, [
+      prepared ? h("li", "", prepared) : null,
+      h("li", "", "Every send and every reply is tracked on your map, so you can see what's working."),
+      h("li", "", "Your map keeps adjusting as you answer more and as results come in."),
+    ].filter(Boolean)),
+    h("p", "offer__price", null, {}, [
+      h("b", "", `$${price.full}`),
+      h("span", "", ` for ${price.months} months${monthly ? `, or ${price.instalments} payments of $${price.instalment}` : ""}`),
+      h("span", "offer__refund", `${price.refundDays}-day refund, no questions asked`),
+    ]),
+    row(
+      button("Start my map", () => start(checkout), { solid: true, arrow: true }),
+      monthly ? link_(`Or pay $${price.instalment} a month, ${price.instalments} times`, () => start(monthly)) : null
+    ),
+    ask,
+    error,
+    h("p", "card__fine", offer.payNote),
+    row(shareButton(hits))
+  );
+  return section;
+}
+
+/**
+ * A plain summary to show someone (a partner, a friend), because the hardest part of
+ * paying is often explaining it. Copied, never sent anywhere.
+ */
+function shareButton(hits) {
+  const price = offer.price;
+  const text = [
+    "My GridSchool check (gridschool.org/check) says what's most likely in the way of interviews:",
+    ...hits.map((hit, n) => `${n + 1}. ${hit.title}`),
+    "",
+    `For $${price.full} (${price.months} months, ${price.refundDays}-day refund) they do the first week's work: ${offer.prepared[hits[0].id] || ""}`.trim(),
+    "A person reviews everything before I send it, and every send and reply is tracked.",
+  ].join("\n");
+  const copy = link_("Copy a summary to show someone", async () => {
+    try {
+      await navigator.clipboard.writeText(text);
+      copy.textContent = "Copied. Paste it anywhere.";
+    } catch {
+      copy.textContent = "Couldn't copy here. Select your findings above instead.";
+    }
+  });
+  return copy;
 }
 
 /** The nav says who is signed in, with a way out. */
@@ -771,7 +967,7 @@ addEventListener("keydown", (event) => {
 
 /** One funnel step, tagged with where they came from (server: events.py). */
 function count(name) {
-  track(API, name, { source: store.from, check: store.saved?.id || "" });
+  track(API, name, { source: store.from, check: store.saved?.id || "", props: { variant } });
 }
 
 /** Anything answered in this browser that a returning sign-in shouldn't replace. */
@@ -793,6 +989,13 @@ function arrivedFrom() {
 async function boot() {
   catalog = await (await fetch("../data/intake/questions.json")).json();
   rubric = await fetch("../data/intake/rubric.json").then((res) => res.json()).catch(() => rubric);
+  [insights, sources, offer] = await Promise.all([
+    fetch("../data/intake/insights.json").then((res) => res.json()).catch(() => insights),
+    fetch("../data/intake/sources.json").then((res) => res.json()).catch(() => sources),
+    fetch("../data/intake/offer.json").then((res) => res.json()).catch(() => null),
+  ]);
+  const navName = document.querySelector(".nav-right .eyebrow");
+  if (navName) navName.textContent = checkName();
   map = mountCheckMap({ svg: $("#map-svg"), box: $("#map"), card: $("#map-card") });
   const params = new URLSearchParams(location.search);
   // The link in the sign-in email: sign in, then open their newest map.

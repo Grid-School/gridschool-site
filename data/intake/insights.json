@@ -1,0 +1,46 @@
+{
+  "about": "One line back after each answer on the free check (Rory's review: each answer should teach something). These are GridSchool's read, shown under the label 'Our read', not statistics. Add a number only with a dated source.",
+  "lines": {
+    "stage": {
+      "grad": "New grads are judged mostly on what a stranger can open and check: a project, a repo, a write-up.",
+      "self": "Without a degree to lean on, the first thing a reviewer can open does most of the work.",
+      "working": "Working engineers are hired through people more often than portals. We'll see how much of your search goes that way.",
+      "laidoff": "A gap is easier to explain than most people fear. What matters is what you did with it."
+    },
+    "role": {
+      "fullstack": "Full-stack means different things at each company. Saying which half you lead with helps you get read.",
+      "backend": "Backend reviewers look for systems you ran and what broke, more than the languages you list.",
+      "ai": "Applied AI teams want proof you can check what a model did, not only that you can call one.",
+      "frontend": "Frontend work is the easiest to show. A link a reviewer can open beats any bullet.",
+      "platform": "Platform teams hire on what you kept running, and how you handled it when it didn't.",
+      "unsure": "That's common. One target for the next month usually gets more replies than keeping every door open."
+    },
+    "level": {
+      "entry": "At entry level, reviewers look for one thing you built and can explain end to end.",
+      "mid": "Mid level is where owning something from start to finish starts to matter.",
+      "senior": "Senior roles are read for scope: what you decided, not only what you built.",
+      "staff": "Staff roles are mostly filled through people who already know your work."
+    },
+    "months": {
+      "lt1": "Early is the best time to fix where your applications land.",
+      "1to3": "A month or two in is when the pattern in your replies starts to show.",
+      "3to6": "After a few months, changing the channel usually helps more than sending more.",
+      "6to12": "After this long, changing the channel usually helps more than sending more.",
+      "gt12": "After this long, it's rarely effort. It's usually where the effort goes."
+    },
+    "apps": {
+      "none": "Good. You can aim before you send.",
+      "1to20": "That's enough to learn from. What came back tells us where it's stuck.",
+      "21to75": "At this volume, silence usually points at where they land, not at you.",
+      "76to200": "At this volume, silence usually points at where they land, not at you.",
+      "gt200": "At this volume, silence usually points at where they land, not at you."
+    },
+    "stop": {
+      "replies": "Silence at this stage usually comes from the resume or the channel. Both are fixable.",
+      "screen": "Getting the call means your resume works. What you say on the call is the next thing to look at.",
+      "technical": "Reaching the technical round means you're getting through. Practice on that format is the lever.",
+      "final": "Final-round no's are often about the story and fit more than skill.",
+      "offers": "Offers mean you're hireable. The fix is where you aim."
+    }
+  }
+}

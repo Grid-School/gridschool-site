@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welcome. GridSchool</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../rez.css?v=4c582b7-202610191734">
+<link rel="stylesheet" href="../check/check.css?v=4c582b7-202610191734">
+<style>
+  .begin { max-width: 560px; margin: clamp(24px, 6svh, 72px) auto 64px; }
+  .begin .card__title { font-size: clamp(26px, 3vw, 34px); }
+  .video { margin-top: 18px; aspect-ratio: 16 / 9; width: 100%; border: 0; border-radius: var(--radius-sm); background: var(--panel); }
+  .next { margin-top: 26px; padding-top: 22px; border-top: 1px solid var(--line); }
+  .next__title { margin-top: 0; }
+  .next__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
+  .next__list li { display: grid; gap: 2px; }
+  .next__when { font: 400 13px/1.45 var(--font-mono); color: var(--cyan); }
+  .next__what { font-size: 15px; line-height: 1.55; color: var(--soft); }
+  .next__list li:not(:first-child) .next__when { color: var(--muted); }
+  .begin .card__row { margin-top: 26px; }
+  .begin .card__fine { text-wrap: pretty; }
+  @media (max-width: 480px) { .begin .save__row { grid-template-columns: 1fr; } .begin .save__row .btn { justify-content: center; text-align: center; } }
+  .steps-wait { display: flex; align-items: center; gap: 12px; margin-top: 14px; color: var(--soft); font-size: 14.5px; }
+</style>
+</head>
+<body class="rez-page">
+<header class="nav" id="nav">
+  <a class="brand" href="../" aria-label="GridSchool home">
+    <svg viewBox="0 0 36 36" aria-hidden="true">
+      <g transform="translate(18 18) rotate(45) translate(-12.5 -12.5)">
+        <g class="g-off"><rect x="5.4" y="5.4" width="4.2" height="4.2" rx="1.2"/><rect x="10.4" y="5.4" width="4.2" height="4.2" rx="1.2"/><rect x="15.4" y="5.4" width="4.2" height="4.2" rx="1.2"/><rect x="20.4" y="5.4" width="4.2" height="4.2" rx="1.2"/><rect x="5.4" y="10.4" width="4.2" height="4.2" rx="1.2"/><rect x="10.4" y="10.4" width="4.2" height="4.2" rx="1.2"/><rect x="5.4" y="15.4" width="4.2" height="4.2" rx="1.2"/><rect x="10.4" y="15.4" width="4.2" height="4.2" rx="1.2"/><rect x="15.4" y="15.4" width="4.2" height="4.2" rx="1.2"/></g>
+        <g class="g-on"><rect x="0.4" y="0.4" width="4.2" height="4.2" rx="1.2"/><rect x="5.4" y="0.4" width="4.2" height="4.2" rx="1.2"/><rect x="10.4" y="0.4" width="4.2" height="4.2" rx="1.2"/><rect x="15.4" y="0.4" width="4.2" height="4.2" rx="1.2"/><rect x="20.4" y="0.4" width="4.2" height="4.2" rx="1.2"/><rect x="0.4" y="5.4" width="4.2" height="4.2" rx="1.2"/><rect x="0.4" y="10.4" width="4.2" height="4.2" rx="1.2"/><rect x="15.4" y="10.4" width="4.2" height="4.2" rx="1.2"/><rect x="20.4" y="10.4" width="4.2" height="4.2" rx="1.2"/><rect x="0.4" y="15.4" width="4.2" height="4.2" rx="1.2"/><rect x="20.4" y="15.4" width="4.2" height="4.2" rx="1.2"/><rect x="0.4" y="20.4" width="4.2" height="4.2" rx="1.2"/><rect x="5.4" y="20.4" width="4.2" height="4.2" rx="1.2"/><rect x="10.4" y="20.4" width="4.2" height="4.2" rx="1.2"/><rect x="15.4" y="20.4" width="4.2" height="4.2" rx="1.2"/><rect x="20.4" y="20.4" width="4.2" height="4.2" rx="1.2"/></g>
+      </g>
+    </svg>
+    <span>GRID<b>SCHOOL</b></span>
+  </a>
+  <span class="nav-right"><span class="nav-account" id="nav-account"></span><span class="eyebrow">Welcome</span></span>
+</header>
+<main class="wrap begin">
+  <section class="card is-in" id="card" aria-live="polite">
+    <noscript><p class="card__lead">This page needs JavaScript to open your map.</p></noscript>
+  </section>
+</main>
+<script type="module" src="begin.js?v=4c582b7-202610191734"></script>
+</body>
+</html>

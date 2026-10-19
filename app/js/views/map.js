@@ -16,22 +16,22 @@
  * went with it, because on the floor position is derived from sequence.
  */
 
-import { el, mount } from "../dom.js?v=aefa0fd-202610191723";
-import { btn, toast } from "../ui.js?v=aefa0fd-202610191723";
-import { createScene3d } from "../graph/scene3d/index.js?v=aefa0fd-202610191723";
-import { createRezScene } from "../graph/rez/index.js?v=aefa0fd-202610191723";
-import { STATUS, nextUp, progress, visibleGraph, stepNumber } from "../graph/model.js?v=aefa0fd-202610191723";
-import { LEGEND, STANDING, STANDING_LABEL, standingOf, legendKeyOf } from "../graph/standing.js?v=aefa0fd-202610191723";
-import { trackLabel } from "../copy.js?v=aefa0fd-202610191723";
-import { mapList } from "./map-list.js?v=aefa0fd-202610191723";
-import { dueLabel } from "./from-aden.js?v=aefa0fd-202610191723";
-import { createGridState, hashFor, RESERVED_ARGS, VIEW } from "./grid-state.js?v=aefa0fd-202610191723";
-import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=aefa0fd-202610191723";
-import { isProgressReadOnly } from "../store.js?v=aefa0fd-202610191723";
-import { doneForYou, nextMove, movesAfterNext, isTypedMap } from "../engine.js?v=aefa0fd-202610191723";
-import { matchedRoles, fetchPacks, radarReady } from "../roles-remote.js?v=aefa0fd-202610191723";
-import { careerOf } from "../search.js?v=aefa0fd-202610191723";
-import { isoDate } from "../time.js?v=aefa0fd-202610191723";
+import { el, mount } from "../dom.js?v=4c582b7-202610191734";
+import { btn, toast } from "../ui.js?v=4c582b7-202610191734";
+import { createScene3d } from "../graph/scene3d/index.js?v=4c582b7-202610191734";
+import { createRezScene } from "../graph/rez/index.js?v=4c582b7-202610191734";
+import { STATUS, nextUp, progress, visibleGraph, stepNumber } from "../graph/model.js?v=4c582b7-202610191734";
+import { LEGEND, STANDING, STANDING_LABEL, standingOf, legendKeyOf } from "../graph/standing.js?v=4c582b7-202610191734";
+import { trackLabel } from "../copy.js?v=4c582b7-202610191734";
+import { mapList } from "./map-list.js?v=4c582b7-202610191734";
+import { dueLabel } from "./from-aden.js?v=4c582b7-202610191734";
+import { createGridState, hashFor, RESERVED_ARGS, VIEW } from "./grid-state.js?v=4c582b7-202610191734";
+import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=4c582b7-202610191734";
+import { isProgressReadOnly } from "../store.js?v=4c582b7-202610191734";
+import { doneForYou, nextMove, movesAfterNext, isTypedMap } from "../engine.js?v=4c582b7-202610191734";
+import { matchedRoles, fetchPacks, radarReady } from "../roles-remote.js?v=4c582b7-202610191734";
+import { careerOf } from "../search.js?v=4c582b7-202610191734";
+import { isoDate } from "../time.js?v=4c582b7-202610191734";
 
 /** Right side clears the control column, top clears the legend bar. */
 const INSETS = { top: 76, right: 132, bottom: 72, left: 40 };
@@ -104,7 +104,8 @@ export function renderMap(ctx, initialArg) {
 
   /** Ids and edges only: positions are derived from these on the floor. */
   function graphSignature(graph) {
-    return graph.nodes.map((n) => `${n.id}:${n.n}:${(n.requires ?? []).join(",")}`).join("|");
+    // A Complete step's hint (prep.js) is drawn text too: a stage moved on the desk redraws it.
+    return graph.nodes.map((n) => `${n.id}:${n.n}:${(n.requires ?? []).join(",")}${n.hint ? `:${n.hint}` : ""}`).join("|");
   }
 
   /** A student sees the spine, what they picked and what is on offer. */

@@ -13,6 +13,14 @@ export const LINKS = {
   // GridSchool Complete (the self-serve plan). The free check (check/) shows
   // "Unlock your full map" only once this is a real link.
   completeCheckout: "REPLACE_ME_CHECKOUT_COMPLETE",
+  // The same plan as 4 monthly payments of $99 (a second Stripe payment link). The offer shows
+  // "Or pay $99 a month" only once this is real.
+  completeCheckoutMonthly: "REPLACE_ME_CHECKOUT_COMPLETE_MONTHLY",
+  // Aden's face beside the offer on the check result (a square photo, 88px or larger, in assets/).
+  // Initials show until it's set.
+  adenPhoto: "REPLACE_ME_ADEN_PHOTO",
+  // Aden's short welcome video on begin/ (an embeddable URL: Loom or YouTube embed). Hidden until set.
+  welcomeVideo: "REPLACE_ME_WELCOME_VIDEO_EMBED",
   fitCall: "REPLACE_ME_CALCOM_FIT_20MIN",
   oneOnOne: "REPLACE_ME_CALCOM_1ON1_45MIN",
   discord: "REPLACE_ME_DISCORD_INVITE",
@@ -109,8 +117,15 @@ export const AUTH = {
 };
 
 export const PERSIST = {
-  endpoint: "https://lab.gridschool.org",
+  endpoint: localApi() ?? "https://lab.gridschool.org",
 };
+
+/** On this Mac only: ?api=http://localhost:<port> points every board call at a local stub server. */
+function localApi() {
+  if (typeof location === "undefined" || !/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) return null;
+  const asked = new URLSearchParams(location.search).get("api");
+  return asked && /^http:\/\/(localhost|127\.0\.0\.1):\d+\/?$/.test(asked) ? asked.replace(/\/$/, "") : null;
+}
 
 /**
  * No dollar figure is printed anywhere on the site. The rate is quoted on the

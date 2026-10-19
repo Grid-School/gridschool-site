@@ -2,15 +2,15 @@
  * Invite set-password and return login. Demo never lands here.
  */
 
-import { el, mount } from "../dom.js?v=aefa0fd-202610191723";
-import { gmark, wordmark } from "../../../js/brand.js?v=aefa0fd-202610191723";
+import { el, mount } from "../dom.js?v=4c582b7-202610191734";
+import { gmark, wordmark } from "../../../js/brand.js?v=4c582b7-202610191734";
 import {
   enterSeat,
   loginWithPassword,
   peekInvite,
   redeemInvite,
   requestLoginLink,
-} from "../persist-auth.js?v=aefa0fd-202610191723";
+} from "../persist-auth.js?v=4c582b7-202610191734";
 
 const FIELD =
   "width:100%;font:inherit;font-size:15px;color:var(--text);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:11px 13px;";
@@ -52,6 +52,22 @@ function shell(title, lead, ...children) {
       ...children,
       foot()
     )
+  );
+}
+
+/**
+ * GridSchool Complete has no passwords: buyers sign in with an emailed code on
+ * begin/. Offered first so nobody who joined through the free check is asked
+ * for a password we told them they would never need. Residency keeps the form.
+ */
+function codeDoor() {
+  const api = new URLSearchParams(location.search).get("api");
+  const href = `../begin/${api ? `?api=${encodeURIComponent(api)}` : ""}`;
+  return el(
+    "a.picker__row",
+    { href, style: "display:block;margin:22px 0 6px;text-decoration:none" },
+    el("b", {}, "Joined through the free check? Sign in with a code"),
+    el("span", {}, "We email you a 6-digit code. No password.")
   );
 }
 
@@ -184,6 +200,7 @@ function renderReturn(app, presetEmail, notice = "") {
         }
       },
     },
+    el("p.muted", { style: "margin-top:22px;font-size:13px" }, "Residency students: email and password."),
     label("login-email", "Email"),
     email,
     label("login-password", "Password"),
@@ -226,6 +243,6 @@ function renderReturn(app, presetEmail, notice = "") {
 
   mount(
     app,
-    shell("Open your board", notice || "Email and password. The keys stay on the school side.", form, forgot)
+    shell("Open your board", notice || "Two ways in, depending on how you joined.", codeDoor(), form, forgot)
   );
 }

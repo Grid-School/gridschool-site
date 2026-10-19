@@ -10,14 +10,14 @@
  * day or week, because "3 comments a day" is never finished, only kept.
  */
 
-import { el } from "../dom.js?v=aefa0fd-202610191723";
-import { btn, toast } from "../ui.js?v=aefa0fd-202610191723";
-import { KIND_LABEL, TASK_STATE, formatEstimate } from "../tasks.js?v=aefa0fd-202610191723";
-import { taskIsComplete, isCountTask, countOf } from "../task-state.js?v=aefa0fd-202610191723";
-import { fmtDay, fmtTime, relativeDay } from "../time.js?v=aefa0fd-202610191723";
-import { joinIsLive } from "../call-slot.js?v=aefa0fd-202610191723";
-import { isPrivateLinkKey, link } from "../../../config.js?v=aefa0fd-202610191723";
-export { statusLabel } from "../copy.js?v=aefa0fd-202610191723";
+import { el } from "../dom.js?v=4c582b7-202610191734";
+import { btn, toast } from "../ui.js?v=4c582b7-202610191734";
+import { KIND_LABEL, TASK_STATE, formatEstimate } from "../tasks.js?v=4c582b7-202610191734";
+import { taskIsComplete, isCountTask, countOf } from "../task-state.js?v=4c582b7-202610191734";
+import { fmtDay, fmtTime, relativeDay } from "../time.js?v=4c582b7-202610191734";
+import { joinIsLive } from "../call-slot.js?v=4c582b7-202610191734";
+import { isPrivateLinkKey, link } from "../../../config.js?v=4c582b7-202610191734";
+export { statusLabel } from "../copy.js?v=4c582b7-202610191734";
 
 export const stateIdOf = (task) => task.weekKey ?? task.id;
 
@@ -51,6 +51,41 @@ function tallyControl(task, id, { store }) {
       { type: "button", "aria-label": `One more for ${task.title}`, onclick: () => save(count + 1) },
       "+"
     )
+  );
+}
+
+/**
+ * A 1-to-N answer (a field with `scale`): one button per number, the pick kept
+ * in a hidden input under the field's id, so the checkbox reads it like text.
+ */
+function scaleField(item, inputId, value, done) {
+  const size = Math.max(2, Math.min(10, Number(item.scale) || 5));
+  const input = el("input", { id: inputId, type: "hidden", value: String(value ?? "") });
+  const buttons = [];
+  for (let n = 1; n <= size; n += 1) {
+    const pick = el(
+      "button.task__pick",
+      {
+        type: "button",
+        "aria-pressed": String(String(value) === String(n)),
+        "aria-label": `${n} of ${size}`,
+        disabled: done,
+        onclick: () => {
+          input.value = String(n);
+          buttons.forEach((other, index) => other.setAttribute("aria-pressed", String(index === n - 1)));
+        },
+      },
+      String(n)
+    );
+    buttons.push(pick);
+  }
+  return el(
+    "div.task__field.task__field--scale",
+    { role: "group", "aria-label": item.label },
+    el("span", {}, item.label),
+    el("div.task__scale", {}, buttons),
+    item.low || item.high ? el("div.task__ends", {}, el("small", {}, item.low ? `1 · ${item.low}` : ""), el("small", {}, item.high ? `${size} · ${item.high}` : "")) : null,
+    input
   );
 }
 
@@ -119,7 +154,9 @@ export function taskRow(task, { store, navigate, showGo = false } = {}) {
       type: "button",
       "aria-pressed": String(done),
       "aria-label": done ? `Mark ${task.title} not done` : `Mark ${task.title} done`,
-      title: done ? "Uncheck to change this task" : "Check this box when the work is finished",
+      // A Complete task that waits on the work we're preparing (step.js) can't be checked yet.
+      disabled: Boolean(task.locked && !done),
+      title: task.locked && !done ? task.locked : done ? "Uncheck to change this task" : "Check this box when the work is finished",
       onclick: () => {
         if (done) {
           store.setTaskState(id, TASK_STATE.TODO);
@@ -135,6 +172,8 @@ export function taskRow(task, { store, navigate, showGo = false } = {}) {
           return;
         }
         store.setTaskState(id, TASK_STATE.DONE, nextAnswers);
+        // A Complete task says what it changed (complete_map.py `changed`).
+        if (task.changed) toast(task.changed);
       },
     }),
     el(
@@ -165,6 +204,7 @@ export function taskRow(task, { store, navigate, showGo = false } = {}) {
             {},
             fields.map((item) => {
               const inputId = `task-${id}-${item.id}`;
+              if (item.scale) return scaleField(item, inputId, answers[item.id] ?? "", done);
               const props = {
                 id: inputId,
                 placeholder: item.placeholder ?? "",
@@ -185,6 +225,7 @@ export function taskRow(task, { store, navigate, showGo = false } = {}) {
         : null,
       habit ? tallyControl(task, id, { store }) : null,
       taskOpen(task, { navigate }),
+      done && !habit && task.changed ? el("p.task__changed", {}, el("b", {}, "What changed "), task.changed) : null,
       done && !habit ? el("p.task__undo", {}, "Task complete. Uncheck the box if you need to change an answer.") : null,
       acts.length ? el("div.task__acts", {}, acts) : null
     )
