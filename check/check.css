@@ -307,6 +307,21 @@ footer a { color: var(--muted); }
 @media (max-width: 520px) { .offer__ask .save__row { grid-template-columns: 1fr; } .offer { padding: 18px 16px 14px; } }
 .offer .card__fine { margin-top: 12px; }
 
+/* ---------- the result as one path: the finding, today, keep it; the rest folds away ---------- */
+.findings.findings--one { grid-template-columns: 1fr; max-width: 760px; }
+.finding--hero { padding: 22px 24px; }
+.finding--hero .finding__title { font-size: clamp(20px, 2.2vw, 24px); line-height: 1.3; }
+.finding--hero .finding__why { font-size: 15px; }
+.findings--one .today { order: 0; grid-column: auto; }
+.keep-main { max-width: 760px; margin-top: 8px; }
+.keep-main .card__sub--keep { font-size: 18px; color: var(--lumen); }
+.today--step { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; max-width: 760px; margin-top: 14px; }
+.today--step .today__text { margin: 0; font-size: 17px; line-height: 1.55; }
+.options--choices { max-width: 760px; margin-top: 16px; }
+.option--choice { text-align: left; align-items: flex-start; padding-top: 14px; padding-bottom: 14px; }
+.option--choice b { display: block; font-weight: 500; color: var(--text); font-size: 16px; }
+.option--choice small { display: block; margin-top: 3px; font-size: 13.5px; line-height: 1.45; color: var(--soft); }
+
 /* ---------- phones: last, so it wins over the rules above ---------- */
 @media (max-width: 960px) {
   /* The map sits above the card at full width. It only rides along (sticky)

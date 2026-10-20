@@ -13,13 +13,13 @@
  * this browser so a refresh loses nothing; the resume text never does.
  */
 
-import { PERSIST, link } from "../config.js?v=5a6643e-202610200458";
-import * as I from "../data/intake/intake.mjs?v=5a6643e-202610200458";
-import { mountCheckMap } from "./check-map.js?v=5a6643e-202610200458";
-import * as Account from "./account.js?v=5a6643e-202610200458";
-import { track, visitorId } from "./events.js?v=5a6643e-202610200458";
-import * as Share from "./share.mjs?v=5a6643e-202610200458";
-import { drawShareCard, cardBlob } from "./share-card.js?v=5a6643e-202610200458";
+import { PERSIST, link } from "../config.js?v=7a3a519-202610200504";
+import * as I from "../data/intake/intake.mjs?v=7a3a519-202610200504";
+import { mountCheckMap } from "./check-map.js?v=7a3a519-202610200504";
+import * as Account from "./account.js?v=7a3a519-202610200504";
+import { track, visitorId } from "./events.js?v=7a3a519-202610200504";
+import * as Share from "./share.mjs?v=7a3a519-202610200504";
+import { drawShareCard, cardBlob } from "./share-card.js?v=7a3a519-202610200504";
 
 const KEY = "gridschool.check.v1";
 const SHARE_KEY = "gridschool.share.v1";
@@ -356,81 +356,156 @@ const VIEWS = {
   },
 
   result() {
+    // The result in steps, one card at a time beside the map, like the questions (Aden: "where do
+    // I look?"): the one thing in your way, what to do today, keep the map free, then a choice of
+    // what would help most, ordered by their answers. store.rstep says which card is showing.
     const hits = I.bottlenecks(catalog, store.state, store.read).slice(0, 3);
-    const { nodes } = I.diagnosisMap(catalog, store.state, store.read);
-    const locked = nodes.filter((node) => node.state === "locked");
-    const parts = [
-      h("div", "result__head", null, {}, [
-        h("p", "eyebrow", "Your check"),
-        h("h2", "card__title", hits.length ? "What most likely stands between you and interviews" : "We need a little more to go on", { tabindex: -1 }),
-      ]),
-    ];
     if (!hits.length) {
-      parts.push(h("p", "card__lead", "You skipped most of the questions, so nothing stands out yet. Answer a couple more and your map will fill in."));
-      parts.push(row(button("Answer more", () => restart(), { solid: true })));
+      return [
+        h("p", "eyebrow", "Your scan"),
+        h("h2", "card__title", "We need a little more to go on", { tabindex: -1 }),
+        h("p", "card__lead", "You skipped most of the questions, so nothing stands out yet. Answer a couple more and your map will fill in."),
+        row(button("Answer more", () => restart(), { solid: true })),
+      ];
     }
+    const step = RESULT_STEPS[store.rstep] ? store.rstep : "finding";
+    return RESULT_STEPS[step](hits);
+  },
+};
 
-    // The findings, side by side. Each carries the number drawn in its ring on the map,
-    // and pointing at one lights that ring, so the cards and the map read as one thing.
-    const findings = h("div", "findings");
-    hits.forEach((hit, n) => {
-      const item = h("article", `finding${n === 0 ? " finding--first" : ""}`, null, { tabindex: 0 });
-      item.append(
-        h("div", "finding__head", null, {}, [h("span", "finding__n", String(n + 1)), h("span", "chip", n === 0 ? "Likely · start here" : "Likely")]),
-        h("h3", "finding__title", hit.title),
-        h("ul", "finding__why", null, {}, hit.evidence.map((line) => h("li", "", line)))
-      );
-      const light = () => map.hot(`b.${hit.id}`);
-      item.addEventListener("mouseenter", light);
-      item.addEventListener("focus", light);
-      item.addEventListener("mouseleave", () => map.hot(null));
-      item.addEventListener("blur", () => map.hot(null));
-      findings.append(item);
-    });
-    if (hits[0]) {
-      const copy = button("Copy", async () => {
-        try {
-          await navigator.clipboard.writeText(hits[0].action);
-          copy.textContent = "Copied";
-        } catch {
-          copy.textContent = "Select it to copy";
-        }
-      }, { small: true });
-      findings.append(
-        h("div", "today", null, {}, [
-          h("div", "", null, {}, [h("span", "today__label", "Do this today"), h("p", "today__text", hits[0].action)]),
-          copy,
-        ])
-      );
-    }
-    if (hits.length) {
-      parts.push(
-        findings,
-        h("p", "card__fine card__fine--honest", "These are our best guesses based on what you told us. Your full map tests each one and drops any that don't hold up."),
-        sharePanel()
-      );
-    }
+/* ---------- the result, one step at a time ---------- */
 
-    // What's next, beside keeping it: the locked areas on one side, the save on the other.
-    if (store.read?.verdict) parts.push(verdictPanel(store.read.verdict));
+function goStep(step) {
+  store.rstep = step;
+  persist();
+  show("result");
+}
 
-    // The free result is complete on its own: keeping the map, free, is the one thing we ask
-    // here, right after the findings. Paying for us to do the work comes after it, as an option
-    // (a lead magnet that ends in a paywall stops feeling free).
-    const foot = h("div", "result__foot");
-    const keep = h("section", "");
-    keep.append(saveForm());
-    foot.append(keep);
-    if (locked.length) {
-      const list = h("ul", "locked");
-      for (const node of locked) list.append(h("li", "", null, {}, [lockIcon(), h("span", "", node.title), h("span", "locked__min", `${node.questions} questions · ~${node.minutes} min`)]));
-      foot.append(h("section", "", null, {}, [h("h3", "card__sub", `Still to map: ${locked.length} more parts, a few questions each`), list]));
-    }
-    parts.push(foot);
+const stepLabel = (n) => h("p", "eyebrow", `Your scan · ${n} of 3`);
+const backTo = (step, label = "Back") => link_(label, () => goStep(step));
+
+/** A finding; pointing at it lights its ring on the map. */
+function findingCard(hit, n) {
+  const item = h("article", `finding${n === 0 ? " finding--first finding--hero" : ""}`, null, { tabindex: 0 });
+  item.append(
+    ...[
+      n ? h("div", "finding__head", null, {}, [h("span", "finding__n", String(n + 1)), h("span", "chip", "Also likely")]) : null,
+      h("h3", "finding__title", hit.title),
+      h("ul", "finding__why", null, {}, hit.evidence.map((line) => h("li", "", line))),
+    ].filter(Boolean)
+  );
+  const light = () => map.hot(`b.${hit.id}`);
+  item.addEventListener("mouseenter", light);
+  item.addEventListener("focus", light);
+  item.addEventListener("mouseleave", () => map.hot(null));
+  item.addEventListener("blur", () => map.hot(null));
+  return item;
+}
+
+/** A big choice, styled like a question's options. */
+function choice(title, sub, onClick) {
+  const node = h("button", "option option--choice", null, { type: "button" });
+  node.append(h("span", "", null, {}, [h("b", "", title), sub ? h("small", "", sub) : null]));
+  node.addEventListener("click", onClick);
+  return node;
+}
+
+/** People searching longer, or between roles, see the done-for-you option first. */
+function inAHurry() {
+  const a = store.state.answers;
+  return a.stage === "laidoff" || ["3to6", "6to12", "gt12"].includes(a.months);
+}
+
+const RESULT_STEPS = {
+  finding(hits) {
+    return [
+      stepLabel(1),
+      h("h2", "card__title", "The most likely thing in your way", { tabindex: -1 }),
+      h("div", "findings findings--one", null, {}, [findingCard(hits[0], 0)]),
+      row(button("What to do about it", () => goStep("today"), { solid: true, arrow: true, focus: true })),
+      h("p", "card__fine card__fine--honest", "Our best guess from what you told us. Your map tests it and drops it if it doesn't hold up."),
+    ];
+  },
+
+  today(hits) {
+    const top = hits[0];
+    const copy = button("Copy", async () => {
+      try {
+        await navigator.clipboard.writeText(top.action);
+        copy.textContent = "Copied";
+      } catch {
+        copy.textContent = "Select it to copy";
+      }
+    }, { small: true });
+    return [
+      stepLabel(2),
+      h("h2", "card__title", "Do this today", { tabindex: -1 }),
+      h("div", "today today--step", null, {}, [h("p", "today__text", top.action), copy]),
+      row(button("Keep my map", () => goStep("keep"), { solid: true, arrow: true, focus: true }), backTo("finding")),
+    ];
+  },
+
+  keep() {
+    return [
+      stepLabel(3),
+      h("div", "keep-main", null, {}, [saveForm()]),
+      row(link_(store.saved ? "Continue" : "Not now, continue", () => goStep("next")), backTo("today")),
+    ];
+  },
+
+  next(hits) {
     const checkout = DEMO ? DEMO_CHECKOUT : link("completeCheckout");
-    if (checkout && offer && hits.length) parts.push(offerBlock(hits, checkout));
-    parts.push(row(link_("Start over", () => restart(true))));
-    return parts;
+    const offerChoice = checkout && offer ? choice("Do the work with us", `We prepare your first week's work. From $${offer.price.instalment} a month, optional.`, () => goStep("offer")) : null;
+    const free = [
+      hits.length > 1 ? choice(`See the other likely ${hits.length === 2 ? "blocker" : "blockers"}`, "What else is probably slowing you down.", () => goStep("others")) : null,
+      store.read?.verdict ? choice("How a hiring manager reads your resume", "Six things they check in the first seconds, scored.", () => goStep("resume")) : null,
+      choice("See what the rest of your map covers", "The parts that open with a few more questions.", () => goStep("rest")),
+      choice("Share your scan with a friend", "A picture of your scan and a link to take theirs.", () => goStep("share")),
+    ];
+    const choices = inAHurry() ? [offerChoice, ...free] : [...free, offerChoice];
+    return [
+      h("p", "eyebrow", "Your scan"),
+      h("h2", "card__title", "What would help most now?", { tabindex: -1 }),
+      h("div", "options options--choices", null, {}, choices.filter(Boolean)),
+      row(backTo("keep"), link_("Start over", () => restart(true))),
+    ];
+  },
+
+  offer(hits) {
+    const checkout = DEMO ? DEMO_CHECKOUT : link("completeCheckout");
+    return [offerBlock(hits, checkout), row(backTo("next"))];
+  },
+
+  others(hits) {
+    return [
+      h("p", "eyebrow", "Your scan"),
+      h("h2", "card__title", "Also likely in your way", { tabindex: -1 }),
+      h("div", "findings findings--one", null, {}, hits.slice(1).map((hit, n) => findingCard(hit, n + 1))),
+      row(backTo("next")),
+    ];
+  },
+
+  resume() {
+    return [verdictPanel(store.read.verdict), row(backTo("next"))];
+  },
+
+  rest() {
+    const { nodes } = I.diagnosisMap(catalog, store.state, store.read);
+    const list = h("ul", "locked");
+    for (const node of nodes.filter((n) => n.state === "locked")) {
+      list.append(h("li", "", null, {}, [lockIcon(), h("span", "", node.title), h("span", "locked__min", `${node.questions} questions · ~${node.minutes} min`)]));
+    }
+    return [
+      h("p", "eyebrow", "Your map"),
+      h("h2", "card__title", "What the rest of your map covers", { tabindex: -1 }),
+      h("p", "card__help", "Each part opens with a few more questions, and fills in as results come back."),
+      list,
+      row(backTo("next")),
+    ];
+  },
+
+  share() {
+    return [h("p", "eyebrow", "Your scan"), h("h2", "card__title", "Share your scan", { tabindex: -1 }), sharePanel(), row(backTo("next"))];
   },
 };
 
@@ -465,6 +540,7 @@ function finish(now = false) {
   clearTimeout(waiting);
   drawMap();
   if (store.read?.followups?.length && !store.followups.length) return show("follow");
+  store.rstep = "finding";
   show("result");
   count("check.done");
   live.textContent = "Your result is ready.";
