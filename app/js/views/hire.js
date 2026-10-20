@@ -16,10 +16,10 @@
  * half-typed form. Aden sees it read-only from the desk.
  */
 
-import { el, mount } from "../dom.js?v=7a3a519-202610200504";
-import { panel, btn, field, toast, copy } from "../ui.js?v=7a3a519-202610200504";
-import { isoDate, fmtDay } from "../time.js?v=7a3a519-202610200504";
-import { STATUS } from "../graph/model.js?v=7a3a519-202610200504";
+import { el, mount } from "../dom.js?v=1f1792d-202610200509";
+import { panel, btn, field, toast, copy } from "../ui.js?v=1f1792d-202610200509";
+import { isoDate, fmtDay } from "../time.js?v=1f1792d-202610200509";
+import { STATUS } from "../graph/model.js?v=1f1792d-202610200509";
 import {
   STAGES,
   RELATIONS,
@@ -63,14 +63,14 @@ import {
   nextTouch,
   targetCandidates,
   MAX_ACTIVE_TARGETS,
-} from "../search.js?v=7a3a519-202610200504";
-import { storyCard, appRow } from "./search-parts.js?v=7a3a519-202610200504";
-import { TOOLS } from "../engine.js?v=7a3a519-202610200504";
-import { PERSIST } from "../../../config.js?v=7a3a519-202610200504";
-import { matchedRoles, radarReady, fetchPacks, winsState, shareWin } from "../roles-remote.js?v=7a3a519-202610200504";
-import { createPackDrawer } from "./pack.js?v=7a3a519-202610200504";
-import { createCampaignDrawer } from "./campaign.js?v=7a3a519-202610200504";
-import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=7a3a519-202610200504";
+} from "../search.js?v=1f1792d-202610200509";
+import { storyCard, appRow } from "./search-parts.js?v=1f1792d-202610200509";
+import { TOOLS } from "../engine.js?v=1f1792d-202610200509";
+import { PERSIST } from "../../../config.js?v=1f1792d-202610200509";
+import { matchedRoles, radarReady, fetchPacks, winsState, shareWin } from "../roles-remote.js?v=1f1792d-202610200509";
+import { createPackDrawer } from "./pack.js?v=1f1792d-202610200509";
+import { createCampaignDrawer } from "./campaign.js?v=1f1792d-202610200509";
+import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=1f1792d-202610200509";
 
 const RUN_FAMILIES = ["proof", "presence", "network", "interview"];
 /** How many moves the day leads with. More than this reads as a wall, not a plan. */

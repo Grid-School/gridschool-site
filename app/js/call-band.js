@@ -4,10 +4,10 @@
  * until the call's end. Same record and math as the calendar (time.js).
  */
 
-import { el, mount } from "./dom.js?v=7a3a519-202610200504";
-import { btn } from "./ui.js?v=7a3a519-202610200504";
-import { nextCall, fmtTime, relativeDay } from "./time.js?v=7a3a519-202610200504";
-import { joinIsLive, zoneLabel } from "./call-slot.js?v=7a3a519-202610200504";
+import { el, mount } from "./dom.js?v=1f1792d-202610200509";
+import { btn } from "./ui.js?v=1f1792d-202610200509";
+import { nextCall, fmtTime, relativeDay } from "./time.js?v=1f1792d-202610200509";
+import { joinIsLive, zoneLabel } from "./call-slot.js?v=1f1792d-202610200509";
 
 const DAY_MS = 24 * 3600000;
 
