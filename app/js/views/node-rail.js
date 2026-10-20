@@ -5,7 +5,7 @@
  * pops once. Every node can be opened directly.
  */
 
-import { el } from "../dom.js?v=dbf2d27-202610202350";
+import { el } from "../dom.js?v=0220cb7-202610202353";
 
 export function nodeRail({ nodes, done = [], here, fresh = [], onGo, label = "Steps" }) {
   return el(

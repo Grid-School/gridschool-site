@@ -18,7 +18,7 @@ import {
   arrivalFractions,
   rezIn,
   prefersReducedMotion,
-} from "../js/rez/road.js?v=dbf2d27-202610202350";
+} from "../js/rez/road.js?v=0220cb7-202610202353";
 
 const CELL = 28;
 const LANES = ["interview", "pipeline", "proof", "network", "presence"];

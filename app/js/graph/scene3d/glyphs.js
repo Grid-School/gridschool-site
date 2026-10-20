@@ -4,7 +4,7 @@
  * any pitch. Fonts are the brand's, restated because a canvas cannot read CSS.
  */
 
-import { stepNumber } from "../model.js?v=dbf2d27-202610202350";
+import { stepNumber } from "../model.js?v=0220cb7-202610202353";
 
 const MONO = "'IBM Plex Mono', ui-monospace, monospace";
 const SANS = "'IBM Plex Sans', system-ui, sans-serif";

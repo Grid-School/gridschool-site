@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { eventsForWeek, ownSchedule, studentWeek, joinedDate, nextCall } from "./time.js?v=dbf2d27-202610202350";
+import { eventsForWeek, ownSchedule, studentWeek, joinedDate, nextCall } from "./time.js?v=0220cb7-202610202353";
 
 const cohort = JSON.parse(readFileSync(new URL("../../data/cohort.json", import.meta.url), "utf8"));
 

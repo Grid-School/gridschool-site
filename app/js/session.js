@@ -59,7 +59,10 @@ export function resolveSlug() {
     return "demo";
   }
   if (fromUrl && persistToken()) {
-    signIn(fromUrl, { persistToken: persistToken() });
+    // Re-signing from the URL keeps a free seat's plan when it's the same board (boot.js opens
+    // free seats without the lesson key only when the session says "free").
+    const before = currentSession();
+    signIn(fromUrl, { persistToken: persistToken(), plan: before?.slug === fromUrl ? before.plan : undefined });
     return fromUrl;
   }
   if (fromUrl) return fromUrl;

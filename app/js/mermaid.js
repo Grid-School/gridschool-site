@@ -9,7 +9,7 @@
  * an empty box, and the student can still learn the notation from it.
  */
 
-import { el } from "./dom.js?v=dbf2d27-202610202350";
+import { el } from "./dom.js?v=0220cb7-202610202353";
 
 const MERMAID_URL = "https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.esm.min.mjs";
 
