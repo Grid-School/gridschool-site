@@ -16,22 +16,24 @@
  * went with it, because on the floor position is derived from sequence.
  */
 
-import { el, mount } from "../dom.js?v=c2793e2-202610202249";
-import { btn, toast } from "../ui.js?v=c2793e2-202610202249";
-import { createScene3d } from "../graph/scene3d/index.js?v=c2793e2-202610202249";
-import { createRezScene } from "../graph/rez/index.js?v=c2793e2-202610202249";
-import { STATUS, nextUp, progress, visibleGraph, stepNumber } from "../graph/model.js?v=c2793e2-202610202249";
-import { LEGEND, STANDING, STANDING_LABEL, standingOf, legendKeyOf } from "../graph/standing.js?v=c2793e2-202610202249";
-import { trackLabel } from "../copy.js?v=c2793e2-202610202249";
-import { mapList } from "./map-list.js?v=c2793e2-202610202249";
-import { dueLabel } from "./from-aden.js?v=c2793e2-202610202249";
-import { createGridState, hashFor, RESERVED_ARGS, VIEW } from "./grid-state.js?v=c2793e2-202610202249";
-import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=c2793e2-202610202249";
-import { isProgressReadOnly } from "../store.js?v=c2793e2-202610202249";
-import { doneForYou, nextMove, movesAfterNext, isTypedMap } from "../engine.js?v=c2793e2-202610202249";
-import { matchedRoles, fetchPacks, radarReady } from "../roles-remote.js?v=c2793e2-202610202249";
-import { careerOf } from "../search.js?v=c2793e2-202610202249";
-import { isoDate } from "../time.js?v=c2793e2-202610202249";
+import { el, mount } from "../dom.js?v=c2374bc-202610202345";
+import { btn, toast } from "../ui.js?v=c2374bc-202610202345";
+import { createScene3d } from "../graph/scene3d/index.js?v=c2374bc-202610202345";
+import { createRezScene } from "../graph/rez/index.js?v=c2374bc-202610202345";
+import { STATUS, nextUp, progress, visibleGraph, stepNumber } from "../graph/model.js?v=c2374bc-202610202345";
+import { LEGEND, STANDING, STANDING_LABEL, standingOf, legendKeyOf } from "../graph/standing.js?v=c2374bc-202610202345";
+import { trackLabel } from "../copy.js?v=c2374bc-202610202345";
+import { mapList } from "./map-list.js?v=c2374bc-202610202345";
+import { dueLabel } from "./from-aden.js?v=c2374bc-202610202345";
+import { createGridState, hashFor, RESERVED_ARGS, VIEW } from "./grid-state.js?v=c2374bc-202610202345";
+import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=c2374bc-202610202345";
+import { isProgressReadOnly } from "../store.js?v=c2374bc-202610202345";
+import { doneForYou, nextMove, movesAfterNext, isTypedMap } from "../engine.js?v=c2374bc-202610202345";
+import { matchedRoles, fetchPacks, radarReady } from "../roles-remote.js?v=c2374bc-202610202345";
+import { careerOf } from "../search.js?v=c2374bc-202610202345";
+import { isoDate } from "../time.js?v=c2374bc-202610202345";
+import { routeGraph, isLandmark } from "../graph/route.js?v=c2374bc-202610202345";
+import { isFreeMap, upgradeHref } from "../prep.js?v=c2374bc-202610202345";
 
 /** Right side clears the control column, top clears the legend bar. */
 const INSETS = { top: 76, right: 132, bottom: 72, left: 40 };
@@ -108,8 +110,16 @@ export function renderMap(ctx, initialArg) {
     return graph.nodes.map((n) => `${n.id}:${n.n}:${(n.requires ?? []).join(",")}${n.hint ? `:${n.hint}` : ""}`).join("|");
   }
 
+  /*
+   * A Complete or free map draws as one route (graph/route.js). On a free map the folded
+   * question steps open in place, and "See the full plan" previews the done-for-you steps
+   * as the paid plan shows them. Both are this view's own state, never saved.
+   */
+  let foldOpen = false;
+  let fullPlan = false;
+
   /** A student sees the spine, what they picked and what is on offer. */
-  const shown = () => visibleGraph(current.state.graph);
+  const shown = () => routeGraph(visibleGraph(current.state.graph), { foldOpen, fullPlan });
 
   /** Ready nodes and the next move ride on every real board (not the public demo). */
   const hasBand = () => current.state.slug !== "demo";
@@ -326,7 +336,23 @@ export function renderMap(ctx, initialArg) {
   /** The node the camera went into; on return it pulls back out from there. */
   let openedId = null;
 
+  /** What a landmark says when it's tapped: it's not a step, so it opens nothing. */
+  const LANDMARK_LINE = {
+    _scan: "You took the free scan. Your map starts one step in.",
+    _goal: "Where this route leads: interviews.",
+  };
+
   function openNode(id) {
+    if (isLandmark(id)) {
+      if (id === "_more") {
+        foldOpen = true;
+        draw();
+        return;
+      }
+      if (id === "_waiting") return openNode("f.sample");
+      setStatus(LANDMARK_LINE[id] ?? null);
+      return;
+    }
     const node = current.state.graph.byId.get(id);
     if (shouldInterceptLock(node)) {
       showLockNotice(node);
@@ -404,6 +430,27 @@ export function renderMap(ctx, initialArg) {
   function renderHud() {
     const { graph } = current.state;
     const prog = progress(graph);
+    const free = isFreeMap(graph);
+    // A free map counts only the steps a free seat can finish (model.js progress).
+    const count = free ? `Your steps: ${prog.spine.lit} of ${prog.spine.total}` : hasBand() ? `${prog.spine.lit} of ${prog.spine.total} steps done` : `Required ${prog.spine.lit} of ${prog.spine.total}`;
+    const planSwitch = free
+      ? el(
+          "button.planswitch",
+          {
+            type: "button",
+            role: "switch",
+            "aria-checked": String(fullPlan),
+            class: fullPlan ? "is-on" : null,
+            onclick: () => {
+              fullPlan = !fullPlan;
+              draw();
+            },
+          },
+          el("i.planswitch__track", { "aria-hidden": "true" }, el("i.planswitch__knob")),
+          "See the full plan"
+        )
+      : null;
+    const startPlan = free && fullPlan ? btn({ label: "Start the full plan", variant: "solid", href: upgradeHref(graph, null, { demo: current.state.slug === "demo" }) }) : null;
 
     const controls = [
       btn({ label: "Fit", variant: "quiet", title: "The whole path", onclick: () => floor?.fit({ insets: INSETS }) }),
@@ -431,7 +478,9 @@ export function renderMap(ctx, initialArg) {
         "div.hud__group",
         {},
         modeToggle(),
-        el("b.hud__count", {}, hasBand() ? `${prog.spine.lit} of ${prog.spine.total} steps done` : `Required ${prog.spine.lit} of ${prog.spine.total}`),
+        el("b.hud__count", {}, count),
+        planSwitch,
+        startPlan,
         // A personal map has no elective depth; "No depth picked yet" would
         // read as a choice the student cannot make.
         hasDepth(graph, prog) ? el("span.hud__depth", {}, depthLine(prog.depth)) : null,
@@ -484,6 +533,7 @@ export function renderMap(ctx, initialArg) {
 
   /** One line of depth on hover: what this node is, and where it stands. */
   function hoverLine(id) {
+    if (LANDMARK_LINE[id]) return LANDMARK_LINE[id];
     const { graph } = current.state;
     const node = graph.byId.get(id);
     if (!node) return null;

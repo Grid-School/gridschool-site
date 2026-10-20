@@ -8,12 +8,16 @@
  *    (when.js). People read most right after they buy; this is the page they reread.
  * 4. Open the map: the account becomes a board session (POST /account/seat) and the board opens.
  *    If that hand-off says the sign-in expired, the sign-in form comes back.
+ *
+ * Someone who had a free map pays from it (Have us do this): the payment turns that same seat
+ * into the paid one (billing_api.py), so step 2 waits for its plan to read 'complete' and
+ * step 4 opens the board they already had, with everything they did on it.
  */
 
-import { PERSIST, link } from "../config.js?v=c2793e2-202610202249";
-import * as Account from "../check/account.js?v=c2793e2-202610202249";
-import { enterSeat } from "../app/js/persist-auth.js?v=c2793e2-202610202249";
-import { reviewLabel } from "./when.js?v=c2793e2-202610202249";
+import { PERSIST, link } from "../config.js?v=c2374bc-202610202345";
+import * as Account from "../check/account.js?v=c2374bc-202610202345";
+import { enterSeat } from "../app/js/persist-auth.js?v=c2374bc-202610202345";
+import { reviewLabel } from "./when.js?v=c2374bc-202610202345";
 
 // Localhost never talks to production: ?api= when given, else the page's own origin.
 const API = (() => {
@@ -167,8 +171,13 @@ function welcomeView(me) {
       const body = await res.json().catch(() => ({}));
       if (res.status === 401) return signInView("Your sign-in expired. Sign in again and your map opens.");
       if (!res.ok) throw new Error(body.error || "Your map didn't open. Try again in a moment.");
+      // The same seat whether it was made at checkout or was their free seat until now (billing_api.py).
       const slug = await enterSeat(body);
-      location.href = `../app/?s=${encodeURIComponent(slug)}`;
+      const board = new URL("../app/", location.href);
+      board.searchParams.set("s", slug);
+      // On this Mac the board talks to the same local API as this page, never production.
+      if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) board.searchParams.set("api", API);
+      location.href = board.toString();
     } catch (problem) {
       open.disabled = false;
       open.textContent = "Open my map →";

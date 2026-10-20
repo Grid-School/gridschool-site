@@ -21,6 +21,36 @@ export function isCompleteMap(mapOrGraph) {
   return /^complete-/.test(String(mapOrGraph?.version ?? ""));
 }
 
+/**
+ * A free seat's map (complete_map.build_map(..., plan="free")). Same steps as the paid map; the
+ * prepared ones show as part of the paid plan, with no tracker, and their tasks stay closed.
+ */
+export function isFreeMap(mapOrGraph) {
+  return mapOrGraph?.plan === "free";
+}
+
+/** On a free map: the line and button a prepared step shows in place of its tracker. */
+export const DFY_LINE = "We do this for you";
+export const PAID_ASK = "Have us do this";
+export const PAID_HINT = DFY_LINE;
+export const PAID_TASKS = "Yours once we have done the work above";
+export const PAID_VIDEO = "Included when we do it with you";
+export const FILM_COMING = "Film coming";
+
+/**
+ * Where "Have us do this" goes. On the demo board: the demo checkout, carrying the map's top
+ * finding (the rule behind its first step), then the welcome, then the paid demo map. On a real
+ * free seat: the offer on their own saved check (`check` on the map), so the payment carries
+ * that check's id and the Provisioner upgrades this same seat.
+ */
+export function upgradeHref(graph, node = null, { demo = false } = {}) {
+  const rule = node?.basis?.rule || (graph?.nodes ?? []).find((item) => item?.basis?.rule)?.basis.rule || "";
+  const safe = String(rule).replace(/[^a-z]/g, "").slice(0, 20);
+  if (demo) return `../demo/checkout/${safe ? `?top=${safe}` : ""}`;
+  const check = /^ck_[A-Za-z0-9_-]{16,40}$/.test(String(graph?.check ?? "")) ? graph.check : "";
+  return check ? `../check/?id=${check}&step=offer` : "../check/?step=offer";
+}
+
 /** Where a tracked step stands: every stage with its state, and whether the work is theirs yet. */
 export function prepOf(node, prep = {}) {
   const stages = Array.isArray(node?.stages) ? node.stages : [];

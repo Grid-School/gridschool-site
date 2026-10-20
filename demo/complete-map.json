@@ -57,8 +57,92 @@
   ],
   "nodes": [
    {
-    "id": "b.reach",
+    "id": "t.today",
     "n": 1,
+    "title": "Get your profile ready for the notes",
+    "family": "pipeline",
+    "phase": "now",
+    "kind": "core",
+    "requires": [],
+    "completion": "tasks",
+    "why": "While we work on the rest, this is the one thing that moves today. It takes about ten minutes, and only you can do it.",
+    "basis": {
+     "confidence": "probable",
+     "because": [
+      "You've sent 76 to 200 applications and rarely hear back."
+     ],
+     "rule": "reach"
+    },
+    "video": {
+     "id": "v.complete-today",
+     "title": "Today's ten minutes, done on screen",
+     "mins": 3,
+     "summary": "Aden does one of these ten-minute steps himself, start to finish, so you can see what done looks like."
+    },
+    "how": [
+     "Open your LinkedIn profile and click the pencil beside your name.",
+     "Start the headline with the exact title you want, written the way postings write it, for example \"Backend Engineer\".",
+     "After a bar, add what you work on in a few words: the kind of system, the languages.",
+     "Leave out \"open to work\", \"seeking\" and \"aspiring\". The title already says it.",
+     "Save, then open your profile in a private window and read the top line as a stranger would."
+    ],
+    "example": "Backend Engineer | Payment and data APIs in Python and Go",
+    "tasks": [
+     {
+      "id": "t.today.do",
+      "title": "Change your LinkedIn headline so it names the role you want",
+      "kind": "ship",
+      "done_when": "Your headline names the role you want.",
+      "changed": "A hiring manager who opens your profile from a note now reads the role you want first.",
+      "est": 10
+     }
+    ],
+    "evidence": "Today's ten minutes are done."
+   },
+   {
+    "id": "f.sample",
+    "n": 2,
+    "title": "1 role picked for you",
+    "family": "pipeline",
+    "phase": "now",
+    "kind": "core",
+    "requires": [],
+    "completion": "tasks",
+    "why": "A taste of the full plan: one fresh role that fits what you told us, what to lead with, and a note you can send. On the full plan this happens every week.",
+    "sample": {
+     "company": "Larkspur Pay",
+     "title": "Backend Engineer, Payments",
+     "url": "",
+     "posted": "2026-10-18",
+     "where": "Remote, US",
+     "lead": [
+      "Six years running payment and data APIs in Python and Go, which is the core of this role.",
+      "The billing service you owned: say what it handled and what you changed about it.",
+      "Postgres in production, since the listing asks for it by name."
+     ],
+     "fit": "A strong fit on the backend and payments work. The listing mentions Kafka, which your resume doesn't show; leave it out rather than stretch.",
+     "note": {
+      "subject": "Backend Engineer, Payments: six years on payment APIs",
+      "body": "Hi,\n\nI saw the Backend Engineer, Payments role at Larkspur Pay. For six years I've built and run payment and data APIs in Python and Go, most recently a billing service I owned end to end.\n\nI've applied through your site. If it's useful, I'm happy to walk through how I'd approach your payments stack in a short call.\n\nThanks,\nSam Rivera"
+     },
+     "fictional": true
+    },
+    "waiting": 4,
+    "tasks": [
+     {
+      "id": "f.sample.apply",
+      "title": "Read the role, then apply and send the note if it fits",
+      "kind": "ship",
+      "done_when": "You've applied, or decided it doesn't fit.",
+      "changed": "One fresh role has your application, led with what fits.",
+      "est": 15
+     }
+    ],
+    "evidence": "One fresh role has your application, led with what fits."
+   },
+   {
+    "id": "b.reach",
+    "n": 3,
     "title": "Get your applications in front of a person",
     "family": "pipeline",
     "phase": "now",
@@ -111,12 +195,18 @@
       "est": 25
      }
     ],
+    "video": {
+     "id": "v.complete-prepared",
+     "title": "What we prepare, and what to check before it goes out",
+     "mins": 5,
+     "summary": "Aden opens a finished piece of prepared work, reads it the way you should, and shows what to check before anything goes out under your name."
+    },
     "evidence": "Five notes have gone to hiring managers.",
     "group": "g.now"
    },
    {
     "id": "b.story",
-    "n": 2,
+    "n": 4,
     "title": "Make your resume read like the role you want",
     "family": "presence",
     "phase": "now",
@@ -175,12 +265,18 @@
       "est": 15
      }
     ],
+    "video": {
+     "id": "v.complete-prepared",
+     "title": "What we prepare, and what to check before it goes out",
+     "mins": 5,
+     "summary": "Aden opens a finished piece of prepared work, reads it the way you should, and shows what to check before anything goes out under your name."
+    },
     "evidence": "Your resume and LinkedIn lead with the role you want.",
     "group": "g.now"
    },
    {
     "id": "b.proof",
-    "n": 3,
+    "n": 5,
     "title": "Show you can catch what AI gets wrong",
     "family": "proof",
     "phase": "now",
@@ -237,42 +333,19 @@
       "est": 30
      }
     ],
+    "video": {
+     "id": "v.complete-prepared",
+     "title": "What we prepare, and what to check before it goes out",
+     "mins": 5,
+     "summary": "Aden opens a finished piece of prepared work, reads it the way you should, and shows what to check before anything goes out under your name."
+    },
     "evidence": "One verified audit is linked at the top of your resume.",
     "group": "g.now"
    },
    {
-    "id": "t.today",
-    "n": 4,
-    "title": "Get your profile ready for the notes",
-    "family": "pipeline",
-    "phase": "now",
-    "kind": "core",
-    "requires": [],
-    "completion": "tasks",
-    "why": "While we work on the rest, this is the one thing that moves today. It takes about ten minutes, and only you can do it.",
-    "basis": {
-     "confidence": "probable",
-     "because": [
-      "You've sent 76 to 200 applications and rarely hear back."
-     ],
-     "rule": "reach"
-    },
-    "tasks": [
-     {
-      "id": "t.today.do",
-      "title": "Change your LinkedIn headline so it names the role you want",
-      "kind": "ship",
-      "done_when": "Your headline names the role you want.",
-      "changed": "A hiring manager who opens your profile from a note now reads the role you want first.",
-      "est": 10
-     }
-    ],
-    "evidence": "Today's ten minutes are done."
-   },
-   {
     "id": "q.c1",
-    "n": 5,
-    "title": "Goals and limits: 5 quick questions",
+    "n": 6,
+    "title": "Your target roles, set: 5 questions",
     "family": "pipeline",
     "phase": "learn",
     "kind": "core",
@@ -300,8 +373,8 @@
    },
    {
     "id": "q.c2",
-    "n": 6,
-    "title": "Where it stops: 5 quick questions",
+    "n": 7,
+    "title": "Where to apply, mapped: 5 questions",
     "family": "pipeline",
     "phase": "learn",
     "kind": "core",
@@ -329,8 +402,8 @@
    },
    {
     "id": "q.c4",
-    "n": 7,
-    "title": "Your presence: 6 quick questions",
+    "n": 8,
+    "title": "Your LinkedIn, checked: 6 questions",
     "family": "presence",
     "phase": "learn",
     "kind": "core",
@@ -358,8 +431,8 @@
    },
    {
     "id": "q.c3",
-    "n": 8,
-    "title": "Your proof: 5 quick questions",
+    "n": 9,
+    "title": "Your proof, sorted: 5 questions",
     "family": "proof",
     "phase": "learn",
     "kind": "core",
@@ -387,8 +460,8 @@
    },
    {
     "id": "q.c5",
-    "n": 9,
-    "title": "Your interviews: 2 quick questions",
+    "n": 10,
+    "title": "Your interviews, prepped: 2 questions",
     "family": "interview",
     "phase": "learn",
     "kind": "core",
@@ -416,8 +489,8 @@
    },
    {
     "id": "q.c6",
-    "n": 10,
-    "title": "Your targets: 4 quick questions",
+    "n": 11,
+    "title": "Your targets, sharpened: 4 questions",
     "family": "network",
     "phase": "learn",
     "kind": "core",
@@ -445,7 +518,7 @@
    },
    {
     "id": "w.checkin",
-    "n": 11,
+    "n": 12,
     "title": "Week one check-in",
     "family": "pipeline",
     "phase": "week",
@@ -501,16 +574,16 @@
   "b.reach": {
    "stage": "managers",
    "at": {
-    "roles": "2026-10-19T08:45:27+00:00",
-    "managers": "2026-10-20T01:45:27+00:00"
+    "roles": "2026-10-19T09:49:40+00:00",
+    "managers": "2026-10-20T02:49:40+00:00"
    }
   },
   "b.story": {
    "stage": "review",
    "at": {
-    "reading": "2026-10-19T06:45:27+00:00",
-    "rewriting": "2026-10-19T19:45:27+00:00",
-    "review": "2026-10-20T02:45:27+00:00"
+    "reading": "2026-10-19T07:49:40+00:00",
+    "rewriting": "2026-10-19T20:49:40+00:00",
+    "review": "2026-10-20T03:49:40+00:00"
    }
   }
  }

@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { prepOf, prepHint, opensLater, shortDay, isCompleteMap, stageTime } from "./prep.js?v=c2793e2-202610202249";
-import { buildGraph, nextUp, STATUS } from "./graph/model.js?v=c2793e2-202610202249";
+import { prepOf, prepHint, opensLater, shortDay, isCompleteMap, stageTime, isFreeMap, upgradeHref } from "./prep.js?v=c2374bc-202610202345";
+import { buildGraph, nextUp, STATUS } from "./graph/model.js?v=c2374bc-202610202345";
 
 const STAGES = [
   { id: "roles", label: "Finding roles" },
@@ -107,4 +107,35 @@ test("a residency map is untouched: no tracker, no hint, no date gate", () => {
     assert.equal(node.hint, undefined);
     assert.equal(node.status, STATUS.OPEN);
   }
+});
+
+test("a free map: prepared steps are part of the paid plan, with no tracker even if prep were sent", () => {
+  const free = { ...MAP, plan: "free", check: "ck_abcdefghijklmnop" };
+  const prep = { "b.reach": { stage: "ready", at: { ready: "2026-10-20T09:00:00Z" } } };
+  const graph = buildGraph(free, { prep, tasks: {} }, { now: DAY_ONE });
+  assert.equal(isFreeMap(graph), true);
+  for (const id of ["b.reach", "b.final"]) {
+    const node = graph.byId.get(id);
+    assert.equal(node.paidOnly, true);
+    assert.equal(node.preparing, true);
+    assert.equal(node.prep, undefined);
+    assert.equal(node.hint, "We do this for you");
+  }
+  // The today step is what's next, fully usable; the check-in still opens on its day.
+  assert.equal(nextUp(graph, DAY_ONE).id, "t.today");
+  assert.equal(graph.byId.get("t.today").paidOnly, undefined);
+  assert.equal(graph.byId.get("w.checkin").status, STATUS.FUTURE);
+  // A paid Complete map is unchanged.
+  const paid = buildGraph(MAP, { prep, tasks: {} }, { now: DAY_ONE });
+  assert.equal(paid.byId.get("b.reach").paidOnly, undefined);
+  assert.equal(paid.byId.get("b.reach").prep.ready, true);
+  assert.equal(isFreeMap(paid), false);
+});
+
+test("Have us do this: the demo checkout on the demo board, the seat's own check offer otherwise", () => {
+  const graph = { check: "ck_abcdefghijklmnop", nodes: [{ id: "t.today" }, { id: "b.reach", basis: { rule: "reach" } }] };
+  assert.equal(upgradeHref(graph, { basis: { rule: "story" } }, { demo: true }), "../demo/checkout/?top=story");
+  assert.equal(upgradeHref(graph, null, { demo: true }), "../demo/checkout/?top=reach");
+  assert.equal(upgradeHref(graph, null), "../check/?id=ck_abcdefghijklmnop&step=offer");
+  assert.equal(upgradeHref({ check: "javascript:alert(1)" }, null), "../check/?step=offer");
 });

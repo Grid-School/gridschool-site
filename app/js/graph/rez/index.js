@@ -18,12 +18,13 @@
  * view glides to it. Nothing idles. Reduced motion jumps.
  */
 
-import { el, clear } from "../../dom.js?v=c2793e2-202610202249";
-import { traceSet, stepNumber } from "../model.js?v=c2793e2-202610202249";
-import { STANDING, standingOf, inSequence } from "../standing.js?v=c2793e2-202610202249";
-import { typeOf, specOf } from "../model.js?v=c2793e2-202610202249";
-import { isTypedMap } from "../../engine.js?v=c2793e2-202610202249";
-import { isCompleteMap } from "../../prep.js?v=c2793e2-202610202249";
+import { el, clear } from "../../dom.js?v=c2374bc-202610202345";
+import { traceSet, stepNumber } from "../model.js?v=c2374bc-202610202345";
+import { STANDING, standingOf, inSequence } from "../standing.js?v=c2374bc-202610202345";
+import { typeOf, specOf } from "../model.js?v=c2374bc-202610202345";
+import { isTypedMap } from "../../engine.js?v=c2374bc-202610202345";
+import { isCompleteMap, isFreeMap } from "../../prep.js?v=c2374bc-202610202345";
+import { WIN_LABEL } from "../route.js?v=c2374bc-202610202345";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 /** "2026-10-16" → "Due Oct 16". */
@@ -41,7 +42,7 @@ import {
   runCurrent,
   rezIn,
   prefersReducedMotion,
-} from "../../../../js/rez/road.js?v=c2793e2-202610202249";
+} from "../../../../js/rez/road.js?v=c2374bc-202610202345";
 
 /*
  * One grid under everything, in the board's own units (as on the landing):
@@ -57,6 +58,8 @@ const TOP = 2 * CELL;
 const LEFT = 4 * CELL;
 const RIGHT = 4 * CELL;
 const SIDE_GAP = 3 * CELL;
+/** A Complete or free route: a little more air between steps, so labels never touch. */
+const ROUTE_SPACING = 3.6 * CELL;
 /** Typed maps lay out by dependency: one column per step of depth, this far apart. */
 const FLOW_SPACING = 3.6 * CELL;
 /** A Complete map's group longer than this splits into columns side by side. */
@@ -83,9 +86,9 @@ const DRAG_SLOP = 5;
  * the next. Returns stops (arrays of nodes), placed points and the pairs the
  * road draws.
  */
-function roadLayout(road, laneOf, laneY) {
+function roadLayout(road, laneOf, laneY, spacing = SPACING) {
   const stops = road.map((node) => [node]);
-  const placed = road.map((node, index) => ({ id: node.id, phase: node.phase, lane: laneOf.get(node.family) ?? 0, x: LEFT + index * SPACING, y: laneY(laneOf.get(node.family) ?? 0) }));
+  const placed = road.map((node, index) => ({ id: node.id, phase: node.phase, lane: laneOf.get(node.family) ?? 0, x: LEFT + index * spacing, y: laneY(laneOf.get(node.family) ?? 0) }));
   const pairs = road.slice(1).map((node, index) => [road[index].id, node.id]);
   return { stops, placed, pairs };
 }
@@ -382,12 +385,18 @@ export async function createRezScene(container) {
     const laneOf = new Map(used.map((family) => [family.id, rowOfLane.get(family.lane ?? 0)]));
     const lanes = Math.max(1, laneValues.length);
     const laneTop = TOP;
-    const gap = isTypedMap(graph) ? TYPED_LANE_GAP : LANE_GAP;
-    const laneY = (lane) => laneTop + lane * gap;
     const typed = isTypedMap(graph);
-    const { stops, placed, pairs, roots = [] } = typed ? flowLayout(road, laneOf, laneY, { inOrder: isCompleteMap(graph) }) : roadLayout(road, laneOf, laneY);
+    // A Complete or free map is one route (graph/route.js): every step in `n` order, joined start to
+    // finish, with its own start ("Scan done"). Other typed maps get the wider lanes and a start point.
+    const gap = !graph.route && typed ? TYPED_LANE_GAP : LANE_GAP;
+    const laneY = (lane) => laneTop + lane * gap;
+    const { stops, placed, pairs, roots = [] } = graph.route
+      ? roadLayout(road, laneOf, laneY, ROUTE_SPACING)
+      : typed
+        ? flowLayout(road, laneOf, laneY, { inOrder: isCompleteMap(graph) })
+        : roadLayout(road, laneOf, laneY);
     // Typed maps: one start point on the left, on the middle lane, so no step floats on its own.
-    const start = typed && roots.length ? { x: LEFT, y: laneY(Math.floor((lanes - 1) / 2)) } : null;
+    const start = typed && !graph.route && roots.length ? { x: LEFT, y: laneY(Math.floor((lanes - 1) / 2)) } : null;
     const at = new Map(placed.map((point) => [point.id, point]));
     const roadBottom = Math.max(laneY(lanes - 1), ...placed.map((point) => point.y));
     const sideY = roadBottom + SIDE_GAP;
@@ -429,6 +438,8 @@ export async function createRezScene(container) {
     state.tieFor.clear();
     view.replaceChildren();
     const { plan: p } = state;
+    svg.classList.toggle("is-route", Boolean(graph.route));
+    const freeMap = isFreeMap(graph);
 
     const back = svgEl("g", { class: "rz-back" }, view);
     // The grid runs far past the map in every direction: the canvas has no edge to find.
@@ -489,8 +500,17 @@ export async function createRezScene(container) {
       const g = svgEl("g", { class: "rz-node", transform: `translate(${at.x} ${at.y})`, tabindex: 0, role: "button", "data-id": id }, nodes);
       const body = svgEl("g", { class: "rz-node__body" }, g);
       svgEl("circle", { class: "rz-halo", r: NODE_R + 9 }, body);
+      // A step we do for them wears a second ring: someone else's hands are on it too.
+      if (node.paidOnly || (freeMap && node.stages?.length)) svgEl("circle", { class: "rz-ring2", r: NODE_R + 5 }, body);
+      if (node.landmark === "goal") svgEl("circle", { class: "rz-ring2 rz-goal", r: NODE_R + 6 }, body);
       svgEl("circle", { class: "rz-ring", r: NODE_R }, body);
       svgEl("text", { class: "rz-num" }, body).textContent = stepNumber(node);
+      if (node.paidOnly && !node.landmark) {
+        // The "we do this" mark: Aden's initials on the ring.
+        const badge = svgEl("g", { class: "rz-dfy", transform: `translate(${NODE_R * 0.95} ${-NODE_R * 0.95})` }, body);
+        svgEl("circle", { r: 8 }, badge);
+        svgEl("text", { y: 0.5 }, badge).textContent = "AJ";
+      }
       // The type tag and a due date ride under the title, in the same text, so
       // they move with it when labels make room for each other.
       const base = NODE_R + 22;
@@ -500,9 +520,13 @@ export async function createRezScene(container) {
         svgEl("tspan", { x: lx, dy: index ? 15 : 0 }, title).textContent = line;
       });
       // A Complete step's hint (prep.js): where our work for them stands, or the day it opens.
+      // A free map: a step with a film says so, with its length.
+      const film = freeMap && node.video?.mins ? `▶ ${node.video.mins} min` : null;
       const meta = [specOf(node).tag && typeOf(node) !== "step" ? specOf(node).tag : null, node.due ? dueText(node.due) : null, node.hint ?? null].filter(Boolean).join(" · ");
       if (meta) svgEl("tspan", { class: `rz-meta${node.due ? " is-due" : ""}${node.hint && !node.due ? " is-hint" : ""}`, x: lx, dy: 15 }, title).textContent = meta;
+      if (film) svgEl("tspan", { class: "rz-meta rz-film", x: lx, dy: 15 }, title).textContent = film;
       svgEl("text", { class: "rz-here", y: -NODE_R - 16 }, g).textContent = "YOU ARE HERE";
+      if (node.win) svgEl("text", { class: "rz-win", y: -NODE_R - 16 }, g).textContent = WIN_LABEL.toUpperCase();
       state.nodeEls.set(id, g);
     }
     sizeSvg();
@@ -669,6 +693,11 @@ export async function createRezScene(container) {
       const standing = standingOf(node, options.nextId);
       for (const name of Object.values(STANDING)) g.classList.toggle(`is-${name}`, name === standing);
       g.classList.toggle("is-open-status", node.status === "open");
+      // A free map: a step we do on the paid plan reads quieter than one they can do now.
+      g.classList.toggle("is-paid", Boolean(node.paidOnly) && !node.preview);
+      g.classList.toggle("is-preview", Boolean(node.preview));
+      g.classList.toggle("is-win", Boolean(node.win));
+      for (const kind of ["scan", "goal", "more", "waiting"]) g.classList.toggle(`is-${kind}`, node.landmark === kind);
       g.classList.toggle("is-trace", Boolean(trace?.has(node.id)));
       g.dataset.standing = standing;
       g.setAttribute("aria-label", `Node ${stepNumber(node)}: ${node.title}`);

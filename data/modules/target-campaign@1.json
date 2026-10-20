@@ -62,6 +62,7 @@
   ],
   "video": {
     "id": "v.target-campaign",
+    "access": "paid",
     "title": "Your first Loom, take two",
     "mins": 6,
     "youtube": "",

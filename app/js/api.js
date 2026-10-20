@@ -3,13 +3,13 @@
  * student file seeds identity from the notebook API.
  */
 
-import { loadPrivateJson } from "./gate.js?v=c2793e2-202610202249";
-import { seedFromSnapshot } from "./persist.js?v=c2793e2-202610202249";
-import { fetchSnapshot, remoteEnabled } from "./persist-remote.js?v=c2793e2-202610202249";
-import { applySiteOverrides, applyPrivateLinks, applyCopyOverrides } from "../../js/site-overrides.js?v=c2793e2-202610202249";
-import { revealMemberInvite } from "../../js/member-invite.js?v=c2793e2-202610202249";
-import { numberCurriculumReadings } from "./reading-order.js?v=c2793e2-202610202249";
-import { resolveMap, loadModules, moduleRefs } from "./modules.js?v=c2793e2-202610202249";
+import { loadPrivateJson } from "./gate.js?v=c2374bc-202610202345";
+import { seedFromSnapshot } from "./persist.js?v=c2374bc-202610202345";
+import { fetchSnapshot, remoteEnabled } from "./persist-remote.js?v=c2374bc-202610202345";
+import { applySiteOverrides, applyPrivateLinks, applyCopyOverrides } from "../../js/site-overrides.js?v=c2374bc-202610202345";
+import { revealMemberInvite } from "../../js/member-invite.js?v=c2374bc-202610202345";
+import { numberCurriculumReadings } from "./reading-order.js?v=c2374bc-202610202345";
+import { resolveMap, loadModules, moduleRefs } from "./modules.js?v=c2374bc-202610202345";
 
 const BASE = "../data/";
 const cache = new Map();
@@ -110,11 +110,15 @@ export function boardCurriculum({ universal, student, slug, tour = false, overri
   return applyCopyOverrides(source, overrides);
 }
 
-/** The demo board's Complete map, when the link asks for it (?map=complete). Null otherwise. */
+/** Which made-up seat a demo link asks for: ?map=complete (paid) or ?map=free. */
+const DEMO_MAPS = { complete: "../demo/complete-map.json", free: "../demo/free-map.json" };
+
+/** The demo board's Complete or free map, when the link asks for it (?map=complete, ?map=free). Null otherwise. */
 async function demoCompleteSeat(student) {
-  if (new URLSearchParams(globalThis.location?.search || "").get("map") !== "complete") return null;
+  const file = DEMO_MAPS[new URLSearchParams(globalThis.location?.search || "").get("map")];
+  if (!file) return null;
   try {
-    const res = await fetch(new URL("../demo/complete-map.json", globalThis.location.href));
+    const res = await fetch(new URL(file, globalThis.location.href));
     if (!res.ok) return null;
     const doc = await res.json();
     return { ...student, map: doc.map, prep: doc.prep, identity: { ...(student?.identity ?? {}), name: doc.name } };
@@ -134,7 +138,8 @@ export async function loadBoard(slug, { tour = false } = {}) {
     applySiteOverrides(),
   ]);
   // Walkthroughs: /app/?s=demo&map=complete shows a made-up Complete seat's map (demo/complete-map.json,
-  // written by ops/make-demo-map.py) instead of the residency curriculum. Still the signed-out demo board.
+  // written by ops/make-demo-map.py) instead of the residency curriculum; ?map=free shows the same seat on
+  // the free plan (demo/free-map.json). Still the signed-out demo board.
   const demoSeat = slug === "demo" && !tour ? await demoCompleteSeat(student) : null;
   const seat = demoSeat ?? student;
   const library = (slug === "demo" && !demoSeat) || tour ? {} : await libraryFor(seat);

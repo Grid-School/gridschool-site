@@ -16,9 +16,9 @@
  * never gate a node: a habit is kept, not finished.
  */
 
-import { taskIsComplete, isCountTask } from "../task-state.js?v=c2793e2-202610202249";
-import { typeOf, specOf } from "../../../data/node-types.mjs?v=c2793e2-202610202249";
-import { prepOf, prepHint, opensLater, shortDay } from "../prep.js?v=c2793e2-202610202249";
+import { taskIsComplete, isCountTask } from "../task-state.js?v=c2374bc-202610202345";
+import { typeOf, specOf } from "../../../data/node-types.mjs?v=c2374bc-202610202345";
+import { prepOf, prepHint, opensLater, shortDay, isFreeMap, PAID_HINT } from "../prep.js?v=c2374bc-202610202345";
 
 export { typeOf, specOf };
 
@@ -145,11 +145,17 @@ export function buildGraph(curriculum, student, { unlockAll = false, now = new D
   }
   // GridSchool Complete only (prep.js): the work we're doing for them, and a
   // step that opens on a date. Residency maps carry neither field.
-  const prepState = student?.prep ?? {};
+  // A free map shows the same prepared steps as part of the paid plan: no tracker, tasks closed.
+  const free = isFreeMap(curriculum);
+  const prepState = free ? {} : student?.prep ?? {};
   for (const node of nodes) {
     node.status = statusOf(node, byId, completionEvidence, reviews, groups);
     const prep = prepOf(node, prepState);
-    if (prep) {
+    if (prep && free) {
+      node.paidOnly = true;
+      node.preparing = true;
+      if (node.status !== STATUS.LIT) node.hint = PAID_HINT;
+    } else if (prep) {
       node.prep = prep;
       // Their tasks wait for our work, unless the step says they come first.
       node.preparing = node.prepFirst !== false && !prep.ready;
@@ -189,7 +195,7 @@ export function buildGraph(curriculum, student, { unlockAll = false, now = new D
     };
   }
 
-  return { nodes, byId, edges, groups, phases: curriculum.phases, families: curriculum.families ?? [], version: curriculum.version };
+  return { nodes, byId, edges, groups, phases: curriculum.phases, families: curriculum.families ?? [], version: curriculum.version, plan: curriculum.plan, check: curriculum.check, started: curriculum.started };
 }
 
 /**
@@ -364,7 +370,8 @@ function tally(nodes) {
 export function progress(graph) {
   const sideNodes = graph.nodes.filter((node) => node.kind !== "future" && isSide(node));
   // Habits are kept, not finished, so they never count toward "X of Y".
-  const core = graph.nodes.filter((node) => node.kind !== "future" && !isSide(node) && counts(node));
+  // A free map counts only the steps a free seat can finish: never the ones we do on the paid plan.
+  const core = graph.nodes.filter((node) => node.kind !== "future" && !isSide(node) && counts(node) && !node.paidOnly);
   const spineNodes = core.filter(isSpine);
   const depthNodes = core.filter((node) => !isSpine(node));
   const taken = depthNodes.filter((node) => node.chosen || node.status === STATUS.LIT);

@@ -1,0 +1,17 @@
+{
+  "about": "Shared cases for the video access rule: data/video-access.mjs (board) and server/video_access.py (server) must agree on every one.",
+  "cases": [
+    { "name": "explicit free wins on a prepared step", "video": { "access": "free" }, "node": { "id": "b.reach", "stages": [{ "id": "ready" }] }, "access": "free" },
+    { "name": "explicit paid wins on today's step", "video": { "access": "paid" }, "node": { "id": "t.today" }, "access": "paid" },
+    { "name": "a prepared step is paid", "video": {}, "node": { "id": "b.story", "stages": [{ "id": "reading" }, { "id": "ready" }] }, "access": "paid" },
+    { "name": "today's step is free, even in the interview lane", "video": {}, "node": { "id": "t.today", "family": "interview" }, "access": "free" },
+    { "name": "a question chunk is free", "video": {}, "node": { "id": "q.c1", "chunk": "c1", "family": "interview" }, "access": "free" },
+    { "name": "the week-one check-in is free", "video": {}, "node": { "id": "w.checkin", "family": "pipeline" }, "access": "free" },
+    { "name": "a campaign is paid", "video": {}, "node": { "id": "c.acme", "type": "campaign", "family": "pipeline" }, "access": "paid" },
+    { "name": "a mock interview is paid", "video": {}, "node": { "id": "s.mock", "family": "interview", "phase": "land" }, "access": "paid" },
+    { "name": "a land-phase step is paid", "video": {}, "node": { "id": "s.warm", "family": "pipeline", "phase": "land" }, "access": "paid" },
+    { "name": "a foundation step is free", "video": {}, "node": { "id": "s.repos", "family": "presence", "phase": "prove" }, "access": "free" },
+    { "name": "an unknown access value falls back to the rule", "video": { "access": "vip" }, "node": { "id": "s.repos", "family": "presence" }, "access": "free" },
+    { "name": "no node at all is free", "video": {}, "node": null, "access": "free" }
+  ]
+}

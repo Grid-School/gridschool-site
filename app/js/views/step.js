@@ -8,33 +8,35 @@
  * reading as a shareable page).
  */
 
-import { el, mount } from "../dom.js?v=c2793e2-202610202249";
-import { btn, placeholder, toast, field } from "../ui.js?v=c2793e2-202610202249";
-import { STATUS, blockedBy, progress, isSpine, nextUp, stepNumber } from "../graph/model.js?v=c2793e2-202610202249";
-import { taskRow, reviewScores } from "./parts.js?v=c2793e2-202610202249";
-import { statusLabel, trackLabel, ccvvLabel, stepRule } from "../copy.js?v=c2793e2-202610202249";
-import { videoCard, resolveMedia, filmSummary } from "./video.js?v=c2793e2-202610202249";
-import { handoffDisclosure } from "./handoff.js?v=c2793e2-202610202249";
-import { withSavedState, isCountTask } from "../task-state.js?v=c2793e2-202610202249";
-import { renderMarkdown, splitTitle } from "../markdown.js?v=c2793e2-202610202249";
-import { hydrateMermaid, mermaidSource } from "../mermaid.js?v=c2793e2-202610202249";
-import { provesBlock } from "./proves.js?v=c2793e2-202610202249";
-import { modeLine } from "./mode.js?v=c2793e2-202610202249";
-import { artifactLine } from "./artifact.js?v=c2793e2-202610202249";
-import { refsBlock } from "./refs.js?v=c2793e2-202610202249";
-import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=c2793e2-202610202249";
-import { electiveBlock } from "./elective.js?v=c2793e2-202610202249";
-import { fromAdenCard } from "./from-aden.js?v=c2793e2-202610202249";
-import { helpBlock } from "./step-help.js?v=c2793e2-202610202249";
-import { signoffNotice, submitLabel, linkHint } from "./signoff.js?v=c2793e2-202610202249";
-import { stepSpine, isStepComplete, canAdvance, readyToSave, readFlag } from "./step-progress.js?v=c2793e2-202610202249";
-import { createReadingModal } from "./reading-modal.js?v=c2793e2-202610202249";
-import { bindDraft, clearDraft } from "../drafts.js?v=c2793e2-202610202249";
-import { registerLeaveGuard, clearLeaveGuard, isLeaveDirty } from "../leave-guard.js?v=c2793e2-202610202249";
-import { isPreviewMedia } from "../preview-mode.js?v=c2793e2-202610202249";
-import { isViewEnabled } from "../features.js?v=c2793e2-202610202249";
-import { siteOverridesDoc, dropSiteOverridesCache } from "../../../js/site-overrides.js?v=c2793e2-202610202249";
-import { isCompleteMap, stageTime } from "../prep.js?v=c2793e2-202610202249";
+import { el, mount } from "../dom.js?v=c2374bc-202610202345";
+import { btn, placeholder, toast, field } from "../ui.js?v=c2374bc-202610202345";
+import { STATUS, blockedBy, progress, isSpine, nextUp, stepNumber } from "../graph/model.js?v=c2374bc-202610202345";
+import { taskRow, reviewScores } from "./parts.js?v=c2374bc-202610202345";
+import { statusLabel, trackLabel, ccvvLabel, stepRule } from "../copy.js?v=c2374bc-202610202345";
+import { videoCard, resolveMedia, filmSummary } from "./video.js?v=c2374bc-202610202345";
+import { handoffDisclosure } from "./handoff.js?v=c2374bc-202610202345";
+import { withSavedState, isCountTask } from "../task-state.js?v=c2374bc-202610202345";
+import { renderMarkdown, splitTitle } from "../markdown.js?v=c2374bc-202610202345";
+import { hydrateMermaid, mermaidSource } from "../mermaid.js?v=c2374bc-202610202345";
+import { provesBlock } from "./proves.js?v=c2374bc-202610202345";
+import { modeLine } from "./mode.js?v=c2374bc-202610202345";
+import { artifactLine } from "./artifact.js?v=c2374bc-202610202345";
+import { refsBlock } from "./refs.js?v=c2374bc-202610202345";
+import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=c2374bc-202610202345";
+import { electiveBlock } from "./elective.js?v=c2374bc-202610202345";
+import { fromAdenCard } from "./from-aden.js?v=c2374bc-202610202345";
+import { helpBlock } from "./step-help.js?v=c2374bc-202610202345";
+import { signoffNotice, submitLabel, linkHint } from "./signoff.js?v=c2374bc-202610202345";
+import { stepSpine, isStepComplete, canAdvance, readyToSave, readFlag } from "./step-progress.js?v=c2374bc-202610202345";
+import { createReadingModal } from "./reading-modal.js?v=c2374bc-202610202345";
+import { bindDraft, clearDraft } from "../drafts.js?v=c2374bc-202610202345";
+import { registerLeaveGuard, clearLeaveGuard, isLeaveDirty } from "../leave-guard.js?v=c2374bc-202610202345";
+import { isPreviewMedia } from "../preview-mode.js?v=c2374bc-202610202345";
+import { isViewEnabled } from "../features.js?v=c2374bc-202610202345";
+import { siteOverridesDoc, dropSiteOverridesCache } from "../../../js/site-overrides.js?v=c2374bc-202610202345";
+import { isCompleteMap, isFreeMap, stageTime, upgradeHref, PAID_ASK, PAID_TASKS, PAID_VIDEO, DFY_LINE, FILM_COMING } from "../prep.js?v=c2374bc-202610202345";
+import { sampleBlock } from "./sample.js?v=c2374bc-202610202345";
+import { videoAccess, isFilmed } from "../../../data/video-access.mjs?v=c2374bc-202610202345";
 
 const FALLBACK_VIDEO = {
   title: "Lesson",
@@ -100,7 +102,34 @@ export function tasksLead(node, welcome = false) {
  * GridSchool Complete: the work we're doing for them, as a tracker (prep.js).
  * A stage is lit only once Aden set it; nothing is guessed from the clock.
  */
-export function prepBlock(node) {
+export function prepBlock(node, { upgrade = null } = {}) {
+  // A free map: who does it, what we'd do, the stages it would move through, and one way to start.
+  if (node?.paidOnly) {
+    return el(
+      "section.step__prep.step__prep--paid",
+      { "aria-label": DFY_LINE },
+      el(
+        "div.dfy__head",
+        {},
+        el("span.dfy__avatar", { "aria-hidden": "true" }, "AJ"),
+        el("div", {}, el("b.eyebrow", {}, DFY_LINE), el("p.dfy__who", {}, "Aden checks every piece before it reaches you."))
+      ),
+      node.prepared ? el("p.step__prep-what", {}, node.prepared) : null,
+      lockedPreview(node, upgrade),
+      node.stages?.length
+        ? el(
+            "div.dfy__preview",
+            {},
+            el("b.dfy__label", {}, "What we'd do for you"),
+            el(
+              "ol.prep.prep--preview",
+              {},
+              node.stages.map((stage) => el("li.prep__stage", {}, el("i.prep__dot", { "aria-hidden": "true" }), el("span.prep__label", {}, stage.label)))
+            )
+          )
+        : null
+    );
+  }
   const prep = node?.prep;
   if (!prep) return null;
   const note = prep.ready
@@ -127,6 +156,78 @@ export function prepBlock(node) {
       )
     ),
     el("p.step__prep-note", {}, note)
+  );
+}
+
+/**
+ * The today step's walkthrough (complete_map.py `how`): numbered lines someone can follow
+ * without help, and an example where one helps. Sits above the task's checkbox and field.
+ */
+export function howBlock(node) {
+  const how = Array.isArray(node?.how) ? node.how.filter((line) => typeof line === "string" && line) : [];
+  if (!how.length) return null;
+  return el(
+    "section.step__how",
+    { "aria-label": "How to do it" },
+    el("b.eyebrow", {}, "How to do it"),
+    el("ol.step__how-list", {}, how.map((line) => el("li", {}, line))),
+    node.example ? el("p.step__how-example", {}, el("b", {}, "Example"), el("span", {}, node.example)) : null
+  );
+}
+
+/**
+ * A film that doesn't play here, drawn as a poster: a frame with a play mark and Aden's
+ * initials, then the title, the length, one line on what it covers and why it won't play.
+ * On a free map: a film not uploaded yet says "Film coming" (from its brief), and a paid one
+ * says it's included when we do it with you. It never fakes playback, and a paid film's
+ * address never reaches a free seat (server/video_access.py).
+ */
+/**
+ * What the full plan makes for this step, shown blurred on a free map (Aden: let them see their
+ * own dashboard, with the paid parts blurred). The shapes under the blur are generic, never their
+ * data or invented results, and the words on top say exactly what it is.
+ */
+const PREVIEW_ROWS = {
+  reach: ["Senior Backend Engineer · posted 2 days ago", "Hiring manager · Engineering Manager, Payments", "Note: Hi, I saw the payments role and wanted to reach you directly", "Platform Engineer · posted yesterday", "Hiring manager · Director of Platform", "Note: Hi, your team's work on the data pipeline caught my eye"],
+  story: ["Backend Engineer | Payment and data APIs in Python and Go", "Led the billing service rewrite: [your result, in your numbers]", "Owned the reconciliation pipeline end to end", "Shipped the new invoicing API used by three teams"],
+  proof: ["Audit: the app's sign-up and payments flow", "Finding 1 · critical · the token is never checked", "Fix: verify the token on every request, with a test", "Report outline: what you checked, what you fixed, what's left"],
+};
+function lockedPreview(node, upgrade) {
+  const rows = PREVIEW_ROWS[node?.basis?.rule] ?? ["What we prepare for this step", "Researched for your target roles", "Written in your voice", "Checked by Aden before it reaches you"];
+  return el(
+    "div.dfy__locked",
+    {},
+    el("div.dfy__blur", { "aria-hidden": "true" }, rows.map((line, n) => el(`p.dfy__row${n % 3 === 0 ? ".dfy__row--head" : ""}`, {}, line))),
+    el(
+      "div.dfy__over",
+      {},
+      el("b", {}, "Included in the full plan"),
+      el("span", {}, "We make yours from your answers once you start. This blur is the shape of it."),
+      upgrade ? btn({ label: PAID_ASK, variant: "cta", href: upgrade }) : null
+    )
+  );
+}
+
+export function filmCard(video, { note, paid = false, lead = null } = {}) {
+  const line = String(video?.summary ?? "").trim().match(/^[^.!?]+[.!?]?/)?.[0] ?? "";
+  return el(
+    "figure.film",
+    { class: paid ? "film--paid film--blur" : "film--coming" },
+    el(
+      "div.film__frame",
+      { "aria-hidden": "true" },
+      el("span.film__play"),
+      el("span.film__by", {}, "AJ"),
+      video?.mins ? el("span.film__mins", {}, `${video.mins} min`) : null
+    ),
+    el(
+      "figcaption.film__body",
+      {},
+      lead ? el("b.film__lead", {}, lead) : null,
+      el("p.film__title", {}, video?.title || "Lesson film"),
+      line ? el("p.film__line", {}, line) : null,
+      el("span.film__note", {}, note)
+    )
   );
 }
 
@@ -181,7 +282,9 @@ export function renderStep(ctx, nodeId, moduleId = null) {
     if (node.id === "or.start") return "Week 1 · Orientation";
     const family = (graph.families ?? []).find((item) => item.id === node.family);
     const prog = progress(graph);
-    const track = isSpine(node) ? `${trackLabel(node.track)} ${prog.spine.lit} of ${prog.spine.total}` : trackLabel(node.track);
+    // A free map counts only their own steps, and says so.
+    const label = isFreeMap(graph) ? "Your steps" : trackLabel(node.track);
+    const track = isSpine(node) ? `${label} ${prog.spine.lit} of ${prog.spine.total}` : label;
     /* Weeks are typical pace inside the intensive sequence, not a calendar
        promise: the residency runs a year and nothing on the map expires. */
     const weeks =
@@ -200,7 +303,21 @@ export function renderStep(ctx, nodeId, moduleId = null) {
     // film to a student. Media preview (instructor strip, device-local) shows
     // the stand-in clip and the film's brief so the page can be judged before
     // filming.
-    const filmed = Boolean(node.video && resolveMedia(node.video));
+    // A free map: every film shows. A free one plays once it's uploaded and is a "Film coming"
+    // poster until then; a paid one is a poster that never plays (the server sends it without an
+    // address). The guided first step opens on its film: "Watch first".
+    const freePlan = isFreeMap(graph);
+    const demoBoard = current.state.slug === "demo";
+    const upgrade = freePlan ? upgradeHref(graph, node, { demo: demoBoard }) : null;
+    const access = freePlan && node.video ? videoAccess(node.video, node) : null;
+    const watchFirst = access === "free" && /^t\./.test(node.id) && node.video?.mins ? `Watch first, about ${node.video.mins} min` : null;
+    const slot =
+      access === "paid"
+        ? filmCard(node.video, { note: PAID_VIDEO, paid: true })
+        : access === "free" && !isFilmed(node.video)
+          ? filmCard(node.video, { note: FILM_COMING, lead: watchFirst })
+          : null;
+    const filmed = access !== "paid" && Boolean(node.video && resolveMedia(node.video));
     const preview = isAdmin && isPreviewMedia();
     const previewClip = !filmed && Boolean(node.video) && preview;
     const video = filmed ? node.video : previewClip ? { ...FALLBACK_VIDEO, title: node.video.title || FALLBACK_VIDEO.title, mins: node.video.mins || FALLBACK_VIDEO.mins } : null;
@@ -265,7 +382,9 @@ export function renderStep(ctx, nodeId, moduleId = null) {
           el(
             "p.step__tasks-lead",
             {},
-            node.preparing ? "These are yours once the work above is ready. Until then there's nothing to do here." : tasksLead(node, welcome)
+            node.paidOnly
+              ? "On the paid plan we do the work above, then these are yours."
+              : node.preparing ? "These are yours once the work above is ready. Until then there's nothing to do here." : tasksLead(node, welcome)
           ),
           el(
             "div.tasks",
@@ -280,7 +399,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
                   nodeTitle: node.title,
                   index: i + 1,
                   hideKind: !isCountTask(task),
-                  locked: node.preparing ? "Opens when the work above is ready for you" : null,
+                  locked: node.paidOnly ? PAID_TASKS : node.preparing ? "Opens when the work above is ready for you" : null,
                 },
                 { store: current.store, navigate: current.navigate }
               )
@@ -308,14 +427,17 @@ export function renderStep(ctx, nodeId, moduleId = null) {
         welcome ? null : modeLine(node),
         welcome ? null : artifactLine(node)
       ),
-      prepBlock(node),
+      prepBlock(node, { upgrade }),
+      sampleBlock(node, { upgrade }),
       fromAdenCard(node),
       electiveBlock({ node, store: current.store }),
-      card || (preview && !filmed && node.video?.summary)
+      card || slot || (preview && !filmed && node.video?.summary)
         ? el(
             "section.step__video",
             {},
+            card && watchFirst ? el("b.eyebrow.film__first", {}, watchFirst) : null,
             card ? card.node : null,
+            card ? null : slot,
             preview && !welcome ? filmSummary({ summary: node.video?.summary, filmed }) : null
           )
         : null,
@@ -347,6 +469,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
             when: "You may read this page now. The tasks become available when the step opens.",
           })
         : null,
+      welcome || node.kind === "future" ? null : howBlock(node),
       welcome || node.kind === "future" ? null : tasksBlock,
       welcome ? null : helpBlock({ node, store: current.store, isAdmin }),
       isCompleteMap(graph) ? changedBlock(node) : null,
@@ -733,7 +856,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
       );
 
       async function save(entry) {
-        const { fetchSiteOverrides, saveSiteOverrides } = await import("../persist-admin.js?v=c2793e2-202610202249");
+        const { fetchSiteOverrides, saveSiteOverrides } = await import("../persist-admin.js?v=c2374bc-202610202345");
         const current = await fetchSiteOverrides().catch(() => ({ doc: {} }));
         const doc = current.doc ?? {};
         const nodes = { ...(doc.copy?.nodes ?? {}) };

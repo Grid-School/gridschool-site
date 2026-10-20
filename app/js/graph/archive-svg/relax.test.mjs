@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { relax, CLEAR_X, CLEAR_Y } from "./relax.js?v=c2793e2-202610202249";
+import { relax, CLEAR_X, CLEAR_Y } from "./relax.js?v=c2374bc-202610202345";
 
 function grid() {
   return [

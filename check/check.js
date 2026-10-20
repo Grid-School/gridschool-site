@@ -1,6 +1,7 @@
 /**
  * The free check: six one-tap questions in, the person's top likely
- * bottlenecks, one thing to do today, and their map out. People arrive warm
+ * bottlenecks, and their map out: a free map whose first step walks them
+ * through the fix. People arrive warm
  * (from the VSL or an ad, mostly on phones), so there is no intro screen:
  * question 1 is the first thing they see. A resume is offered after the
  * questions, as an optional way to sharpen the result, never as a gate.
@@ -13,13 +14,14 @@
  * this browser so a refresh loses nothing; the resume text never does.
  */
 
-import { PERSIST, link } from "../config.js?v=c2793e2-202610202249";
-import * as I from "../data/intake/intake.mjs?v=c2793e2-202610202249";
-import { mountCheckMap } from "./check-map.js?v=c2793e2-202610202249";
-import * as Account from "./account.js?v=c2793e2-202610202249";
-import { track, visitorId } from "./events.js?v=c2793e2-202610202249";
-import * as Share from "./share.mjs?v=c2793e2-202610202249";
-import { drawShareCard, cardBlob } from "./share-card.js?v=c2793e2-202610202249";
+import { PERSIST, link } from "../config.js?v=c2374bc-202610202345";
+import * as I from "../data/intake/intake.mjs?v=c2374bc-202610202345";
+import { mountCheckMap } from "./check-map.js?v=c2374bc-202610202345";
+import * as Account from "./account.js?v=c2374bc-202610202345";
+import { enterSeat } from "../app/js/persist-auth.js?v=c2374bc-202610202345";
+import { track, visitorId } from "./events.js?v=c2374bc-202610202345";
+import * as Share from "./share.mjs?v=c2374bc-202610202345";
+import { drawShareCard, cardBlob } from "./share-card.js?v=c2374bc-202610202345";
 
 const KEY = "gridschool.check.v1";
 const SHARE_KEY = "gridschool.share.v1";
@@ -357,9 +359,8 @@ const VIEWS = {
 
   result() {
     // The result in steps, one card at a time beside the map, like the questions (Aden: "where do
-    // I look?"): the one thing in your way, keep the map free (the map itself walks them through
-    // the fix), then a choice of what would help most, ordered by their answers. store.rstep says
-    // which card is showing.
+    // I look?"): the one thing in your way, keep the map free (the map walks them through it), then
+    // a choice of what would help most, ordered by their answers. store.rstep says which card is showing.
     const hits = I.bottlenecks(catalog, store.state, store.read).slice(0, 3);
     if (!hits.length) {
       return [
@@ -411,20 +412,26 @@ function choice(title, sub, onClick) {
   return node;
 }
 
-/** People searching longer, or between roles, see the done-for-you option first. */
-function inAHurry() {
-  const a = store.state.answers;
-  return a.stage === "laidoff" || ["3to6", "6to12", "gt12"].includes(a.months);
-}
+
+/**
+ * "Open my map, free": the map is the free plan, and its first step walks them through fixing
+ * this. On a walkthrough (?demo=1) it opens the made-up free map; otherwise keeping the map with
+ * an email is what makes their free account, so it goes there first.
+ */
+const DEMO_FREE_MAP = "../app/?s=demo&map=free";
 
 const RESULT_STEPS = {
   finding(hits) {
+    const open = () => {
+      if (DEMO) return void (location.href = DEMO_FREE_MAP);
+      goStep("keep");
+    };
     return [
       stepLabel(1),
       h("h2", "card__title", "The most likely thing in your way", { tabindex: -1 }),
       h("div", "findings findings--one", null, {}, [findingCard(hits[0], 0)]),
-      h("p", "card__help", "Your map walks you through fixing this, step by step.", { style: "margin-top: 14px" }),
-      row(button("Keep my map, free", () => goStep("keep"), { solid: true, arrow: true, focus: true })),
+      h("p", "card__help card__help--map", "Your map walks you through fixing this, step by step."),
+      row(button("Open my map, free", open, { solid: true, arrow: true, focus: true })),
       h("p", "card__fine card__fine--honest", "Our best guess from what you told us. Your map tests it and drops it if it doesn't hold up."),
     ];
   },
@@ -437,27 +444,29 @@ const RESULT_STEPS = {
     ];
   },
 
+  // No paid choice here: nobody is asked to pay before they've opened their own map (Aden).
+  // The full plan is offered from inside the free board ("Have us do this", ?step=offer).
   next(hits) {
-    const checkout = DEMO ? DEMO_CHECKOUT : link("completeCheckout");
-    const offerChoice = checkout && offer ? choice("Do the work with us", `We prepare your first week's work. From $${offer.price.instalment} a month, optional.`, () => goStep("offer")) : null;
     const free = [
       hits.length > 1 ? choice(`See the other likely ${hits.length === 2 ? "blocker" : "blockers"}`, "What else is probably slowing you down.", () => goStep("others")) : null,
       store.read?.verdict ? choice("How a hiring manager reads your resume", "Six things they check in the first seconds, scored.", () => goStep("resume")) : null,
       choice("See what the rest of your map covers", "The parts that open with a few more questions.", () => goStep("rest")),
       choice("Share your scan with a friend", "A picture of your scan and a link to take theirs.", () => goStep("share")),
     ];
-    const choices = inAHurry() ? [offerChoice, ...free] : [...free, offerChoice];
     return [
       h("p", "eyebrow", "Your scan"),
       h("h2", "card__title", "What would help most now?", { tabindex: -1 }),
-      h("div", "options options--choices", null, {}, choices.filter(Boolean)),
+      store.saved?.id ? openMapRow() : null,
+      h("div", "options options--choices", null, {}, free.filter(Boolean)),
       row(backTo("keep"), link_("Start over", () => restart(true))),
-    ];
+    ].filter(Boolean);
   },
 
   offer(hits) {
     const checkout = DEMO ? DEMO_CHECKOUT : link("completeCheckout");
-    return [offerBlock(hits, checkout), row(backTo("next"))];
+    // Reached from their board ("Have us do this"): back goes to the map they came from.
+    const fromBoard = /\/app\//.test(document.referrer);
+    return [offerBlock(hits, checkout), row(fromBoard ? link_("Back to my map", () => history.back()) : backTo("next"))];
   },
 
   others(hits) {
@@ -704,13 +713,14 @@ function saveForm() {
     const sent = store.saved.emailed;
     done.classList.toggle("saved--unsent", !inAccount && sent === false);
     done.append(
-      h("b", "", inAccount ? "Saved to your account." : sent ? "Sent. Check your inbox." : "Your map is saved."),
       h("p", "", inAccount
-        ? `Come back any time at gridschool.org/check and sign in with ${store.saved.email}.`
-        : sent ? "You can always get back to your map at this link:" : "We couldn't send the email just now, so keep this link. It always opens your map:"),
+        ? `Saved to your account. Come back any time at gridschool.org/check and sign in with ${store.saved.email}.`
+        : sent ? "We also emailed you a link. This one always brings you back to your map:" : "To come back later, keep this link. It always brings you back to your map:"),
       ...(inAccount ? [] : [h("a", "saved__link", store.saved.link, { href: store.saved.link })])
     );
-    draw(...[done, communityBlock()].filter(Boolean));
+    // Saved: their map is a free board of their own, and this opens it, with or without a sign-in
+    // (the check's own id opens the seat made from it: server free_seat.check_seat_session).
+    draw(...[openMapRow(), done, communityBlock()].filter(Boolean));
     prepareShare();
   };
 
@@ -724,6 +734,7 @@ function saveForm() {
       h("p", "card__help", `We sent a 6-digit code to ${email}. Enter it to keep your map in your account. The email also has a link if you'd rather tap.`),
       h("div", "save__row", null, {}, [code, confirm]),
       error,
+      ...(store.saved?.id ? [row(link_("Open my map now", () => savedView()))] : []),
       row(
         link_("Send a new code", async () => {
           error.textContent = "";
@@ -828,6 +839,44 @@ function saveForm() {
 }
 
 /**
+ * "Open my map": their free board (POST /account/free-seat, server: free_seat.py), by their
+ * sign-in when they have one, otherwise by this saved check's own id.
+ * The first time, it makes the free seat from this check; after that it opens the same one. A paid
+ * seat opens as itself. Localhost carries ?api= to the board, so it never talks to production.
+ */
+function openMapRow() {
+  const error = h("p", "card__error", "", { role: "alert" });
+  const open = button("Open my map", async () => {
+    error.textContent = "";
+    open.disabled = true;
+    try {
+      const token = Account.session()?.token;
+      const res = await fetch(`${API}/account/free-seat`, {
+        method: "POST",
+        headers: { ...(token ? { authorization: `Bearer ${token}` } : {}), "content-type": "application/json" },
+        body: JSON.stringify({ check: store.saved?.id || "" }),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(body.error || "Your map didn't open. Try again in a moment.");
+      const slug = await enterSeat(body);
+      location.href = boardUrl(slug);
+    } catch (problem) {
+      open.disabled = false;
+      error.textContent = say(problem);
+    }
+  }, { solid: true, arrow: true, focus: true });
+  return h("div", "saved__open", null, {}, [h("h3", "card__sub card__sub--keep", "Your map is ready."), h("p", "card__help", "It starts with the step that walks you through fixing this. Free, and yours to keep."), row(open), error]);
+}
+
+/** The board for a seat. On this Mac the board gets the same local API the check uses. */
+function boardUrl(slug) {
+  const url = new URL("../app/", location.href);
+  url.searchParams.set("s", slug);
+  if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) url.searchParams.set("api", API);
+  return url.toString();
+}
+
+/**
  * Off to checkout. The link carries this check's id (client_reference_id), so the
  * payment finds this exact map, and the email (prefilled_email) so they don't type
  * it twice. An unsaved check is saved first: signed in, with their account email;
@@ -846,7 +895,9 @@ async function goToCheckout(checkout, email = "") {
   if (!store.saved?.id) await saveCheck(email);
   const url = new URL(checkout);
   url.searchParams.set("client_reference_id", store.saved.id);
-  if (store.saved.email) url.searchParams.set("prefilled_email", store.saved.email);
+  // A free seat coming from its board (?step=offer) pays with its account email, so the payment finds that seat.
+  const payEmail = store.saved.email || Account.session()?.email || "";
+  if (payEmail) url.searchParams.set("prefilled_email", payEmail);
   count("checkout.start");
   location.href = url.toString();
 }
@@ -916,10 +967,12 @@ function offerBlock(hits, checkout) {
       h("span", "", ` for ${price.months} months${monthly ? `, or ${price.instalments} payments of $${price.instalment}` : ""}`),
       h("span", "offer__refund", `${price.refundDays}-day refund, no questions asked`),
     ]),
-    row(
-      button("Start my map", () => start(checkout), { arrow: true }),
-      monthly ? link_(`Or pay $${price.instalment} a month, ${price.instalments} times`, () => start(monthly)) : null
-    ),
+    checkout
+      ? row(
+          button("Start my map", () => start(checkout), { arrow: true }),
+          monthly ? link_(`Or pay $${price.instalment} a month, ${price.instalments} times`, () => start(monthly)) : null
+        )
+      : h("p", "card__help", "Online checkout opens soon. To start now, write to support@gridschool.org from the email you saved your map with, and we'll set it up by hand."),
     ask,
     error,
     h("p", "card__fine", offer.payNote),
@@ -1231,6 +1284,9 @@ async function boot() {
     showAccount();
   }
   if (id && (await reopen(id))) {
+    // From a free board's "Have us do this" (?step=offer): straight to the offer on their own check.
+    const asked = params.get("step");
+    if (asked === "offer") store.rstep = offer ? "offer" : "next"; // without Stripe yet, the offer says how to start
     show("result");
     booted = true;
     return drawMap({ first: true });
