@@ -3,11 +3,11 @@
  * The film for a step also lives on that step. This is one ordered list.
  */
 
-import { el } from "../dom.js?v=b399b51-202610200449";
-import { panel, btn } from "../ui.js?v=b399b51-202610200449";
-import { loadLibrary } from "../api.js?v=b399b51-202610200449";
-import { videoCard } from "./video.js?v=b399b51-202610200449";
-import { isPreviewMedia } from "../preview-mode.js?v=b399b51-202610200449";
+import { el } from "../dom.js?v=5a6643e-202610200458";
+import { panel, btn } from "../ui.js?v=5a6643e-202610200458";
+import { loadLibrary } from "../api.js?v=5a6643e-202610200458";
+import { videoCard } from "./video.js?v=5a6643e-202610200458";
+import { isPreviewMedia } from "../preview-mode.js?v=5a6643e-202610200458";
 
 export function renderLibrary(ctx) {
   const root = el("div.view.view--library", {}, el("p.muted", {}, "Loading the library."));

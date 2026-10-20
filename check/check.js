@@ -13,13 +13,13 @@
  * this browser so a refresh loses nothing; the resume text never does.
  */
 
-import { PERSIST, link } from "../config.js?v=b399b51-202610200449";
-import * as I from "../data/intake/intake.mjs?v=b399b51-202610200449";
-import { mountCheckMap } from "./check-map.js?v=b399b51-202610200449";
-import * as Account from "./account.js?v=b399b51-202610200449";
-import { track, visitorId } from "./events.js?v=b399b51-202610200449";
-import * as Share from "./share.mjs?v=b399b51-202610200449";
-import { drawShareCard, cardBlob } from "./share-card.js?v=b399b51-202610200449";
+import { PERSIST, link } from "../config.js?v=5a6643e-202610200458";
+import * as I from "../data/intake/intake.mjs?v=5a6643e-202610200458";
+import { mountCheckMap } from "./check-map.js?v=5a6643e-202610200458";
+import * as Account from "./account.js?v=5a6643e-202610200458";
+import { track, visitorId } from "./events.js?v=5a6643e-202610200458";
+import * as Share from "./share.mjs?v=5a6643e-202610200458";
+import { drawShareCard, cardBlob } from "./share-card.js?v=5a6643e-202610200458";
 
 const KEY = "gridschool.check.v1";
 const SHARE_KEY = "gridschool.share.v1";
@@ -414,20 +414,22 @@ const VIEWS = {
     // What's next, beside keeping it: the locked areas on one side, the save on the other.
     if (store.read?.verdict) parts.push(verdictPanel(store.read.verdict));
 
-    // The offer comes right after the diagnosis: the work we'd do, the price, the refund and the
-    // person, in that order (Rory's review). Keeping the map for later sits under it, second.
-    const checkout = DEMO ? DEMO_CHECKOUT : link("completeCheckout");
-    if (checkout && offer && hits.length) parts.push(offerBlock(hits, checkout));
+    // The free result is complete on its own: keeping the map, free, is the one thing we ask
+    // here, right after the findings. Paying for us to do the work comes after it, as an option
+    // (a lead magnet that ends in a paywall stops feeling free).
     const foot = h("div", "result__foot");
     const keep = h("section", "");
-    keep.append(saveForm({ later: Boolean(checkout && offer && hits.length) }));
+    keep.append(saveForm());
     foot.append(keep);
     if (locked.length) {
       const list = h("ul", "locked");
       for (const node of locked) list.append(h("li", "", null, {}, [lockIcon(), h("span", "", node.title), h("span", "locked__min", `${node.questions} questions · ~${node.minutes} min`)]));
-      foot.append(h("section", "", null, {}, [h("h3", "card__sub", `${locked.length} more parts of your map open up with a few questions each`), list]));
+      foot.append(h("section", "", null, {}, [h("h3", "card__sub", `Still to map: ${locked.length} more parts, a few questions each`), list]));
     }
-    parts.push(foot, row(link_("Start over", () => restart(true))));
+    parts.push(foot);
+    const checkout = DEMO ? DEMO_CHECKOUT : link("completeCheckout");
+    if (checkout && offer && hits.length) parts.push(offerBlock(hits, checkout));
+    parts.push(row(link_("Start over", () => restart(true))));
     return parts;
   },
 };
@@ -630,9 +632,9 @@ async function saveCheck(email, { notify = false, trap = "" } = {}) {
  * link in the same email) or Google where it works. If the code email can't go
  * out, the saved link on screen is how they keep it, and we say so.
  */
-function saveForm({ later = false } = {}) {
+function saveForm() {
   const wrap = h("section", "keep");
-  const keepTitle = later ? "Not today? Keep your map" : "Keep your map";
+  const keepTitle = "Keep your map. It's free.";
   const signed = Account.session();
   const draw = (...nodes) => wrap.replaceChildren(...nodes);
 
@@ -707,7 +709,7 @@ function saveForm({ later = false } = {}) {
     const googleSlot = h("div", "google-slot");
     form.append(
       h("h3", "card__sub card__sub--keep", keepTitle),
-      h("p", "card__help", "Save it to an account so you can come back to it. No password: we email you a code."),
+      h("p", "card__help", "Save your findings and your map so you can come back to them. No card, no password: we email you a code."),
       h("div", "save__row", null, {}, [email, submit]),
       trap,
       error,
@@ -841,8 +843,8 @@ function offerBlock(hits, checkout) {
   );
   const prepared = offer.prepared[hits[0].id];
   section.append(
-    h("p", "eyebrow", "Your full map"),
-    h("h3", "offer__title", "We'll do the first week's work for you.", { id: "offer-title" }),
+    h("p", "eyebrow", "Optional · done for you"),
+    h("h3", "offer__title", "Want us to do the first week's work?", { id: "offer-title" }),
     who,
     h("ul", "offer__list", null, {}, [
       prepared ? h("li", "", prepared) : null,
@@ -855,7 +857,7 @@ function offerBlock(hits, checkout) {
       h("span", "offer__refund", `${price.refundDays}-day refund, no questions asked`),
     ]),
     row(
-      button("Start my map", () => start(checkout), { solid: true, arrow: true }),
+      button("Start my map", () => start(checkout), { arrow: true }),
       monthly ? link_(`Or pay $${price.instalment} a month, ${price.instalments} times`, () => start(monthly)) : null
     ),
     ask,
