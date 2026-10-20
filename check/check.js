@@ -13,13 +13,13 @@
  * this browser so a refresh loses nothing; the resume text never does.
  */
 
-import { PERSIST, link } from "../config.js?v=1f1792d-202610200509";
-import * as I from "../data/intake/intake.mjs?v=1f1792d-202610200509";
-import { mountCheckMap } from "./check-map.js?v=1f1792d-202610200509";
-import * as Account from "./account.js?v=1f1792d-202610200509";
-import { track, visitorId } from "./events.js?v=1f1792d-202610200509";
-import * as Share from "./share.mjs?v=1f1792d-202610200509";
-import { drawShareCard, cardBlob } from "./share-card.js?v=1f1792d-202610200509";
+import { PERSIST, link } from "../config.js?v=5529d91-202610200519";
+import * as I from "../data/intake/intake.mjs?v=5529d91-202610200519";
+import { mountCheckMap } from "./check-map.js?v=5529d91-202610200519";
+import * as Account from "./account.js?v=5529d91-202610200519";
+import { track, visitorId } from "./events.js?v=5529d91-202610200519";
+import * as Share from "./share.mjs?v=5529d91-202610200519";
+import { drawShareCard, cardBlob } from "./share-card.js?v=5529d91-202610200519";
 
 const KEY = "gridschool.check.v1";
 const SHARE_KEY = "gridschool.share.v1";
@@ -357,8 +357,9 @@ const VIEWS = {
 
   result() {
     // The result in steps, one card at a time beside the map, like the questions (Aden: "where do
-    // I look?"): the one thing in your way, what to do today, keep the map free, then a choice of
-    // what would help most, ordered by their answers. store.rstep says which card is showing.
+    // I look?"): the one thing in your way, keep the map free (the map itself walks them through
+    // the fix), then a choice of what would help most, ordered by their answers. store.rstep says
+    // which card is showing.
     const hits = I.bottlenecks(catalog, store.state, store.read).slice(0, 3);
     if (!hits.length) {
       return [
@@ -368,7 +369,7 @@ const VIEWS = {
         row(button("Answer more", () => restart(), { solid: true })),
       ];
     }
-    const step = RESULT_STEPS[store.rstep] ? store.rstep : "finding";
+    const step = RESULT_STEPS[store.rstep] ? store.rstep : "finding"; // an old "today" falls back here
     return RESULT_STEPS[step](hits);
   },
 };
@@ -381,7 +382,7 @@ function goStep(step) {
   show("result");
 }
 
-const stepLabel = (n) => h("p", "eyebrow", `Your scan · ${n} of 3`);
+const stepLabel = (n) => h("p", "eyebrow", `Your scan · ${n} of 2`);
 const backTo = (step, label = "Back") => link_(label, () => goStep(step));
 
 /** A finding; pointing at it lights its ring on the map. */
@@ -422,34 +423,17 @@ const RESULT_STEPS = {
       stepLabel(1),
       h("h2", "card__title", "The most likely thing in your way", { tabindex: -1 }),
       h("div", "findings findings--one", null, {}, [findingCard(hits[0], 0)]),
-      row(button("What to do about it", () => goStep("today"), { solid: true, arrow: true, focus: true })),
+      h("p", "card__help", "Your map walks you through fixing this, step by step.", { style: "margin-top: 14px" }),
+      row(button("Keep my map, free", () => goStep("keep"), { solid: true, arrow: true, focus: true })),
       h("p", "card__fine card__fine--honest", "Our best guess from what you told us. Your map tests it and drops it if it doesn't hold up."),
-    ];
-  },
-
-  today(hits) {
-    const top = hits[0];
-    const copy = button("Copy", async () => {
-      try {
-        await navigator.clipboard.writeText(top.action);
-        copy.textContent = "Copied";
-      } catch {
-        copy.textContent = "Select it to copy";
-      }
-    }, { small: true });
-    return [
-      stepLabel(2),
-      h("h2", "card__title", "Do this today", { tabindex: -1 }),
-      h("div", "today today--step", null, {}, [h("p", "today__text", top.action), copy]),
-      row(button("Keep my map", () => goStep("keep"), { solid: true, arrow: true, focus: true }), backTo("finding")),
     ];
   },
 
   keep() {
     return [
-      stepLabel(3),
+      stepLabel(2),
       h("div", "keep-main", null, {}, [saveForm()]),
-      row(link_(store.saved ? "Continue" : "Not now, continue", () => goStep("next")), backTo("today")),
+      row(link_(store.saved ? "Continue" : "Not now, continue", () => goStep("next")), backTo("finding")),
     ];
   },
 

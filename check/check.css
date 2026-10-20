@@ -315,8 +315,6 @@ footer a { color: var(--muted); }
 .findings--one .today { order: 0; grid-column: auto; }
 .keep-main { margin-top: 8px; }
 .keep-main .card__sub--keep { font-size: 18px; color: var(--lumen); }
-.today--step { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-top: 14px; }
-.today--step .today__text { margin: 0; font-size: 17px; line-height: 1.55; }
 .options--choices { margin-top: 16px; }
 /* On its own step the offer is the card's content, not a box inside the card. */
 .card > .offer { margin-top: 0; padding: 0; background: none; box-shadow: none; }

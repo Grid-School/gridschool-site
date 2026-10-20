@@ -13,7 +13,7 @@
  * Pure: zone math is Intl only, no library.
  */
 
-import { addDays, isoDate, parseDate, weekStart } from "./time.js?v=1f1792d-202610200509";
+import { addDays, isoDate, parseDate, weekStart } from "./time.js?v=5529d91-202610200519";
 
 export const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const DAY_MS = 86400000;

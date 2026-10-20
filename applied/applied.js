@@ -3,9 +3,9 @@
  * Mailto is only the fallback if that post failed. Cal.com is later.
  */
 
-import { getApplication, formatApplication, mailtoHref } from "../js/lead.js?v=1f1792d-202610200509";
-import { link } from "../config.js?v=1f1792d-202610200509";
-import { applySiteOverrides } from "../js/site-overrides.js?v=1f1792d-202610200509";
+import { getApplication, formatApplication, mailtoHref } from "../js/lead.js?v=5529d91-202610200519";
+import { link } from "../config.js?v=5529d91-202610200519";
+import { applySiteOverrides } from "../js/site-overrides.js?v=5529d91-202610200519";
 
 const application = getApplication();
 
