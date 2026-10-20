@@ -1,0 +1,517 @@
+{
+ "about": "Fictional walkthrough seat (ops/make-demo-map.py). Not a real person.",
+ "name": "Sam Rivera",
+ "map": {
+  "version": "complete-2",
+  "title": "Your map",
+  "law": "Every step either clears a likely bottleneck or tells us more about one.",
+  "started": "2026-10-18",
+  "families": [
+   {
+    "id": "interview",
+    "label": "Interview",
+    "lane": 0,
+    "track": "spine"
+   },
+   {
+    "id": "pipeline",
+    "label": "Search",
+    "lane": 1,
+    "track": "spine"
+   },
+   {
+    "id": "proof",
+    "label": "Proof",
+    "lane": 2,
+    "track": "spine"
+   },
+   {
+    "id": "network",
+    "label": "People",
+    "lane": 3,
+    "track": "spine"
+   },
+   {
+    "id": "presence",
+    "label": "Presence",
+    "lane": 4,
+    "track": "spine"
+   }
+  ],
+  "phases": [
+   {
+    "id": "now",
+    "label": "Start here",
+    "pace": "This week, any order"
+   },
+   {
+    "id": "learn",
+    "label": "Tell us more",
+    "pace": "A few minutes each; every answer sharpens the map"
+   },
+   {
+    "id": "week",
+    "label": "Week one",
+    "pace": "One question, a week in"
+   }
+  ],
+  "nodes": [
+   {
+    "id": "b.reach",
+    "n": 1,
+    "title": "Get your applications in front of a person",
+    "family": "pipeline",
+    "phase": "now",
+    "kind": "core",
+    "requires": [],
+    "completion": "tasks",
+    "why": "Portal applications are skimmed by software and busy recruiters. A short note to the person hiring is read.",
+    "basis": {
+     "confidence": "probable",
+     "because": [
+      "You've sent 76 to 200 applications and rarely hear back."
+     ],
+     "from": [
+      "answers",
+      "resume"
+     ],
+     "rule": "reach"
+    },
+    "prepared": "We find five fresh roles that fit you, the hiring manager for each, and a short note to each one in your voice.",
+    "stages": [
+     {
+      "id": "roles",
+      "label": "Finding roles"
+     },
+     {
+      "id": "managers",
+      "label": "Finding hiring managers"
+     },
+     {
+      "id": "notes",
+      "label": "Drafting notes"
+     },
+     {
+      "id": "review",
+      "label": "Aden reviewing"
+     },
+     {
+      "id": "ready",
+      "label": "Ready for you"
+     }
+    ],
+    "prepFirst": true,
+    "tasks": [
+     {
+      "id": "b.reach.send",
+      "title": "Send the five notes from your own LinkedIn",
+      "kind": "ship",
+      "done_when": "All five notes are sent.",
+      "changed": "Five hiring managers now have a note from you, not only a portal application.",
+      "est": 25
+     }
+    ],
+    "evidence": "Five notes have gone to hiring managers.",
+    "group": "g.now"
+   },
+   {
+    "id": "b.story",
+    "n": 2,
+    "title": "Make your resume read like the role you want",
+    "family": "presence",
+    "phase": "now",
+    "kind": "core",
+    "requires": [],
+    "completion": "tasks",
+    "why": "A reader decides in a few seconds whether you fit. The first lines have to say the role and the proof.",
+    "basis": {
+     "confidence": "probable",
+     "because": [
+      "Most replies depend on a quick skim of your resume, and right now those replies aren't coming.",
+      "In your resume, your bullet points describe your duties, not what changed because of your work.",
+      "In your resume, there are no numbers that show the impact of your work."
+     ],
+     "from": [
+      "answers",
+      "resume"
+     ],
+     "rule": "story"
+    },
+    "prepared": "We rewrite your headline and the top of your resume from what you've told us, and flag any number we need you to confirm.",
+    "stages": [
+     {
+      "id": "reading",
+      "label": "Reading your resume"
+     },
+     {
+      "id": "rewriting",
+      "label": "Rewriting the top lines"
+     },
+     {
+      "id": "review",
+      "label": "Aden reviewing"
+     },
+     {
+      "id": "ready",
+      "label": "Ready for you"
+     }
+    ],
+    "prepFirst": true,
+    "tasks": [
+     {
+      "id": "b.story.confirm",
+      "title": "Confirm or correct the facts we flagged",
+      "kind": "write",
+      "done_when": "Every flagged fact is confirmed or fixed.",
+      "changed": "Every number in your new top lines is one you've checked.",
+      "est": 10
+     },
+     {
+      "id": "b.story.swap",
+      "title": "Put the new top lines on your resume and LinkedIn",
+      "kind": "ship",
+      "done_when": "Your resume and LinkedIn show the new top lines.",
+      "changed": "Your resume and LinkedIn now open with the role you want.",
+      "est": 15
+     }
+    ],
+    "evidence": "Your resume and LinkedIn lead with the role you want.",
+    "group": "g.now"
+   },
+   {
+    "id": "b.proof",
+    "n": 3,
+    "title": "Show you can catch what AI gets wrong",
+    "family": "proof",
+    "phase": "now",
+    "kind": "core",
+    "requires": [],
+    "completion": "tasks",
+    "why": "Anyone can generate an app now. A dated audit of a real AI-built app, with the fixes, shows the judgment teams are hiring for, and a stranger can check it.",
+    "basis": {
+     "confidence": "probable",
+     "because": [
+      "In your resume, there are no numbers that show the impact of your work."
+     ],
+     "from": [
+      "answers",
+      "resume"
+     ],
+     "rule": "proof"
+    },
+    "prepared": "We line up an AI-built app whose owner wants it checked, set up the introduction, and give you the audit checklist and a report outline.",
+    "stages": [
+     {
+      "id": "match",
+      "label": "Finding an app to audit"
+     },
+     {
+      "id": "intro",
+      "label": "Setting up the introduction"
+     },
+     {
+      "id": "review",
+      "label": "Aden reviewing"
+     },
+     {
+      "id": "ready",
+      "label": "Ready for you"
+     }
+    ],
+    "prepFirst": true,
+    "tasks": [
+     {
+      "id": "b.proof.audit",
+      "title": "Audit it against the checklist and fix the critical findings",
+      "kind": "ship",
+      "done_when": "Each critical finding is fixed and checked.",
+      "changed": "A real AI-built app has a dated audit, with its critical findings fixed.",
+      "est": 240
+     },
+     {
+      "id": "b.proof.link",
+      "title": "Publish the one-page audit report and link it at the top of your resume",
+      "kind": "ship",
+      "done_when": "The report is live and linked at the top of your resume.",
+      "changed": "A reviewer can now open your audit from the top of your resume.",
+      "est": 30
+     }
+    ],
+    "evidence": "One verified audit is linked at the top of your resume.",
+    "group": "g.now"
+   },
+   {
+    "id": "t.today",
+    "n": 4,
+    "title": "Get your profile ready for the notes",
+    "family": "pipeline",
+    "phase": "now",
+    "kind": "core",
+    "requires": [],
+    "completion": "tasks",
+    "why": "While we work on the rest, this is the one thing that moves today. It takes about ten minutes, and only you can do it.",
+    "basis": {
+     "confidence": "probable",
+     "because": [
+      "You've sent 76 to 200 applications and rarely hear back."
+     ],
+     "rule": "reach"
+    },
+    "tasks": [
+     {
+      "id": "t.today.do",
+      "title": "Change your LinkedIn headline so it names the role you want",
+      "kind": "ship",
+      "done_when": "Your headline names the role you want.",
+      "changed": "A hiring manager who opens your profile from a note now reads the role you want first.",
+      "est": 10
+     }
+    ],
+    "evidence": "Today's ten minutes are done."
+   },
+   {
+    "id": "q.c1",
+    "n": 5,
+    "title": "Goals and limits: 5 quick questions",
+    "family": "pipeline",
+    "phase": "learn",
+    "kind": "core",
+    "requires": [],
+    "chunk": "c1",
+    "why": "Tell us what a good next job looks like for you, and what it can't cost you.",
+    "basis": {
+     "confidence": "unassessed",
+     "because": [
+      "Answering opens up the roles to target."
+     ]
+    },
+    "tasks": [
+     {
+      "id": "q.c1.answer",
+      "title": "Answer the 5 questions (about 1 min)",
+      "kind": "write",
+      "done_when": "Your answers are in.",
+      "changed": "Your target roles are set.",
+      "est": 1
+     }
+    ],
+    "evidence": "Your target roles are set.",
+    "group": "g.learn"
+   },
+   {
+    "id": "q.c2",
+    "n": 6,
+    "title": "Where it stops: 5 quick questions",
+    "family": "pipeline",
+    "phase": "learn",
+    "kind": "core",
+    "requires": [],
+    "chunk": "c2",
+    "why": "Let's look at where your applications go and what comes back.",
+    "basis": {
+     "confidence": "unassessed",
+     "because": [
+      "Answering opens up where to send applications."
+     ]
+    },
+    "tasks": [
+     {
+      "id": "q.c2.answer",
+      "title": "Answer the 5 questions (about 2 min)",
+      "kind": "write",
+      "done_when": "Your answers are in.",
+      "changed": "Your search channels are on your map.",
+      "est": 2
+     }
+    ],
+    "evidence": "Your search channels are on your map.",
+    "group": "g.learn"
+   },
+   {
+    "id": "q.c4",
+    "n": 7,
+    "title": "Your presence: 6 quick questions",
+    "family": "presence",
+    "phase": "learn",
+    "kind": "core",
+    "requires": [],
+    "chunk": "c4",
+    "why": "This is what a recruiter sees in their first seven seconds. We'll handle the rewriting and the design.",
+    "basis": {
+     "confidence": "unassessed",
+     "because": [
+      "Answering opens up your LinkedIn, banner and photo."
+     ]
+    },
+    "tasks": [
+     {
+      "id": "q.c4.answer",
+      "title": "Answer the 6 questions (about 3 min)",
+      "kind": "write",
+      "done_when": "Your answers are in.",
+      "changed": "We're preparing your profile now. A person will review it within 24 hours.",
+      "est": 3
+     }
+    ],
+    "evidence": "We're preparing your profile now. A person will review it within 24 hours.",
+    "group": "g.learn"
+   },
+   {
+    "id": "q.c3",
+    "n": 8,
+    "title": "Your proof: 5 quick questions",
+    "family": "proof",
+    "phase": "learn",
+    "kind": "core",
+    "requires": [],
+    "chunk": "c3",
+    "why": "Let's look at the work you've shipped that someone else could open and check.",
+    "basis": {
+     "confidence": "unassessed",
+     "because": [
+      "Answering opens up your proof and projects."
+     ]
+    },
+    "tasks": [
+     {
+      "id": "q.c3.answer",
+      "title": "Answer the 5 questions (about 2 min)",
+      "kind": "write",
+      "done_when": "Your answers are in.",
+      "changed": "Your proof is on the map.",
+      "est": 2
+     }
+    ],
+    "evidence": "Your proof is on the map.",
+    "group": "g.learn"
+   },
+   {
+    "id": "q.c5",
+    "n": 9,
+    "title": "Your interviews: 2 quick questions",
+    "family": "interview",
+    "phase": "learn",
+    "kind": "core",
+    "requires": [],
+    "chunk": "c5",
+    "why": "Tell us about the interviews you've had and where they ended.",
+    "basis": {
+     "confidence": "unassessed",
+     "because": [
+      "Answering opens up interview prep for each company."
+     ]
+    },
+    "tasks": [
+     {
+      "id": "q.c5.answer",
+      "title": "Answer the 2 questions (about 1 min)",
+      "kind": "write",
+      "done_when": "Your answers are in.",
+      "changed": "Your interview prep is on the map.",
+      "est": 1
+     }
+    ],
+    "evidence": "Your interview prep is on the map.",
+    "group": "g.learn"
+   },
+   {
+    "id": "q.c6",
+    "n": 10,
+    "title": "Your targets: 4 quick questions",
+    "family": "network",
+    "phase": "learn",
+    "kind": "core",
+    "requires": [],
+    "chunk": "c6",
+    "why": "Tell us where you'd like to work, and where you wouldn't.",
+    "basis": {
+     "confidence": "unassessed",
+     "because": [
+      "Answering opens up outreach to your target companies."
+     ]
+    },
+    "tasks": [
+     {
+      "id": "q.c6.answer",
+      "title": "Answer the 4 questions (about 3 min)",
+      "kind": "write",
+      "done_when": "Your answers are in.",
+      "changed": "We're preparing your outreach now.",
+      "est": 3
+     }
+    ],
+    "evidence": "We're preparing your outreach now.",
+    "group": "g.learn"
+   },
+   {
+    "id": "w.checkin",
+    "n": 11,
+    "title": "Week one check-in",
+    "family": "pipeline",
+    "phase": "week",
+    "kind": "core",
+    "requires": [],
+    "completion": "tasks",
+    "opens": "2026-10-25",
+    "coming": "One question about how your search feels, a week after you started.",
+    "why": "A week in, one question. Your answer goes to Aden.",
+    "tasks": [
+     {
+      "id": "w.checkin.feel",
+      "title": "How do you feel about your search now?",
+      "kind": "write",
+      "done_when": "You've answered.",
+      "changed": "Your answer is with Aden.",
+      "est": 2,
+      "fields": [
+       {
+        "id": "scale",
+        "label": "Where it stands, 1 to 5",
+        "scale": 5,
+        "low": "Worse than when I started",
+        "high": "Much better",
+        "required": true
+       },
+       {
+        "id": "note",
+        "label": "In a sentence or two, why",
+        "textarea": true
+       }
+      ]
+     }
+    ],
+    "evidence": "Your week-one answer is in."
+   }
+  ],
+  "weekly": [],
+  "groups": [
+   {
+    "id": "g.now",
+    "mode": "all",
+    "label": "Start here, any order"
+   },
+   {
+    "id": "g.learn",
+    "mode": "all",
+    "label": "Tell us more, any order"
+   }
+  ]
+ },
+ "prep": {
+  "b.reach": {
+   "stage": "managers",
+   "at": {
+    "roles": "2026-10-19T08:45:27+00:00",
+    "managers": "2026-10-20T01:45:27+00:00"
+   }
+  },
+  "b.story": {
+   "stage": "review",
+   "at": {
+    "reading": "2026-10-19T06:45:27+00:00",
+    "rewriting": "2026-10-19T19:45:27+00:00",
+    "review": "2026-10-20T02:45:27+00:00"
+   }
+  }
+ }
+}

@@ -10,10 +10,10 @@
  *    If that hand-off says the sign-in expired, the sign-in form comes back.
  */
 
-import { PERSIST, link } from "../config.js?v=49dfe83-202610200325";
-import * as Account from "../check/account.js?v=49dfe83-202610200325";
-import { enterSeat } from "../app/js/persist-auth.js?v=49dfe83-202610200325";
-import { reviewLabel } from "./when.js?v=49dfe83-202610200325";
+import { PERSIST, link } from "../config.js?v=b399b51-202610200449";
+import * as Account from "../check/account.js?v=b399b51-202610200449";
+import { enterSeat } from "../app/js/persist-auth.js?v=b399b51-202610200449";
+import { reviewLabel } from "./when.js?v=b399b51-202610200449";
 
 // Localhost never talks to production: ?api= when given, else the page's own origin.
 const API = (() => {
@@ -158,6 +158,7 @@ function welcomeView(me) {
   const first = (me.name || "").trim().split(/\s+/)[0];
   const error = h("p", "card__error", "", { role: "alert" });
   const open = button("Open my map →", async () => {
+    if (me.demo) return (location.href = "../app/?s=demo&map=complete");
     open.disabled = true;
     open.textContent = "Opening…";
     error.textContent = "";
@@ -175,6 +176,7 @@ function welcomeView(me) {
     }
   });
   show(
+    me.demo ? h("p", "card__fine", "Demo walkthrough: nothing was charged. The map that opens is a made-up example.", { style: "margin: 0 0 14px" }) : null,
     h("p", "eyebrow", "You're in"),
     h("h1", "card__title", first ? `Welcome, ${first}.` : "Welcome."),
     h("p", "card__lead", startingOn(me)),
@@ -188,6 +190,11 @@ function welcomeView(me) {
 
 async function boot() {
   const params = new URLSearchParams(location.search);
+  // Walkthroughs (from demo/checkout/): the real welcome, with the demo name and the check's top finding.
+  if (params.get("demo") === "1") {
+    const top = (params.get("top") || "").replace(/[^a-z]/g, "").slice(0, 20);
+    return welcomeView({ demo: true, name: (params.get("name") || "Sam Rivera").slice(0, 60), checks: top ? [{ top: [{ id: top }] }] : [] });
+  }
   const signin = params.get("signin");
   if (signin) {
     params.delete("signin");

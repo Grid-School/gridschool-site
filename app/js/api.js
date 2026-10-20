@@ -3,13 +3,13 @@
  * student file seeds identity from the notebook API.
  */
 
-import { loadPrivateJson } from "./gate.js?v=49dfe83-202610200325";
-import { seedFromSnapshot } from "./persist.js?v=49dfe83-202610200325";
-import { fetchSnapshot, remoteEnabled } from "./persist-remote.js?v=49dfe83-202610200325";
-import { applySiteOverrides, applyPrivateLinks, applyCopyOverrides } from "../../js/site-overrides.js?v=49dfe83-202610200325";
-import { revealMemberInvite } from "../../js/member-invite.js?v=49dfe83-202610200325";
-import { numberCurriculumReadings } from "./reading-order.js?v=49dfe83-202610200325";
-import { resolveMap, loadModules, moduleRefs } from "./modules.js?v=49dfe83-202610200325";
+import { loadPrivateJson } from "./gate.js?v=b399b51-202610200449";
+import { seedFromSnapshot } from "./persist.js?v=b399b51-202610200449";
+import { fetchSnapshot, remoteEnabled } from "./persist-remote.js?v=b399b51-202610200449";
+import { applySiteOverrides, applyPrivateLinks, applyCopyOverrides } from "../../js/site-overrides.js?v=b399b51-202610200449";
+import { revealMemberInvite } from "../../js/member-invite.js?v=b399b51-202610200449";
+import { numberCurriculumReadings } from "./reading-order.js?v=b399b51-202610200449";
+import { resolveMap, loadModules, moduleRefs } from "./modules.js?v=b399b51-202610200449";
 
 const BASE = "../data/";
 const cache = new Map();
@@ -110,6 +110,19 @@ export function boardCurriculum({ universal, student, slug, tour = false, overri
   return applyCopyOverrides(source, overrides);
 }
 
+/** The demo board's Complete map, when the link asks for it (?map=complete). Null otherwise. */
+async function demoCompleteSeat(student) {
+  if (new URLSearchParams(globalThis.location?.search || "").get("map") !== "complete") return null;
+  try {
+    const res = await fetch(new URL("../demo/complete-map.json", globalThis.location.href));
+    if (!res.ok) return null;
+    const doc = await res.json();
+    return { ...student, map: doc.map, prep: doc.prep, identity: { ...(student?.identity ?? {}), name: doc.name } };
+  } catch {
+    return null; // the universal demo board still opens
+  }
+}
+
 /** Load everything one board needs, in parallel. */
 export async function loadBoard(slug, { tour = false } = {}) {
   const [curriculum, cohort, student, overrides] = await Promise.all([
@@ -120,14 +133,18 @@ export async function loadBoard(slug, { tour = false } = {}) {
     // for long and never fails it: config.js and the repo mirror stand in.
     applySiteOverrides(),
   ]);
-  const library = slug === "demo" || tour ? {} : await libraryFor(student);
+  // Walkthroughs: /app/?s=demo&map=complete shows a made-up Complete seat's map (demo/complete-map.json,
+  // written by ops/make-demo-map.py) instead of the residency curriculum. Still the signed-out demo board.
+  const demoSeat = slug === "demo" && !tour ? await demoCompleteSeat(student) : null;
+  const seat = demoSeat ?? student;
+  const library = (slug === "demo" && !demoSeat) || tour ? {} : await libraryFor(seat);
   await applyPrivateLinks();
   revealMemberInvite({ slug });
   return {
-    curriculum: boardCurriculum({ universal: curriculum, student, slug, tour, overrides, library }),
+    curriculum: boardCurriculum({ universal: curriculum, student: seat, slug: demoSeat ? "demo-complete" : slug, tour, overrides, library }),
     universal: curriculum,
     cohort,
-    student,
+    student: seat,
     overrides,
   };
 }

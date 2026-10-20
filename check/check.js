@@ -13,13 +13,13 @@
  * this browser so a refresh loses nothing; the resume text never does.
  */
 
-import { PERSIST, link } from "../config.js?v=49dfe83-202610200325";
-import * as I from "../data/intake/intake.mjs?v=49dfe83-202610200325";
-import { mountCheckMap } from "./check-map.js?v=49dfe83-202610200325";
-import * as Account from "./account.js?v=49dfe83-202610200325";
-import { track, visitorId } from "./events.js?v=49dfe83-202610200325";
-import * as Share from "./share.mjs?v=49dfe83-202610200325";
-import { drawShareCard, cardBlob } from "./share-card.js?v=49dfe83-202610200325";
+import { PERSIST, link } from "../config.js?v=b399b51-202610200449";
+import * as I from "../data/intake/intake.mjs?v=b399b51-202610200449";
+import { mountCheckMap } from "./check-map.js?v=b399b51-202610200449";
+import * as Account from "./account.js?v=b399b51-202610200449";
+import { track, visitorId } from "./events.js?v=b399b51-202610200449";
+import * as Share from "./share.mjs?v=b399b51-202610200449";
+import { drawShareCard, cardBlob } from "./share-card.js?v=b399b51-202610200449";
 
 const KEY = "gridschool.check.v1";
 const SHARE_KEY = "gridschool.share.v1";
@@ -51,6 +51,23 @@ const API = (() => {
   const asked = new URLSearchParams(location.search).get("api");
   if (local) return (asked || location.origin).replace(/\/$/, "");
   return PERSIST.endpoint;
+})();
+
+/**
+ * Walkthrough mode (?demo=1, kept for this tab): the offer shows even before Stripe is
+ * connected and leads to demo/checkout/, which charges nothing; funnel counting is off.
+ * ?demo=0 turns it off again.
+ */
+const DEMO_CHECKOUT = "../demo/checkout/";
+const DEMO = (() => {
+  const asked = new URLSearchParams(location.search).get("demo");
+  try {
+    if (asked === "1") sessionStorage.setItem("gridschool.demo", "1");
+    if (asked === "0") sessionStorage.removeItem("gridschool.demo");
+    return sessionStorage.getItem("gridschool.demo") === "1";
+  } catch {
+    return asked === "1";
+  }
 })();
 
 /** What a person sees when something fails: our words, never the browser's ("Failed to fetch"). */
@@ -399,7 +416,7 @@ const VIEWS = {
 
     // The offer comes right after the diagnosis: the work we'd do, the price, the refund and the
     // person, in that order (Rory's review). Keeping the map for later sits under it, second.
-    const checkout = link("completeCheckout");
+    const checkout = DEMO ? DEMO_CHECKOUT : link("completeCheckout");
     if (checkout && offer && hits.length) parts.push(offerBlock(hits, checkout));
     const foot = h("div", "result__foot");
     const keep = h("section", "");
@@ -756,6 +773,14 @@ function saveForm({ later = false } = {}) {
  * the welcome page signs them in after they pay.
  */
 async function goToCheckout(checkout, email = "") {
+  if (DEMO) {
+    // Walkthrough: nothing is saved or counted; the demo checkout carries the top finding on.
+    const demo = new URL(checkout, location.href);
+    const top = I.bottlenecks(catalog, store.state, store.read)[0];
+    if (top) demo.searchParams.set("top", top.id);
+    location.href = demo.toString();
+    return;
+  }
   if (!store.saved?.id) await saveCheck(email);
   const url = new URL(checkout);
   url.searchParams.set("client_reference_id", store.saved.id);
@@ -772,7 +797,7 @@ async function goToCheckout(checkout, email = "") {
  */
 function offerBlock(hits, checkout) {
   const price = offer.price;
-  const monthly = link("completeCheckoutMonthly");
+  const monthly = DEMO ? `${DEMO_CHECKOUT}?plan=monthly` : link("completeCheckoutMonthly");
   const photo = link("adenPhoto");
   const section = h("section", "offer", null, { "aria-labelledby": "offer-title" });
   const error = h("p", "card__error", "", { role: "alert" });
@@ -787,7 +812,7 @@ function offerBlock(hits, checkout) {
     error.textContent = "";
     target = url;
     const signed = Account.session();
-    if (store.saved?.id || signed) {
+    if (store.saved?.id || signed || DEMO) {
       try {
         return await goToCheckout(url, signed?.email || "");
       } catch (problem) {
@@ -1100,6 +1125,7 @@ addEventListener("keydown", (event) => {
 
 /** One funnel step, tagged with where they came from (server: events.py). */
 function count(name, props = {}) {
+  if (DEMO) return; // walkthroughs never count as real traffic
   track(API, name, { source: store.from, check: store.saved?.id || "", props: { variant, ...props } });
 }
 

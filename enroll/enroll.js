@@ -6,9 +6,9 @@
  * there; until then it walks the demo path to day one.
  */
 
-import { link, PRICING } from "../config.js?v=49dfe83-202610200325";
-import { saveEnrollment } from "../js/lead.js?v=49dfe83-202610200325";
-import { applySiteOverrides } from "../js/site-overrides.js?v=49dfe83-202610200325";
+import { link, PRICING } from "../config.js?v=b399b51-202610200449";
+import { saveEnrollment } from "../js/lead.js?v=b399b51-202610200449";
+import { applySiteOverrides } from "../js/site-overrides.js?v=b399b51-202610200449";
 
 const PLANS = [
   {
