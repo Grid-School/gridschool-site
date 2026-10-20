@@ -3,14 +3,14 @@
  * board, built from the same model the student sees so the two can never disagree.
  */
 
-import { loadRoster, loadStudent, loadCurriculum, loadCohort, boardCurriculum, libraryFor } from "./api.js?v=b335f3c-202610202219";
-import { readOverlay, mergeStudent, listEvents } from "./overlay.js?v=b335f3c-202610202219";
-import { hydrateFromRemote, remoteEnabled } from "./persist-remote.js?v=b335f3c-202610202219";
-import { listPersistSlugs } from "./persist-admin.js?v=b335f3c-202610202219";
-import { buildGraph, progress, nextUp, STATUS } from "./graph/model.js?v=b335f3c-202610202219";
-import { quotaStatus, waitingOn, buildQueue } from "./tasks.js?v=b335f3c-202610202219";
-import { weekNumber, studentWeek, ownSchedule, hasOwnMap } from "./time.js?v=b335f3c-202610202219";
-import { quietSignal } from "./last-seen.js?v=b335f3c-202610202219";
+import { loadRoster, loadStudent, loadCurriculum, loadCohort, boardCurriculum, libraryFor } from "./api.js?v=c2793e2-202610202249";
+import { readOverlay, mergeStudent, listEvents } from "./overlay.js?v=c2793e2-202610202249";
+import { hydrateFromRemote, remoteEnabled } from "./persist-remote.js?v=c2793e2-202610202249";
+import { listPersistSlugs } from "./persist-admin.js?v=c2793e2-202610202249";
+import { buildGraph, progress, nextUp, STATUS } from "./graph/model.js?v=c2793e2-202610202249";
+import { quotaStatus, waitingOn, buildQueue } from "./tasks.js?v=c2793e2-202610202249";
+import { weekNumber, studentWeek, ownSchedule, hasOwnMap } from "./time.js?v=c2793e2-202610202249";
+import { quietSignal } from "./last-seen.js?v=c2793e2-202610202249";
 
 export async function loadCohortBoards() {
   const [roster, curriculum, cohort, persistSlugs] = await Promise.all([

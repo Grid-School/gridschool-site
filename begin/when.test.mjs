@@ -1,6 +1,6 @@
 // node site/begin/when.test.mjs
 import assert from "node:assert/strict";
-import { nextReview, reviewLabel } from "./when.js?v=b335f3c-202610202219";
+import { nextReview, reviewLabel } from "./when.js?v=c2793e2-202610202249";
 
 const iso = (s) => new Date(s);
 

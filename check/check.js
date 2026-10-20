@@ -13,13 +13,13 @@
  * this browser so a refresh loses nothing; the resume text never does.
  */
 
-import { PERSIST, link } from "../config.js?v=b335f3c-202610202219";
-import * as I from "../data/intake/intake.mjs?v=b335f3c-202610202219";
-import { mountCheckMap } from "./check-map.js?v=b335f3c-202610202219";
-import * as Account from "./account.js?v=b335f3c-202610202219";
-import { track, visitorId } from "./events.js?v=b335f3c-202610202219";
-import * as Share from "./share.mjs?v=b335f3c-202610202219";
-import { drawShareCard, cardBlob } from "./share-card.js?v=b335f3c-202610202219";
+import { PERSIST, link } from "../config.js?v=c2793e2-202610202249";
+import * as I from "../data/intake/intake.mjs?v=c2793e2-202610202249";
+import { mountCheckMap } from "./check-map.js?v=c2793e2-202610202249";
+import * as Account from "./account.js?v=c2793e2-202610202249";
+import { track, visitorId } from "./events.js?v=c2793e2-202610202249";
+import * as Share from "./share.mjs?v=c2793e2-202610202249";
+import { drawShareCard, cardBlob } from "./share-card.js?v=c2793e2-202610202249";
 
 const KEY = "gridschool.check.v1";
 const SHARE_KEY = "gridschool.share.v1";

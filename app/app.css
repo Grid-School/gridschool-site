@@ -1547,6 +1547,9 @@ pre.diagram--failed { border-color: var(--amber); }
 .rz-seg.is-done { stroke: color-mix(in srgb, var(--ok) 70%, transparent); }
 .rz-seg.is-live { stroke: var(--cyan); filter: drop-shadow(0 0 4px color-mix(in srgb, var(--cyan) 55%, transparent)); }
 .rz-tie { fill: none; stroke: var(--cyan); stroke-width: 1; stroke-dasharray: 3 6; opacity: .12; }
+.rz-start__line { fill: none; stroke: var(--line); stroke-width: 1.2; opacity: .55; }
+.rz-start__dot { fill: var(--cyan); filter: drop-shadow(0 0 5px color-mix(in srgb, var(--cyan) 60%, transparent)); }
+.rz-start__label { font: 500 9.5px var(--font-mono); letter-spacing: .14em; fill: var(--muted); text-anchor: middle; }
 .rz-current { fill: none; stroke: var(--cyan); stroke-width: 2; stroke-linecap: round; filter: drop-shadow(0 0 5px var(--cyan)); }
 .rz-spark { fill: #fff; filter: drop-shadow(0 0 6px var(--cyan)) drop-shadow(0 0 14px var(--cyan)); }
 

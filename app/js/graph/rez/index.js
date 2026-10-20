@@ -18,12 +18,12 @@
  * view glides to it. Nothing idles. Reduced motion jumps.
  */
 
-import { el, clear } from "../../dom.js?v=b335f3c-202610202219";
-import { traceSet, stepNumber } from "../model.js?v=b335f3c-202610202219";
-import { STANDING, standingOf, inSequence } from "../standing.js?v=b335f3c-202610202219";
-import { typeOf, specOf } from "../model.js?v=b335f3c-202610202219";
-import { isTypedMap } from "../../engine.js?v=b335f3c-202610202219";
-import { isCompleteMap } from "../../prep.js?v=b335f3c-202610202219";
+import { el, clear } from "../../dom.js?v=c2793e2-202610202249";
+import { traceSet, stepNumber } from "../model.js?v=c2793e2-202610202249";
+import { STANDING, standingOf, inSequence } from "../standing.js?v=c2793e2-202610202249";
+import { typeOf, specOf } from "../model.js?v=c2793e2-202610202249";
+import { isTypedMap } from "../../engine.js?v=c2793e2-202610202249";
+import { isCompleteMap } from "../../prep.js?v=c2793e2-202610202249";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 /** "2026-10-16" → "Due Oct 16". */
@@ -41,7 +41,7 @@ import {
   runCurrent,
   rezIn,
   prefersReducedMotion,
-} from "../../../../js/rez/road.js?v=b335f3c-202610202219";
+} from "../../../../js/rez/road.js?v=c2793e2-202610202249";
 
 /*
  * One grid under everything, in the board's own units (as on the landing):
@@ -51,18 +51,16 @@ import {
 const CELL = 50;
 const SPACING = 3 * CELL;
 const LANE_GAP = 2 * CELL;
+/** Typed maps can hold nodes in neighbouring lanes in one column: a full label and YOU ARE HERE fit between. */
+const TYPED_LANE_GAP = 3 * CELL;
 const TOP = 2 * CELL;
 const LEFT = 4 * CELL;
 const RIGHT = 4 * CELL;
 const SIDE_GAP = 3 * CELL;
 /** Typed maps lay out by dependency: one column per step of depth, this far apart. */
 const FLOW_SPACING = 3.6 * CELL;
-/** A column taller than this splits into sub-columns side by side. */
+/** A Complete map's group longer than this splits into columns side by side. */
 const FLOW_MAX_STACK = 6;
-/** Above every node, room for the YOU ARE HERE label it shows when it's next. */
-const HERE_ROOM = 28;
-/** Below a node's label, the gap before the next node in its column. */
-const FLOW_STACK = 0.9 * CELL;
 /** Ready nodes stand this far right of you, in their lanes. */
 const READY_DX = 1.5 * CELL;
 const NODE_R = 15;
@@ -96,10 +94,11 @@ function roadLayout(road, laneOf, laneY) {
  * Typed maps (node types, parallel groups) lay out by what each step waits on:
  * a step's column is the longest chain of requirements before it, so steps
  * that can be done together stand in one column, and every line is a real
- * requirement. A group id in requires stands for its members. In a column,
- * nodes keep their lane where they can and otherwise stack below, never
- * touching. Each column takes the phase of its first step, so bands don't
- * overlap.
+ * requirement. A group id in requires stands for its members. Every node sits
+ * on its own lane's line: when a column holds more than one node in a lane,
+ * they stand side by side along that line and the column widens, instead of
+ * stacking down into the lanes below. Each column takes the phase of its first
+ * step, so bands don't overlap.
  */
 function flowLayout(road, laneOf, laneY, { inOrder = false } = {}) {
   const ids = new Set(road.map((node) => node.id));
@@ -119,51 +118,43 @@ function flowLayout(road, laneOf, laneY, { inOrder = false } = {}) {
   road.forEach((node) => depthOf(node));
   const columns = [];
   for (const node of road) (columns[depth.get(node.id)] ??= []).push(node);
-  // A tall column splits into sub-columns side by side: a parallel group stays
-  // together in its own, the rest follow, at most FLOW_MAX_STACK to a column.
-  const byLane = (a, b) => (laneOf.get(a.family) ?? 0) - (laneOf.get(b.family) ?? 0) || a.n - b.n;
+  const laneIndex = (node) => laneOf.get(node.family) ?? 0;
+  const byLane = (a, b) => laneIndex(a) - laneIndex(b) || a.n - b.n;
   const stops = [];
   for (const column of columns.filter(Boolean)) {
-    if (inOrder) {
-      stops.push(...orderedStops(column, byLane));
-      continue;
-    }
-    if (column.length <= FLOW_MAX_STACK) {
-      stops.push(column.sort(byLane));
-      continue;
-    }
-    const groups = new Map();
-    const loose = [];
-    for (const node of column) (node.group ? (groups.get(node.group) ?? groups.set(node.group, []).get(node.group)) : loose).push(node);
-    const parts = [...[...groups.values()].sort((a, b) => b.length - a.length || a[0].n - b[0].n), loose];
-    let current = [];
-    for (const part of parts) {
-      if (current.length && current.length + part.length > FLOW_MAX_STACK) {
-        stops.push(current.sort(byLane));
-        current = [];
-      }
-      current.push(...part);
-    }
-    if (current.length) stops.push(current.sort(byLane));
+    if (inOrder) stops.push(...orderedStops(column, byLane));
+    else stops.push(column.sort(byLane));
   }
   const placed = [];
-  stops.forEach((column, index) => {
+  // The first column sits one step right of the start point, which every root hangs from.
+  let x = LEFT + FLOW_SPACING;
+  for (const column of stops) {
     const phase = [...column].sort((a, b) => a.n - b.n)[0].phase;
-    let floor = -Infinity;
+    const used = new Map();
     for (const node of column) {
-      const lane = laneOf.get(node.family) ?? 0;
-      const y = Math.max(laneY(lane), floor);
-      // The next node in the column starts below this one's label: title lines,
-      // the tag or due line, and a gap.
-      const lines = wrapLabel(node.title, 19, 3).length + (node.due || node.hint || (node.type && node.type !== "step") ? 1 : 0);
-      // Any node can become "do this next", which puts YOU ARE HERE above it,
-      // so the room for that label is kept between every pair in a column.
-      floor = y + NODE_R + 22 + 15 * (lines - 1) + FLOW_STACK + HERE_ROOM;
-      placed.push({ id: node.id, phase, lane, x: LEFT + index * FLOW_SPACING, y });
+      const lane = laneIndex(node);
+      const slot = used.get(lane) ?? 0;
+      used.set(lane, slot + 1);
+      placed.push({ id: node.id, phase, lane, x: x + slot * FLOW_SPACING, y: laneY(lane) });
     }
-  });
+    x += Math.max(1, ...used.values()) * FLOW_SPACING;
+  }
   const pairs = road.flatMap((node) => reqs(node).map((from) => [from, node.id]));
-  return { stops, placed, pairs };
+  const roots = road.filter((node) => !reqs(node).length).map((node) => node.id);
+  return { stops, placed, pairs, roots };
+}
+
+/**
+ * The line between two placed steps. On a typed map, a line between two steps on the same lane
+ * would lie on the lane line, hidden, and run through every step between them as if it joined
+ * them, so it arcs over them instead.
+ */
+function linePath(a, b, typed) {
+  if (!typed || Math.abs(a.y - b.y) > 1) return roadSegments([a, b])[0];
+  const lift = Math.min(0.55 * TYPED_LANE_GAP, 22 + 0.12 * Math.abs(b.x - a.x));
+  const dx = (b.x - a.x) * 0.3;
+  const y = a.y - lift;
+  return { d: `M ${a.x} ${a.y} C ${a.x + dx} ${y} ${b.x - dx} ${y} ${b.x} ${b.y}` };
 }
 
 /**
@@ -391,8 +382,12 @@ export async function createRezScene(container) {
     const laneOf = new Map(used.map((family) => [family.id, rowOfLane.get(family.lane ?? 0)]));
     const lanes = Math.max(1, laneValues.length);
     const laneTop = TOP;
-    const laneY = (lane) => laneTop + lane * LANE_GAP;
-    const { stops, placed, pairs } = isTypedMap(graph) ? flowLayout(road, laneOf, laneY, { inOrder: isCompleteMap(graph) }) : roadLayout(road, laneOf, laneY);
+    const gap = isTypedMap(graph) ? TYPED_LANE_GAP : LANE_GAP;
+    const laneY = (lane) => laneTop + lane * gap;
+    const typed = isTypedMap(graph);
+    const { stops, placed, pairs, roots = [] } = typed ? flowLayout(road, laneOf, laneY, { inOrder: isCompleteMap(graph) }) : roadLayout(road, laneOf, laneY);
+    // Typed maps: one start point on the left, on the middle lane, so no step floats on its own.
+    const start = typed && roots.length ? { x: LEFT, y: laneY(Math.floor((lanes - 1) / 2)) } : null;
     const at = new Map(placed.map((point) => [point.id, point]));
     const roadBottom = Math.max(laneY(lanes - 1), ...placed.map((point) => point.y));
     const sideY = roadBottom + SIDE_GAP;
@@ -400,6 +395,9 @@ export async function createRezScene(container) {
     const lastX = Math.max(LEFT, ...[...at.values()].map((point) => point.x));
     return {
       at,
+      typed,
+      start,
+      roots,
       order: stops.map((stop) => stop[0].id),
       stops: stops.map((stop) => stop.map((node) => node.id)),
       pairs,
@@ -456,6 +454,7 @@ export async function createRezScene(container) {
     if (p.sideY !== null) {
       svgEl("text", { class: "rz-lane__label", x: 24, y: p.sideY - 40 }, back).textContent = "SIDE QUESTS";
     }
+    const segment = (a, b) => linePath(a, b, p.typed);
     const ties = svgEl("g", { class: "rz-ties" }, view);
     const roadPairs = p.pairs;
     const consecutive = new Set(roadPairs.map(([from, to]) => `${from}->${to}`));
@@ -464,14 +463,23 @@ export async function createRezScene(container) {
       const a = p.at.get(edge.from);
       const b = p.at.get(edge.to);
       if (!a || !b || consecutive.has(key) || a.side || b.side) continue;
-      const [seg] = roadSegments([a, b]);
-      state.tieFor.set(key, svgEl("path", { class: "rz-tie", d: seg.d }, ties));
+      state.tieFor.set(key, svgEl("path", { class: "rz-tie", d: segment(a, b).d }, ties));
     }
 
+    if (p.start) {
+      // The start point: a quiet line to every step that waits on nothing. Not a requirement,
+      // so it's drawn like a tie and stays out of the road's done and live colours.
+      for (const id of p.roots) {
+        const at = p.at.get(id);
+        if (at) svgEl("path", { class: "rz-start__line", d: linePath(p.start, at, true).d }, ties);
+      }
+      const mark = svgEl("g", { class: "rz-start", transform: `translate(${p.start.x} ${p.start.y})` }, view);
+      svgEl("circle", { class: "rz-start__dot", r: 6 }, mark);
+      svgEl("text", { class: "rz-start__label", x: 0, y: 26 }, mark).textContent = "START";
+    }
     const road = svgEl("g", { class: "rz-road" }, view);
     for (const [from, to] of roadPairs) {
-      const [seg] = roadSegments([p.at.get(from), p.at.get(to)]);
-      state.segFor.set(`${from}->${to}`, svgEl("path", { class: "rz-seg", d: seg.d }, road));
+      state.segFor.set(`${from}->${to}`, svgEl("path", { class: "rz-seg", d: segment(p.at.get(from), p.at.get(to)).d }, road));
     }
 
     const nodes = svgEl("g", { class: "rz-nodes" }, view);
@@ -694,7 +702,7 @@ export async function createRezScene(container) {
     const target = state.nodeEls.get(toId);
     if (from < 0 || to <= from || !target || reducedMotion) return;
     const points = p.order.slice(from, to + 1).map((id) => p.at.get(id));
-    const d = roadSegments(points).map((seg, index) => (index ? seg.d.replace(/^M [^C]+/, "") : seg.d)).join(" ");
+    const d = points.slice(1).map((b, index) => linePath(points[index], b, p.typed).d).map((seg, index) => (index ? seg.replace(/^M [^C]+/, "") : seg)).join(" ");
     state.cancelCurrent();
     const current = svgEl("path", { class: "rz-current", d }, view.querySelector(".rz-road"));
     const spark = svgEl("circle", { class: "rz-spark", r: 3.5, cx: points[0].x, cy: points[0].y }, view);
