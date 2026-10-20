@@ -9,9 +9,9 @@
  * data/students/<slug>.json.
  */
 
-import { loadBoard, boardCurriculum, libraryFor } from "./api.js?v=5529d91-202610200519";
-import { buildGraph } from "./graph/model.js?v=5529d91-202610200519";
-import { weekNumber, studentWeek, ownSchedule, hasOwnMap } from "./time.js?v=5529d91-202610200519";
+import { loadBoard, boardCurriculum, libraryFor } from "./api.js?v=b335f3c-202610202219";
+import { buildGraph } from "./graph/model.js?v=b335f3c-202610202219";
+import { weekNumber, studentWeek, ownSchedule, hasOwnMap } from "./time.js?v=b335f3c-202610202219";
 import {
   read,
   clear as clearPersist,
@@ -21,10 +21,10 @@ import {
   mergeStudent,
   STUDENT_KEYS,
   INSTRUCTOR_KEYS,
-} from "./persist.js?v=5529d91-202610200519";
-import { flushAfterLocalWrite, hydrateFromRemote, persistStatus, startPolling } from "./persist-remote.js?v=5529d91-202610200519";
-import { validReviewReturn } from "./review.js?v=5529d91-202610200519";
-import { isDevUnlock } from "./dev-mode.js?v=5529d91-202610200519";
+} from "./persist.js?v=b335f3c-202610202219";
+import { flushAfterLocalWrite, hydrateFromRemote, persistStatus, startPolling } from "./persist-remote.js?v=b335f3c-202610202219";
+import { validReviewReturn } from "./review.js?v=b335f3c-202610202219";
+import { isDevUnlock } from "./dev-mode.js?v=b335f3c-202610202219";
 
 export { validReviewReturn };
 
@@ -528,6 +528,24 @@ export function addMemoryNote(text) {
         ...(overlay.questions ?? []),
       ];
     }
+  }, event);
+}
+
+/**
+ * "Need help with this step?" A question tied to one node: it reaches Aden
+ * (question.asked notifies him) with the step's title and its own link, so
+ * he can answer on the step instead of hunting for context in chat.
+ */
+export function askAboutStep({ nodeId, title, text }) {
+  const trimmed = String(text ?? "").trim();
+  if (!trimmed) return state();
+  const url = `${location.origin}${location.pathname}?s=${encodeURIComponent(slug)}#/map/${nodeId}`;
+  const event = { kind: "question.asked", payload: { title: `${title}: ${trimmed}`.slice(0, 200), text: trimmed.slice(0, 200), nodeId, url } };
+  return commitStudent(() => {
+    overlay.questions = [
+      { id: `q-${Date.now()}`, at: new Date().toISOString(), text: trimmed, nodeId },
+      ...(overlay.questions ?? mergedStudent().questions ?? []),
+    ];
   }, event);
 }
 

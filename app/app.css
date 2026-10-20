@@ -1294,6 +1294,9 @@ html.vid-lock, html.vid-lock body { overflow: hidden; }
 .step__do, .step__why, .step__video, .step__lesson, .step__tasks, .step__out, .step__mods, .step__refs, .step__schedule {
   margin-top: var(--sp-7);
 }
+.step__help { margin-top: var(--sp-6); max-width: var(--measure); display: grid; gap: var(--sp-2); justify-items: start; }
+.step__help .task__field { width: 100%; display: grid; gap: 6px; }
+.step__help label { color: var(--ink-soft); font-size: 14px; }
 .step__do > .eyebrow, .step__why > .eyebrow, .step__video > .eyebrow, .step__lesson > .eyebrow,
 .step__out > .eyebrow, .step__mods > .eyebrow, .step__refs > .eyebrow, .step__schedule > .eyebrow { margin-bottom: var(--sp-2); }
 

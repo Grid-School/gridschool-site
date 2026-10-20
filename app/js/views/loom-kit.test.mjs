@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { splitBeat, paceNote, takesLine, clock, PACE } from "./loom-kit.js?v=5529d91-202610200519";
+import { splitBeat, paceNote, takesLine, clock, PACE } from "./loom-kit.js?v=b335f3c-202610202219";
 
 test("splitBeat pulls stage directions out of the spoken line", () => {
   assert.deepEqual(splitBeat("Here's how. [screen: the repo, the approval gate] The agent proposes."), {
@@ -29,7 +29,7 @@ test("takesLine and clock", () => {
 });
 
 test("startingAnswers keeps saved words and puts the starter in every untouched blank", async () => {
-  const { startingAnswers } = await import("./loom-kit.js?v=5529d91-202610200519");
+  const { startingAnswers } = await import("./loom-kit.js?v=b335f3c-202610202219");
   const a = startingAnswers({ hello: "Hey Priya, I'm Sam." });
   assert.equal(a.hello, "Hey Priya, I'm Sam.");
   assert.match(a.role, /^I'm reaching out about the ___ role/);

@@ -3,7 +3,7 @@
  * object visually and a change to a panel changes it everywhere.
  */
 
-import { el } from "./dom.js?v=5529d91-202610200519";
+import { el } from "./dom.js?v=b335f3c-202610202219";
 
 export function panel({ eyebrow, title, note, actions, tone } = {}, ...children) {
   return el(

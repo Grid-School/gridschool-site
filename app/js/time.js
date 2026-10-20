@@ -4,7 +4,7 @@
  * stays true when a start date or a 1:1 slot moves.
  */
 
-import { normalizeSlot, occurrenceInWeek, partsIn, validZone, browserZone } from "./call-slot.js?v=5529d91-202610200519";
+import { normalizeSlot, occurrenceInWeek, partsIn, validZone, browserZone } from "./call-slot.js?v=b335f3c-202610202219";
 
 const DAY_MS = 86400000;
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -148,6 +148,30 @@ export function eventsForWeek(cohort, student, week, { tz = null } = {}) {
     let slot;
     if (rule.perStudent) {
       slot = studentSlot(cohort, student);
+      // Synced from Aden's Google Calendar (server/gcal_sync.py): the real calls this week,
+      // moved and one-off ones included, each with its own Meet link.
+      const synced = syncedCalls(student, start);
+      if (synced) {
+        for (const call of synced) {
+          const local = partsIn(call.at, shown);
+          events.push({
+            ...rule,
+            id: `${rule.id ?? "oneone"}-${call.at.toISOString()}`,
+            title: call.title || rule.title,
+            time: local.time,
+            weekday: local.weekday,
+            date: local.date,
+            at: call.at,
+            tz: shown,
+            week,
+            mins: call.mins || slot?.mins,
+            href: call.link || slot?.link,
+            where: call.link ? "Google Meet" : slot?.where ?? rule.where,
+            slot,
+          });
+        }
+        continue;
+      }
       if (!slot) continue;
     } else {
       slot = { weekday: rule.weekday, time: rule.time, tz: rule.tz ?? cohort.tz ?? shown, every: 1, mins: rule.mins ?? 0 };
@@ -186,6 +210,17 @@ export function eventsForWeek(cohort, student, week, { tz = null } = {}) {
     if (a.date !== b.date) return a.date < b.date ? -1 : 1;
     return (a.time ?? "").localeCompare(b.time ?? "");
   });
+}
+
+/** This week's calls from Google (`oneone.upcoming`), or null when the seat isn't synced. */
+export function syncedCalls(student, weekStartDate) {
+  const list = student?.oneone?.upcoming;
+  if (!Array.isArray(list)) return null;
+  const from = new Date(weekStartDate).getTime();
+  const to = from + 7 * 24 * 60 * 60 * 1000;
+  return list
+    .map((call) => ({ ...call, at: new Date(call.at) }))
+    .filter((call) => !Number.isNaN(call.at.getTime()) && call.at.getTime() >= from && call.at.getTime() < to);
 }
 
 /**

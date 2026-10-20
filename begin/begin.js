@@ -10,10 +10,10 @@
  *    If that hand-off says the sign-in expired, the sign-in form comes back.
  */
 
-import { PERSIST, link } from "../config.js?v=5529d91-202610200519";
-import * as Account from "../check/account.js?v=5529d91-202610200519";
-import { enterSeat } from "../app/js/persist-auth.js?v=5529d91-202610200519";
-import { reviewLabel } from "./when.js?v=5529d91-202610200519";
+import { PERSIST, link } from "../config.js?v=b335f3c-202610202219";
+import * as Account from "../check/account.js?v=b335f3c-202610202219";
+import { enterSeat } from "../app/js/persist-auth.js?v=b335f3c-202610202219";
+import { reviewLabel } from "./when.js?v=b335f3c-202610202219";
 
 // Localhost never talks to production: ?api= when given, else the page's own origin.
 const API = (() => {

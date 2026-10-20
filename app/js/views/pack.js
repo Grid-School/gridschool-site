@@ -12,12 +12,12 @@
  * with the prepared role (entry.steps), so it reopens where they left off.
  */
 
-import { el, mount } from "../dom.js?v=5529d91-202610200519";
-import { btn, copy, toast } from "../ui.js?v=5529d91-202610200519";
-import { createModal } from "../modal.js?v=5529d91-202610200519";
-import { peopleLinks, ageLabel } from "../search.js?v=5529d91-202610200519";
-import { prepareRole } from "../roles-remote.js?v=5529d91-202610200519";
-import { nodeRail, nodeIntro } from "./node-rail.js?v=5529d91-202610200519";
+import { el, mount } from "../dom.js?v=b335f3c-202610202219";
+import { btn, copy, toast } from "../ui.js?v=b335f3c-202610202219";
+import { createModal } from "../modal.js?v=b335f3c-202610202219";
+import { peopleLinks, ageLabel } from "../search.js?v=b335f3c-202610202219";
+import { prepareRole } from "../roles-remote.js?v=b335f3c-202610202219";
+import { nodeRail, nodeIntro } from "./node-rail.js?v=b335f3c-202610202219";
 
 export const PACK_NODES = [
   { id: "fit", label: "Fit" },

@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { modeOf, MODES } from "./modes.js?v=5529d91-202610200519";
+import { modeOf, MODES } from "./modes.js?v=b335f3c-202610202219";
 
 test("a node with no mode is Open", () => {
   assert.equal(modeOf({}).key, "open");
