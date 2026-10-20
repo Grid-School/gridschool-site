@@ -3,9 +3,9 @@
  * Care without condescension: name what unlocks it, offer the next open step.
  */
 
-import { el } from "../dom.js?v=c2374bc-202610202345";
-import { btn } from "../ui.js?v=c2374bc-202610202345";
-import { STATUS, blockedBy, nextUp } from "../graph/model.js?v=c2374bc-202610202345";
+import { el } from "../dom.js?v=dbf2d27-202610202350";
+import { btn } from "../ui.js?v=dbf2d27-202610202350";
+import { STATUS, blockedBy, nextUp } from "../graph/model.js?v=dbf2d27-202610202350";
 
 /** Short human reason + actions. Used on the map HUD and as a step-page gate. */
 export function lockNotice({ graph, node, onGo, onDismiss }) {

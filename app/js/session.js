@@ -17,9 +17,11 @@ export function currentSession() {
   return null;
 }
 
-export function signIn(slug, { role = "student", persistToken: token } = {}) {
+export function signIn(slug, { role = "student", persistToken: token, plan } = {}) {
   const session = { slug, role, at: Date.now(), demo: slug === "demo" };
   if (token) session.persistToken = token;
+  // "free": a free seat has no lesson key; its board opens on the public course copy (boot.js).
+  if (plan === "free") session.plan = "free";
   localStorage.setItem(KEY, JSON.stringify(session));
   return session;
 }

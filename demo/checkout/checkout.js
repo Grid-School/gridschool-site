@@ -5,7 +5,7 @@
  * finding, and from there to the made-up Complete map. The real checkout is Stripe.
  */
 
-import { offerOf } from "./offer.js?v=c2374bc-202610202345";
+import { offerOf } from "./offer.js?v=dbf2d27-202610202350";
 
 const params = new URLSearchParams(location.search);
 const card = document.getElementById("card");

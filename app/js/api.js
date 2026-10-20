@@ -3,13 +3,13 @@
  * student file seeds identity from the notebook API.
  */
 
-import { loadPrivateJson } from "./gate.js?v=c2374bc-202610202345";
-import { seedFromSnapshot } from "./persist.js?v=c2374bc-202610202345";
-import { fetchSnapshot, remoteEnabled } from "./persist-remote.js?v=c2374bc-202610202345";
-import { applySiteOverrides, applyPrivateLinks, applyCopyOverrides } from "../../js/site-overrides.js?v=c2374bc-202610202345";
-import { revealMemberInvite } from "../../js/member-invite.js?v=c2374bc-202610202345";
-import { numberCurriculumReadings } from "./reading-order.js?v=c2374bc-202610202345";
-import { resolveMap, loadModules, moduleRefs } from "./modules.js?v=c2374bc-202610202345";
+import { loadPrivateJson } from "./gate.js?v=dbf2d27-202610202350";
+import { seedFromSnapshot } from "./persist.js?v=dbf2d27-202610202350";
+import { fetchSnapshot, remoteEnabled } from "./persist-remote.js?v=dbf2d27-202610202350";
+import { applySiteOverrides, applyPrivateLinks, applyCopyOverrides } from "../../js/site-overrides.js?v=dbf2d27-202610202350";
+import { revealMemberInvite } from "../../js/member-invite.js?v=dbf2d27-202610202350";
+import { numberCurriculumReadings } from "./reading-order.js?v=dbf2d27-202610202350";
+import { resolveMap, loadModules, moduleRefs } from "./modules.js?v=dbf2d27-202610202350";
 
 const BASE = "../data/";
 const cache = new Map();
@@ -128,9 +128,10 @@ async function demoCompleteSeat(student) {
 }
 
 /** Load everything one board needs, in parallel. */
-export async function loadBoard(slug, { tour = false } = {}) {
+export async function loadBoard(slug, { tour = false, publicCopy = false } = {}) {
   const [curriculum, cohort, student, overrides] = await Promise.all([
-    loadCurriculum({ tour }),
+    // publicCopy: a free seat without the lesson key reads the public course copy, but keeps its own map.
+    loadCurriculum({ tour: tour || publicCopy }),
     loadCohort(),
     loadStudent(slug),
     // Live links and short copy edits from the console. Never blocks a board

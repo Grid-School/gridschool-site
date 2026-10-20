@@ -16,9 +16,9 @@
  * never gate a node: a habit is kept, not finished.
  */
 
-import { taskIsComplete, isCountTask } from "../task-state.js?v=c2374bc-202610202345";
-import { typeOf, specOf } from "../../../data/node-types.mjs?v=c2374bc-202610202345";
-import { prepOf, prepHint, opensLater, shortDay, isFreeMap, PAID_HINT } from "../prep.js?v=c2374bc-202610202345";
+import { taskIsComplete, isCountTask } from "../task-state.js?v=dbf2d27-202610202350";
+import { typeOf, specOf } from "../../../data/node-types.mjs?v=dbf2d27-202610202350";
+import { prepOf, prepHint, opensLater, shortDay, isFreeMap, PAID_HINT } from "../prep.js?v=dbf2d27-202610202350";
 
 export { typeOf, specOf };
 

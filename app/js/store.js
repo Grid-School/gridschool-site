@@ -9,9 +9,9 @@
  * data/students/<slug>.json.
  */
 
-import { loadBoard, boardCurriculum, libraryFor } from "./api.js?v=c2374bc-202610202345";
-import { buildGraph } from "./graph/model.js?v=c2374bc-202610202345";
-import { weekNumber, studentWeek, ownSchedule, hasOwnMap } from "./time.js?v=c2374bc-202610202345";
+import { loadBoard, boardCurriculum, libraryFor } from "./api.js?v=dbf2d27-202610202350";
+import { buildGraph } from "./graph/model.js?v=dbf2d27-202610202350";
+import { weekNumber, studentWeek, ownSchedule, hasOwnMap } from "./time.js?v=dbf2d27-202610202350";
 import {
   read,
   clear as clearPersist,
@@ -21,10 +21,10 @@ import {
   mergeStudent,
   STUDENT_KEYS,
   INSTRUCTOR_KEYS,
-} from "./persist.js?v=c2374bc-202610202345";
-import { flushAfterLocalWrite, hydrateFromRemote, persistStatus, startPolling } from "./persist-remote.js?v=c2374bc-202610202345";
-import { validReviewReturn } from "./review.js?v=c2374bc-202610202345";
-import { isDevUnlock } from "./dev-mode.js?v=c2374bc-202610202345";
+} from "./persist.js?v=dbf2d27-202610202350";
+import { flushAfterLocalWrite, hydrateFromRemote, persistStatus, startPolling } from "./persist-remote.js?v=dbf2d27-202610202350";
+import { validReviewReturn } from "./review.js?v=dbf2d27-202610202350";
+import { isDevUnlock } from "./dev-mode.js?v=dbf2d27-202610202350";
 
 export { validReviewReturn };
 
@@ -70,9 +70,9 @@ async function previewMap() {
   }
 }
 
-export async function init(nextSlug, { tour = false } = {}) {
+export async function init(nextSlug, { tour = false, publicCopy = false } = {}) {
   slug = nextSlug;
-  base = await loadBoard(nextSlug, { tour });
+  base = await loadBoard(nextSlug, { tour, publicCopy });
   if (!tour && nextSlug !== "demo") {
     const snap = await hydrateFromRemote(nextSlug, { force: true });
     // On this Mac only: &map=<name> shows site/data/maps/<name>.json instead
