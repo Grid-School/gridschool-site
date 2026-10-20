@@ -1693,6 +1693,14 @@ pre.diagram--failed { border-color: var(--amber); }
 .sapp.is-closed { opacity: .55; }
 .sapp__acts { grid-column: 1 / -1; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 .sapp__move { background: var(--bg); color: var(--text); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 5px 8px; font: inherit; font-size: 13px; }
+/* Share to #wins: inside the row it celebrates, only on the student's own tap. */
+.sapp__acts .swin__done { font-size: 12.5px; color: var(--ok); padding: 6px 9px; }
+.swin { grid-column: 1 / -1; display: grid; gap: 10px; margin-top: 2px; padding: 12px 14px; border: 1px solid var(--hair-cyan); border-radius: var(--radius); background: var(--bg2); }
+.swin__label { margin: 0; padding: 0; font-size: 12.5px; color: var(--muted); }
+.swin__preview { margin: 0; padding: 8px 12px; border-left: 2px solid var(--cyan); color: #fff; font-size: 14.5px; overflow-wrap: anywhere; }
+.swin__opt { display: flex; gap: 8px; align-items: center; font-size: 13.5px; color: var(--text); cursor: pointer; }
+.swin__opt input { accent-color: var(--cyan); width: 16px; height: 16px; margin: 0; }
+.swin__acts { display: flex; gap: 6px; flex-wrap: wrap; }
 
 .slog { display: grid; gap: 12px; }
 .slog__kinds { display: flex; gap: 6px; }

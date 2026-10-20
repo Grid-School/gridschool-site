@@ -10,8 +10,8 @@
  * When the radar is off the match is simply empty and the page says so.
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=815d2ba-202610191746";
-import { persistToken } from "./session.js?v=815d2ba-202610191746";
+import { PERSIST, isPlaceholder } from "../../config.js?v=49dfe83-202610200325";
+import { persistToken } from "./session.js?v=49dfe83-202610200325";
 
 export function radarReady() {
   return Boolean(persistToken() && PERSIST?.endpoint && !isPlaceholder(PERSIST.endpoint));
@@ -59,6 +59,20 @@ export async function fetchPacks(slug) {
   if (!radarReady()) return {};
   const payload = await call("GET", `/students/${encodeURIComponent(slug)}/roles/packs`);
   return payload.packs ?? {};
+}
+
+/** Whether #wins is set up, and which of their sends they've already shared ("appId:stage"). */
+export async function winsState(slug) {
+  if (!radarReady()) return { on: false, shared: [] };
+  return call("GET", `/students/${encodeURIComponent(slug)}/wins`);
+}
+
+/**
+ * Share one of their own sends to #wins (community_jobs.py). The server writes the message from their
+ * record: first name, the stage, the company only when they ticked it. `dryRun` returns that text only.
+ */
+export function shareWin(slug, { appId, includeCompany = false, dryRun = false }) {
+  return call("POST", `/students/${encodeURIComponent(slug)}/wins/share`, { appId, includeCompany, dryRun });
 }
 
 /** A multi-channel campaign for one target (campaign_draft.py): radar roleKey, or a role {company, title, url, description}. */

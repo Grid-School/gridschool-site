@@ -1,8 +1,15 @@
 {
-  "about": "The first line on the free check for each ad (?from=). It's the ad's own promise line (ops/film-scripts/ads.md, PR #96), so the page reads as the next step. Change both together.",
+  "about": "The first line on the free check for each ad (?from=, or utm_campaign when the ad sends utm_source + utm_campaign). It's the ad's own promise line (ops/film-scripts/ads.md, PR #96), so the page reads as the next step. Change both together. 'prefixes' covers a whole family of sources (share:<ref> is a link someone shared from their result). 'filter' shows under the first line for paid ads only (meta-... and ad-...); set it to \"\" to remove it.",
   "lines": {
     "ad-grad": "In two minutes, see where your applications are landing and the first move that changes it.",
     "ad-invisible": "In two minutes, see how your best work reads to a hiring manager outside your team, and what to show first.",
-    "ad-laidoff": "In two minutes, get your map and the moves to make this week."
-  }
+    "ad-laidoff": "In two minutes, get your map and the moves to make this week.",
+    "meta-silence": "In two minutes, see what a hiring manager concludes from your resume, and the one thing to fix today.",
+    "meta-laidoff": "The clock is running. In two minutes, see where your applications are getting stuck and what to do this week.",
+    "meta-map": "Your map draws itself as you answer. Two minutes, free."
+  },
+  "prefixes": {
+    "share:": "A friend shared their scan with you. Take yours: two minutes, free."
+  },
+  "filter": "For software engineers who are ready to send a few honest notes, not 200 more applications."
 }

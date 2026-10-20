@@ -16,10 +16,10 @@
  * half-typed form. Aden sees it read-only from the desk.
  */
 
-import { el, mount } from "../dom.js?v=815d2ba-202610191746";
-import { panel, btn, field, toast, copy } from "../ui.js?v=815d2ba-202610191746";
-import { isoDate, fmtDay } from "../time.js?v=815d2ba-202610191746";
-import { STATUS } from "../graph/model.js?v=815d2ba-202610191746";
+import { el, mount } from "../dom.js?v=49dfe83-202610200325";
+import { panel, btn, field, toast, copy } from "../ui.js?v=49dfe83-202610200325";
+import { isoDate, fmtDay } from "../time.js?v=49dfe83-202610200325";
+import { STATUS } from "../graph/model.js?v=49dfe83-202610200325";
 import {
   STAGES,
   RELATIONS,
@@ -63,14 +63,14 @@ import {
   nextTouch,
   targetCandidates,
   MAX_ACTIVE_TARGETS,
-} from "../search.js?v=815d2ba-202610191746";
-import { storyCard, appRow } from "./search-parts.js?v=815d2ba-202610191746";
-import { TOOLS } from "../engine.js?v=815d2ba-202610191746";
-import { PERSIST } from "../../../config.js?v=815d2ba-202610191746";
-import { matchedRoles, radarReady, fetchPacks } from "../roles-remote.js?v=815d2ba-202610191746";
-import { createPackDrawer } from "./pack.js?v=815d2ba-202610191746";
-import { createCampaignDrawer } from "./campaign.js?v=815d2ba-202610191746";
-import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=815d2ba-202610191746";
+} from "../search.js?v=49dfe83-202610200325";
+import { storyCard, appRow } from "./search-parts.js?v=49dfe83-202610200325";
+import { TOOLS } from "../engine.js?v=49dfe83-202610200325";
+import { PERSIST } from "../../../config.js?v=49dfe83-202610200325";
+import { matchedRoles, radarReady, fetchPacks, winsState, shareWin } from "../roles-remote.js?v=49dfe83-202610200325";
+import { createPackDrawer } from "./pack.js?v=49dfe83-202610200325";
+import { createCampaignDrawer } from "./campaign.js?v=49dfe83-202610200325";
+import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=49dfe83-202610200325";
 
 const RUN_FAMILIES = ["proof", "presence", "network", "interview"];
 /** How many moves the day leads with. More than this reads as a wall, not a plan. */
@@ -615,6 +615,85 @@ export function renderHire(ctx, initialTool, campaignId) {
     );
   }
 
+  /* ---------- sharing a win (only ever on their own tap) ---------- */
+
+  // #wins shows nothing until Aden sets it up; then a send they can be glad about gets a quiet
+  // "Share to #wins" on its own row. The text comes from the server, so the preview is exactly
+  // what posts: first name, the stage, and the company only if they tick it.
+  let wins = { on: false, shared: new Set() };
+  let sharing = null; // { appId, stage, include, text, busy }
+
+  async function loadWins() {
+    if (!radarReady() || readOnly()) return;
+    try {
+      const state = await winsState(ctx.state.slug);
+      wins = { on: Boolean(state.on), shared: new Set(state.shared ?? []) };
+      draw();
+    } catch {
+      /* no #wins today: the rows stay as they were */
+    }
+  }
+
+  /** A reply or later, any time; a send only on the day they sent it. */
+  function shareable(app) {
+    return !app.closed && (app.stage !== "sent" || app.date === isoDate(new Date()));
+  }
+
+  async function previewWin(app, include) {
+    sharing = { appId: app.id, stage: app.stage, include, text: sharing?.appId === app.id ? sharing.text : "", busy: true };
+    draw();
+    try {
+      const out = await shareWin(ctx.state.slug, { appId: app.id, includeCompany: include, dryRun: true });
+      if (sharing?.appId === app.id) sharing = { ...sharing, text: out.text, busy: false };
+    } catch (error) {
+      sharing = null;
+      toast(error.message, "warn");
+    }
+    draw();
+  }
+
+  async function postWin(app) {
+    if (!sharing || sharing.busy) return;
+    sharing = { ...sharing, busy: true };
+    draw();
+    try {
+      await shareWin(ctx.state.slug, { appId: app.id, includeCompany: sharing.include });
+      wins.shared.add(`${app.id}:${app.stage}`);
+      sharing = null;
+      toast("Posted to #wins.");
+    } catch (error) {
+      if (error.status === 409) wins.shared.add(`${app.id}:${app.stage}`);
+      sharing = error.status === 409 ? null : { ...sharing, busy: false };
+      toast(error.message, "warn");
+    }
+    draw();
+  }
+
+  function shareControl(app) {
+    if (!wins.on || !shareable(app)) return null;
+    if (wins.shared.has(`${app.id}:${app.stage}`)) return el("span.swin__done", {}, "Shared to #wins");
+    if (sharing?.appId === app.id) return null;
+    return btn({ label: "Share to #wins", variant: "quiet", onclick: () => previewWin(app, false) });
+  }
+
+  function shareBox(app) {
+    if (!sharing || sharing.appId !== app.id || sharing.stage !== app.stage) return null;
+    const box = el("input", { type: "checkbox", checked: sharing.include, disabled: sharing.busy, onchange: (event) => previewWin(app, event.target.checked) });
+    return el(
+      "div.swin",
+      { role: "group", "aria-label": "Share to #wins" },
+      el("p.swin__label", {}, "This posts in #wins on the GridSchool Discord:"),
+      el("blockquote.swin__preview", { "aria-live": "polite" }, sharing.text || "…"),
+      app.company ? el("label.swin__opt", {}, box, ` Include the company (${app.company})`) : null,
+      el(
+        "div.swin__acts",
+        {},
+        btn({ label: sharing.busy ? "One moment…" : "Post it", variant: "solid", disabled: sharing.busy || !sharing.text, onclick: () => postWin(app) }),
+        btn({ label: "Cancel", variant: "quiet", onclick: () => { sharing = null; draw(); } })
+      )
+    );
+  }
+
   /* ---------- pipeline rows ---------- */
 
   function controls(app) {
@@ -624,13 +703,17 @@ export function renderHire(ctx, initialTool, campaignId) {
       { "aria-label": `How far ${app.company} got`, onchange: () => save((s) => ({ apps: moveApp(s.apps, app.id, select.value) }), { kind: "search.moved", payload: { stage: select.value } }) },
       STAGES.map((stage) => el("option", { value: stage.id, selected: stage.id === app.stage ? "" : null }, stage.label))
     );
-    return el(
-      "div.sapp__acts",
-      {},
-      select,
-      btn({ label: app.closed ? "Reopen" : "Close", variant: "quiet", onclick: () => save((s) => ({ apps: closeApp(s.apps, app.id, !app.closed) })) }),
-      btn({ label: "Delete", variant: "quiet", onclick: () => confirm(`Delete ${app.company || "this"} from your log?`) && save((s) => ({ apps: removeApp(s.apps, app.id) })) })
-    );
+    return [
+      el(
+        "div.sapp__acts",
+        {},
+        select,
+        btn({ label: app.closed ? "Reopen" : "Close", variant: "quiet", onclick: () => save((s) => ({ apps: closeApp(s.apps, app.id, !app.closed) })) }),
+        btn({ label: "Delete", variant: "quiet", onclick: () => confirm(`Delete ${app.company || "this"} from your log?`) && save((s) => ({ apps: removeApp(s.apps, app.id) })) }),
+        shareControl(app)
+      ),
+      shareBox(app),
+    ];
   }
 
   /* ---------- bring a posting from anywhere ---------- */
@@ -803,6 +886,7 @@ export function renderHire(ctx, initialTool, campaignId) {
 
   redraw();
   void loadRadar();
+  void loadWins();
   // #/do/targets/<campaign id> opens that campaign (a campaign node on the map links here).
   let openedFor = null;
   const openFromRoute = (id) => {

@@ -13,13 +13,16 @@
  * this browser so a refresh loses nothing; the resume text never does.
  */
 
-import { PERSIST, link } from "../config.js?v=815d2ba-202610191746";
-import * as I from "../data/intake/intake.mjs?v=815d2ba-202610191746";
-import { mountCheckMap } from "./check-map.js?v=815d2ba-202610191746";
-import * as Account from "./account.js?v=815d2ba-202610191746";
-import { track, visitorId } from "./events.js?v=815d2ba-202610191746";
+import { PERSIST, link } from "../config.js?v=49dfe83-202610200325";
+import * as I from "../data/intake/intake.mjs?v=49dfe83-202610200325";
+import { mountCheckMap } from "./check-map.js?v=49dfe83-202610200325";
+import * as Account from "./account.js?v=49dfe83-202610200325";
+import { track, visitorId } from "./events.js?v=49dfe83-202610200325";
+import * as Share from "./share.mjs?v=49dfe83-202610200325";
+import { drawShareCard, cardBlob } from "./share-card.js?v=49dfe83-202610200325";
 
 const KEY = "gridschool.check.v1";
+const SHARE_KEY = "gridschool.share.v1";
 const PDF_JS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs";
 const PDF_WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs";
 const READ_WAIT_MS = 9000;
@@ -257,10 +260,12 @@ const VIEWS = {
       options.append(choice);
     });
     const opening = index === 0 && !Object.keys(store.state.answers).length;
-    const adLine = opening ? sources.lines?.[store.from] : "";
+    const adLine = opening ? Share.sourceLine(store.from, sources) : "";
+    const filter = opening ? Share.filterLine(store.from, sources) : "";
     return [
       opening ? h("p", "eyebrow eyebrow--open", `${checkName()} · 2 minutes`) : null,
-      adLine ? h("p", "card__lede", adLine) : null,
+      adLine ? h("p", `card__lede${filter ? " card__lede--filtered" : ""}`, adLine) : null,
+      filter ? h("p", "card__filter", filter) : null,
       opening ? null : insightLine(),
       progress(index + 1, asked.length),
       fromResume ? h("p", "tag tag--resume", "We filled this in from your resume. Is it right?") : null,
@@ -384,7 +389,8 @@ const VIEWS = {
     if (hits.length) {
       parts.push(
         findings,
-        h("p", "card__fine card__fine--honest", "These are our best guesses based on what you told us. Your full map tests each one and drops any that don't hold up.")
+        h("p", "card__fine card__fine--honest", "These are our best guesses based on what you told us. Your full map tests each one and drops any that don't hold up."),
+        sharePanel()
       );
     }
 
@@ -625,7 +631,8 @@ function saveForm({ later = false } = {}) {
         : sent ? "You can always get back to your map at this link:" : "We couldn't send the email just now, so keep this link. It always opens your map:"),
       ...(inAccount ? [] : [h("a", "saved__link", store.saved.link, { href: store.saved.link })])
     );
-    draw(done);
+    draw(...[done, communityBlock()].filter(Boolean));
+    prepareShare();
   };
 
   const codeView = (email) => {
@@ -858,6 +865,132 @@ function shareButton(hits) {
   return copy;
 }
 
+/* ---------- sharing the scan ---------- */
+
+/**
+ * The ref in a shared link: from the saved check (a hash, never its id), or a random one kept
+ * in this browser until they save. Someone who arrives by it starts with from=share:<ref>,
+ * which saves with their check, so a share is counted all the way to a saved map.
+ */
+let memoryRef = "";
+async function shareRef() {
+  if (store.saved?.id) {
+    const ref = await Share.refFromCheck(store.saved.id).catch(() => "");
+    if (ref) return ref;
+  }
+  try {
+    let ref = localStorage.getItem(SHARE_KEY);
+    if (!/^[0-9a-z]{10}$/.test(ref || "")) {
+      ref = Share.randomRef();
+      localStorage.setItem(SHARE_KEY, ref);
+    }
+    return ref;
+  } catch {
+    memoryRef ||= Share.randomRef();
+    return memoryRef;
+  }
+}
+
+// The card and link are made ahead of the tap: a phone's share sheet only opens straight from a tap.
+let shareReady = null;
+let shareFor = null;
+function prepareShare() {
+  const hits = I.bottlenecks(catalog, store.state, store.read);
+  if (!hits.length) return null;
+  const key = `${store.saved?.id || ""}|${hits[0].id}`;
+  if (shareReady && shareFor === key) return shareReady;
+  shareFor = key;
+  const { nodes } = I.diagnosisMap(catalog, store.state, store.read);
+  shareReady = (async () => {
+    const url = Share.shareUrl(await shareRef());
+    const canvas = await drawShareCard({ title: hits[0].title, nodes, label: variant === "scan" ? "My hiring scan" : "My free check" });
+    const blob = await cardBlob(canvas);
+    const file = blob && typeof File === "function" ? new File([blob], "gridschool-scan.png", { type: "image/png" }) : null;
+    return { url, canvas, blob, file };
+  })().catch(() => {
+    shareReady = null;
+    return null;
+  });
+  return shareReady;
+}
+
+/**
+ * "Share your scan": a picture of their #1 likely blocker and their map's shape, and a link that
+ * starts someone else's. Phones get the share sheet with the picture; everywhere else, or if the
+ * sheet can't take a file, the picture shows here with Copy link and Download image.
+ */
+function sharePanel() {
+  const panel = h("section", "share", null, { "aria-label": "Share your scan" });
+  const preview = h("div", "share__preview", null, { hidden: "" });
+  const status = h("p", "share__status", "", { "aria-live": "polite" });
+  const open = button("Share your scan", null, { small: true });
+  const counted = (via) => count("check.share", { view: via });
+
+  const showPreview = async () => {
+    const ready = await prepareShare();
+    if (!ready) return;
+    const img = h("img", "share__img", null, { src: ready.canvas.toDataURL("image/png"), alt: "Your scan as a picture: your #1 likely blocker, your map, and gridschool.org/check", width: 1200, height: 630 });
+    const copy = button("Copy link", async () => {
+      // Saving after the card showed changes the ref to the saved check's, so ask again.
+      const { url } = (await prepareShare()) || ready;
+      try {
+        await navigator.clipboard.writeText(url);
+        status.textContent = "Link copied.";
+        counted("copy");
+      } catch {
+        status.textContent = url;
+      }
+    }, { small: true });
+    const download = h("a", "btn btn--line btn--small", "Download image", { href: ready.blob ? URL.createObjectURL(ready.blob) : img.src, download: "gridschool-scan.png" });
+    download.addEventListener("click", () => counted("download"));
+    preview.replaceChildren(img, h("div", "card__row share__actions", null, {}, [copy, download]));
+    preview.hidden = false;
+  };
+
+  open.addEventListener("click", async () => {
+    status.textContent = "";
+    const ready = await prepareShare();
+    if (!ready) return;
+    const data = { title: "My hiring scan", text: "This is what my scan says is most likely in my way. Take yours: two minutes, free.", url: ready.url };
+    const canFile = ready.file && navigator.canShare?.({ ...data, files: [ready.file] });
+    if (canFile && matchMedia("(hover: none)").matches) {
+      try {
+        await navigator.share({ ...data, files: [ready.file] });
+        counted("native");
+        return;
+      } catch (problem) {
+        if (problem?.name === "AbortError") return; // they closed the sheet
+      }
+    }
+    await showPreview();
+  });
+  panel.append(
+    h("div", "share__head", null, {}, [
+      h("p", "share__text", "Send a friend in the same search a picture of your scan and a link to take theirs. It shows your #1 likely blocker and your map, never your name, email or resume."),
+      open,
+    ]),
+    status,
+    preview
+  );
+  (window.requestIdleCallback || ((fn) => setTimeout(fn, 400)))(() => prepareShare());
+  return panel;
+}
+
+/**
+ * The community, only for people who just kept their map with an email: that step is the
+ * proof they mean it. Hidden while the invite link is still a placeholder.
+ */
+function communityBlock() {
+  const invite = link("community"); // public door; the invite itself stays on the server (config.js)
+  if (!invite || !store.saved || !(store.saved.email || Account.session())) return null;
+  const join = h("a", "btn btn--line btn--small", "Join the community", { href: invite, target: "_blank", rel: "noopener" });
+  join.addEventListener("click", () => count("community.join_click"));
+  return h("div", "community", null, {}, [
+    h("p", "", "Join the community: fresh roles every morning, weekly send day, and people at the same stage as you."),
+    join,
+  ]);
+}
+
 /** The nav says who is signed in, with a way out. */
 function showAccount() {
   const slot = $("#nav-account");
@@ -966,8 +1099,8 @@ addEventListener("keydown", (event) => {
 /* ---------- start ---------- */
 
 /** One funnel step, tagged with where they came from (server: events.py). */
-function count(name) {
-  track(API, name, { source: store.from, check: store.saved?.id || "", props: { variant } });
+function count(name, props = {}) {
+  track(API, name, { source: store.from, check: store.saved?.id || "", props: { variant, ...props } });
 }
 
 /** Anything answered in this browser that a returning sign-in shouldn't replace. */
@@ -979,12 +1112,8 @@ function localStorageHasProgress() {
   }
 }
 
-/** Where they came from (?from=vsl, or an ad's utm tags), saved with the lead so each source can be measured. */
-function arrivedFrom() {
-  const params = new URLSearchParams(location.search);
-  const raw = params.get("from") || [params.get("utm_source"), params.get("utm_campaign")].filter(Boolean).join(":");
-  return raw.replace(/[^\w:.-]/g, "").slice(0, 60);
-}
+/** Where they came from (?from=vsl, a shared link's share:<ref>, or an ad's utm tags), saved with the lead so each source can be measured. */
+const arrivedFrom = () => Share.arrivedFrom(location.search);
 
 async function boot() {
   catalog = await (await fetch("../data/intake/questions.json")).json();

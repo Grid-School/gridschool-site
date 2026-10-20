@@ -23,6 +23,10 @@ export const LINKS = {
   welcomeVideo: "REPLACE_ME_WELCOME_VIDEO_EMBED",
   fitCall: "REPLACE_ME_CALCOM_FIT_20MIN",
   oneOnOne: "REPLACE_ME_CALCOM_1ON1_45MIN",
+  // The free community's public door. The free check shows "Join the community" once this is
+  // "https://lab.gridschool.org/community", which redirects to the invite in the server's
+  // COMMUNITY_INVITE env. Never put a Discord invite here (tools/check-private-links.mjs).
+  community: "REPLACE_ME_COMMUNITY",
   discord: "REPLACE_ME_DISCORD_INVITE",
   discordAsks: "REPLACE_ME_DISCORD_ASKS",
   discordShip: "REPLACE_ME_DISCORD_SHIP",

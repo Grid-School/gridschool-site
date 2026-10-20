@@ -325,3 +325,19 @@ footer a { color: var(--muted); }
   .is-asking .map-caption { margin-top: 0; }
   .is-asking .check__grid { gap: 10px; }
 }
+
+/* ---------- growth: the ad's filter line, sharing the scan, the community ---------- */
+.card__lede--filtered { margin-bottom: 6px; }
+.card__filter { margin: 0 0 16px; font-size: 12.5px; line-height: 1.5; color: var(--muted); }
+.share { margin-top: 16px; padding: 14px 18px; border-radius: var(--radius-sm); box-shadow: inset 0 0 0 1px var(--line-2); }
+.share__head { display: flex; align-items: center; justify-content: space-between; gap: 12px 24px; flex-wrap: wrap; }
+.share__text { flex: 1 1 300px; margin: 0; font-size: 14px; line-height: 1.5; color: var(--soft); }
+.share__head .btn { flex: none; }
+.share__status { margin: 8px 0 0; font: 400 12.5px var(--font-mono); color: var(--cyan); word-break: break-all; }
+.share__status:empty { display: none; }
+.share__preview { margin-top: 14px; }
+.share__img { display: block; width: 100%; max-width: 600px; height: auto; border-radius: var(--radius-sm); box-shadow: 0 0 0 1px var(--line-2); }
+.share__actions { margin-top: 12px; }
+a.btn--small { display: inline-flex; align-items: center; text-decoration: none; }
+.community { margin-top: 12px; padding: 14px 18px; border-radius: var(--radius-sm); background: rgba(var(--cyan-rgb), .05); box-shadow: inset 0 0 0 1px var(--hair-cyan); }
+.community p { margin: 0 0 12px; font-size: 14px; line-height: 1.5; color: var(--text); }
