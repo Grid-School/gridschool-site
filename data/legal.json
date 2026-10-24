@@ -1,5 +1,5 @@
 {
-  "version": "2026-10-19",
+  "version": "2026-10-24",
   "note": "Written from how the program actually runs. Every claim here has to match the offer lock in companies/gridschool-phase0; if the offer changes, this file changes in the same commit.",
   "documents": {
     "terms": {
@@ -74,6 +74,12 @@
           "body": [
             "You can stop at any time; after week 2 tuition is non-refundable because the spot is one of five and I cannot resell it mid-year.",
             "I can end the program with a refund of unused tuition if you break the conduct rules above, or if I cannot deliver what I sold."
+          ]
+        },
+        {
+          "heading": "YouTube",
+          "body": [
+            "Parts of GridSchool's tools use YouTube API Services. Anyone using those tools agrees to the YouTube Terms of Service (https://www.youtube.com/t/terms) and acknowledges the Google Privacy Policy (https://policies.google.com/privacy)."
           ]
         },
         {
@@ -158,6 +164,16 @@
           "whenAdTracking": [
             "Advertising measurement is active: an ad platform pixel records that you visited and whether you applied, so I can tell which ads bring people who are actually a fit. It does not receive your application answers or your board.",
             "You can block it with any tracker blocker and the site keeps working."
+          ]
+        },
+        {
+          "heading": "YouTube data",
+          "body": [
+            "GridSchool's internal research tool uses YouTube API Services. By using it, you agree to be bound by the YouTube Terms of Service (https://www.youtube.com/t/terms), and Google's Privacy Policy (https://policies.google.com/privacy) applies to the data YouTube holds.",
+            "What it accesses: public information about public YouTube videos and channels (titles, tags, thumbnails, view, like and comment counts, subscriber counts), and, with the channel owner's sign-in, the analytics of GridSchool's own channel. It does not access any viewer's account or personal data.",
+            "How it is used: to see which topics and packaging styles perform well relative to each channel's usual videos, so GridSchool can decide what to make next. The ratios and image measurements it produces are our own calculations, not YouTube metrics. Nothing is sold or shared, and nothing is shown publicly.",
+            "Storage and deletion: titles, channel names and thumbnails are refreshed or deleted within 30 days. Statistics and our derived measurements are kept only as long as YouTube's developer policies allow (30 days, or up to 36 months where YouTube has approved that use). Data about a video that is deleted or made private is removed at the next refresh. The tool stores no cookies or other data on anyone's device.",
+            "GridSchool's own channel access can be revoked at any time at https://security.google.com/settings/security/permissions. To ask about or delete any YouTube data we hold, email support@gridschool.org."
           ]
         },
         {

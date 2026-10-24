@@ -8,7 +8,7 @@
  * as an invented company name.
  */
 
-import { LEGAL, LINKS, isPlaceholder } from "../config.js?v=0220cb7-202610202353";
+import { LEGAL, LINKS, isPlaceholder } from "../config.js?v=3e91cd7-202610240659";
 
 const MISSING = "not set yet";
 
@@ -50,7 +50,7 @@ function sectionCard(section) {
   card.append(heading("h2", section.heading));
 
   const lines = [...section.body, ...(section.whenAdTracking && LEGAL.adTracking ? section.whenAdTracking : [])];
-  for (const line of lines) card.append(paragraph(line));
+  for (const line of lines) card.append(linked(paragraph(line)));
 
   return card;
 }
@@ -95,6 +95,23 @@ function paragraph(text, className) {
   const node = document.createElement("p");
   node.textContent = text;
   if (className) node.className = className;
+  return node;
+}
+
+/** Turns plain https:// URLs in a paragraph into links, building nodes (never markup) so copy stays content. */
+function linked(node) {
+  const text = node.textContent;
+  const parts = text.split(/(https:\/\/[^\s)]*[^\s).,;:])/);   // a trailing full stop stays outside the link
+  if (parts.length === 1) return node;
+  node.textContent = "";
+  for (const part of parts) {
+    if (!part.startsWith("https://")) { node.append(part); continue; }
+    const a = document.createElement("a");
+    a.href = part;
+    a.textContent = part;
+    a.rel = "noopener";
+    node.append(a);
+  }
   return node;
 }
 

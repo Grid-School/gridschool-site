@@ -7,7 +7,7 @@
  * families gather (see that file for the forces).
  */
 
-import { relax } from "./relax.js?v=0220cb7-202610202353";
+import { relax } from "./relax.js?v=3e91cd7-202610240659";
 
 export const COL_W = 206;
 /** Center to center. Every pair of stacked nodes uses this, never a squeeze. */
