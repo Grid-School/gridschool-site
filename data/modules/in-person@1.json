@@ -70,5 +70,11 @@
     "notes",
     "links",
     "due"
-  ]
+  ],
+  "video": {
+    "id": "v.in-person",
+    "title": "One evening, three people",
+    "mins": 6,
+    "summary": "How to pick an event, open a conversation without a pitch, and follow up the next morning."
+  }
 }

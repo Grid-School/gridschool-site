@@ -22,5 +22,11 @@
     "notes",
     "links",
     "due"
-  ]
+  ],
+  "video": {
+    "id": "v.case-study",
+    "title": "Write the case study",
+    "mins": 6,
+    "summary": "The problem, what you tried, what broke, what you changed, the result. One page a hiring manager reads to the end."
+  }
 }

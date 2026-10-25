@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { loadDesk, rememberSeen, saveDesk, todayKey } from "./desk.js?v=ac1f443-202610240735";
+import { loadDesk, rememberSeen, saveDesk, todayKey } from "./desk.js?v=506a0c6-202610250354";
 
 function memory() {
   const map = new Map();

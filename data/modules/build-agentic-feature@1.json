@@ -62,5 +62,11 @@
     "notes",
     "links",
     "due"
-  ]
+  ],
+  "video": {
+    "id": "v.build-agentic-feature",
+    "title": "Build the feature the boring way",
+    "mins": 10,
+    "summary": "Building it step by step with an AI assistant while you stay the engineer: tests, tracing, and a version that works every time."
+  }
 }

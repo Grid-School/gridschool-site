@@ -16,9 +16,10 @@
  * never gate a node: a habit is kept, not finished.
  */
 
-import { taskIsComplete, isCountTask } from "../task-state.js?v=ac1f443-202610240735";
-import { typeOf, specOf } from "../../../data/node-types.mjs?v=ac1f443-202610240735";
-import { prepOf, prepHint, opensLater, shortDay, isFreeMap, PAID_HINT } from "../prep.js?v=ac1f443-202610240735";
+import { taskIsComplete, isCountTask } from "../task-state.js?v=506a0c6-202610250354";
+import { typeOf, specOf } from "../../../data/node-types.mjs?v=506a0c6-202610250354";
+import { prepOf, prepHint, opensLater, shortDay, isFreeMap, PAID_HINT, COURSE_HINT } from "../prep.js?v=506a0c6-202610250354";
+import { FREE_MODULES, isCourseStep, moduleId } from "../../../data/video-access.mjs?v=506a0c6-202610250354";
 
 export { typeOf, specOf };
 
@@ -151,7 +152,12 @@ export function buildGraph(curriculum, student, { unlockAll = false, now = new D
   for (const node of nodes) {
     node.status = statusOf(node, byId, completionEvidence, reviews, groups);
     const prep = prepOf(node, prepState);
-    if (prep && free) {
+    // A free map carries the whole course; only the free modules open on it.
+    if (free && isCourseStep(node) && !FREE_MODULES.includes(moduleId(node))) {
+      node.paidOnly = true;
+      node.course = true;
+      if (node.status !== STATUS.LIT) node.hint = COURSE_HINT;
+    } else if (prep && free) {
       node.paidOnly = true;
       node.preparing = true;
       if (node.status !== STATUS.LIT) node.hint = PAID_HINT;

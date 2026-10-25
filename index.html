@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="rez.css?v=ac1f443-202610240735">
+<link rel="stylesheet" href="rez.css?v=506a0c6-202610250354">
 <script>/* First view of a session gets the arrival; a repeat starts drawn (js/landing-map.js). */
 try { if (!sessionStorage.getItem("gridschool.arrived") && !matchMedia("(prefers-reduced-motion: reduce)").matches) document.documentElement.classList.add("first-view"); } catch (e) {}</script>
 </head>
@@ -39,7 +39,7 @@ try { if (!sessionStorage.getItem("gridschool.arrived") && !matchMedia("(prefers
     <a href="#who">Who it's for</a>
     <a href="#proof">What you leave with</a>
     <a href="#week">How a week runs</a>
-    <a href="#plans">Two plans</a>
+    <a href="#plans">Plans</a>
     <a href="#faq">Questions</a>
   </nav>
   <a class="nav__cta" href="apply/" data-book>Book a call <kbd>B</kbd></a>
@@ -249,40 +249,60 @@ try { if (!sessionStorage.getItem("gridschool.arrived") && !matchMedia("(prefers
 <hr class="rule">
 
 <!-- ============ PLANS ============ -->
+<!-- Prices: data/intake/offer.json and server/billing.py (offer_test.py keeps them equal). Every paid button goes to checkout/ (order.mjs). -->
 <section class="sec" id="plans">
   <div class="wrap">
-    <p class="eyebrow">Two ways to work with me</p>
-    <h2>The same map. How much of my time is in it is up to you.</h2>
-    <p class="lede">Both start from where you stand. In the Residency I review every step with you. In Complete you get your map and the first week's work prepared, and you run it yourself.</p>
+    <p class="eyebrow">Three ways in</p>
+    <h2>The same map. How much of me is in it is up to you.</h2>
+    <p class="lede">Every plan starts from the free check, where you stand today. Run the course yourself, or have me build it with you.</p>
+    <p class="sales-fine plans-currency">Prices are in US dollars and include any sales tax or VAT. Checkout shows them in your own currency.</p>
 
-    <div class="plans">
+    <div class="plans plans--three">
       <article class="plan">
-        <div class="plan__bar eyebrow"><span>GridSchool Residency</span><span class="tag">I review every step</span></div>
-        <h3>Your map, walked with me every week until a company hires you.</h3>
+        <div class="plan__bar eyebrow"><span>Free</span><span class="tag">start here</span></div>
+        <h3>Your map from the 2-minute check, and two course modules.</h3>
         <ul class="plan__list">
-          <li>Starts with a 20-minute call, where we finish your map</li>
-          <li>A weekly 1:1, up to three written reviews a week, and a cohort call</li>
-          <li>Eight weeks of teaching and review, then the 1:1 keeps going until you're hired</li>
-          <li>The week-2 exit: wrong room, and unused tuition comes back</li>
+          <li>What's most likely in the way of interviews, and a ten-minute step for today</li>
+          <li>Profile images, and your headline, About and top roles, each with its film</li>
+          <li>The rest of the course on your map, so you can see the whole road</li>
+          <li>No card, nothing to cancel</li>
         </ul>
         <div class="plan__foot">
-          <p class="plan__price"><b>Founding rate</b> quoted on the call<span>Up to five residents with me at a time.</span></p>
-          <a class="btn btn--solid" href="apply/" data-book>Book a call <span class="arr" aria-hidden="true">→</span></a>
+          <p class="plan__price"><b>$0</b><span>Keep your map with an email.</span></p>
+          <a class="btn btn--line" href="check/?from=home-plans">Take the free check <span class="arr" aria-hidden="true">→</span></a>
+          <a class="plan__alt" href="app/?s=demo&amp;map=free">See a sample map</a>
         </div>
       </article>
 
       <article class="plan plan--complete">
         <div class="plan__bar eyebrow"><span>GridSchool Complete</span><span class="tag">you run it</span></div>
-        <h3>Your map from the free check, and the first week's work prepared for you.</h3>
+        <h3>The whole course and the system, with your first week prepared.</h3>
         <ul class="plan__list">
-          <li>Five fresh roles that fit your map</li>
-          <li>The hiring manager for each one</li>
-          <li>A short note to each, written in your voice</li>
+          <li>Every module and every film: profile, proof, people, search, interviews and the offer</li>
+          <li>Five fresh roles that fit your map, the hiring manager for each, and a note to each in your voice</li>
           <li>I approve every note before you send it</li>
+          <li>Your map keeps adjusting as you answer and as results come in</li>
         </ul>
         <div class="plan__foot">
-          <p class="plan__price"><b>$349</b> for 12 months, or 4 payments of $99<span>14-day refund, no questions.</span></p>
-          <a class="btn btn--line" href="check/?from=home-plans">Take the free 2-minute check <span class="arr" aria-hidden="true">→</span></a>
+          <p class="plan__price"><b>$997</b> once<span>Or 7 days free, then $97 a month.</span></p>
+          <a class="btn btn--solid" href="checkout/?plan=complete&amp;from=home">Choose how to pay <span class="arr" aria-hidden="true">→</span></a>
+          <a class="plan__alt" href="checkout/?plan=complete&amp;gift=1&amp;from=home">Give it as a gift</a>
+        </div>
+      </article>
+
+      <article class="plan plan--residency">
+        <div class="plan__bar eyebrow"><span>GridSchool Residency</span><span class="tag">I build it with you</span></div>
+        <h3>I work with you as an engineer, building your projects, until you sign an offer.</h3>
+        <ul class="plan__list">
+          <li>Everything in Complete</li>
+          <li>Calls twice a week for the first 8 weeks, building your projects together</li>
+          <li>Then a weekly 1:1 until you sign an offer, for up to 12 months</li>
+          <li>The week-2 exit: wrong room, and unused tuition comes back</li>
+        </ul>
+        <div class="plan__foot">
+          <p class="plan__price"><b>$12,000</b><span>Or 3 payments of $4,000. Three seats.</span></p>
+          <a class="btn btn--line" href="checkout/?plan=residency&amp;from=home">Reserve a seat <span class="arr" aria-hidden="true">→</span></a>
+          <a class="plan__alt" href="residency/">How the Residency works</a>
         </div>
       </article>
     </div>
@@ -301,7 +321,9 @@ try { if (!sessionStorage.getItem("gridschool.arrived") && !matchMedia("(prefers
       <details><summary>How is the map decided?</summary><p>The sentence at the top of this page drafts it from three answers, using the same steps the platform runs. On the call we finish it from your resume, your target companies, and where your last interviews stopped. Every step ends in something a stranger can open.</p></details>
       <details><summary>Why not follow the map on my own?</summary><p>You can, and the draft is yours to keep. What a list cannot do is read your work and send it back, change the plan when an interview goes sideways, or sign a verdict as someone who did not help you. Most steps on your map end in a written review from me, and the defense is judged by an outside engineer. That part is what you pay for.</p></details>
       <details><summary>Is this a bootcamp?</summary><p>No. A bootcamp teaches a stack to beginners. This starts from software you can already write and works on what gets you hired next, planned around you and reviewed every week.</p></details>
-      <details><summary>Why founding, with no placements yet?</summary><p>The first five get me at full attention while the method is tuned on them, at the lowest rate anyone will pay. Week 2 is the exit.</p></details>
+      <details><summary>Why trust you, with no placements yet?</summary><p>Don't take it on trust. The free check runs the method on your own situation before you pay anything, and the first two course modules are yours to use. Complete has a 14-day refund on the one-time price, the monthly plan cancels any time, and the Residency has the week-2 exit.</p></details>
+      <details><summary>Can a parent pay for it?</summary><p>Yes: <a class="link" href="gift/">give it as a gift</a>. They choose to accept it from their own email (if they don't, you're refunded in full), and if they agree you get a short weekly note on their progress.</p></details>
+      <details><summary>Can I cancel the monthly plan?</summary><p>Any time, online, in two clicks. It starts with 7 free days, then $97 a month, and it stops on its own after 12 payments. We email you 3 days before the first charge.</p></details>
     </div>
   </div>
 </section>
@@ -321,6 +343,6 @@ try { if (!sessionStorage.getItem("gridschool.arrived") && !matchMedia("(prefers
   <div class="wrap">GridSchool Residency · <a href="mailto:support@gridschool.org">support@gridschool.org</a> · © 2026 GRID SCHOOL LLC · Boise, Idaho · <a href="privacy/">Privacy</a> · <a href="terms/">Terms</a><br>A company's yes is theirs. Your evidence won't be.</div>
 </footer>
 
-<script type="module" src="landing.js?v=ac1f443-202610240735"></script>
+<script type="module" src="landing.js?v=506a0c6-202610250354"></script>
 </body>
 </html>

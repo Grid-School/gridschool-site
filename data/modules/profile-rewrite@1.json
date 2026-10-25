@@ -159,5 +159,12 @@
     "notes",
     "links",
     "due"
-  ]
+  ],
+  "video": {
+    "id": "v.profile-rewrite",
+    "title": "Headline, About and top roles, from what you can prove",
+    "mins": 8,
+    "summary": "How recruiters search, and how to write a headline, an About and three roles that use their words and claim only what you can show.",
+    "access": "free"
+  }
 }

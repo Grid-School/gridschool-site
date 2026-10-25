@@ -31,5 +31,11 @@
     "notes",
     "links",
     "due"
-  ]
+  ],
+  "video": {
+    "id": "v.pick-feature",
+    "title": "Pick the one feature to build",
+    "mins": 5,
+    "summary": "How to choose the feature that shows the most of the job in the least time, and how to know it's small enough."
+  }
 }

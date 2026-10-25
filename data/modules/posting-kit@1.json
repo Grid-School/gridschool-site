@@ -69,5 +69,11 @@
     "notes",
     "links",
     "due"
-  ]
+  ],
+  "video": {
+    "id": "v.posting-kit",
+    "title": "Your first posts, from what you noticed",
+    "mins": 6,
+    "summary": "Three post shapes that work for engineers, and how to write one from something you saw this week."
+  }
 }

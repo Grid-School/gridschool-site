@@ -36,6 +36,11 @@ export const PAID_HINT = DFY_LINE;
 export const PAID_TASKS = "Yours once we have done the work above";
 export const PAID_VIDEO = "Included when we do it with you";
 export const FILM_COMING = "Film coming";
+/** On a free map: a course step past the free ones (data/video-access.mjs FREE_MODULES). */
+export const COURSE_LINE = "Part of the full course";
+export const COURSE_HINT = "Full course";
+export const COURSE_ASK = "Get the full course";
+export const COURSE_TASKS = "Yours with the full course";
 
 /**
  * Where "Have us do this" goes. On the demo board: the demo checkout, carrying the map's top

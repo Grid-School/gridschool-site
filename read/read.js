@@ -5,9 +5,9 @@
  * after render by mermaid.js, only on pages that carry one.
  */
 
-import { renderMarkdown, splitTitle } from "../app/js/markdown.js?v=ac1f443-202610240735";
-import { hydrateMermaid } from "../app/js/mermaid.js?v=ac1f443-202610240735";
-import { bareReadingTitle } from "../app/js/reading-order.js?v=ac1f443-202610240735";
+import { renderMarkdown, splitTitle } from "../app/js/markdown.js?v=506a0c6-202610250354";
+import { hydrateMermaid } from "../app/js/mermaid.js?v=506a0c6-202610250354";
+import { bareReadingTitle } from "../app/js/reading-order.js?v=506a0c6-202610250354";
 
 const CATALOG = new URL("./catalog.json", import.meta.url);
 const MODULES = new URL("./modules/", import.meta.url);

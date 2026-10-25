@@ -14,14 +14,14 @@
  * this browser so a refresh loses nothing; the resume text never does.
  */
 
-import { PERSIST, link } from "../config.js?v=ac1f443-202610240735";
-import * as I from "../data/intake/intake.mjs?v=ac1f443-202610240735";
-import { mountCheckMap } from "./check-map.js?v=ac1f443-202610240735";
-import * as Account from "./account.js?v=ac1f443-202610240735";
-import { enterSeat } from "../app/js/persist-auth.js?v=ac1f443-202610240735";
-import { track, visitorId } from "./events.js?v=ac1f443-202610240735";
-import * as Share from "./share.mjs?v=ac1f443-202610240735";
-import { drawShareCard, cardBlob } from "./share-card.js?v=ac1f443-202610240735";
+import { PERSIST, link } from "../config.js?v=506a0c6-202610250354";
+import * as I from "../data/intake/intake.mjs?v=506a0c6-202610250354";
+import { mountCheckMap } from "./check-map.js?v=506a0c6-202610250354";
+import * as Account from "./account.js?v=506a0c6-202610250354";
+import { enterSeat } from "../app/js/persist-auth.js?v=506a0c6-202610250354";
+import { track, visitorId } from "./events.js?v=506a0c6-202610250354";
+import * as Share from "./share.mjs?v=506a0c6-202610250354";
+import { drawShareCard, cardBlob } from "./share-card.js?v=506a0c6-202610250354";
 
 const KEY = "gridschool.check.v1";
 const SHARE_KEY = "gridschool.share.v1";
@@ -961,24 +961,38 @@ function offerBlock(hits, checkout) {
       prepared ? h("li", "", prepared) : null,
       h("li", "", "Every send and every reply is tracked on your map, so you can see what's working."),
       h("li", "", "Your map keeps adjusting as you answer more and as results come in."),
+      h("li", "", "The whole course opens: every module and every film, not just the two profile steps."),
     ].filter(Boolean)),
     h("p", "offer__price", null, {}, [
       h("b", "", `$${price.full}`),
-      h("span", "", ` for ${price.months} months${monthly ? `, or ${price.instalments} payments of $${price.instalment}` : ""}`),
-      h("span", "offer__refund", `${price.refundDays}-day refund, no questions asked`),
+      h("span", "", ` once, for ${price.months} months${monthly ? `, or $${price.monthly} a month after a ${price.trialDays}-day free trial` : ""}`),
+      h("span", "offer__refund", `${price.refundDays}-day refund on the one-time price, no questions asked`),
     ]),
-    checkout
+    checkout || monthly
       ? row(
-          button("Start my map", () => start(checkout), { arrow: true }),
-          monthly ? link_(`Or pay $${price.instalment} a month, ${price.instalments} times`, () => start(monthly)) : null
+          checkout ? button(`Start my map, $${price.full}`, () => start(checkout), { arrow: true }) : null,
+          monthly ? link_(`Or try it free for ${price.trialDays} days, then $${price.monthly} a month`, () => start(monthly)) : null
         )
       : h("p", "card__help", "Online checkout opens soon. To start now, write to support@gridschool.org from the email you saved your map with, and we'll set it up by hand."),
+    monthly ? h("p", "card__fine", trialTerms(price)) : null,
     ask,
     error,
     h("p", "card__fine", offer.payNote),
+    h("p", "card__fine", "Prices are in US dollars and include any sales tax or VAT. Checkout shows them in your own currency."),
+    h("p", "card__fine", null, {}, [
+      "Want me on calls with you, building your projects together? ",
+      h("a", "", "See the Residency", { href: `../residency/${DEMO ? "?demo=1" : ""}` }),
+      ".",
+    ]),
     row(shareButton(hits))
   );
   return section;
+}
+
+/** The monthly plan's terms, next to its button (California's automatic-renewal rules: before they agree, plainly). */
+function trialTerms(price) {
+  const most = price.monthly * price.monthlyMax;
+  return `Free for ${price.trialDays} days, then $${price.monthly} a month until you cancel, for at most ${price.monthlyMax} payments ($${most.toLocaleString("en-US")}). We email you 3 days before the first charge. Cancel any time online.`;
 }
 
 /**
@@ -991,7 +1005,7 @@ function shareButton(hits) {
     "My GridSchool check (gridschool.org/check) says what's most likely in the way of interviews:",
     ...hits.map((hit, n) => `${n + 1}. ${hit.title}`),
     "",
-    `For $${price.full} (${price.months} months, ${price.refundDays}-day refund) they do the first week's work: ${offer.prepared[hits[0].id] || ""}`.trim(),
+    `For $${price.full} (${price.months} months, ${price.refundDays}-day refund), or $${price.monthly} a month after a ${price.trialDays}-day free trial, they do the first week's work: ${offer.prepared[hits[0].id] || ""}`.trim(),
     "A person reviews everything before I send it, and every send and reply is tracked.",
   ].join("\n");
   const copy = link_("Copy a summary to show someone", async () => {

@@ -29,5 +29,11 @@
     "notes",
     "links",
     "due"
-  ]
+  ],
+  "video": {
+    "id": "v.offer-reported",
+    "title": "When the offer comes",
+    "mins": 6,
+    "summary": "Don't say yes yet: what to ask, how to compare, and how to report the offer so we can help you negotiate."
+  }
 }

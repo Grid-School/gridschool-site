@@ -36,5 +36,11 @@
     "notes",
     "links",
     "due"
-  ]
+  ],
+  "video": {
+    "id": "v.target-list",
+    "title": "List the people already in the seat",
+    "mins": 5,
+    "summary": "Finding 25 to 30 people who do or hire for the job you want, and why this list beats any job board."
+  }
 }

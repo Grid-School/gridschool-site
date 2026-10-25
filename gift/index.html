@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Give GridSchool. A mapped job search, as a gift.</title>
+<meta name="description" content="For a son or daughter finishing a computer science degree or looking for their first engineering role: their own job-search map, the full course, and a working engineer reviewing it. They choose to accept it.">
+<meta property="og:title" content="Give GridSchool: a mapped job search, as a gift">
+<meta property="og:description" content="Their own job-search map, the full course, and a working engineer reviewing it. They choose to accept it, and you get a weekly progress note if they agree.">
+<meta property="og:url" content="https://gridschool.org/gift/">
+<meta property="og:image" content="https://gridschool.org/assets/og.png">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../rez.css?v=506a0c6-202610250354">
+<link rel="stylesheet" href="../js/sales.css?v=506a0c6-202610250354">
+</head>
+<body class="rez-page" data-from="gift">
+
+<header class="nav is-scrolled">
+  <a class="brand" href="../" aria-label="GridSchool home"><span>GRID<b>SCHOOL</b></span></a>
+  <nav class="nav__links" aria-label="Sections" data-pitch-only>
+    <a href="#how">How a gift works</a>
+    <a href="#plans">Plans</a>
+    <a href="#faq">Questions</a>
+  </nav>
+  <a class="nav__cta" href="#plans" data-pitch-only>Give it</a>
+</header>
+
+<main>
+
+<!-- The person receiving it (?claim=…): what it is, and theirs to accept. gifts_api.py does the rest. -->
+<section class="sec sales-paid" id="claim" hidden>
+  <div class="wrap">
+    <p class="eyebrow">A gift for you</p>
+    <h1 class="sales-h1" id="claim-title">Someone gave you GridSchool.</h1>
+    <p class="lede" id="claim-what">A plan for your job search, built around you: your own map of what's most likely in the way of interviews, the full course with a film for every step, and a working engineer (me) reviewing it. It's yours to accept or not, and nothing starts until you do.</p>
+    <label class="gift-share">
+      <input type="checkbox" id="share">
+      <span><b id="share-label">Send them a short weekly progress note.</b> Steps you finished, notes and applications sent, replies, what's next. Never what we talk about, never your drafts. You can stop it any time.</span>
+    </label>
+    <p class="sales-cta">
+      <button class="btn btn--solid" type="button" id="accept">Accept and open my map <span class="arr" aria-hidden="true">→</span></button>
+      <button class="plan__alt gift-no" type="button" id="decline">It's not for me</button>
+    </p>
+    <p class="sales-fine" id="claim-error" role="alert"></p>
+    <p class="sales-fine">If you say no, they're refunded in full. You can always start on your own later with the free check.</p>
+  </div>
+</section>
+
+<!-- After accepting a Residency gift, after declining, after stopping the notes, after a giver pays: one message. -->
+<section class="sec sales-paid" id="done" hidden>
+  <div class="wrap">
+    <p class="eyebrow" id="done-eyebrow">Done</p>
+    <h1 class="sales-h1" id="done-title"></h1>
+    <p class="lede" id="done-body"></p>
+    <p class="sales-cta" id="done-cta" hidden><a class="btn btn--solid" id="done-link" href="../">Continue <span class="arr" aria-hidden="true">→</span></a></p>
+  </div>
+</section>
+
+<div id="pitch">
+<section class="sec">
+  <div class="wrap">
+    <p class="eyebrow">Give GridSchool</p>
+    <h1 class="sales-h1">Give them a mapped job search, and a working engineer in their corner.</h1>
+    <p class="lede">For a son or daughter finishing a computer science degree, or already looking for their first engineering role, wherever they study. They get their own map, the full course and my review. You get a weekly note on their progress, if they agree.</p>
+    <p class="sales-cta">
+      <a class="btn btn--solid" href="#plans">Choose a plan <span class="arr" aria-hidden="true">→</span></a>
+      <a class="plan__alt" href="../watch/">Watch how it works first</a>
+    </p>
+  </div>
+</section>
+
+<hr class="rule">
+
+<section class="sec" id="how">
+  <div class="wrap">
+    <p class="eyebrow">How a gift works</p>
+    <h2>It works best when it's their choice.</h2>
+    <div class="sales-steps">
+      <article>
+        <b class="sales-steps__when">1 · You</b>
+        <h3>Choose a plan and pay.</h3>
+        <p>At checkout you add their first name and email. Nothing is made for them yet, and nothing renews on your card.</p>
+      </article>
+      <article>
+        <b class="sales-steps__when">2 · Them</b>
+        <h3>They choose to accept it.</h3>
+        <p>They get an email from me with what it is. If they accept, their map opens that day. If it isn't for them, you're refunded in full. You hear either way.</p>
+      </article>
+      <article>
+        <b class="sales-steps__when">3 · Every week</b>
+        <h3>A short note, if they agree.</h3>
+        <p>Steps finished, notes and applications sent, replies, and what's next. Never what we talk about on calls, never their drafts. Either of you can stop it.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<section class="sec" id="plans">
+  <div class="wrap">
+    <p class="eyebrow">Plans to give</p>
+    <h2>Paid up front. Nothing renews on your card.</h2>
+    <p class="lede">Both plans include everything in the free check and the full course. Prices are in US dollars and include any sales tax or VAT. Checkout shows them in your own currency.</p>
+    <div class="plans">
+      <article class="plan plan--complete">
+        <div class="plan__bar eyebrow"><span>GridSchool Complete</span><span class="tag">they run it</span></div>
+        <h3>The whole course and the system, with their first week's work prepared for them.</h3>
+        <ul class="plan__list">
+          <li>Their map, and every module and film: profile, proof, people, search, interviews, the offer</li>
+          <li>Roles that fit them, the hiring manager for each, and a note to each in their voice</li>
+          <li>I approve every note before they send it</li>
+          <li>12 months</li>
+        </ul>
+        <div class="plan__foot">
+          <p class="plan__price"><b>$997</b><span>Refunded in full if they don't accept.</span></p>
+          <a class="btn btn--solid" href="../checkout/?plan=complete&amp;gift=1&amp;from=gift">Give Complete, $997 <span class="arr" aria-hidden="true">→</span></a>
+        </div>
+      </article>
+      <article class="plan plan--residency">
+        <div class="plan__bar eyebrow"><span>GridSchool Residency</span><span class="tag">I build it with them</span></div>
+        <h3>I work with them as an engineer, building the projects that make them stand out, until they sign an offer.</h3>
+        <ul class="plan__list">
+          <li>Everything in Complete</li>
+          <li>Calls twice a week for 8 weeks, building their projects together, at a time that works in their time zone</li>
+          <li>Then a weekly 1:1 until they sign an offer, for up to 12 months</li>
+          <li>Three seats at a time</li>
+        </ul>
+        <div class="plan__foot">
+          <p class="plan__price"><b>$12,000</b><span>Or 3 monthly payments of $4,000. Refunded in full if they don't accept.</span></p>
+          <a class="btn btn--line" href="../checkout/?plan=residency&amp;gift=1&amp;from=gift">Give the Residency, $12,000 <span class="arr" aria-hidden="true">→</span></a>
+          <a class="plan__alt" href="../checkout/?plan=residency&amp;billing=monthly&amp;gift=1&amp;from=gift">Or 3 payments of $4,000</a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<section class="sec sec--tight" id="faq">
+  <div class="wrap">
+    <p class="eyebrow">Straight answers</p>
+    <div class="faq" style="margin-top:24px">
+      <details><summary>Who is it for?</summary><p>Someone 18 or older who can already write software and wants an engineering role: in their final year of a computer science degree, a recent graduate who hasn't found a position yet, or someone who needs a project that makes a team stop and look. The map is built for English-language engineering roles: the US, Canada, the UK, Singapore, Australia, and remote teams. They can study or live anywhere.</p></details>
+      <details><summary>Can they start before they graduate?</summary><p>Yes, and the final year is a good time. Many new-graduate roles open close to a year before the start date, and a project built now is ready when they apply.</p></details>
+      <details><summary>What will I see?</summary><p>If they agree: a short weekly email with the steps they finished, how many notes and applications they sent, replies, and what's next. You won't see what we talk about on calls, their drafts, or my reviews of their work. If they'd rather keep it private, you'll get one email saying they accepted.</p></details>
+      <details><summary>What if they don't want it?</summary><p>They say so from the email, and you're refunded in full. It works far better as their choice than as an assignment, so I'd rather they decline than start reluctantly.</p></details>
+      <details><summary>Is a job guaranteed?</summary><p>No, and be wary of anyone who says it is. A company's yes is theirs. What I promise is the work: their map, the course, my review of what they send, and in the Residency, me building with them every week.</p></details>
+      <details><summary>Who are you?</summary><p>Aden Jessee. I'm a working engineer: I build applied AI and agentic systems now, and I built software for years before that. GridSchool is the system I built to plan and run a job search the way I'd run an engineering project.</p></details>
+    </div>
+  </div>
+</section>
+</div>
+
+</main>
+
+<footer><div class="wrap">GridSchool · <a href="mailto:support@gridschool.org">support@gridschool.org</a> · <a href="../terms/">Terms</a> · <a href="../privacy/">Privacy</a> · © 2026 GRID SCHOOL LLC · Boise, Idaho<br>A company's yes is theirs. Your evidence won't be.</div></footer>
+
+<script type="module" src="./gift.js?v=506a0c6-202610250354"></script>
+</body>
+</html>

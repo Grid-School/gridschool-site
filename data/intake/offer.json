@@ -1,13 +1,22 @@
 {
-  "about": "What the paid plan prepares for each finding, shown on the free check's offer. 'prepared' must match complete_map.PLANS (offer_test.py checks). Prices and refund are the public offer; change them only with BREAK-IN-LOCK.",
+  "about": "What the paid plan prepares for each finding, shown on the free check's offer. 'prepared' must match complete_map.PLANS (offer_test.py checks). Prices and refund are the public offer and must match server/billing.py; change them only with BREAK-IN-LOCK.",
   "price": {
-    "full": 349,
-    "instalments": 4,
-    "instalment": 99,
+    "full": 997,
     "months": 12,
+    "monthly": 97,
+    "monthlyMax": 12,
+    "trialDays": 7,
     "refundDays": 14
   },
-  "payNote": "Less than one day of a typical software developer's pay.",
+  "residency": {
+    "full": 12000,
+    "instalments": 3,
+    "instalment": 4000,
+    "seats": 3,
+    "months": 12,
+    "buildWeeks": 8
+  },
+  "payNote": "Less than two days of a typical software developer's pay.",
   "payNoteSource": "BLS OEWS May 2025: software developers' median annual wage $135,980, about $523 per working day (260 days). Check the current release before changing.",
   "prepared": {
     "reach": "We find five fresh roles that fit you, the hiring manager for each, and a short note to each one in your voice.",

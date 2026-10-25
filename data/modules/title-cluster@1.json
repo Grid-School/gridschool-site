@@ -36,5 +36,11 @@
     "notes",
     "links",
     "due"
-  ]
+  ],
+  "video": {
+    "id": "v.title-cluster",
+    "title": "The titles your experience fits",
+    "mins": 5,
+    "summary": "Reading live postings to find the two or three titles you can win, and searching under all of them."
+  }
 }

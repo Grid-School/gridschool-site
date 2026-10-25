@@ -29,5 +29,11 @@
     "notes",
     "links",
     "due"
-  ]
+  ],
+  "video": {
+    "id": "v.design-board",
+    "title": "Find your taste before you build",
+    "mins": 5,
+    "summary": "Collecting thirty-five images until a style shows up, and why that style makes every later page look like one person made it."
+  }
 }

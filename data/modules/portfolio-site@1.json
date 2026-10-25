@@ -29,5 +29,11 @@
     "notes",
     "links",
     "due"
-  ]
+  ],
+  "video": {
+    "id": "v.portfolio-site",
+    "title": "A portfolio site led by one project",
+    "mins": 7,
+    "summary": "What goes on the first screen, why one deep project beats six thin ones, and how to ship the site in a weekend."
+  }
 }

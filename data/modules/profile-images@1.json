@@ -29,5 +29,12 @@
     "notes",
     "links",
     "due"
-  ]
+  ],
+  "video": {
+    "id": "v.profile-images",
+    "title": "Profile images that read as trust",
+    "mins": 5,
+    "summary": "Why the banner and headshot are read before any word, and how to make both look like the same person in the same seat.",
+    "access": "free"
+  }
 }

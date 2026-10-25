@@ -22,7 +22,7 @@
  * graph (progress, next, the step pages) never holds them.
  */
 
-import { isCompleteMap, isFreeMap, shortDay } from "../prep.js?v=ac1f443-202610240735";
+import { isCompleteMap, isFreeMap, shortDay, COURSE_HINT } from "../prep.js?v=506a0c6-202610250354";
 
 export const SHOWN_QUESTIONS = 2;
 export const WIN_LABEL = "Your biggest win";
@@ -64,11 +64,16 @@ export function routeGraph(graph, { foldOpen = false, fullPlan = false } = {}) {
   // Questions: the next two stay, the rest wait in one node on a free map.
   const open = ordered.filter((node) => isQuestion(node) && node.status !== "lit");
   const folded = free && !foldOpen && open.length > SHOWN_QUESTIONS ? new Set(open.slice(SHOWN_QUESTIONS).map((node) => node.id)) : new Set();
+  // The course past the free modules: one node on a free map, every step once they ask to see the full plan.
+  const lockedCourse = free && !fullPlan ? ordered.filter((node) => node.course && node.paidOnly) : [];
+  const courseFold = new Set(lockedCourse.map((node) => node.id));
   let dfyIndex = 0;
   for (const node of ordered) {
-    if (folded.has(node.id)) continue;
+    if (folded.has(node.id) || courseFold.has(node.id)) continue;
     let shown = node;
-    if (free && node.paidOnly) {
+    if (free && node.course) {
+      shown = { ...node, preview: fullPlan, hint: COURSE_HINT };
+    } else if (free && node.paidOnly) {
       const win = node.id === winId;
       shown = fullPlan
         ? { ...node, preview: true, win, hint: previewHint(node, dfyIndex) }
@@ -81,6 +86,13 @@ export function routeGraph(graph, { foldOpen = false, fullPlan = false } = {}) {
         id: "_waiting", n: node.n + 0.5, title: `${node.waiting} more waiting on the full plan`, landmark: "waiting",
         status: "open", track: "spine", family: node.family, phase: node.phase, sideNumber: `+${node.waiting}`,
         paidOnly: true, preparing: true, preview: fullPlan, hint: fullPlan ? "Finding roles" : DFY_HINT, tasks: [],
+      });
+    }
+    if (lockedCourse.length && node.id === ordered.filter((item) => item.phase === "course" && !courseFold.has(item.id)).at(-1)?.id) {
+      out.push({
+        id: "_course", n: node.n + 0.5, title: `${lockedCourse.length} more course steps in the full plan`, landmark: "waiting",
+        status: "open", track: "spine", family: node.family, phase: node.phase, sideNumber: `+${lockedCourse.length}`,
+        paidOnly: true, course: true, preparing: true, preview: false, hint: COURSE_HINT, tasks: [],
       });
     }
     if (folded.size && node.id === open[SHOWN_QUESTIONS - 1]?.id) {

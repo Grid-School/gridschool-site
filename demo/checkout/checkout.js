@@ -5,7 +5,7 @@
  * finding, and from there to the made-up Complete map. The real checkout is Stripe.
  */
 
-import { offerOf } from "./offer.js?v=ac1f443-202610240735";
+import { offerOf } from "./offer.js?v=506a0c6-202610250354";
 
 const params = new URLSearchParams(location.search);
 const card = document.getElementById("card");
@@ -47,9 +47,14 @@ async function render() {
     return node;
   };
   const paint = () => {
-    total.textContent = plan === "full" ? `$${price.full}` : `$${price.instalment} today`;
-    payLabel.textContent = plan === "full" ? `Pay $${price.full}` : `Pay $${price.instalment}`;
+    total.textContent = plan === "full" ? `$${price.full}` : "$0 today";
+    payLabel.textContent = plan === "full" ? `Pay $${price.full}` : `Start my ${price.trialDays}-day trial`;
+    terms.textContent =
+      plan === "full"
+        ? `Charged as GRIDSCHOOL COMPLETE on a real order. Changed your mind? ${price.refundDays} days to ask for a full refund.`
+        : `Free for ${price.trialDays} days, then $${price.monthly} a month until you cancel, for at most ${price.monthlyMax} payments. We email you 3 days before the first charge. Cancel any time online.`;
   };
+  const terms = h("p", "card__fine", "");
   const pay = h("button", "btn btn--solid paybtn", null, { type: "button" }, [payLabel, h("span", "arr", "(demo) →", { "aria-hidden": "true" })]);
   pay.addEventListener("click", () => {
     pay.disabled = true;
@@ -73,16 +78,16 @@ async function render() {
     h("p", "card__lead", `Your map and the first week's work. ${prepared}`),
     h("div", "plans", null, {}, [
       choice("full", `$${price.full} once`, `${price.months} months`),
-      choice("monthly", `$${price.instalment} a month`, `${price.instalments} payments`),
+      choice("monthly", `$${price.monthly} a month`, `${price.trialDays} days free first`),
     ]),
     h("div", "order", null, {}, [
       h("div", "order__line", null, {}, [h("span", "", "Aden reviews your map"), h("b", "", "within 24 hours")]),
-      h("div", "order__line", null, {}, [h("span", "", "Refund"), h("b", "", `${price.refundDays} days, no questions`)]),
+      h("div", "order__line", null, {}, [h("span", "", "Refund"), h("b", "", `${price.refundDays} days on the one-time price`)]),
       h("div", "order__line order__total", null, {}, [h("span", "", "Due today"), total]),
     ]),
     h("label", "name-row", null, { for: "demo-name" }, [h("span", "", "Name for the welcome page (demo)"), name]),
     pay,
-    h("p", "card__fine", "Charged as GRIDSCHOOL COMPLETE on a real order. Changed your mind? 14 days to ask for a full refund.")
+    terms
   );
   paint();
 }

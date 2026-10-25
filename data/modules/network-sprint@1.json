@@ -72,5 +72,11 @@
     "notes",
     "links",
     "due"
-  ]
+  ],
+  "video": {
+    "id": "v.network-sprint",
+    "title": "A week of starting conversations",
+    "mins": 8,
+    "summary": "Comments, connection notes and first messages that start a real conversation, and how to send them when you'd rather not."
+  }
 }

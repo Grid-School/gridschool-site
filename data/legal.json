@@ -1,5 +1,5 @@
 {
-  "version": "2026-10-24",
+  "version": "2026-10-25",
   "note": "Written from how the program actually runs. Every claim here has to match the offer lock in companies/gridschool-phase0; if the offer changes, this file changes in the same commit.",
   "documents": {
     "terms": {
@@ -9,14 +9,15 @@
         {
           "heading": "What you are buying",
           "body": [
-            "The GridSchool Residency is an eight-week coaching and review intensive for people who can already write a working program and cannot get a team to trust them, plus continued review after week 8 until a company hires you. It includes a weekly 45-minute one-to-one, a weekly cohort call, up to three written reviews per week, written sign-offs on your projects, a board that tracks your evidence, real systems to work in, a recorded live defense read by an outside engineer, help building your public site and profile, interview preparation from your own work, and a prompt pack you run in your own AI account. The intensive runs on the condition that you put work in every day.",
-            "It is coaching and review. It is not a bootcamp, not a degree, not accredited, and not a recruiting agency."
+            "There are three plans. Free: your map from the free check, today's step, the check's questions, and the first two course modules (profile images, and your headline, About and top roles) with their films. GridSchool Complete: the whole course and every film, your map and the system that keeps it current, and the first week's work prepared for you (roles that fit your map, the hiring manager for each, and a short note to each that I approve before you send it). The GridSchool Residency: everything in Complete, plus calls with me twice a week for the first eight weeks, building the projects that make you stand out together, then a weekly 45-minute one-to-one on your search until you sign an offer, for up to 12 months from your start.",
+            "It is coaching, a course and software. It is not a bootcamp, not a degree, not accredited, and not a recruiting or employment agency: I do not place you in a job or have access to jobs that you don't."
           ]
         },
         {
           "heading": "What I do not promise",
           "body": [
-            "I do not promise that a company hires you. Nobody honest can. I do not offer a job-or-refund, an income share agreement, or a guaranteed interview. After week 8 I keep the weekly one-to-one, interview preparation from your own work, and help getting eyes on the evidence, at no extra tuition, until a company hires you or you end the arrangement. That is a service I keep providing. It is not a promise that a company says yes.",
+            "I do not promise that a company hires you. Nobody honest can. None of these plans is a job-or-refund, an income share agreement, or a guaranteed interview, and none charges anything after you are hired. In the Residency, after week 8 I keep the weekly one-to-one, interview preparation from your own work, and help getting eyes on the evidence until you sign an offer or 12 months from your start, whichever comes first. That is a service I keep providing. It is not a promise that a company says yes.",
+            "Students who enrolled before these plans keep the agreements they signed.",
             "I do not give legal, immigration, visa, or tax advice."
           ]
         },
@@ -29,23 +30,41 @@
         {
           "heading": "Price and payment",
           "body": [
-            "The founding rate is quoted on your call and shown in full at checkout before you pay; it is not printed on the site because it will change. It is one payment, or a deposit and the balance at day 15, after the exit window has passed. The first five carry the proof while the method is still being tuned, and the rate rises once they have defended.",
-            "There is no subscription and no monthly product. What you pay is what it costs.",
-            "Payments and any financing are handled by the checkout partner named on the checkout page before you pay. I never see or store your card details."
+            "Free costs nothing and asks for no card.",
+            "GridSchool Complete is $997 once, for 12 months. Or it is a monthly plan: 7 days free, then $97 a month, charged to your card on the same day each month until you cancel, and never more than 12 payments ($1,164) in all. The monthly plan's terms are shown next to its button and again at checkout before you agree. We email you 3 days before the trial ends and the first charge is made. If you cancel during the trial, you are not charged.",
+            "The GridSchool Residency is $12,000 in one payment, or 3 monthly payments of $4,000 that stop after the third. Either way it is one fixed price, with nothing hourly and nothing after you are hired.",
+            "Prices are in US dollars and include any sales tax, VAT or GST we are required to collect, so the price shown is the price you pay. If you are outside the US, checkout can show and charge the price in your own currency at the checkout partner's exchange rate; your card's own conversion then doesn't apply.",
+            "Payments are handled by the checkout partner named on the checkout page (Stripe). I never see or store your card details."
+          ]
+        },
+        {
+          "heading": "Cancelling and refunds",
+          "body": [
+            "Complete, paid once: ask within 14 days of paying and you get a full refund, no questions asked. Reply to any email from us.",
+            "Complete, monthly: cancel any time, online, from the link in your emails (it opens the checkout partner's own billing page), or by replying to any email from us; it is done the same day. You keep your map and the course until the end of the month you paid for, then your seat pauses. Nothing is deleted, so you can restart later where you left off.",
+            "The Residency: the week 2 exit below."
+          ]
+        },
+        {
+          "heading": "Gifts",
+          "body": [
+            "You can buy GridSchool Complete or the Residency for someone else, usually a son or daughter. A gift is paid once; nothing renews on your card. The person receiving it must be 18 or older.",
+            "Nothing is made for them until they accept it from the link in their own email. If they decline, you are refunded in full. Once they accept, the plan is theirs, under these terms, and the refund rules above apply as if they had bought it, with the refund going to your card.",
+            "When they accept, they choose whether you get a short weekly progress note: steps finished, notes and applications sent, replies, and what's next. You never see what is said on calls, their drafts, or my reviews of their work. Either of you can stop the notes from the link in any of them."
           ]
         },
         {
           "heading": "The week 2 exit",
           "body": [
-            "If either of us says this is the wrong room by the end of week 2, unused tuition comes back. No essay required.",
-            "This is the only guarantee I make, and it is deliberate: it covers the risk you cannot judge yet, which is whether we work well together."
+            "In the Residency, if either of us says this is the wrong room by the end of week 2, unused tuition comes back. No essay required. If you chose 3 payments, the later payments are cancelled.",
+            "This is the Residency's only guarantee, and it is deliberate: it covers the risk you cannot judge yet, which is whether we work well together."
           ]
         },
         {
           "heading": "The quota, and what happens if it stops",
           "body": [
-            "The residency quota is work every day, a ship URL every week, and the live sessions you booked. Application volume and LinkedIn posting are not requirements.",
-            "Miss three weeks of ship or three live sessions and your spot pauses and I call you. If we agree it is over, it ends; if not, it resumes at your pace. Eight weeks is the intensive, not a hire-by date. After week 8 the same weekly review continues until a company hires you or you end it; once you have landed a position, I stay reachable."
+            "The Residency's quota is work every day, a ship URL every week, and the calls you booked. Application volume and LinkedIn posting are not requirements.",
+            "Miss three weeks of ship or three calls and your seat pauses and I call you. If we agree it is over, it ends; if not, it resumes at your pace. Eight weeks is the build phase, not a hire-by date. After week 8 the weekly one-to-one continues until you sign an offer or 12 months from your start; once you have landed a position, I stay reachable."
           ]
         },
         {
@@ -72,8 +91,8 @@
         {
           "heading": "Ending it",
           "body": [
-            "You can stop at any time; after week 2 tuition is non-refundable because the spot is one of five and I cannot resell it mid-year.",
-            "I can end the program with a refund of unused tuition if you break the conduct rules above, or if I cannot deliver what I sold."
+            "You can stop at any time. In the Residency, after week 2 tuition is non-refundable because the seat is one of three and I cannot fill it mid-way; if you chose 3 payments, the remaining ones are still due.",
+            "I can end any plan with a refund of unused tuition if you break the conduct rules above, or if I cannot deliver what I sold."
           ]
         },
         {
@@ -138,7 +157,8 @@
           "heading": "What I never do",
           "body": [
             "I do not sell your data. I do not share your application or your reviews with recruiters, employers, or anyone else without you asking me to.",
-            "I do not use your private work as marketing without your written permission."
+            "I do not use your private work as marketing without your written permission.",
+            "If someone gave you GridSchool as a gift, they get a weekly progress note only if you agree when you accept it, and it holds only counts and step titles (what you finished, how many notes and applications you sent, replies, what's next). You can stop it any time from the link in your welcome email."
           ]
         },
         {

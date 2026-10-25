@@ -43,5 +43,11 @@
     "notes",
     "links",
     "due"
-  ]
+  ],
+  "video": {
+    "id": "v.build-posts",
+    "title": "Posts that show your work",
+    "mins": 6,
+    "summary": "Turning a build into posts people stop for: the screenshot, the one sentence, the question at the end."
+  }
 }

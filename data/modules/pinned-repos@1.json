@@ -29,5 +29,11 @@
     "notes",
     "links",
     "due"
-  ]
+  ],
+  "video": {
+    "id": "v.pinned-repos",
+    "title": "Three pinned repos someone stops for",
+    "mins": 6,
+    "summary": "Picking the three, writing a README a stranger can follow, and recording a 90-second walkthrough in one take."
+  }
 }

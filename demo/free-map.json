@@ -5,7 +5,7 @@
   "version": "complete-2",
   "title": "Your map",
   "law": "Every step either clears a likely bottleneck or tells us more about one.",
-  "started": "2026-10-18",
+  "started": "2026-10-23",
   "families": [
    {
     "id": "interview",
@@ -53,6 +53,11 @@
     "id": "week",
     "label": "Week one",
     "pace": "One question, a week in"
+   },
+   {
+    "id": "course",
+    "label": "The course",
+    "pace": "In order, at your pace: each step has its film and its tasks"
    }
   ],
   "nodes": [
@@ -113,7 +118,7 @@
      "company": "Larkspur Pay",
      "title": "Backend Engineer, Payments",
      "url": "",
-     "posted": "2026-10-18",
+     "posted": "2026-10-23",
      "where": "Remote, US",
      "lead": [
       "Six years running payment and data APIs in Python and Go, which is the core of this role.",
@@ -525,7 +530,7 @@
     "kind": "core",
     "requires": [],
     "completion": "tasks",
-    "opens": "2026-10-25",
+    "opens": "2026-10-30",
     "coming": "One question about how your search feels, a week after you started.",
     "why": "A week in, one question. Your answer goes to Aden.",
     "tasks": [
@@ -554,6 +559,182 @@
      }
     ],
     "evidence": "Your week-one answer is in."
+   },
+   {
+    "id": "m.profile-images",
+    "n": 13,
+    "requires": [],
+    "module": "profile-images@1",
+    "family": "presence",
+    "phase": "course"
+   },
+   {
+    "id": "m.profile-rewrite",
+    "n": 14,
+    "requires": [],
+    "module": "profile-rewrite@1",
+    "family": "presence",
+    "phase": "course"
+   },
+   {
+    "id": "m.design-board",
+    "n": 15,
+    "requires": [],
+    "module": "design-board@1",
+    "family": "presence",
+    "phase": "course"
+   },
+   {
+    "id": "m.portfolio-site",
+    "n": 16,
+    "requires": [],
+    "module": "portfolio-site@1",
+    "family": "presence",
+    "phase": "course"
+   },
+   {
+    "id": "m.pinned-repos",
+    "n": 17,
+    "requires": [],
+    "module": "pinned-repos@1",
+    "family": "presence",
+    "phase": "course"
+   },
+   {
+    "id": "m.project-ideas",
+    "n": 18,
+    "requires": [],
+    "module": "project-ideas@1",
+    "family": "proof",
+    "phase": "course"
+   },
+   {
+    "id": "m.pick-feature",
+    "n": 19,
+    "requires": [],
+    "module": "pick-feature@1",
+    "family": "proof",
+    "phase": "course"
+   },
+   {
+    "id": "m.build-agentic-feature",
+    "n": 20,
+    "requires": [],
+    "module": "build-agentic-feature@1",
+    "family": "proof",
+    "phase": "course"
+   },
+   {
+    "id": "m.case-study",
+    "n": 21,
+    "requires": [],
+    "module": "case-study@1",
+    "family": "proof",
+    "phase": "course"
+   },
+   {
+    "id": "m.target-list",
+    "n": 22,
+    "requires": [],
+    "module": "target-list@1",
+    "family": "network",
+    "phase": "course"
+   },
+   {
+    "id": "m.posting-kit",
+    "n": 23,
+    "requires": [],
+    "module": "posting-kit@1",
+    "family": "network",
+    "phase": "course"
+   },
+   {
+    "id": "m.build-posts",
+    "n": 24,
+    "requires": [],
+    "module": "build-posts@1",
+    "family": "network",
+    "phase": "course"
+   },
+   {
+    "id": "m.network-sprint",
+    "n": 25,
+    "requires": [],
+    "module": "network-sprint@1",
+    "family": "network",
+    "phase": "course"
+   },
+   {
+    "id": "m.in-person",
+    "n": 26,
+    "requires": [],
+    "module": "in-person@1",
+    "family": "network",
+    "phase": "course"
+   },
+   {
+    "id": "m.title-cluster",
+    "n": 27,
+    "requires": [],
+    "module": "title-cluster@1",
+    "family": "pipeline",
+    "phase": "course"
+   },
+   {
+    "id": "m.target-campaign",
+    "n": 28,
+    "requires": [],
+    "module": "target-campaign@1",
+    "family": "pipeline",
+    "phase": "course"
+   },
+   {
+    "id": "m.warm-path",
+    "n": 29,
+    "requires": [],
+    "module": "warm-path@1",
+    "family": "pipeline",
+    "phase": "course"
+   },
+   {
+    "id": "m.application-engine",
+    "n": 30,
+    "requires": [],
+    "module": "application-engine@1",
+    "family": "pipeline",
+    "phase": "course"
+   },
+   {
+    "id": "m.story-bank",
+    "n": 31,
+    "requires": [],
+    "module": "story-bank@1",
+    "family": "interview",
+    "phase": "course"
+   },
+   {
+    "id": "m.company-prep",
+    "n": 32,
+    "requires": [],
+    "module": "company-prep@1",
+    "family": "interview",
+    "phase": "course"
+   },
+   {
+    "id": "m.mock-interview",
+    "n": 33,
+    "requires": [],
+    "module": "mock-interview@1",
+    "family": "interview",
+    "phase": "course"
+   },
+   {
+    "id": "m.offer-reported",
+    "n": 34,
+    "requires": [],
+    "module": "offer-reported@1",
+    "family": "pipeline",
+    "phase": "course"
    }
   ],
   "weekly": [],

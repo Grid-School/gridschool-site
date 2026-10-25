@@ -6,10 +6,12 @@
     "ad-laidoff": "In two minutes, get your map and the moves to make this week.",
     "meta-silence": "In two minutes, see what a hiring manager concludes from your resume, and the one thing to fix today.",
     "meta-laidoff": "The clock is running. In two minutes, see where your applications are getting stuck and what to do this week.",
-    "meta-map": "Your map draws itself as you answer. Two minutes, free."
+    "meta-map": "Your map draws itself as you answer. Two minutes, free.",
+    "vsl": "You watched the video. This is the check it talks about: two minutes, free."
   },
   "prefixes": {
-    "share:": "A friend shared their scan with you. Take yours: two minutes, free."
+    "share:": "A friend shared their scan with you. Take yours: two minutes, free.",
+    "vsl:": "You watched the video. This is the check it talks about: two minutes, free."
   },
   "filter": "For software engineers who are ready to send a few honest notes, not 200 more applications."
 }

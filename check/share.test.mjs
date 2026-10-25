@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
-import { arrivedFrom, filterLine, isAd, lineKey, randomRef, refFromCheck, shareUrl, sourceLine } from "./share.mjs?v=ac1f443-202610240735";
+import { arrivedFrom, filterLine, isAd, lineKey, randomRef, refFromCheck, shareUrl, sourceLine } from "./share.mjs?v=506a0c6-202610250354";
 
 const SOURCES = JSON.parse(readFileSync(new URL("../data/intake/sources.json", import.meta.url), "utf8"));
 
@@ -21,7 +21,7 @@ test("each Meta ad lands on its own line, by from= or by utm campaign", () => {
     assert.equal(sourceLine(`instagram:${key}`, SOURCES), SOURCES.lines[key]);
   }
   assert.equal(lineKey("facebook:nope", SOURCES.lines), "");
-  assert.equal(sourceLine("vsl", SOURCES), "");
+  assert.equal(sourceLine("nope", SOURCES), "");
   assert.equal(sourceLine("", SOURCES), "");
 });
 
@@ -52,4 +52,10 @@ test("an unsaved ref is short and clean", () => {
   let n = 0;
   assert.equal(randomRef(() => (n++ % 36) / 36), "0123456789");
   assert.match(randomRef(), /^[0-9a-z]{10}$/);
+});
+
+test("someone who watched the video gets the video's line, or the line of the ad that brought them", () => {
+  assert.match(sourceLine("vsl", SOURCES), /^You watched the video/);
+  assert.match(sourceLine("vsl:some-new-ad", SOURCES), /^You watched the video/);
+  assert.equal(sourceLine("vsl:meta-silence", SOURCES), SOURCES.lines["meta-silence"]);
 });

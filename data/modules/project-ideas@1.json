@@ -38,5 +38,11 @@
     "notes",
     "links",
     "due"
-  ]
+  ],
+  "video": {
+    "id": "v.project-ideas",
+    "title": "Project ideas aimed at the job you want",
+    "mins": 6,
+    "summary": "Reading postings for the problems teams actually have, and turning them into five project ideas you could ship."
+  }
 }

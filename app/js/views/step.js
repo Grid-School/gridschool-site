@@ -8,35 +8,35 @@
  * reading as a shareable page).
  */
 
-import { el, mount } from "../dom.js?v=ac1f443-202610240735";
-import { btn, placeholder, toast, field } from "../ui.js?v=ac1f443-202610240735";
-import { STATUS, blockedBy, progress, isSpine, nextUp, stepNumber } from "../graph/model.js?v=ac1f443-202610240735";
-import { taskRow, reviewScores } from "./parts.js?v=ac1f443-202610240735";
-import { statusLabel, trackLabel, ccvvLabel, stepRule } from "../copy.js?v=ac1f443-202610240735";
-import { videoCard, resolveMedia, filmSummary } from "./video.js?v=ac1f443-202610240735";
-import { handoffDisclosure } from "./handoff.js?v=ac1f443-202610240735";
-import { withSavedState, isCountTask } from "../task-state.js?v=ac1f443-202610240735";
-import { renderMarkdown, splitTitle } from "../markdown.js?v=ac1f443-202610240735";
-import { hydrateMermaid, mermaidSource } from "../mermaid.js?v=ac1f443-202610240735";
-import { provesBlock } from "./proves.js?v=ac1f443-202610240735";
-import { modeLine } from "./mode.js?v=ac1f443-202610240735";
-import { artifactLine } from "./artifact.js?v=ac1f443-202610240735";
-import { refsBlock } from "./refs.js?v=ac1f443-202610240735";
-import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=ac1f443-202610240735";
-import { electiveBlock } from "./elective.js?v=ac1f443-202610240735";
-import { fromAdenCard } from "./from-aden.js?v=ac1f443-202610240735";
-import { helpBlock } from "./step-help.js?v=ac1f443-202610240735";
-import { signoffNotice, submitLabel, linkHint } from "./signoff.js?v=ac1f443-202610240735";
-import { stepSpine, isStepComplete, canAdvance, readyToSave, readFlag } from "./step-progress.js?v=ac1f443-202610240735";
-import { createReadingModal } from "./reading-modal.js?v=ac1f443-202610240735";
-import { bindDraft, clearDraft } from "../drafts.js?v=ac1f443-202610240735";
-import { registerLeaveGuard, clearLeaveGuard, isLeaveDirty } from "../leave-guard.js?v=ac1f443-202610240735";
-import { isPreviewMedia } from "../preview-mode.js?v=ac1f443-202610240735";
-import { isViewEnabled } from "../features.js?v=ac1f443-202610240735";
-import { siteOverridesDoc, dropSiteOverridesCache } from "../../../js/site-overrides.js?v=ac1f443-202610240735";
-import { isCompleteMap, isFreeMap, stageTime, upgradeHref, PAID_ASK, PAID_TASKS, PAID_VIDEO, DFY_LINE, FILM_COMING } from "../prep.js?v=ac1f443-202610240735";
-import { sampleBlock } from "./sample.js?v=ac1f443-202610240735";
-import { videoAccess, isFilmed } from "../../../data/video-access.mjs?v=ac1f443-202610240735";
+import { el, mount } from "../dom.js?v=506a0c6-202610250354";
+import { btn, placeholder, toast, field } from "../ui.js?v=506a0c6-202610250354";
+import { STATUS, blockedBy, progress, isSpine, nextUp, stepNumber } from "../graph/model.js?v=506a0c6-202610250354";
+import { taskRow, reviewScores } from "./parts.js?v=506a0c6-202610250354";
+import { statusLabel, trackLabel, ccvvLabel, stepRule } from "../copy.js?v=506a0c6-202610250354";
+import { videoCard, resolveMedia, filmSummary } from "./video.js?v=506a0c6-202610250354";
+import { handoffDisclosure } from "./handoff.js?v=506a0c6-202610250354";
+import { withSavedState, isCountTask } from "../task-state.js?v=506a0c6-202610250354";
+import { renderMarkdown, splitTitle } from "../markdown.js?v=506a0c6-202610250354";
+import { hydrateMermaid, mermaidSource } from "../mermaid.js?v=506a0c6-202610250354";
+import { provesBlock } from "./proves.js?v=506a0c6-202610250354";
+import { modeLine } from "./mode.js?v=506a0c6-202610250354";
+import { artifactLine } from "./artifact.js?v=506a0c6-202610250354";
+import { refsBlock } from "./refs.js?v=506a0c6-202610250354";
+import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=506a0c6-202610250354";
+import { electiveBlock } from "./elective.js?v=506a0c6-202610250354";
+import { fromAdenCard } from "./from-aden.js?v=506a0c6-202610250354";
+import { helpBlock } from "./step-help.js?v=506a0c6-202610250354";
+import { signoffNotice, submitLabel, linkHint } from "./signoff.js?v=506a0c6-202610250354";
+import { stepSpine, isStepComplete, canAdvance, readyToSave, readFlag } from "./step-progress.js?v=506a0c6-202610250354";
+import { createReadingModal } from "./reading-modal.js?v=506a0c6-202610250354";
+import { bindDraft, clearDraft } from "../drafts.js?v=506a0c6-202610250354";
+import { registerLeaveGuard, clearLeaveGuard, isLeaveDirty } from "../leave-guard.js?v=506a0c6-202610250354";
+import { isPreviewMedia } from "../preview-mode.js?v=506a0c6-202610250354";
+import { isViewEnabled } from "../features.js?v=506a0c6-202610250354";
+import { siteOverridesDoc, dropSiteOverridesCache } from "../../../js/site-overrides.js?v=506a0c6-202610250354";
+import { isCompleteMap, isFreeMap, stageTime, upgradeHref, PAID_ASK, PAID_TASKS, PAID_VIDEO, DFY_LINE, FILM_COMING, COURSE_LINE, COURSE_ASK, COURSE_TASKS } from "../prep.js?v=506a0c6-202610250354";
+import { sampleBlock } from "./sample.js?v=506a0c6-202610250354";
+import { videoAccess, isFilmed } from "../../../data/video-access.mjs?v=506a0c6-202610250354";
 
 const FALLBACK_VIDEO = {
   title: "Lesson",
@@ -103,6 +103,25 @@ export function tasksLead(node, welcome = false) {
  * A stage is lit only once Aden set it; nothing is guessed from the clock.
  */
 export function prepBlock(node, { upgrade = null } = {}) {
+  // A free map, a course step past the free ones: what it is, and one way to get it.
+  if (node?.paidOnly && node.course) {
+    return el(
+      "section.step__prep.step__prep--paid",
+      { "aria-label": COURSE_LINE },
+      el(
+        "div.dfy__locked",
+        {},
+        el("div.dfy__blur", { "aria-hidden": "true" }, courseRows(node).map((line, n) => el(`p.dfy__row${n % 3 === 0 ? ".dfy__row--head" : ""}`, {}, line))),
+        el(
+          "div.dfy__over",
+          {},
+          el("b", {}, COURSE_LINE),
+          el("span", {}, "The module, its film and its tasks open with GridSchool Complete. Your two profile steps are free now."),
+          upgrade ? btn({ label: COURSE_ASK, variant: "cta", href: upgrade }) : null
+        )
+      )
+    );
+  }
   // A free map: who does it, what we'd do, the stages it would move through, and one way to start.
   if (node?.paidOnly) {
     return el(
@@ -192,6 +211,13 @@ const PREVIEW_ROWS = {
   story: ["Backend Engineer | Payment and data APIs in Python and Go", "Led the billing service rewrite: [your result, in your numbers]", "Owned the reconciliation pipeline end to end", "Shipped the new invoicing API used by three teams"],
   proof: ["Audit: the app's sign-up and payments flow", "Finding 1 · critical · the token is never checked", "Fix: verify the token on every request, with a test", "Report outline: what you checked, what you fixed, what's left"],
 };
+/** What a locked course step blurs: its own task titles, then the parts every module has, four lines or more. */
+function courseRows(node) {
+  const tasks = (node?.tasks ?? []).map((task) => task.title).filter(Boolean).slice(0, 4);
+  const parts = [node?.video?.title ? `Film: ${node.video.title}` : "The film for this step", "A worked example, start to finish", "What done looks like, and how to check it", "Your tasks, one at a time"];
+  return [...tasks, ...parts].slice(0, Math.max(4, tasks.length + 2));
+}
+
 function lockedPreview(node, upgrade) {
   const rows = PREVIEW_ROWS[node?.basis?.rule] ?? ["What we prepare for this step", "Researched for your target roles", "Written in your voice", "Checked by Aden before it reaches you"];
   return el(
@@ -313,7 +339,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
     const watchFirst = access === "free" && /^t\./.test(node.id) && node.video?.mins ? `Watch first, about ${node.video.mins} min` : null;
     const slot =
       access === "paid"
-        ? filmCard(node.video, { note: PAID_VIDEO, paid: true })
+        ? filmCard(node.video, { note: node.course ? "Included in the full course" : PAID_VIDEO, paid: true })
         : access === "free" && !isFilmed(node.video)
           ? filmCard(node.video, { note: FILM_COMING, lead: watchFirst })
           : null;
@@ -382,7 +408,9 @@ export function renderStep(ctx, nodeId, moduleId = null) {
           el(
             "p.step__tasks-lead",
             {},
-            node.paidOnly
+            node.course && node.paidOnly
+              ? "These open with the full course."
+              : node.paidOnly
               ? "On the paid plan we do the work above, then these are yours."
               : node.preparing ? "These are yours once the work above is ready. Until then there's nothing to do here." : tasksLead(node, welcome)
           ),
@@ -399,7 +427,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
                   nodeTitle: node.title,
                   index: i + 1,
                   hideKind: !isCountTask(task),
-                  locked: node.paidOnly ? PAID_TASKS : node.preparing ? "Opens when the work above is ready for you" : null,
+                  locked: node.course && node.paidOnly ? COURSE_TASKS : node.paidOnly ? PAID_TASKS : node.preparing ? "Opens when the work above is ready for you" : null,
                 },
                 { store: current.store, navigate: current.navigate }
               )
@@ -856,7 +884,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
       );
 
       async function save(entry) {
-        const { fetchSiteOverrides, saveSiteOverrides } = await import("../persist-admin.js?v=ac1f443-202610240735");
+        const { fetchSiteOverrides, saveSiteOverrides } = await import("../persist-admin.js?v=506a0c6-202610250354");
         const current = await fetchSiteOverrides().catch(() => ({ doc: {} }));
         const doc = current.doc ?? {};
         const nodes = { ...(doc.copy?.nodes ?? {}) };

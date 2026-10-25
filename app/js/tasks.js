@@ -5,9 +5,9 @@
  * Task state lives on the student. Everything else here is derived.
  */
 
-import { STATUS, blockedBy, isSide, isSpine, stepNumber } from "./graph/model.js?v=ac1f443-202610240735";
-import { withSavedState } from "./task-state.js?v=ac1f443-202610240735";
-import { weekRange, isoDate } from "./time.js?v=ac1f443-202610240735";
+import { STATUS, blockedBy, isSide, isSpine, stepNumber } from "./graph/model.js?v=506a0c6-202610250354";
+import { withSavedState } from "./task-state.js?v=506a0c6-202610250354";
+import { weekRange, isoDate } from "./time.js?v=506a0c6-202610250354";
 
 export const TASK_STATE = {
   TODO: "todo",

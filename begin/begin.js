@@ -14,10 +14,10 @@
  * step 4 opens the board they already had, with everything they did on it.
  */
 
-import { PERSIST, link } from "../config.js?v=ac1f443-202610240735";
-import * as Account from "../check/account.js?v=ac1f443-202610240735";
-import { enterSeat } from "../app/js/persist-auth.js?v=ac1f443-202610240735";
-import { reviewLabel } from "./when.js?v=ac1f443-202610240735";
+import { PERSIST, link } from "../config.js?v=506a0c6-202610250354";
+import * as Account from "../check/account.js?v=506a0c6-202610250354";
+import { enterSeat } from "../app/js/persist-auth.js?v=506a0c6-202610250354";
+import { reviewLabel } from "./when.js?v=506a0c6-202610250354";
 
 // Localhost never talks to production: ?api= when given, else the page's own origin.
 const API = (() => {
@@ -193,7 +193,7 @@ function welcomeView(me) {
     nextBlock(),
     h("div", "card__row", null, {}, [open]),
     error,
-    h("p", "card__fine", "Changed your mind? You have 14 days to ask for a full refund. Reply to any email from us.")
+    h("p", "card__fine", "Changed your mind? On the one-time price you have 14 days to ask for a full refund. On the monthly plan, cancel any time from the link in your email. Or reply to any email from us.")
   );
 }
 

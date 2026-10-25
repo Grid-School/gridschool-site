@@ -10,12 +10,28 @@ export const LINKS = {
   application: "REPLACE_ME_TALLY_URL",
   foundingCheckout: "REPLACE_ME_CHECKOUT_FOUNDING",
   depositCheckout: "REPLACE_ME_CHECKOUT_DEPOSIT",
-  // GridSchool Complete (the self-serve plan). The free check (check/) shows
-  // "Unlock your full map" only once this is a real link.
+  // Stripe Payment Links, one per button (ops/stripe-setup.md says how to make each one).
+  // Until a link is real its buttons fall back: Complete to the free check, Residency to residency/.
+  // GridSchool Complete, $997 once (12 months). The check's offer and the home and watch pages use it.
   completeCheckout: "REPLACE_ME_CHECKOUT_COMPLETE",
-  // The same plan as 4 monthly payments of $99 (a second Stripe payment link). The offer shows
-  // "Or pay $99 a month" only once this is real.
+  // GridSchool Complete monthly: 7-day free trial, then $97 a month (the webhook stops it at 12).
   completeCheckoutMonthly: "REPLACE_ME_CHECKOUT_COMPLETE_MONTHLY",
+  // GridSchool Residency, $12,000 in full.
+  residencyCheckout: "REPLACE_ME_CHECKOUT_RESIDENCY",
+  // GridSchool Residency as 3 monthly payments of $4,000 (the webhook tells Aden to stop it after 3).
+  residencyCheckoutMonthly: "REPLACE_ME_CHECKOUT_RESIDENCY_MONTHLY",
+  // Gifts (gift/): the same plans, paid once, with two custom fields at checkout, giftemail and giftname
+  // (ops/launch-copy.md §1). Until they're real, gift/'s buttons write to support@ instead.
+  giftComplete: "REPLACE_ME_CHECKOUT_GIFT_COMPLETE",
+  giftResidency: "REPLACE_ME_CHECKOUT_GIFT_RESIDENCY",
+  giftResidencyMonthly: "REPLACE_ME_CHECKOUT_GIFT_RESIDENCY_MONTHLY",
+  // Stripe's customer portal login link: where anyone on a monthly plan cancels or changes their card.
+  // Shown on terms/ and residency/; the server's STRIPE_PORTAL_URL is the same link, for emails.
+  billingPortal: "REPLACE_ME_STRIPE_PORTAL",
+  // The sales video on watch/ (an embeddable URL: YouTube embed, Loom embed, or a CDN mp4). Placeholder until set.
+  vslVideo: "REPLACE_ME_VSL_EMBED",
+  // Where a new resident books their kickoff (residency/?paid=1). Falls back to fitCall, then email.
+  kickoffCall: "REPLACE_ME_CALCOM_KICKOFF",
   // Aden's face beside the offer on the check result (a square photo, 88px or larger, in assets/).
   // Initials show until it's set.
   adenPhoto: "REPLACE_ME_ADEN_PHOTO",
@@ -51,7 +67,7 @@ export const LEGAL = {
   entity: "GRID SCHOOL LLC",
   jurisdiction: "Idaho, United States",
   contactAddress: "3100 N. Lakeharbor Lane Ste 176 #160, Boise, Idaho 83703 US",
-  effective: "2026-10-24",
+  effective: "2026-10-25",
   /** Set true only once an ads pixel is actually installed. */
   adTracking: false,
 };
@@ -132,15 +148,12 @@ function localApi() {
 }
 
 /**
- * No dollar figure is printed anywhere on the site. The rate is quoted on the
- * call and shown on the checkout page, because it will move over the next
- * year and a stale number on a page is a lie the site tells for you. Copy
- * says "founding rate"; the numbers live at checkout and in the sales script.
- * Checkout is Aden's processor, outside this repo. Paste the URL he issues.
- * Do not add Stripe or any other named vendor here.
+ * The public prices live in data/intake/offer.json (and server/billing.py,
+ * kept equal by server/offer_test.py). These are the Residency's shape for
+ * pages that don't load offer.json. Older seats keep the deals they signed.
  */
 export const PRICING = {
-  spots: 5,
+  spots: 3,
   /** Eight weeks of the intensive, then stay until hired. Source: the offer lock §3. */
   weeks: 8,
   foundingLabel: "Founding rate",

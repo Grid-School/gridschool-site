@@ -2,8 +2,8 @@
  * Admin persist calls. Desk only. Student boards never import this.
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=ac1f443-202610240735";
-import { persistToken } from "./session.js?v=ac1f443-202610240735";
+import { PERSIST, isPlaceholder } from "../../config.js?v=506a0c6-202610250354";
+import { persistToken } from "./session.js?v=506a0c6-202610250354";
 
 function endpoint() {
   return String(PERSIST.endpoint || "").replace(/\/$/, "");
@@ -76,6 +76,16 @@ export function rotateSeatToken(slug) {
 /** Merge identity fields (e.g. the Discord ID) without minting invites or tokens. */
 export function updateIdentity(slug, fields) {
   return request("PATCH", `/students/${slug}/identity`, fields);
+}
+
+/** Every desk record (admin/desk.js, server/desk_api.py): [{kind, ref, data, updated_at}]. */
+export function listDesk() {
+  return request("GET", "/desk");
+}
+
+/** One edit to a desk record: {op: "set" | "action.add" | ..., ...}. Answers the new record. */
+export function deskOp(kind, ref, op) {
+  return request("POST", `/desk/${kind}/${encodeURIComponent(ref)}`, op);
 }
 
 /** The live overrides document, fresh (not the page cache). */

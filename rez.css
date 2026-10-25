@@ -633,6 +633,12 @@ footer a { color: var(--muted); }
   margin-top: var(--sp-8);
 }
 @media (max-width: 860px) { .plans { grid-template-columns: minmax(0, 1fr); } }
+.plans--three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+/* Three cards line up: same headline height, and the foot (price, button, link) pinned to the bottom. */
+.plans--three .plan h3 { min-height: calc(3 * 1.3em); }
+.plans--three .plan__foot { gap: 14px; }
+.plans--three .plan__price span { min-height: 1.5em; }
+@media (max-width: 1100px) { .plans--three { grid-template-columns: minmax(0, 1fr); max-width: 640px; } }
 .plan {
   min-width: 0; border-radius: var(--radius);
   background: var(--panel); box-shadow: inset 0 0 0 1px var(--hair);
@@ -654,7 +660,11 @@ footer a { color: var(--muted); }
 .plan__price { margin: 0; font-size: 15px; color: var(--soft); }
 .plan__price b { color: var(--lumen); font-weight: 500; font-size: 22px; letter-spacing: -0.02em; margin-right: 4px; }
 .plan__price span { display: block; margin-top: 4px; font: 400 var(--fs-meta)/1.5 var(--font-mono); color: var(--muted); }
+.plan__alt { color: var(--soft); font-size: 14.5px; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--hair-cyan); }
+.plan__alt:hover { color: var(--lumen); text-decoration-color: var(--cyan); }
+.plan__fine { margin: -6px 0 0; font: 400 var(--fs-meta)/1.5 var(--font-mono); color: var(--muted); max-width: 34em; }
 @media (max-width: 600px) {
   .plan__foot { justify-items: stretch; }
   .plan__foot .btn { justify-content: center; white-space: normal; }
 }
+.plans-currency { margin: 14px 0 0; max-width: 46em; font: 400 var(--fs-meta)/1.6 var(--font-mono); color: var(--muted); }

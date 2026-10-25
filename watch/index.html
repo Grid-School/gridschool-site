@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Why your applications get no replies. GridSchool</title>
+<meta name="description" content="A short video from Aden Jessee, a working engineer: why applying more stopped working, what hiring teams actually open, and the free 2-minute check that maps your next step.">
+<meta property="og:title" content="Why your applications get no replies">
+<meta property="og:description" content="What hiring teams actually open, and the free 2-minute check that maps your next step.">
+<meta property="og:url" content="https://gridschool.org/watch/">
+<meta property="og:image" content="https://gridschool.org/assets/og.png">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../rez.css?v=506a0c6-202610250354">
+<link rel="stylesheet" href="../js/sales.css?v=506a0c6-202610250354">
+</head>
+<body class="rez-page" data-from="watch">
+
+<header class="nav is-scrolled">
+  <a class="brand" href="../" aria-label="GridSchool home"><span>GRID<b>SCHOOL</b></span></a>
+  <a class="nav__cta" href="../check/?from=vsl" data-check>Take the free check</a>
+</header>
+
+<main>
+<!-- The sales video (VSL). Script: ops/film-scripts/vsl.md. The video is LINKS.vslVideo; until it's
+     set, the frame shows what it will say. Every check link carries ?from=vsl (or vsl:<ad> when the
+     page was opened from an ad's ?from=), so the funnel can tell video viewers apart. -->
+<section class="sec">
+  <div class="wrap">
+    <p class="eyebrow">For software engineers looking for their next role</p>
+    <h1 class="sales-h1">Why two hundred applications get no replies, and what hiring teams open instead.</h1>
+    <p class="lede">Watch this first. It's how hiring teams actually decide, and what to do about it this week.</p>
+
+    <div class="vsl" id="vsl">
+      <div class="vsl__hold">
+        <div class="vsl__play" aria-hidden="true">▶</div>
+        <b>The video is coming</b>
+        <span>Until it's up, here is what it covers, below. The free check is the same either way.</span>
+      </div>
+    </div>
+
+    <p class="sales-cta">
+      <a class="btn btn--solid" href="../check/?from=vsl" data-check>Take the free 2-minute check <span class="arr" aria-hidden="true">→</span></a>
+      <a class="plan__alt" href="../#plans">See the plans</a>
+    </p>
+    <p class="sales-fine">Free. No card. You get your map and the first two course modules, and you keep them.</p>
+  </div>
+</section>
+
+<hr class="rule">
+
+<section class="sec">
+  <div class="wrap">
+    <p class="eyebrow">What the video covers</p>
+    <h2>Six minutes, in this order.</h2>
+    <ol class="vsl-beats">
+      <li>Why sending more applications stopped working, with the numbers on new-grad and early-career hiring.</li>
+      <li>What a hiring manager actually opens in the first ten seconds, and what makes them close the tab.</li>
+      <li>The three things that get replies: a profile that claims only what you can show, one project built to the bar of the job, and a short note to a named person.</li>
+      <li>Why "I didn't know" is a fine answer in an interview, and what to say next.</li>
+      <li>What the free check does: two minutes of questions, then a map of your likely bottleneck and today's ten-minute step.</li>
+      <li>The three ways in, from free to building it with me, and who each one is for.</li>
+    </ol>
+    <p class="sales-cta"><a class="btn btn--line" href="../check/?from=vsl" data-check>Take the free check <span class="arr" aria-hidden="true">→</span></a></p>
+  </div>
+</section>
+
+<hr class="rule">
+
+<section class="sec sec--tight">
+  <div class="wrap">
+    <p class="eyebrow">Ready already?</p>
+    <h2>Skip to the full course.</h2>
+    <p class="lede">$997 once for 12 months, or 7 days free and then $97 a month. Your map, every module and film, and the first week's work prepared for you.</p>
+    <p class="sales-cta">
+      <a class="btn btn--solid" href="../checkout/?plan=complete&amp;from=vsl">Choose how to pay <span class="arr" aria-hidden="true">→</span></a>
+    </p>
+    <p class="sales-fine">Free for 7 days, then $97 a month until you cancel, for at most 12 payments ($1,164). We email you 3 days before the first charge. Cancel any time online. 14-day refund on the one-time price. Prices are in US dollars and include any sales tax or VAT. Checkout shows them in your own currency.</p>
+    <p class="sales-fine">Want me building it with you? <a class="link" href="../residency/">The Residency</a>. Buying it for someone else? <a class="link" href="../gift/">Give it as a gift</a>.</p>
+  </div>
+</section>
+</main>
+
+<footer><div class="wrap">GridSchool · <a href="mailto:support@gridschool.org">support@gridschool.org</a> · <a href="../terms/">Terms</a> · <a href="../privacy/">Privacy</a> · © 2026 GRID SCHOOL LLC · Boise, Idaho<br>A company's yes is theirs. Your evidence won't be.</div></footer>
+
+<script type="module">
+import { link } from "../config.js?v=506a0c6-202610250354";
+import { vslEmbed, checkSource } from "../js/vsl.mjs?v=506a0c6-202610250354";
+
+const params = new URLSearchParams(location.search);
+// Opened from an ad (?from=meta-x): the check hears vsl:meta-x.
+const source = checkSource(params.get("from"));
+for (const anchor of document.querySelectorAll("a[data-check]")) {
+  const url = new URL(anchor.getAttribute("href"), location.href);
+  url.searchParams.set("from", source);
+  anchor.href = url.toString();
+}
+const embed = vslEmbed(link("vslVideo"));
+if (embed) {
+  const frame = document.getElementById("vsl");
+  const media =
+    embed.kind === "file"
+      ? Object.assign(document.createElement("video"), { src: embed.src, controls: true, playsInline: true, preload: "metadata" })
+      : Object.assign(document.createElement("iframe"), { src: embed.src, title: "Why your applications get no replies", allow: "autoplay; fullscreen; picture-in-picture", loading: "lazy" });
+  frame.replaceChildren(media);
+}
+</script>
+</body>
+</html>

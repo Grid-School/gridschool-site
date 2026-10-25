@@ -13,14 +13,14 @@
  * own column on the floor: listed, never in the required count.
  */
 
-import { el } from "../dom.js?v=ac1f443-202610240735";
-import { panel, btn, copy, dot } from "../ui.js?v=ac1f443-202610240735";
-import { STATUS, isSide, isSpine, nextUp, stepNumber } from "../graph/model.js?v=ac1f443-202610240735";
-import { inSequence, standingOf, STANDING_LABEL, STANDING_TONE } from "../graph/standing.js?v=ac1f443-202610240735";
-import { reviewScores } from "./parts.js?v=ac1f443-202610240735";
-import { trackLabel } from "../copy.js?v=ac1f443-202610240735";
-import { fmtDay } from "../time.js?v=ac1f443-202610240735";
-import { dueBadge } from "./from-aden.js?v=ac1f443-202610240735";
+import { el } from "../dom.js?v=506a0c6-202610250354";
+import { panel, btn, copy, dot } from "../ui.js?v=506a0c6-202610250354";
+import { STATUS, isSide, isSpine, nextUp, stepNumber } from "../graph/model.js?v=506a0c6-202610250354";
+import { inSequence, standingOf, STANDING_LABEL, STANDING_TONE } from "../graph/standing.js?v=506a0c6-202610250354";
+import { reviewScores } from "./parts.js?v=506a0c6-202610250354";
+import { trackLabel } from "../copy.js?v=506a0c6-202610250354";
+import { fmtDay } from "../time.js?v=506a0c6-202610250354";
+import { dueBadge } from "./from-aden.js?v=506a0c6-202610250354";
 
 export function mapList({ state, onOpenNode }) {
   const { graph, student } = state;
@@ -30,7 +30,8 @@ export function mapList({ state, onOpenNode }) {
   const side = all.filter(isSide);
   const nextId = nextUp(graph)?.id ?? null;
   const lit = all.filter((node) => node.status === STATUS.LIT);
-  const spine = ordered.filter((node) => node.kind !== "future" && isSpine(node));
+  // On a free map, steps in the paid plan don't count toward what's required of them yet.
+  const spine = ordered.filter((node) => node.kind !== "future" && isSpine(node) && !node.paidOnly);
   const spineLit = spine.filter((node) => node.status === STATUS.LIT);
   const reviewsByNode = groupReviews(student.reviews ?? []);
   const loose = (student.reviews ?? []).filter((review) => !review.nodeId);
@@ -85,6 +86,7 @@ function sequenceRows(graph, ordered, reviewsByNode, nextId, onOpenNode) {
 function row(node, reviews, onOpenNode, nextId, family) {
   const latest = reviews[0];
   const standing = standingOf(node, nextId);
+  const paidPlan = node.paidOnly && node.status !== STATUS.LIT;
   return el(
     "div.mlrow",
     { class: `mlrow--${node.status} mlrow--s-${standing}` },
@@ -111,7 +113,9 @@ function row(node, reviews, onOpenNode, nextId, family) {
     el(
       "div.mlrow__side",
       {},
-      el("span", { class: `mlrow__state mlrow__state--${STANDING_TONE[standing]}` }, STANDING_LABEL[standing]),
+      paidPlan
+        ? el("span", { class: "mlrow__state mlrow__state--locked" }, "In the full plan")
+        : el("span", { class: `mlrow__state mlrow__state--${STANDING_TONE[standing]}` }, STANDING_LABEL[standing]),
       node.status !== STATUS.LIT && node.fromAden?.due ? dueBadge(node.fromAden.due) : null,
       node.proof?.at && el("span.mlrow__at", {}, fmtDay(node.proof.at)),
       latest && el("span", { class: `mlrow__rv mlrow__rv--${latest.state}` }, latest.state === "returned" ? "reviewed" : "in review")
