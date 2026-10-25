@@ -5,7 +5,7 @@
  * them (visible or as a tooltip and aria-label) carries the meaning.
  */
 
-import { el } from "./dom.js?v=ccd0c2c-202610250604";
+import { el } from "./dom.js?v=ff2922c-202610250636";
 
 function svg(...children) {
   return el(

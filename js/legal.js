@@ -8,7 +8,7 @@
  * as an invented company name.
  */
 
-import { LEGAL, LINKS, isPlaceholder } from "../config.js?v=ccd0c2c-202610250604";
+import { LEGAL, LINKS, isPlaceholder } from "../config.js?v=ff2922c-202610250636";
 
 const MISSING = "not set yet";
 

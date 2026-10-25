@@ -16,25 +16,25 @@
  * went with it, because on the floor position is derived from sequence.
  */
 
-import { el, mount } from "../dom.js?v=ccd0c2c-202610250604";
-import { btn, toast } from "../ui.js?v=ccd0c2c-202610250604";
-import { createScene3d } from "../graph/scene3d/index.js?v=ccd0c2c-202610250604";
-import { createRezScene } from "../graph/rez/index.js?v=ccd0c2c-202610250604";
-import { STATUS, nextUp, progress, visibleGraph, stepNumber } from "../graph/model.js?v=ccd0c2c-202610250604";
-import { LEGEND, STANDING, STANDING_LABEL, standingOf, legendKeyOf } from "../graph/standing.js?v=ccd0c2c-202610250604";
-import { trackLabel } from "../copy.js?v=ccd0c2c-202610250604";
-import { mapList } from "./map-list.js?v=ccd0c2c-202610250604";
-import { dueLabel } from "./from-aden.js?v=ccd0c2c-202610250604";
-import { createGridState, hashFor, RESERVED_ARGS, VIEW } from "./grid-state.js?v=ccd0c2c-202610250604";
-import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=ccd0c2c-202610250604";
-import { isProgressReadOnly } from "../store.js?v=ccd0c2c-202610250604";
-import { doneForYou, nextMove, movesAfterNext, isTypedMap } from "../engine.js?v=ccd0c2c-202610250604";
-import { matchedRoles, fetchPacks, radarReady } from "../roles-remote.js?v=ccd0c2c-202610250604";
-import { careerOf } from "../search.js?v=ccd0c2c-202610250604";
-import { isoDate } from "../time.js?v=ccd0c2c-202610250604";
-import { routeGraph, isLandmark } from "../graph/route.js?v=ccd0c2c-202610250604";
-import { isFreeMap, upgradeHref } from "../prep.js?v=ccd0c2c-202610250604";
-import { createSuggest } from "./suggest.js?v=ccd0c2c-202610250604";
+import { el, mount } from "../dom.js?v=ff2922c-202610250636";
+import { btn, toast } from "../ui.js?v=ff2922c-202610250636";
+import { createScene3d } from "../graph/scene3d/index.js?v=ff2922c-202610250636";
+import { createRezScene } from "../graph/rez/index.js?v=ff2922c-202610250636";
+import { STATUS, nextUp, progress, visibleGraph, stepNumber } from "../graph/model.js?v=ff2922c-202610250636";
+import { LEGEND, STANDING, STANDING_LABEL, standingOf, legendKeyOf } from "../graph/standing.js?v=ff2922c-202610250636";
+import { trackLabel } from "../copy.js?v=ff2922c-202610250636";
+import { mapList } from "./map-list.js?v=ff2922c-202610250636";
+import { dueLabel } from "./from-aden.js?v=ff2922c-202610250636";
+import { createGridState, hashFor, RESERVED_ARGS, VIEW } from "./grid-state.js?v=ff2922c-202610250636";
+import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=ff2922c-202610250636";
+import { isProgressReadOnly } from "../store.js?v=ff2922c-202610250636";
+import { doneForYou, nextMove, movesAfterNext, isTypedMap } from "../engine.js?v=ff2922c-202610250636";
+import { matchedRoles, fetchPacks, radarReady } from "../roles-remote.js?v=ff2922c-202610250636";
+import { careerOf } from "../search.js?v=ff2922c-202610250636";
+import { isoDate } from "../time.js?v=ff2922c-202610250636";
+import { routeGraph, isLandmark } from "../graph/route.js?v=ff2922c-202610250636";
+import { isFreeMap, upgradeHref } from "../prep.js?v=ff2922c-202610250636";
+import { createSuggest } from "./suggest.js?v=ff2922c-202610250636";
 
 /** Right side clears the control column, top clears the legend bar. */
 const INSETS = { top: 76, right: 132, bottom: 72, left: 40 };
@@ -432,7 +432,8 @@ export function renderMap(ctx, initialArg) {
         }
       });
       proxy.addEventListener("mouseenter", () => {
-        painter({ tracingId: id });
+        // Editing: no tracing, so the map never dims around a step being dragged or changed.
+        if (!suggest.isOn()) painter({ tracingId: id });
         setStatus(hoverLine(id));
       });
       proxy.addEventListener("mouseleave", () => {
@@ -526,7 +527,7 @@ export function renderMap(ctx, initialArg) {
             el("span.legend", {}, el("i.key.key--done"), "done"),
             el("span.legend", {}, el("i.key.key--next"), "do this next"),
             el("span.legend", {}, el("i.key.key--tag", {}, "tag"), "made for you"),
-            el("span.legend.legend--hint", {}, "Tap a step to open it")
+            el("span.legend.legend--hint", {}, suggest.isOn() ? "Tap a step to change it" : "Tap a step to open it")
           )
         : el("div.hud__group", {}, ...legendFor(graph).map((standing) => legendKey(standing, STANDING_LABEL[standing])))
     );

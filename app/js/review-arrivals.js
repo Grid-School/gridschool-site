@@ -8,8 +8,8 @@
  * ones that just came back. `watchReviewArrivals` wires it to the store.
  */
 
-import { OUTCOME, stepNumber } from "./graph/model.js?v=ccd0c2c-202610250604";
-import { toast } from "./ui.js?v=ccd0c2c-202610250604";
+import { OUTCOME, stepNumber } from "./graph/model.js?v=ff2922c-202610250636";
+import { toast } from "./ui.js?v=ff2922c-202610250636";
 
 export function arrivals(before = [], after = []) {
   const wasReturned = new Set(before.filter((r) => r.state === "returned").map((r) => r.id));

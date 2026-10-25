@@ -19,10 +19,10 @@
  * it's sent; sending again replaces an open suggestion.
  */
 
-import { el, mount, clear } from "../dom.js?v=ccd0c2c-202610250604";
-import { btn, toast } from "../ui.js?v=ccd0c2c-202610250604";
-import { buildGraph } from "../graph/model.js?v=ccd0c2c-202610250604";
-import { isLandmark } from "../graph/route.js?v=ccd0c2c-202610250604";
+import { el, mount, clear } from "../dom.js?v=ff2922c-202610250636";
+import { btn, toast } from "../ui.js?v=ff2922c-202610250636";
+import { buildGraph } from "../graph/model.js?v=ff2922c-202610250636";
+import { isLandmark } from "../graph/route.js?v=ff2922c-202610250636";
 import {
   applyOps,
   checkOps,
@@ -36,7 +36,7 @@ import {
   MAX_NOTE,
   MAX_TITLE,
   NEW_PREFIX,
-} from "../../../data/map-proposal.mjs?v=ccd0c2c-202610250604";
+} from "../../../data/map-proposal.mjs?v=ff2922c-202610250636";
 import {
   suggestReady,
   listSuggestions,
@@ -46,7 +46,7 @@ import {
   writeDraft,
   answerSeen,
   markAnswerSeen,
-} from "../suggest-remote.js?v=ccd0c2c-202610250604";
+} from "../suggest-remote.js?v=ff2922c-202610250636";
 
 const DRAG_SLOP = 8;
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -91,8 +91,8 @@ export function createSuggest({ ctx, redraw }) {
   const ready = () => suggestReady(slug()) && Boolean(curriculum()?.nodes?.length);
   const open = () => s.proposals.find((p) => p.status === "open") ?? null;
 
-  const bar = el("div.sgbar", { hidden: true, role: "region", "aria-label": "Your suggested changes" });
-  const card = el("div.sgcard", { hidden: true, role: "dialog", "aria-label": "Suggest a change" });
+  const bar = el("div.sgbar", { hidden: true, role: "region", "aria-label": "Your map edits" });
+  const card = el("div.sgcard", { hidden: true, role: "dialog", "aria-label": "Edit your map" });
   const pill = el("div.sgpill", { hidden: true, role: "status" });
   const ghost = el("div.sgghost", { hidden: true, "aria-hidden": "true" });
 
@@ -249,7 +249,7 @@ export function createSuggest({ ctx, redraw }) {
     return { field, node: el("label.sgcard__field", {}, el("span", {}, label), field) };
   }
 
-  function form(title, fields, onAdd, addLabel = "Add to my suggestion") {
+  function form(title, fields, onAdd, addLabel = "Add to my edits") {
     const submit = () => onAdd(Object.fromEntries(Object.entries(fields).map(([key, f]) => [key, f.field.value])));
     for (const f of Object.values(fields)) {
       f.field.addEventListener("keydown", (event) => {
@@ -442,7 +442,7 @@ export function createSuggest({ ctx, redraw }) {
     return el(
       "div.sgcard__review",
       {},
-      el("b.sgcard__title", {}, `Your suggestion: ${s.ops.length} change${s.ops.length === 1 ? "" : "s"}`),
+      el("b.sgcard__title", {}, `Your edits: ${s.ops.length} change${s.ops.length === 1 ? "" : "s"}`),
       el("p.sgcard__hint", {}, "Aden reads each one, keeps what helps, and may adjust it. Your map changes only when he publishes."),
       el(
         "ol.sgcard__list",
@@ -460,7 +460,7 @@ export function createSuggest({ ctx, redraw }) {
         )
       ),
       el("label.sgcard__field", {}, el("span", {}, "A note for Aden"), noteBox),
-      live ? el("p.sgcard__hint", {}, `This replaces the suggestion you sent on ${day(live.created_at)}.`) : null,
+      live ? el("p.sgcard__hint", {}, `This replaces the edits you sent on ${day(live.created_at)}.`) : null,
       s.error ? el("p.sgcard__error", { role: "alert" }, s.error) : null,
       el(
         "div.sgcard__acts",
@@ -547,7 +547,7 @@ export function createSuggest({ ctx, redraw }) {
           el("button.sgchip", { type: "button", "data-sg-new": "", title: "Drag onto the step it comes after" }, "+ New step"),
           el("button.sgchip.sgchip--ask", { type: "button", onclick: () => openCard({ ask: true }) }, "Ask Aden")
         ),
-        el("div.sgbar__text", {}, el("b", {}, "Suggesting changes"), el("span", {}, line)),
+        el("div.sgbar__text", {}, el("b", {}, "Editing your map"), el("span", {}, line)),
         s.picking ? btn({ label: "Cancel", variant: "quiet", onclick: () => ((s.picking = null), render()) }) : null,
         count && !s.picking ? btn({ label: "Review and send", variant: "solid", onclick: () => openCard({ review: true }) }) : null,
         btn({ label: "Done", variant: "quiet", onclick: () => setOn(false) })
@@ -567,7 +567,7 @@ export function createSuggest({ ctx, redraw }) {
       mount(
         pill,
         el("span.sgpill__dot", { "aria-hidden": "true" }),
-        el("span", {}, `Your suggestion is with Aden · ${live.ops.length} change${live.ops.length === 1 ? "" : "s"}, sent ${day(live.created_at)}`),
+        el("span", {}, `Your edits are with Aden · ${live.ops.length} change${live.ops.length === 1 ? "" : "s"}, sent ${day(live.created_at)}`),
         el("button.sgpill__b", { type: "button", onclick: () => setOn(true) }, "Open")
       );
       return;
@@ -576,8 +576,8 @@ export function createSuggest({ ctx, redraw }) {
       const kept = answered.kept?.length ?? 0;
       const line =
         answered.status === "merged"
-          ? `Aden updated your map from your suggestion${answered.ops.length ? ` (${kept} of ${answered.ops.length} changes in)` : ""}`
-          : "Aden answered your suggestion";
+          ? `Aden updated your map from your edits${answered.ops.length ? ` (${kept} of ${answered.ops.length} changes in)` : ""}`
+          : "Aden answered your edits";
       pill.hidden = false;
       mount(
         pill,

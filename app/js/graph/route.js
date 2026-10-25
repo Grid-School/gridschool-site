@@ -22,7 +22,7 @@
  * graph (progress, next, the step pages) never holds them.
  */
 
-import { isCompleteMap, isFreeMap, shortDay, COURSE_HINT } from "../prep.js?v=ccd0c2c-202610250604";
+import { isCompleteMap, isFreeMap, shortDay, COURSE_HINT } from "../prep.js?v=ff2922c-202610250636";
 
 export const SHOWN_QUESTIONS = 2;
 export const WIN_LABEL = "Your biggest win";
