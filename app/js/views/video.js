@@ -8,8 +8,8 @@
  * Safari HLS "Auto". YouTube remains a legacy path if an id is still present.
  */
 
-import { el } from "../dom.js?v=2b0f46b-202610250651";
-import { MEDIA } from "../../../config.js?v=2b0f46b-202610250651";
+import { el } from "../dom.js?v=f9fea94-202610250751";
+import { MEDIA } from "../../../config.js?v=f9fea94-202610250751";
 
 const QUALITIES = [
   { id: "360", label: "360p" },

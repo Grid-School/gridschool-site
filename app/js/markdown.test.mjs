@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { renderMarkdown, splitTitle } from "./markdown.js?v=2b0f46b-202610250651";
+import { renderMarkdown, splitTitle } from "./markdown.js?v=f9fea94-202610250751";
 
 test("splitTitle takes the leading H1 and leaves the body", () => {
   const { title, body } = splitTitle("# 05 · Agentic workflow\n\n*Series: disciplines.*\n\n## First\n");

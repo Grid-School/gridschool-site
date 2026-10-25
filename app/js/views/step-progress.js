@@ -10,8 +10,8 @@
  *   link   the URL that lights the node
  */
 
-import { el } from "../dom.js?v=2b0f46b-202610250651";
-import { taskIsComplete, isCountTask, savedTask } from "../task-state.js?v=2b0f46b-202610250651";
+import { el } from "../dom.js?v=f9fea94-202610250751";
+import { taskIsComplete, isCountTask, savedTask } from "../task-state.js?v=f9fea94-202610250751";
 
 export const ROW = { READ: "read", LESSON: "lesson", TASK: "task", LINK: "link" };
 

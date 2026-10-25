@@ -1,0 +1,46 @@
+/* Resume builder (js/views/resume.js): one question on the left, the resume on the right. */
+.view--resume { padding: 24px 16px 64px; }
+.rz { max-width: 1180px; margin: 0 auto; }
+.rz__head { display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
+.rz__head > div { flex: 1 1 320px; }
+.rz__title { font-size: clamp(22px, 3vw, 30px); margin: 4px 0 0; line-height: 1.15; }
+.rz__meta { color: var(--muted); font-size: 14px; margin: 0; }
+.rz__grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
+@media (min-width: 980px) { .rz__grid { grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); align-items: start; } }
+.rz__main { min-width: 0; }
+.rz__card { margin-top: 14px; padding: 22px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.rz__card .cnode__head h2 { margin: 0 0 6px; font-size: 20px; }
+.rz__card .cnode__what { color: var(--muted); margin: 0 0 16px; }
+.rz__q { margin: 6px 0 14px; }
+.rz__qtext { font-size: clamp(18px, 2.2vw, 22px); line-height: 1.35; margin: 0; font-weight: 600; }
+.rz__why { color: var(--muted); font-size: 14px; margin: 8px 0 0; }
+.rz__count { color: var(--muted); font-size: 13px; margin: 0 0 4px; letter-spacing: .02em; }
+.rz__text, .rz__input { width: 100%; box-sizing: border-box; background: var(--bg2); color: var(--text); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 12px 14px; font: inherit; font-size: 15px; line-height: 1.5; }
+.rz__text { resize: vertical; min-height: 96px; }
+.rz__text:focus, .rz__input:focus { outline: none; border-color: var(--cyan); }
+.rz__row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+.rz__report { margin: 14px 0 0; font-size: 13.5px; color: var(--ok); }
+.rz__start { display: grid; gap: 12px; }
+.rz__drop { display: grid; gap: 4px; padding: 18px; border: 1px dashed var(--line); border-radius: var(--radius-sm); cursor: pointer; }
+.rz__drop span { color: var(--muted); font-size: 13px; }
+.rz__drop .rz__file { margin-top: 6px; color: var(--muted); max-width: 100%; }
+.rz__fresh { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
+.rz__fresh h3 { margin: 0; font-size: 16px; }
+.rz__lines { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 10px; }
+.rz__line { padding: 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--bg2); }
+.rz__line.is-ok { border-color: color-mix(in srgb, var(--ok) 45%, var(--line)); }
+.rz__linetext { margin: 0; font-size: 15px; line-height: 1.5; }
+.rz__was { margin: 6px 0 0; font-size: 12.5px; color: var(--muted); }
+.rz__ok { color: var(--ok); font-size: 14px; }
+.rz__line .rz__input { margin-top: 8px; }
+.rz__downloads { display: flex; gap: 10px; flex-wrap: wrap; }
+.rz__empty { color: var(--muted); }
+.rz__preview { position: sticky; top: 16px; min-width: 0; }
+.rz-doc { margin-top: 8px; background: #fbfbf8; color: #15171a; border-radius: var(--radius-sm); padding: 28px 30px; font: 13.5px/1.45 Calibri, "IBM Plex Sans", Arial, sans-serif; box-shadow: 0 10px 40px rgba(0, 0, 0, .35); max-height: calc(100vh - 120px); overflow: auto; }
+.rz-doc__name { font-size: 22px; margin: 0 0 2px; color: #000; }
+.rz-doc__top { margin: 1px 0; color: #333; overflow-wrap: anywhere; }
+.rz-doc__h { font-size: 12.5px; letter-spacing: .08em; margin: 14px 0 4px; padding-bottom: 2px; border-bottom: 1px solid #999; color: #000; }
+.rz-doc__role { margin: 8px 0 2px; font-weight: 700; color: #000; }
+.rz-doc__list { margin: 2px 0 4px; padding-left: 18px; }
+.rz-doc__list li { margin: 2px 0; }
+@media (max-width: 979px) { .rz__preview { position: static; } .rz-doc { max-height: none; padding: 20px; } }

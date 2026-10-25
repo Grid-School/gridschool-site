@@ -1,0 +1,46 @@
+{
+  "id": "resume-engine",
+  "version": 1,
+  "title": "Build your resume, one question at a time",
+  "purpose": "Turn what you've done into a resume where every line is true, specific and yours, then download it.",
+  "lane": "presence",
+  "phase": "position",
+  "kind": "core",
+  "completion": "tasks",
+  "why": "Hiring software checks each required skill against your lines, and a recruiter skims the top in seconds. Specific, checkable lines are what still stand out now that anyone can polish a resume with AI.",
+  "evidence": "A downloaded resume where you confirmed every line.",
+  "modules": [],
+  "tasks": [
+    {
+      "id": "build",
+      "title": "Answer the questions and confirm every line",
+      "kind": "write",
+      "est": 45,
+      "how": [
+        "Start from the resume you have. The builder reads every line, keeps your words, and asks about what's missing, one question at a time.",
+        "Rough numbers are fine; say \"about\". Skip anything you can't answer.",
+        "Only lines you confirm go on your resume."
+      ],
+      "done_when": "Every line on your resume is confirmed.",
+      "open": {
+        "route": "resume",
+        "label": "Open the resume builder"
+      }
+    },
+    {
+      "id": "download",
+      "title": "Download it as Word and PDF",
+      "kind": "ship",
+      "est": 5,
+      "done_when": "You have the Word file and the PDF saved where you apply from.",
+      "open": {
+        "route": "resume",
+        "label": "Open the resume builder"
+      }
+    }
+  ],
+  "slots": [
+    "notes",
+    "due"
+  ]
+}

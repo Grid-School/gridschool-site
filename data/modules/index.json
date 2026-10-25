@@ -202,6 +202,13 @@
       "title": "Verification proof: audit an AI-built app and fix what it got wrong",
       "lane": "proof",
       "purpose": "With the owner's permission, audit a real AI-built app for the mistakes AI makes and fix the critical ones."
+    },
+    {
+      "id": "resume-engine",
+      "version": 1,
+      "title": "Build your resume, one question at a time",
+      "lane": "presence",
+      "purpose": "Turn what you've done into a resume where every line is true, specific and yours, then download it."
     }
   ]
 }

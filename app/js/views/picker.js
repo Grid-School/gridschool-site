@@ -3,11 +3,11 @@
  * whole platform can be walked without an account.
  */
 
-import { el } from "../dom.js?v=2b0f46b-202610250651";
-import { btn } from "../ui.js?v=2b0f46b-202610250651";
-import { gmark, wordmark } from "../../../js/brand.js?v=2b0f46b-202610250651";
-import { loadRoster, loadStudent } from "../api.js?v=2b0f46b-202610250651";
-import { signIn } from "../session.js?v=2b0f46b-202610250651";
+import { el } from "../dom.js?v=f9fea94-202610250751";
+import { btn } from "../ui.js?v=f9fea94-202610250751";
+import { gmark, wordmark } from "../../../js/brand.js?v=f9fea94-202610250751";
+import { loadRoster, loadStudent } from "../api.js?v=f9fea94-202610250751";
+import { signIn } from "../session.js?v=f9fea94-202610250751";
 
 export function renderPicker(mountPoint) {
   const list = el("div.picker__list", {}, el("p.muted", {}, "Loading boards."));

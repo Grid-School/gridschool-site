@@ -73,6 +73,15 @@ export const NODE_TYPES = {
       "onRoad": true,
       "gates": true,
       "canBeNext": true
+    },
+    "builder": {
+      "label": "Built with you",
+      "who": "student",
+      "completes": "tasks",
+      "onRoad": true,
+      "gates": true,
+      "canBeNext": true,
+      "tag": "Built with you"
     }
   },
   "groupModes": {
