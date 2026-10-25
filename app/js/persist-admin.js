@@ -2,8 +2,8 @@
  * Admin persist calls. Desk only. Student boards never import this.
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=391fdce-202610250551";
-import { persistToken } from "./session.js?v=391fdce-202610250551";
+import { PERSIST, isPlaceholder } from "../../config.js?v=ccd0c2c-202610250604";
+import { persistToken } from "./session.js?v=ccd0c2c-202610250604";
 
 function endpoint() {
   return String(PERSIST.endpoint || "").replace(/\/$/, "");
@@ -167,4 +167,28 @@ export async function openMapDraft(slug, body, { signal } = {}) {
 /** A positioning draft from a resume (server/career_draft.py). Saves nothing. */
 export function draftCareer({ resume = "", linkedin = "", goal = "", notes = "", name = "" }) {
   return request("POST", "/career/draft", { resume, linkedin, goal, notes, name });
+}
+
+/* ---------- suggested map changes and map history (maps_api.py) ---------- */
+
+/** The student's suggestions, newest first. */
+export async function listMapSuggestions(slug) {
+  const body = await request("GET", `/students/${encodeURIComponent(slug)}/map/proposals`);
+  return Array.isArray(body.proposals) ? body.proposals : [];
+}
+
+/** Close an open suggestion: {action: "decline", reply} or {action: "merged", version, kept, reply}. */
+export async function resolveMapSuggestion(slug, id, body) {
+  return (await request("POST", `/students/${encodeURIComponent(slug)}/map/proposals/${id}`, body)).proposal;
+}
+
+/** Every stored version of the map, newest first, without the maps. */
+export async function listMapVersions(slug) {
+  const body = await request("GET", `/students/${encodeURIComponent(slug)}/map/versions`);
+  return Array.isArray(body.versions) ? body.versions : [];
+}
+
+/** One stored version, with its map. */
+export function fetchMapVersion(slug, version) {
+  return request("GET", `/students/${encodeURIComponent(slug)}/map?version=${encodeURIComponent(version)}`);
 }

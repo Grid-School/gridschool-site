@@ -2479,3 +2479,98 @@ pre.diagram--failed { border-color: var(--amber); }
   .view--map .hud--top > .hud__group:first-child { flex-wrap: wrap; row-gap: 8px; min-width: 0; max-width: 100%; }
   .view--map .hud--top .planswitch { font-size: 12.5px; }
 }
+
+/* ---------- suggest changes (views/suggest.js): the student's suggestion, drawn on their own map ---------- */
+:root { --sg: #b39dff; }
+.hud__suggest { padding: 5px 11px; font-size: 12.5px; }
+.hud__suggest.is-on { border-color: var(--sg); color: var(--sg); background: color-mix(in srgb, var(--sg) 12%, transparent); }
+
+/* The bar replaces "do this next" while suggesting: the tools, what's going on, send. */
+.sgbar {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 4;
+  display: flex; align-items: center; gap: 14px; padding: 12px 20px;
+  background: rgba(5, 8, 14, .95); backdrop-filter: blur(6px);
+  border-top: 1px solid color-mix(in srgb, var(--sg) 40%, var(--line));
+}
+.sgbar__tools { display: flex; gap: 8px; flex: none; }
+.sgbar__text { display: grid; gap: 2px; min-width: 0; flex: 1; }
+.sgbar__text b { color: var(--sg); font-weight: 500; font-size: 13px; letter-spacing: .02em; }
+.sgbar__text span { color: var(--muted); font-size: 13px; line-height: 1.4; }
+.sgchip {
+  font: 500 13px var(--font-sans); color: var(--text); cursor: grab; touch-action: none; user-select: none;
+  padding: 7px 12px; border-radius: 999px; border: 1px dashed var(--sg);
+  background: color-mix(in srgb, var(--sg) 14%, transparent);
+}
+.sgchip:active { cursor: grabbing; }
+.sgchip--ask { border-style: solid; cursor: pointer; background: transparent; }
+@media (max-width: 640px) {
+  .sgbar { flex-wrap: wrap; padding: 10px 14px; }
+  .sgbar__text { flex-basis: 100%; order: -1; }
+}
+
+/* One card at a time: a step's actions, a form, or the review. */
+.sgcard {
+  position: absolute; right: 18px; top: 64px; bottom: 84px; z-index: 6;
+  width: min(380px, calc(100% - 32px)); overflow-y: auto;
+  background: color-mix(in srgb, var(--surface) 95%, #000);
+  border: 1px solid color-mix(in srgb, var(--sg) 35%, var(--line)); border-radius: var(--radius);
+  padding: 16px 18px; box-shadow: 0 18px 48px rgba(0, 0, 0, .45);
+  height: fit-content; max-height: calc(100% - 172px);
+}
+@media (max-width: 640px) { .sgcard { left: 16px; right: 16px; width: auto; top: auto; bottom: 120px; } }
+.sgcard__title { display: block; color: #fff; font-size: 15px; font-weight: 500; line-height: 1.35; margin-bottom: 10px; }
+.sgcard__tag { display: inline-block; margin: -4px 0 10px; font-size: 11px; color: var(--sg); border: 1px solid var(--sg); border-radius: 999px; padding: 1px 8px; }
+.sgcard__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.sgcard__grid .b { justify-content: center; text-align: center; font-size: 13px; }
+.sgcard__field { display: grid; gap: 6px; margin-bottom: 12px; }
+.sgcard__field > span { color: var(--muted); font-size: 13px; }
+.sgcard__field input, .sgcard__field textarea {
+  width: 100%; font: 14px/1.45 var(--font-sans); color: var(--text); background: var(--bg);
+  border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; resize: vertical;
+}
+.sgcard__field input:focus, .sgcard__field textarea:focus { outline: none; border-color: var(--sg); }
+.sgcard__acts { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+.sgcard__hint { color: var(--muted); font-size: 13px; line-height: 1.5; margin: 0 0 12px; }
+.sgcard__error { color: var(--warn); font-size: 13px; line-height: 1.45; margin: 4px 0 0; }
+.sgcard__mine { list-style: none; padding: 12px 0 0; margin: 12px 0 0; border-top: 1px solid var(--hair); display: grid; gap: 8px; }
+.sgcard__mine li { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; color: var(--text); }
+.sgcard__list { list-style: none; padding: 0; margin: 0 0 14px; display: grid; gap: 10px; }
+.sgcard__list li { display: grid; gap: 3px; padding: 10px 12px; border: 1px solid var(--hair); border-radius: 10px; position: relative; padding-right: 76px; }
+.sgcard__list li.is-bad { border-color: color-mix(in srgb, var(--warn) 55%, var(--line)); }
+.sgcard__list li .b { position: absolute; right: 8px; top: 8px; padding: 3px 8px; font-size: 12px; }
+.sgcard__kind { font-size: 11px; color: var(--sg); letter-spacing: .03em; text-transform: uppercase; }
+.sgcard__what { color: var(--text); font-size: 13.5px; line-height: 1.4; }
+.sgcard__note { color: var(--muted); font-size: 13px; line-height: 1.45; }
+
+/* Where the suggestion stands, when not suggesting: a sentence under the top bar, like Aden's own line. */
+.sgpill {
+  position: absolute; top: 88px; left: 18px; z-index: 2; display: inline-flex; align-items: center; gap: 8px; max-width: calc(100% - 36px);
+  padding: 5px 6px 5px 10px; border-radius: 999px; font-size: 12.5px; color: var(--text);
+  background: rgba(6, 10, 18, .92); border: 1px solid color-mix(in srgb, var(--sg) 40%, var(--line));
+}
+.sgpill__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--sg); flex: none; }
+.sgpill__dot.is-ok { background: var(--ok); box-shadow: 0 0 6px var(--ok); }
+.sgpill__reply { display: block; color: var(--muted); font-style: italic; margin-top: 2px; }
+.sgpill__b { font: 500 12px var(--font-sans); color: var(--sg); background: none; border: 1px solid color-mix(in srgb, var(--sg) 45%, transparent); border-radius: 999px; padding: 3px 10px; cursor: pointer; flex: none; }
+
+/* What follows the pointer while dragging. */
+.sgghost {
+  position: fixed; left: 0; top: 0; z-index: 50; pointer-events: none;
+  font: 500 12.5px var(--font-sans); color: #fff; padding: 5px 10px; border-radius: 999px;
+  background: color-mix(in srgb, var(--sg) 70%, #000); box-shadow: 0 8px 24px rgba(0, 0, 0, .4);
+}
+
+/* On the Route: a suggested step is dashed in the suggestion's colour; a step that doesn't fit fades. */
+.rz-node.is-sg-add .rz-ring { stroke: var(--sg); stroke-dasharray: 4 3; fill: color-mix(in srgb, var(--sg) 12%, var(--bg)); }
+.rz-node.is-sg-add .rz-num { fill: var(--sg); }
+.rz-node.is-sg-add .rz-meta { fill: var(--sg); }
+.rz-node.is-sg-retire { opacity: .42; }
+.rz-node.is-sg-retire .rz-title { text-decoration: line-through; }
+.rz-node.is-suggested:not(.is-sg-add) .rz-halo { stroke: var(--sg); stroke-width: 1.4; stroke-dasharray: 2 4; fill: none; opacity: 1; }
+.rz-node.is-drop-target .rz-ring { stroke: var(--sg); stroke-width: 3; }
+.rz-node.is-drop-target .rz-halo { fill: color-mix(in srgb, var(--sg) 25%, transparent); opacity: 1; }
+.sgcard__tasks { list-style: none; padding: 12px 0 0; margin: 12px 0 0; border-top: 1px solid var(--hair); display: grid; gap: 4px; }
+.sgcard__taskhead { color: var(--muted); font-size: 12px; letter-spacing: .04em; text-transform: uppercase; margin-bottom: 2px; }
+.sgcard__tasks li:not(.sgcard__taskhead) { display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--text); }
+.sgcard__tasks li > span { flex: 1; min-width: 0; line-height: 1.4; }
+.sgcard__tasks .b { padding: 3px 7px; font-size: 12px; }

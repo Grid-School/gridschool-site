@@ -9,9 +9,9 @@
  * data/students/<slug>.json.
  */
 
-import { loadBoard, boardCurriculum, libraryFor } from "./api.js?v=391fdce-202610250551";
-import { buildGraph } from "./graph/model.js?v=391fdce-202610250551";
-import { weekNumber, studentWeek, ownSchedule, hasOwnMap } from "./time.js?v=391fdce-202610250551";
+import { loadBoard, boardCurriculum, libraryFor } from "./api.js?v=ccd0c2c-202610250604";
+import { buildGraph } from "./graph/model.js?v=ccd0c2c-202610250604";
+import { weekNumber, studentWeek, ownSchedule, hasOwnMap } from "./time.js?v=ccd0c2c-202610250604";
 import {
   read,
   clear as clearPersist,
@@ -21,10 +21,10 @@ import {
   mergeStudent,
   STUDENT_KEYS,
   INSTRUCTOR_KEYS,
-} from "./persist.js?v=391fdce-202610250551";
-import { flushAfterLocalWrite, hydrateFromRemote, persistStatus, startPolling } from "./persist-remote.js?v=391fdce-202610250551";
-import { validReviewReturn } from "./review.js?v=391fdce-202610250551";
-import { isDevUnlock } from "./dev-mode.js?v=391fdce-202610250551";
+} from "./persist.js?v=ccd0c2c-202610250604";
+import { flushAfterLocalWrite, hydrateFromRemote, persistStatus, startPolling } from "./persist-remote.js?v=ccd0c2c-202610250604";
+import { validReviewReturn } from "./review.js?v=ccd0c2c-202610250604";
+import { isDevUnlock } from "./dev-mode.js?v=ccd0c2c-202610250604";
 
 export { validReviewReturn };
 
@@ -92,6 +92,8 @@ export async function init(nextSlug, { tour = false, publicCopy = false } = {}) 
         curriculum: boardCurriculum({ universal: base.universal, student, slug: nextSlug, overrides: base.overrides, library }),
       };
     }
+    // The live map's version: a suggested change names the version it was made against.
+    base = { ...base, mapVersion: Number.isInteger(snap?.mapVersion) ? snap.mapVersion : null };
     // And its 1:1 record: set on the seat, it is the only source the calendar,
     // Today, Profile and reminders read. The desk can change it any time, so
     // every poll re-applies it.

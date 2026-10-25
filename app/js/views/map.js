@@ -16,24 +16,25 @@
  * went with it, because on the floor position is derived from sequence.
  */
 
-import { el, mount } from "../dom.js?v=391fdce-202610250551";
-import { btn, toast } from "../ui.js?v=391fdce-202610250551";
-import { createScene3d } from "../graph/scene3d/index.js?v=391fdce-202610250551";
-import { createRezScene } from "../graph/rez/index.js?v=391fdce-202610250551";
-import { STATUS, nextUp, progress, visibleGraph, stepNumber } from "../graph/model.js?v=391fdce-202610250551";
-import { LEGEND, STANDING, STANDING_LABEL, standingOf, legendKeyOf } from "../graph/standing.js?v=391fdce-202610250551";
-import { trackLabel } from "../copy.js?v=391fdce-202610250551";
-import { mapList } from "./map-list.js?v=391fdce-202610250551";
-import { dueLabel } from "./from-aden.js?v=391fdce-202610250551";
-import { createGridState, hashFor, RESERVED_ARGS, VIEW } from "./grid-state.js?v=391fdce-202610250551";
-import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=391fdce-202610250551";
-import { isProgressReadOnly } from "../store.js?v=391fdce-202610250551";
-import { doneForYou, nextMove, movesAfterNext, isTypedMap } from "../engine.js?v=391fdce-202610250551";
-import { matchedRoles, fetchPacks, radarReady } from "../roles-remote.js?v=391fdce-202610250551";
-import { careerOf } from "../search.js?v=391fdce-202610250551";
-import { isoDate } from "../time.js?v=391fdce-202610250551";
-import { routeGraph, isLandmark } from "../graph/route.js?v=391fdce-202610250551";
-import { isFreeMap, upgradeHref } from "../prep.js?v=391fdce-202610250551";
+import { el, mount } from "../dom.js?v=ccd0c2c-202610250604";
+import { btn, toast } from "../ui.js?v=ccd0c2c-202610250604";
+import { createScene3d } from "../graph/scene3d/index.js?v=ccd0c2c-202610250604";
+import { createRezScene } from "../graph/rez/index.js?v=ccd0c2c-202610250604";
+import { STATUS, nextUp, progress, visibleGraph, stepNumber } from "../graph/model.js?v=ccd0c2c-202610250604";
+import { LEGEND, STANDING, STANDING_LABEL, standingOf, legendKeyOf } from "../graph/standing.js?v=ccd0c2c-202610250604";
+import { trackLabel } from "../copy.js?v=ccd0c2c-202610250604";
+import { mapList } from "./map-list.js?v=ccd0c2c-202610250604";
+import { dueLabel } from "./from-aden.js?v=ccd0c2c-202610250604";
+import { createGridState, hashFor, RESERVED_ARGS, VIEW } from "./grid-state.js?v=ccd0c2c-202610250604";
+import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=ccd0c2c-202610250604";
+import { isProgressReadOnly } from "../store.js?v=ccd0c2c-202610250604";
+import { doneForYou, nextMove, movesAfterNext, isTypedMap } from "../engine.js?v=ccd0c2c-202610250604";
+import { matchedRoles, fetchPacks, radarReady } from "../roles-remote.js?v=ccd0c2c-202610250604";
+import { careerOf } from "../search.js?v=ccd0c2c-202610250604";
+import { isoDate } from "../time.js?v=ccd0c2c-202610250604";
+import { routeGraph, isLandmark } from "../graph/route.js?v=ccd0c2c-202610250604";
+import { isFreeMap, upgradeHref } from "../prep.js?v=ccd0c2c-202610250604";
+import { createSuggest } from "./suggest.js?v=ccd0c2c-202610250604";
 
 /** Right side clears the control column, top clears the legend bar. */
 const INSETS = { top: 76, right: 132, bottom: 72, left: 40 };
@@ -74,6 +75,10 @@ export function renderMap(ctx, initialArg) {
   let current = ctx;
   let signature = "";
 
+  // Suggest changes (views/suggest.js): the student's own suggestion drawn on this map.
+  const suggest = createSuggest({ ctx: () => current, redraw: () => draw() });
+  canvas.append(...suggest.elements);
+
   // The Route only, for now (2026-10-10): one 2D map, the one the landing draws.
   // The Floor (scene3d) and the per-seat pick stay in the code for a later return.
   const style = () => MAP_STYLE.ROUTE;
@@ -107,7 +112,8 @@ export function renderMap(ctx, initialArg) {
   /** Ids and edges only: positions are derived from these on the floor. */
   function graphSignature(graph) {
     // A Complete step's hint (prep.js) is drawn text too: a stage moved on the desk redraws it.
-    return graph.nodes.map((n) => `${n.id}:${n.n}:${(n.requires ?? []).join(",")}${n.hint ? `:${n.hint}` : ""}`).join("|");
+    // A suggested change (a rename, a mark) is drawn text too.
+    return graph.nodes.map((n) => `${n.id}:${n.n}:${(n.requires ?? []).join(",")}${n.hint ? `:${n.hint}` : ""}`).join("|") + suggest.signature();
   }
 
   /*
@@ -119,7 +125,9 @@ export function renderMap(ctx, initialArg) {
   let fullPlan = false;
 
   /** A student sees the spine, what they picked and what is on offer. */
-  const shown = () => routeGraph(visibleGraph(current.state.graph), { foldOpen, fullPlan });
+  const shown = () => routeGraph(visibleGraph(boardGraph()), { foldOpen, fullPlan });
+  /** The live map, or the student's suggestion drawn on it while they're suggesting. */
+  const boardGraph = () => suggest.graph() ?? current.state.graph;
 
   /** Ready nodes and the next move ride on every real board (not the public demo). */
   const hasBand = () => current.state.slug !== "demo";
@@ -198,13 +206,13 @@ export function renderMap(ctx, initialArg) {
   /** Aden's current work for them, as a plain sentence under the top bar. */
   function renderAden() {
     const item = (careerOf(current.state.student).working ?? []).find((w) => !w.done && w.text);
-    adenLine.hidden = !hasBand() || isList() || !item;
+    adenLine.hidden = !hasBand() || isList() || !item || suggest.isOn();
     if (item) mount(adenLine, el("span.adenline__dot", { "aria-hidden": "true" }), el("span", {}, `Aden is working on: ${item.text}`));
   }
 
   /** The bottom bar: the one next move, docked, so it never covers the map. Agrees with the white ring. */
   function renderNext() {
-    if (!hasBand() || isList()) {
+    if (!hasBand() || isList() || suggest.isOn()) {
       nextCard.hidden = true;
       return;
     }
@@ -293,6 +301,10 @@ export function renderMap(ctx, initialArg) {
           floor = made;
           signature = "";
           world.dataset.style = want;
+          if (!world.dataset.suggest) {
+            world.dataset.suggest = "1";
+            suggest.attach(world);
+          }
           return made;
         })
         .catch((error) => {
@@ -343,6 +355,8 @@ export function renderMap(ctx, initialArg) {
   };
 
   function openNode(id) {
+    // Suggesting changes: a tap opens what can be changed about the step, not the step.
+    if (!isList() && suggest.tap(id)) return;
     if (isLandmark(id)) {
       if (id === "_more") {
         foldOpen = true;
@@ -489,7 +503,20 @@ export function renderMap(ctx, initialArg) {
         // A personal map has no elective depth; "No depth picked yet" would
         // read as a choice the student cannot make.
         hasDepth(graph, prog) ? el("span.hud__depth", {}, depthLine(prog.depth)) : null,
-        prog.side.total ? el("span.hud__side", {}, `Side quests ${prog.side.lit} of ${prog.side.total}`) : null
+        prog.side.total ? el("span.hud__side", {}, `Side quests ${prog.side.lit} of ${prog.side.total}`) : null,
+        hasBand() && !free && suggest.ready() && !isList()
+          ? el(
+              "button.b.b--ghost.hud__suggest",
+              {
+                type: "button",
+                class: suggest.isOn() ? "is-on" : null,
+                "aria-pressed": String(suggest.isOn()),
+                title: "Propose steps, tasks or changes. Aden reviews them before your map changes.",
+                onclick: () => suggest.setOn(!suggest.isOn()),
+              },
+              suggest.isOn() ? "Editing…" : "Edit my map"
+            )
+          : null
       ),
       hasBand() ? el("div.hud__group.hud__controls", {}, controls) : null,
       hasBand()
@@ -509,6 +536,8 @@ export function renderMap(ctx, initialArg) {
     setStatus(null);
     renderNext();
     renderAden();
+    suggest.render();
+    suggest.renderCard();
     invite.hidden = true;
   }
 
@@ -539,7 +568,7 @@ export function renderMap(ctx, initialArg) {
   /** One line of depth on hover: what this node is, and where it stands. */
   function hoverLine(id) {
     if (LANDMARK_LINE[id]) return LANDMARK_LINE[id];
-    const { graph } = current.state;
+    const graph = boardGraph();
     const node = graph.byId.get(id);
     if (!node) return null;
     const standing = standingOf(node, nextUp(graph)?.id ?? null);
@@ -584,6 +613,7 @@ export function renderMap(ctx, initialArg) {
   });
   // Don't wait for a frame: what's ready starts loading the moment the map mounts.
   void loadLive();
+  void suggest.refresh();
 
   const onResize = () => {
     if (!isList()) floor?.resize();
@@ -608,6 +638,7 @@ export function renderMap(ctx, initialArg) {
     },
     destroy() {
       window.removeEventListener("resize", onResize);
+      suggest.detach();
       floor?.destroy();
     },
   };

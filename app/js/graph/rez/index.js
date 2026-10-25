@@ -18,13 +18,13 @@
  * view glides to it. Nothing idles. Reduced motion jumps.
  */
 
-import { el, clear } from "../../dom.js?v=391fdce-202610250551";
-import { traceSet, stepNumber } from "../model.js?v=391fdce-202610250551";
-import { STANDING, standingOf, inSequence } from "../standing.js?v=391fdce-202610250551";
-import { typeOf, specOf } from "../model.js?v=391fdce-202610250551";
-import { isTypedMap } from "../../engine.js?v=391fdce-202610250551";
-import { isCompleteMap, isFreeMap } from "../../prep.js?v=391fdce-202610250551";
-import { WIN_LABEL } from "../route.js?v=391fdce-202610250551";
+import { el, clear } from "../../dom.js?v=ccd0c2c-202610250604";
+import { traceSet, stepNumber } from "../model.js?v=ccd0c2c-202610250604";
+import { STANDING, standingOf, inSequence } from "../standing.js?v=ccd0c2c-202610250604";
+import { typeOf, specOf } from "../model.js?v=ccd0c2c-202610250604";
+import { isTypedMap } from "../../engine.js?v=ccd0c2c-202610250604";
+import { isCompleteMap, isFreeMap } from "../../prep.js?v=ccd0c2c-202610250604";
+import { WIN_LABEL } from "../route.js?v=ccd0c2c-202610250604";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 /** "2026-10-16" → "Due Oct 16". */
@@ -42,7 +42,7 @@ import {
   runCurrent,
   rezIn,
   prefersReducedMotion,
-} from "../../../../js/rez/road.js?v=391fdce-202610250551";
+} from "../../../../js/rez/road.js?v=ccd0c2c-202610250604";
 
 /*
  * One grid under everything, in the board's own units (as on the landing):
@@ -522,7 +522,9 @@ export async function createRezScene(container) {
       // A Complete step's hint (prep.js): where our work for them stands, or the day it opens.
       // A free map: a step with a film says so, with its length.
       const film = freeMap && node.video?.mins ? `▶ ${node.video.mins} min` : null;
-      const meta = [specOf(node).tag && typeOf(node) !== "step" ? specOf(node).tag : null, node.due ? dueText(node.due) : null, node.hint ?? null].filter(Boolean).join(" · ");
+      // A step the student suggested (views/suggest.js) says so, like anything else made for them.
+      const idea = node.suggested?.some((mark) => mark.kind === "add") ? "Your idea" : null;
+      const meta = [idea, specOf(node).tag && typeOf(node) !== "step" ? specOf(node).tag : null, node.due ? dueText(node.due) : null, node.hint ?? null].filter(Boolean).join(" · ");
       if (meta) svgEl("tspan", { class: `rz-meta${node.due ? " is-due" : ""}${node.hint && !node.due ? " is-hint" : ""}`, x: lx, dy: 15 }, title).textContent = meta;
       if (film) svgEl("tspan", { class: "rz-meta rz-film", x: lx, dy: 15 }, title).textContent = film;
       svgEl("text", { class: "rz-here", y: -NODE_R - 16 }, g).textContent = "YOU ARE HERE";
@@ -699,6 +701,10 @@ export async function createRezScene(container) {
       g.classList.toggle("is-win", Boolean(node.win));
       for (const kind of ["scan", "goal", "more", "waiting"]) g.classList.toggle(`is-${kind}`, node.landmark === kind);
       g.classList.toggle("is-trace", Boolean(trace?.has(node.id)));
+      // Suggested changes, drawn on the map while the student suggests them (and in Aden's review).
+      const marks = new Set((node.suggested ?? []).map((mark) => mark.kind));
+      g.classList.toggle("is-suggested", marks.size > 0);
+      for (const kind of ["add", "task", "move", "retire", "rename", "ask"]) g.classList.toggle(`is-sg-${kind}`, marks.has(kind));
       g.dataset.standing = standing;
       g.setAttribute("aria-label", `Node ${stepNumber(node)}: ${node.title}`);
     }
