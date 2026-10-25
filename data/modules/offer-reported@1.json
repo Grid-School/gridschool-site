@@ -15,7 +15,7 @@
       "title": "Report the offer: role, company, pay, start date",
       "kind": "record",
       "est": 10,
-      "done_when": "Reported to Aden.",
+      "done_when": "Reported to your coach.",
       "fields": [
         {
           "id": "offer",

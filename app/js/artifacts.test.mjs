@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { artifactOf, ARTIFACTS } from "./artifacts.js?v=ff2922c-202610250636";
+import { artifactOf, ARTIFACTS } from "./artifacts.js?v=2b0f46b-202610250651";
 
 test("a node with no artifact renders nothing", () => {
   assert.equal(artifactOf({}), null);

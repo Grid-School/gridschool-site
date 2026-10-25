@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
-import { videoAccess, isFilmed } from "./video-access.mjs?v=ff2922c-202610250636";
+import { videoAccess, isFilmed } from "./video-access.mjs?v=2b0f46b-202610250651";
 
 const here = new URL(".", import.meta.url);
 const { cases } = JSON.parse(readFileSync(new URL("video-access-cases.json", here), "utf8"));

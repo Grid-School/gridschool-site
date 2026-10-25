@@ -8,15 +8,15 @@
  * and this sheet says so rather than pretending to a ledger it does not hold.
  */
 
-import { el } from "./dom.js?v=ff2922c-202610250636";
-import { btn, kv } from "./ui.js?v=ff2922c-202610250636";
-import { createModal } from "./modal.js?v=ff2922c-202610250636";
-import { icon } from "./icons.js?v=ff2922c-202610250636";
-import { link } from "../../config.js?v=ff2922c-202610250636";
-import { returnedUnread } from "./tasks.js?v=ff2922c-202610250636";
-import { initials } from "./rail.js?v=ff2922c-202610250636";
-import { slotSummary } from "./call-slot.js?v=ff2922c-202610250636";
-import { displayZone, studentSlot } from "./time.js?v=ff2922c-202610250636";
+import { el } from "./dom.js?v=2b0f46b-202610250651";
+import { btn, kv } from "./ui.js?v=2b0f46b-202610250651";
+import { createModal } from "./modal.js?v=2b0f46b-202610250651";
+import { icon } from "./icons.js?v=2b0f46b-202610250651";
+import { link } from "../../config.js?v=2b0f46b-202610250651";
+import { returnedUnread } from "./tasks.js?v=2b0f46b-202610250651";
+import { initials } from "./rail.js?v=2b0f46b-202610250651";
+import { slotSummary } from "./call-slot.js?v=2b0f46b-202610250651";
+import { displayZone, studentSlot } from "./time.js?v=2b0f46b-202610250651";
 
 
 export function createProfile({ getState, onExport, onReset, onSignOut, onNavigate }) {
@@ -132,6 +132,6 @@ function clockLine(clock) {
 /** Same record and same math as the calendar, so the two cannot disagree. */
 function oneOnOneLine(cohort, student) {
   const slot = studentSlot(cohort, student);
-  if (!slot) return "Not set yet. Aden sets it after your first call.";
+  if (!slot) return "Not set yet. Your coach sets it after your first call.";
   return slotSummary(slot, displayZone(student));
 }

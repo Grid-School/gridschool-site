@@ -2,15 +2,15 @@
  * Invite set-password and return login. Demo never lands here.
  */
 
-import { el, mount } from "../dom.js?v=ff2922c-202610250636";
-import { gmark, wordmark } from "../../../js/brand.js?v=ff2922c-202610250636";
+import { el, mount } from "../dom.js?v=2b0f46b-202610250651";
+import { gmark, wordmark } from "../../../js/brand.js?v=2b0f46b-202610250651";
 import {
   enterSeat,
   loginWithPassword,
   peekInvite,
   redeemInvite,
   requestLoginLink,
-} from "../persist-auth.js?v=ff2922c-202610250636";
+} from "../persist-auth.js?v=2b0f46b-202610250651";
 
 const FIELD =
   "width:100%;font:inherit;font-size:15px;color:var(--text);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:11px 13px;";

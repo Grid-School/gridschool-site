@@ -78,7 +78,7 @@ export function prepOf(node, prep = {}) {
 export function prepHint(prep) {
   if (!prep) return null;
   if (prep.ready) return "Ready for you";
-  return prep.current ? prep.current.label : "In Aden's queue";
+  return prep.current ? prep.current.label : "In your coach's queue";
 }
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];

@@ -3,9 +3,9 @@
  * curriculum; this secret opens the lab notebook on Postgres.
  */
 
-import { el, mount } from "./dom.js?v=ff2922c-202610250636";
-import { persistToken, setPersistToken } from "./session.js?v=ff2922c-202610250636";
-import { remoteEnabled } from "./persist-remote.js?v=ff2922c-202610250636";
+import { el, mount } from "./dom.js?v=2b0f46b-202610250651";
+import { persistToken, setPersistToken } from "./session.js?v=2b0f46b-202610250651";
+import { remoteEnabled } from "./persist-remote.js?v=2b0f46b-202610250651";
 
 export function needsPersistToken(slug) {
   return remoteEnabled(slug) && !persistToken();
@@ -23,7 +23,7 @@ export function renderPersistDoor(app, slug) {
   const err = el(
     "p",
     { style: "color:#ff9d9d;font-size:13px;margin-top:8px;", hidden: true },
-    "Paste the secret Aden sent you. It is not the lesson access key."
+    "Paste the secret your coach sent you. It is not the lesson access key."
   );
   const form = el(
     "form",

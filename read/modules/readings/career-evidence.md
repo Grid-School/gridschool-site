@@ -1,18 +1,18 @@
 # Help the right people see your work
 
-Your job search needs three separate checks: whether a role is open to you, whether someone sees your application, and whether your work answers their concerns. A stronger project cannot remove a work-authorization requirement. A popular post cannot answer a debugging question. Review all three with Aden before increasing the volume of applications.
+Your job search needs three separate checks: whether a role is open to you, whether someone sees your application, and whether your work answers their concerns. A stronger project cannot remove a work-authorization requirement. A popular post cannot answer a debugging question. Review all three with your coach before increasing the volume of applications.
 
 ## Start before you feel ready to perform
 
-In week 1, save your current resume and LinkedIn profile and choose two role families with Aden. Read five current postings for each. Record recurring skills, location, authorization, experience requirements, and any stated AI policy for interviews. Identify one gap that would prevent you from doing a small task in those roles.
+In week 1, save your current resume and LinkedIn profile and choose two role families with your coach. Read five current postings for each. Record recurring skills, location, authorization, experience requirements, and any stated AI policy for interviews. Identify one gap that would prevent you from doing a small task in those roles.
 
-Practice visibility in steps. First explain a bug privately to Aden. Then share a screenshot and explanation with the cohort. After your first reviewed change, publish one explanation that names exactly what you did. A screen recording with captions can show the work without putting your face on camera. Public claims should describe practice as practice and education as education.
+Practice visibility in steps. First explain a bug privately to your coach. Then share a screenshot and explanation with the cohort. After your first reviewed change, publish one explanation that names exactly what you did. A screen recording with captions can show the work without putting your face on camera. Public claims should describe practice as practice and education as education.
 
 By week 2, revise your profile and draft a resume from existing evidence. In week 4, review the resume and practice an interview. These coaching sessions happen even if a later Career step on the map is still closed.
 
 ## Check readiness for a particular role
 
-You can begin applications when you can explain one reviewed change, reproduce its check, identify a limitation, debug a small unfamiliar variation, and accurately describe your part in the work. Review that evidence with Aden against the role. You can continue applying while you strengthen other skills. You do not need to finish every course step first.
+You can begin applications when you can explain one reviewed change, reproduce its check, identify a limitation, debug a small unfamiliar variation, and accurately describe your part in the work. Review that evidence with your coach against the role. You can continue applying while you strengthen other skills. You do not need to finish every course step first.
 
 Practice the interview the employer actually uses: a small coding problem with edge cases and complexity, reading unfamiliar code, a SQL query, or a system discussion. Use AI only when the interview permits it. Each week, spend one focused practice session on the weakest relevant format and revisit a changed version later.
 
@@ -24,7 +24,7 @@ A useful comment adds an observation, reproducible example, respectful correctio
 
 ## The ten-day visibility experiment
 
-After the intensive, you and Aden can test the proposed higher-volume routine for **10 working days: five posts and 20 substantive comments per day**. This is an experiment, and it has no promised time to interview or hire. Begin only when you have a defensible project, a reviewed profile, relevant people to learn from, and enough distinct observations to prepare the first three days of posts.
+After the intensive, you and your coach can test the proposed higher-volume routine for **10 working days: five posts and 20 substantive comments per day**. This is an experiment, and it has no promised time to interview or hire. Begin only when you have a defensible project, a reviewed profile, relevant people to learn from, and enough distinct observations to prepare the first three days of posts.
 
 Use five different artifacts from the week's work: a demo, a failure and repair, a diagram, a measured result, and a decision or lesson. You may reuse a project, but each post must add a new observation. Prepare drafts in batches. Read every draft, check its claims against the source, and publish deliberately. AI can help edit the wording; you remain responsible for the facts and every conversation.
 

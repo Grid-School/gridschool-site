@@ -7,9 +7,9 @@
  * isn't built. On the demo board the role is a made-up stand-in, and says so.
  */
 
-import { el } from "../dom.js?v=ff2922c-202610250636";
-import { btn, toast } from "../ui.js?v=ff2922c-202610250636";
-import { shortDay, PAID_ASK } from "../prep.js?v=ff2922c-202610250636";
+import { el } from "../dom.js?v=2b0f46b-202610250651";
+import { btn, toast } from "../ui.js?v=2b0f46b-202610250651";
+import { shortDay, PAID_ASK } from "../prep.js?v=2b0f46b-202610250651";
 
 export function sampleBlock(node, { upgrade = null } = {}) {
   const sample = node?.sample;
@@ -54,7 +54,7 @@ export function sampleBlock(node, { upgrade = null } = {}) {
       ? el(
           "div.sample__more",
           {},
-          el("span.dfy__avatar", { "aria-hidden": "true" }, "AJ"),
+          el("span.dfy__avatar", { "aria-hidden": "true" }, "C"),
           el("p", {}, el("b", {}, `${node.waiting} more waiting on the full plan.`), " Each week we pick roles like this one, write what to lead with, and draft the note."),
           upgrade ? btn({ label: PAID_ASK, variant: "cta", href: upgrade }) : null
         )

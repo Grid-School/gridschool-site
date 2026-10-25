@@ -22,4 +22,4 @@ Complete the required “What this cannot do” section in `SPEC.md`. A valid ch
 
 ## Planning and career records
 
-Use [Work and learning record](?m=kit/WORK-LOG) to record time, predictions, project review, and foundations practice. Use [Career activity record](?m=kit/CAREER-TRACKER) to plan relevant conversations and applications. Keep both records private and share selected entries with Aden.
+Use [Work and learning record](?m=kit/WORK-LOG) to record time, predictions, project review, and foundations practice. Use [Career activity record](?m=kit/CAREER-TRACKER) to plan relevant conversations and applications. Keep both records private and share selected entries with your coach.

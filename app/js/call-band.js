@@ -4,10 +4,10 @@
  * until the call's end. Same record and math as the calendar (time.js).
  */
 
-import { el, mount } from "./dom.js?v=ff2922c-202610250636";
-import { btn } from "./ui.js?v=ff2922c-202610250636";
-import { nextCall, fmtTime, relativeDay } from "./time.js?v=ff2922c-202610250636";
-import { joinIsLive, zoneLabel } from "./call-slot.js?v=ff2922c-202610250636";
+import { el, mount } from "./dom.js?v=2b0f46b-202610250651";
+import { btn } from "./ui.js?v=2b0f46b-202610250651";
+import { nextCall, fmtTime, relativeDay } from "./time.js?v=2b0f46b-202610250651";
+import { joinIsLive, zoneLabel } from "./call-slot.js?v=2b0f46b-202610250651";
 
 const DAY_MS = 24 * 3600000;
 
@@ -28,7 +28,7 @@ export function createCallBand(getState) {
       el("span.callstrip__when", {}, el("b", {}, "Your 1:1 "), when, call.where ? ` · ${call.where}` : ""),
       call.href
         ? btn({ label: "Join your 1:1", variant: live ? "solid" : "quiet", href: call.href, target: "_blank" })
-        : el("span.callstrip__note", {}, "Aden sends the link in Discord.")
+        : el("span.callstrip__note", {}, "Your coach sends the link in Discord.")
     );
   }
 

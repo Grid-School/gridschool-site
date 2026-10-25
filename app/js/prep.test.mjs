@@ -1,12 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { prepOf, prepHint, opensLater, shortDay, isCompleteMap, stageTime, isFreeMap, upgradeHref } from "./prep.js?v=ff2922c-202610250636";
-import { buildGraph, nextUp, STATUS } from "./graph/model.js?v=ff2922c-202610250636";
+import { prepOf, prepHint, opensLater, shortDay, isCompleteMap, stageTime, isFreeMap, upgradeHref } from "./prep.js?v=2b0f46b-202610250651";
+import { buildGraph, nextUp, STATUS } from "./graph/model.js?v=2b0f46b-202610250651";
 
 const STAGES = [
   { id: "roles", label: "Finding roles" },
   { id: "managers", label: "Finding hiring managers" },
-  { id: "review", label: "Aden reviewing" },
+  { id: "review", label: "Coach reviewing" },
   { id: "ready", label: "Ready for you" },
 ];
 const NODE = { id: "b.reach", stages: STAGES };
@@ -15,14 +15,14 @@ test("nothing set: every stage waits, and the map says it's queued", () => {
   const prep = prepOf(NODE, {});
   assert.deepEqual(prep.stages.map((s) => s.state), ["todo", "todo", "todo", "todo"]);
   assert.equal(prep.started, false);
-  assert.equal(prepHint(prep), "In Aden's queue");
+  assert.equal(prepHint(prep), "In your coach's queue");
 });
 
 test("a stage is done only when it was set and is behind the current one", () => {
   const prep = prepOf(NODE, { "b.reach": { stage: "review", at: { roles: "2026-10-19T15:00:00Z", review: "2026-10-20T15:00:00Z" } } });
   // managers was never set, so it never reads done
   assert.deepEqual(prep.stages.map((s) => s.state), ["done", "todo", "current", "todo"]);
-  assert.equal(prepHint(prep), "Aden reviewing");
+  assert.equal(prepHint(prep), "Coach reviewing");
   assert.equal(prep.ready, false);
 });
 
@@ -69,7 +69,7 @@ const DAY_ONE = new Date(2026, 9, 19, 10, 0);
 test("day one: a step waiting on our work is never next, so today's ten minutes is", () => {
   const graph = buildGraph(MAP, { tasks: {} }, { now: DAY_ONE });
   assert.equal(graph.byId.get("b.reach").preparing, true);
-  assert.equal(graph.byId.get("b.reach").hint, "In Aden's queue");
+  assert.equal(graph.byId.get("b.reach").hint, "In your coach's queue");
   // A step whose task is what we work from never waits.
   assert.equal(graph.byId.get("b.final").preparing, false);
   assert.equal(nextUp(graph, DAY_ONE).id, "b.final");

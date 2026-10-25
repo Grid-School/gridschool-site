@@ -17,7 +17,7 @@ Readiness review date and evidence:
 - Relevant conversations, with duplicates removed:
 - Applications / screens / technical interviews / offers:
 - Total hours and conversations per hour:
-- One application reviewed with Aden:
+- One application reviewed with your coach:
 - One interview skill to practice:
 - What I will change next week and why:
 

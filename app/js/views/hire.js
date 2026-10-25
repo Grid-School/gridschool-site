@@ -16,10 +16,10 @@
  * half-typed form. Aden sees it read-only from the desk.
  */
 
-import { el, mount } from "../dom.js?v=ff2922c-202610250636";
-import { panel, btn, field, toast, copy } from "../ui.js?v=ff2922c-202610250636";
-import { isoDate, fmtDay } from "../time.js?v=ff2922c-202610250636";
-import { STATUS } from "../graph/model.js?v=ff2922c-202610250636";
+import { el, mount } from "../dom.js?v=2b0f46b-202610250651";
+import { panel, btn, field, toast, copy } from "../ui.js?v=2b0f46b-202610250651";
+import { isoDate, fmtDay } from "../time.js?v=2b0f46b-202610250651";
+import { STATUS } from "../graph/model.js?v=2b0f46b-202610250651";
 import {
   STAGES,
   RELATIONS,
@@ -63,14 +63,14 @@ import {
   nextTouch,
   targetCandidates,
   MAX_ACTIVE_TARGETS,
-} from "../search.js?v=ff2922c-202610250636";
-import { storyCard, appRow } from "./search-parts.js?v=ff2922c-202610250636";
-import { TOOLS } from "../engine.js?v=ff2922c-202610250636";
-import { PERSIST } from "../../../config.js?v=ff2922c-202610250636";
-import { matchedRoles, radarReady, fetchPacks, winsState, shareWin } from "../roles-remote.js?v=ff2922c-202610250636";
-import { createPackDrawer } from "./pack.js?v=ff2922c-202610250636";
-import { createCampaignDrawer } from "./campaign.js?v=ff2922c-202610250636";
-import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=ff2922c-202610250636";
+} from "../search.js?v=2b0f46b-202610250651";
+import { storyCard, appRow } from "./search-parts.js?v=2b0f46b-202610250651";
+import { TOOLS } from "../engine.js?v=2b0f46b-202610250651";
+import { PERSIST } from "../../../config.js?v=2b0f46b-202610250651";
+import { matchedRoles, radarReady, fetchPacks, winsState, shareWin } from "../roles-remote.js?v=2b0f46b-202610250651";
+import { createPackDrawer } from "./pack.js?v=2b0f46b-202610250651";
+import { createCampaignDrawer } from "./campaign.js?v=2b0f46b-202610250651";
+import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=2b0f46b-202610250651";
 
 const RUN_FAMILIES = ["proof", "presence", "network", "interview"];
 /** How many moves the day leads with. More than this reads as a wall, not a plan. */
@@ -88,7 +88,7 @@ const TOOL_WHY = {
   targets: "Five companies where hiring, size and fit overlap, worked on every channel: an email with a Loom, a LinkedIn request, a call, and follow-ups on day 3, 7 and 14.",
   people: "Referrals turn into interviews far more often than applications. Former colleagues first, then people you've met, then people in the seat.",
   applications: "Fresh roles that match your titles, strongest fits first. Prepare reads each one against your record; any posting you find can be prepared too.",
-  profile: "Recruiters search all day. Your story, headline and About from Aden, and the resume and portfolio every tool reads.",
+  profile: "Recruiters search all day. Your story, headline and About from your coach, and the resume and portfolio every tool reads.",
 };
 
 /** Which lane of the grid each kind of move works. */
@@ -815,7 +815,7 @@ export function renderHire(ctx, initialTool, campaignId) {
     mount(headBox, nodeHead(doneToday));
 
     const working = (careerOf(s).working ?? []).filter((w) => !w.done && w.text);
-    mount(adenOn, working.length ? [el("b", {}, "Aden is on"), el("ul", {}, working.slice(0, 4).map((w) => el("li", {}, w.text)))] : null);
+    mount(adenOn, working.length ? [el("b", {}, "Your coach is on"), el("ul", {}, working.slice(0, 4).map((w) => el("li", {}, w.text)))] : null);
     adenOn.hidden = !working.length || focus !== "today";
 
     // Today: every move, in order, the first one is the next move the map marks.
@@ -852,7 +852,7 @@ export function renderHire(ctx, initialTool, campaignId) {
 
   const profileStep = () => {
     const career = careerOf(student());
-    if (!career.headline) return el("p.muted", {}, "Aden writes your headline and story with you on your next call. They show up here.");
+    if (!career.headline) return el("p.muted", {}, "Your coach writes your headline and story with you on your next call. They show up here.");
     return el(
       "div.row",
       {},
@@ -874,7 +874,7 @@ export function renderHire(ctx, initialTool, campaignId) {
       freshBox,
       el("div.hire__quiet", {}, el("details.hire__fold", { open: "" }, el("summary", {}, "Bring a posting from anywhere"), pasteForm), el("details.hire__fold", {}, el("summary", {}, "Live conversations"), liveBox), el("details.hire__fold", {}, el("summary", {}, "Log something you sent"), logForm), el("details.hire__fold", {}, el("summary", {}, "Everything you've sent"), allBox))
     ),
-    profile: el("section.tool__body", {}, panel({ eyebrow: "From Aden", title: "Your story" }, storyBox, profileActions), panel({ eyebrow: "Keep it current", title: "Resume and portfolio" }, el("div.sresume", {}, rLink.node, rPortfolio.node, rText.node, el("div.row", {}, rSave, rStamp)))),
+    profile: el("section.tool__body", {}, panel({ eyebrow: "From your coach", title: "Your story" }, storyBox, profileActions), panel({ eyebrow: "Keep it current", title: "Resume and portfolio" }, el("div.sresume", {}, rLink.node, rPortfolio.node, rText.node, el("div.row", {}, rSave, rStamp)))),
   };
 
   const node = el("div.view.view--hire.view--tool", {}, headBox, ...Object.values(sections), drawer.layer, camp.layer);

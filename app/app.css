@@ -2345,7 +2345,7 @@ pre.diagram--failed { border-color: var(--amber); }
 /*
  * Done for you (free maps). A second ring, not a new colour: cyan stays "you can do this now",
  * green stays "done", amber stays the stake. The double ring says someone else's hands are on it,
- * and the AJ mark says whose. Its label is full-strength text, never the muted grey of "later".
+ * and the C (coach) mark says whose. Its label is full-strength text, never the muted grey of "later".
  */
 .rz-ring2 { fill: none; stroke: color-mix(in srgb, var(--text) 62%, transparent); stroke-width: 1.2; }
 .rz-node.is-paid .rz-ring { stroke: color-mix(in srgb, var(--text) 80%, transparent); stroke-width: 1.5; }

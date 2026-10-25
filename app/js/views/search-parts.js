@@ -6,8 +6,8 @@
  * where it stalls. The rules live in search.js; this file only draws them.
  */
 
-import { el } from "../dom.js?v=ff2922c-202610250636";
-import { STATUS } from "../graph/model.js?v=ff2922c-202610250636";
+import { el } from "../dom.js?v=2b0f46b-202610250651";
+import { STATUS } from "../graph/model.js?v=2b0f46b-202610250651";
 import {
   STAGES,
   KINDS,
@@ -18,7 +18,7 @@ import {
   searchOf,
   careerOf,
   stageIndex,
-} from "../search.js?v=ff2922c-202610250636";
+} from "../search.js?v=2b0f46b-202610250651";
 
 /** Presence steps on their own map: the "findable" ring lights when they are all done. */
 export function presenceProgress(graph) {
@@ -123,7 +123,7 @@ export function weekBlock({ student, now = new Date() }) {
 }
 
 /** The story Aden set, in the three parts a stranger should get in five seconds. */
-export function storyCard(student, { empty = "Aden fills this in with you on your next call." } = {}) {
+export function storyCard(student, { empty = "Your coach fills this in with you on your next call." } = {}) {
   const career = careerOf(student);
   const parts = [
     ["Who you're for", career.story.who],

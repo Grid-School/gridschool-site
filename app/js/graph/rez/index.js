@@ -18,13 +18,13 @@
  * view glides to it. Nothing idles. Reduced motion jumps.
  */
 
-import { el, clear } from "../../dom.js?v=ff2922c-202610250636";
-import { traceSet, stepNumber } from "../model.js?v=ff2922c-202610250636";
-import { STANDING, standingOf, inSequence } from "../standing.js?v=ff2922c-202610250636";
-import { typeOf, specOf } from "../model.js?v=ff2922c-202610250636";
-import { isTypedMap } from "../../engine.js?v=ff2922c-202610250636";
-import { isCompleteMap, isFreeMap } from "../../prep.js?v=ff2922c-202610250636";
-import { WIN_LABEL } from "../route.js?v=ff2922c-202610250636";
+import { el, clear } from "../../dom.js?v=2b0f46b-202610250651";
+import { traceSet, stepNumber } from "../model.js?v=2b0f46b-202610250651";
+import { STANDING, standingOf, inSequence } from "../standing.js?v=2b0f46b-202610250651";
+import { typeOf, specOf } from "../model.js?v=2b0f46b-202610250651";
+import { isTypedMap } from "../../engine.js?v=2b0f46b-202610250651";
+import { isCompleteMap, isFreeMap } from "../../prep.js?v=2b0f46b-202610250651";
+import { WIN_LABEL } from "../route.js?v=2b0f46b-202610250651";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 /** "2026-10-16" → "Due Oct 16". */
@@ -42,7 +42,7 @@ import {
   runCurrent,
   rezIn,
   prefersReducedMotion,
-} from "../../../../js/rez/road.js?v=ff2922c-202610250636";
+} from "../../../../js/rez/road.js?v=2b0f46b-202610250651";
 
 /*
  * One grid under everything, in the board's own units (as on the landing):
@@ -506,10 +506,10 @@ export async function createRezScene(container) {
       svgEl("circle", { class: "rz-ring", r: NODE_R }, body);
       svgEl("text", { class: "rz-num" }, body).textContent = stepNumber(node);
       if (node.paidOnly && !node.landmark) {
-        // The "we do this" mark: Aden's initials on the ring.
+        // The "we do this" mark: a C for coach on the ring.
         const badge = svgEl("g", { class: "rz-dfy", transform: `translate(${NODE_R * 0.95} ${-NODE_R * 0.95})` }, body);
         svgEl("circle", { r: 8 }, badge);
-        svgEl("text", { y: 0.5 }, badge).textContent = "AJ";
+        svgEl("text", { y: 0.5 }, badge).textContent = "C";
       }
       // The type tag and a due date ride under the title, in the same text, so
       // they move with it when labels make room for each other.

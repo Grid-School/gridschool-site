@@ -9,8 +9,8 @@
  * mid-thought keeps it. Nothing here can write the map itself.
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=ff2922c-202610250636";
-import { persistToken } from "./session.js?v=ff2922c-202610250636";
+import { PERSIST, isPlaceholder } from "../../config.js?v=2b0f46b-202610250651";
+import { persistToken } from "./session.js?v=2b0f46b-202610250651";
 
 export function suggestReady(slug) {
   return Boolean(slug && slug !== "demo" && persistToken() && PERSIST?.endpoint && !isPlaceholder(PERSIST.endpoint));

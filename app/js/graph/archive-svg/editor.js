@@ -6,9 +6,9 @@
  * Only Aden sees this. A student's board is theirs to walk, not to rewire.
  */
 
-import { el, clear } from "../../dom.js?v=ff2922c-202610250636";
-import { edgePath, freeSlot } from "./layout.js?v=ff2922c-202610250636";
-import { syncPositions } from "./scene.js?v=ff2922c-202610250636";
+import { el, clear } from "../../dom.js?v=2b0f46b-202610250651";
+import { edgePath, freeSlot } from "./layout.js?v=2b0f46b-202610250651";
+import { syncPositions } from "./scene.js?v=2b0f46b-202610250651";
 
 const DRAG_THRESHOLD = 3;
 

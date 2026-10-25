@@ -10,10 +10,10 @@
  * is not optional decoration, it is the point of the form.
  */
 
-import { el } from "../dom.js?v=ff2922c-202610250636";
-import { btn, field, toast } from "../ui.js?v=ff2922c-202610250636";
-import { registerLeaveGuard, clearLeaveGuard } from "../leave-guard.js?v=ff2922c-202610250636";
-import { stepNumber } from "../graph/model.js?v=ff2922c-202610250636";
+import { el } from "../dom.js?v=2b0f46b-202610250651";
+import { btn, field, toast } from "../ui.js?v=2b0f46b-202610250651";
+import { registerLeaveGuard, clearLeaveGuard } from "../leave-guard.js?v=2b0f46b-202610250651";
+import { stepNumber } from "../graph/model.js?v=2b0f46b-202610250651";
 
 const KINDS = [
   { id: "pr", label: "A pull request" },

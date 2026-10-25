@@ -19,10 +19,10 @@
  * it's sent; sending again replaces an open suggestion.
  */
 
-import { el, mount, clear } from "../dom.js?v=ff2922c-202610250636";
-import { btn, toast } from "../ui.js?v=ff2922c-202610250636";
-import { buildGraph } from "../graph/model.js?v=ff2922c-202610250636";
-import { isLandmark } from "../graph/route.js?v=ff2922c-202610250636";
+import { el, mount, clear } from "../dom.js?v=2b0f46b-202610250651";
+import { btn, toast } from "../ui.js?v=2b0f46b-202610250651";
+import { buildGraph } from "../graph/model.js?v=2b0f46b-202610250651";
+import { isLandmark } from "../graph/route.js?v=2b0f46b-202610250651";
 import {
   applyOps,
   checkOps,
@@ -36,7 +36,7 @@ import {
   MAX_NOTE,
   MAX_TITLE,
   NEW_PREFIX,
-} from "../../../data/map-proposal.mjs?v=ff2922c-202610250636";
+} from "../../../data/map-proposal.mjs?v=2b0f46b-202610250651";
 import {
   suggestReady,
   listSuggestions,
@@ -46,7 +46,7 @@ import {
   writeDraft,
   answerSeen,
   markAnswerSeen,
-} from "../suggest-remote.js?v=ff2922c-202610250636";
+} from "../suggest-remote.js?v=2b0f46b-202610250651";
 
 const DRAG_SLOP = 8;
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -64,7 +64,7 @@ export function plainError(error, titleOf) {
   }
   if (/cannot require side quest/.test(error)) return "A main step can't wait on a side quest. Put it after a main step.";
   if (/cycle/.test(error)) return "That would make a loop: each step would be waiting on the other.";
-  if (/must come after a/.test(error)) return "This kind of step has to come after a call with Aden.";
+  if (/must come after a/.test(error)) return "This kind of step has to come after a call with your coach.";
   return `This would break a rule of the map (${error}).`;
 }
 
@@ -288,7 +288,7 @@ export function createSuggest({ ctx, redraw }) {
       const f = {
         title: input("What's the step?", { placeholder: "Ship a small Chrome extension" }),
         tasks: input("Tasks, one per line (optional)", { textarea: true, rows: 3, max: 800, placeholder: "Pick the idea\nPublish it" }),
-        note: input("Why it helps (for Aden)", { textarea: true, max: MAX_NOTE, placeholder: "Two of my target roles ask for it" }),
+        note: input("Why it helps (for your coach)", { textarea: true, max: MAX_NOTE, placeholder: "Two of my target roles ask for it" }),
       };
       return form(`A new step after “${title}”`, f, (v) => {
         if (!need(v.title, f.title.field)) return;
@@ -356,8 +356,8 @@ export function createSuggest({ ctx, redraw }) {
       }, "Remove it");
     }
     if (kind === "ask") {
-      const f = { note: input("What would you like Aden to add or change here?", { textarea: true, rows: 3, max: MAX_NOTE, placeholder: "Can you break this into smaller tasks?" }) };
-      return form(`Ask Aden about “${title}”`, f, (v) => {
+      const f = { note: input("What would you like your coach to add or change here?", { textarea: true, rows: 3, max: MAX_NOTE, placeholder: "Can you break this into smaller tasks?" }) };
+      return form(`Ask your coach about “${title}”`, f, (v) => {
         if (!need(v.note, f.note.field)) return;
         addOp({ id: newOpId(), kind: "ask", node: id, note: v.note.trim() });
       });
@@ -390,7 +390,7 @@ export function createSuggest({ ctx, redraw }) {
         }),
         mine ? null : act("rename", "Rename"),
         mine ? null : act("retire", "Doesn't fit anymore"),
-        mine ? null : act("ask", "Ask Aden about this")
+        mine ? null : act("ask", "Ask your coach about this")
       ),
       tasks.length
         ? el(
@@ -423,7 +423,7 @@ export function createSuggest({ ctx, redraw }) {
 
   function askForm() {
     const f = { note: input("What would help you most next?", { textarea: true, rows: 4, max: MAX_NOTE, placeholder: "I keep running into system design questions. What should I add?" }) };
-    return form("Ask Aden for steps", f, (v) => {
+    return form("Ask your coach for steps", f, (v) => {
       if (!need(v.note, f.note.field)) return;
       addOp({ id: newOpId(), kind: "ask", note: v.note.trim() });
     });
@@ -432,7 +432,7 @@ export function createSuggest({ ctx, redraw }) {
   function review() {
     const checked = checkOps(curriculum(), s.ops);
     const live = open();
-    const noteBox = el("textarea", { rows: 2, maxlength: MAX_NOTE, placeholder: "Anything Aden should know about these (optional)" });
+    const noteBox = el("textarea", { rows: 2, maxlength: MAX_NOTE, placeholder: "Anything your coach should know about these (optional)" });
     noteBox.value = s.note;
     noteBox.addEventListener("input", () => {
       s.note = noteBox.value;
@@ -443,7 +443,7 @@ export function createSuggest({ ctx, redraw }) {
       "div.sgcard__review",
       {},
       el("b.sgcard__title", {}, `Your edits: ${s.ops.length} change${s.ops.length === 1 ? "" : "s"}`),
-      el("p.sgcard__hint", {}, "Aden reads each one, keeps what helps, and may adjust it. Your map changes only when he publishes."),
+      el("p.sgcard__hint", {}, "Your coach reads each one, keeps what helps, and may adjust it. Your map changes only when they publish."),
       el(
         "ol.sgcard__list",
         {},
@@ -459,7 +459,7 @@ export function createSuggest({ ctx, redraw }) {
           )
         )
       ),
-      el("label.sgcard__field", {}, el("span", {}, "A note for Aden"), noteBox),
+      el("label.sgcard__field", {}, el("span", {}, "A note for your coach"), noteBox),
       live ? el("p.sgcard__hint", {}, `This replaces the edits you sent on ${day(live.created_at)}.`) : null,
       s.error ? el("p.sgcard__error", { role: "alert" }, s.error) : null,
       el(
@@ -467,7 +467,7 @@ export function createSuggest({ ctx, redraw }) {
         {},
         live ? btn({ label: "Withdraw what I sent", variant: "quiet", onclick: () => withdraw(live) }) : null,
         btn({ label: "Keep editing", variant: "quiet", onclick: () => closeCard() }),
-        btn({ label: s.sending ? "Sending…" : "Send to Aden", variant: "solid", disabled: s.sending || bad.length > 0 || !s.ops.length, onclick: () => send() })
+        btn({ label: s.sending ? "Sending…" : "Send to your coach", variant: "solid", disabled: s.sending || bad.length > 0 || !s.ops.length, onclick: () => send() })
       )
     );
   }
@@ -507,7 +507,7 @@ export function createSuggest({ ctx, redraw }) {
       s.note = "";
       closeCard({ quiet: true });
       setOn(false);
-      toast("Sent to Aden. Your map stays as it is until he publishes the update.");
+      toast("Sent to your coach. Your map stays as it is until they publish the update.");
       await refresh();
     } catch (error) {
       s.sending = false;
@@ -537,7 +537,7 @@ export function createSuggest({ ctx, redraw }) {
       const line = s.picking
         ? `Tap the step “${titleOf(s.picking)}” should come after.`
         : count
-          ? `${count} change${count === 1 ? "" : "s"} so far. Your map stays as it is until Aden publishes.`
+          ? `${count} change${count === 1 ? "" : "s"} so far. Your map stays as it is until your coach publishes.`
           : "Tap a step to change it, or drag + New step onto the step it comes after.";
       mount(
         bar,
@@ -545,7 +545,7 @@ export function createSuggest({ ctx, redraw }) {
           "div.sgbar__tools",
           {},
           el("button.sgchip", { type: "button", "data-sg-new": "", title: "Drag onto the step it comes after" }, "+ New step"),
-          el("button.sgchip.sgchip--ask", { type: "button", onclick: () => openCard({ ask: true }) }, "Ask Aden")
+          el("button.sgchip.sgchip--ask", { type: "button", onclick: () => openCard({ ask: true }) }, "Ask your coach")
         ),
         el("div.sgbar__text", {}, el("b", {}, "Editing your map"), el("span", {}, line)),
         s.picking ? btn({ label: "Cancel", variant: "quiet", onclick: () => ((s.picking = null), render()) }) : null,
@@ -567,7 +567,7 @@ export function createSuggest({ ctx, redraw }) {
       mount(
         pill,
         el("span.sgpill__dot", { "aria-hidden": "true" }),
-        el("span", {}, `Your edits are with Aden · ${live.ops.length} change${live.ops.length === 1 ? "" : "s"}, sent ${day(live.created_at)}`),
+        el("span", {}, `Your edits are with your coach · ${live.ops.length} change${live.ops.length === 1 ? "" : "s"}, sent ${day(live.created_at)}`),
         el("button.sgpill__b", { type: "button", onclick: () => setOn(true) }, "Open")
       );
       return;
@@ -576,8 +576,8 @@ export function createSuggest({ ctx, redraw }) {
       const kept = answered.kept?.length ?? 0;
       const line =
         answered.status === "merged"
-          ? `Aden updated your map from your edits${answered.ops.length ? ` (${kept} of ${answered.ops.length} changes in)` : ""}`
-          : "Aden answered your edits";
+          ? `Your coach updated your map from your edits${answered.ops.length ? ` (${kept} of ${answered.ops.length} changes in)` : ""}`
+          : "Your coach answered your edits";
       pill.hidden = false;
       mount(
         pill,

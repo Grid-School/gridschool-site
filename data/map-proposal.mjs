@@ -37,7 +37,7 @@
  * Pure: no DOM, no network. node --test covers it (map-proposal.test.mjs).
  */
 
-import { validateMap } from "./map-rules.mjs?v=ff2922c-202610250636";
+import { validateMap } from "./map-rules.mjs?v=2b0f46b-202610250651";
 
 export const OP_KINDS = ["add", "task", "move", "retire", "rename", "ask", "taskedit", "taskdrop"];
 export const MAX_OPS = 30;
@@ -56,7 +56,7 @@ export const OP_LABEL = {
   move: "Move",
   retire: "Doesn't fit anymore",
   rename: "Rename",
-  ask: "Ask Aden",
+  ask: "Ask your coach",
   taskedit: "Edit task",
   taskdrop: "Remove task",
 };
@@ -391,7 +391,7 @@ export function describeOp(op, titleOf = (id) => id, taskTitleOf = () => null) {
     case "rename":
       return `Rename ${t(op.node)} to “${op.title}”`;
     case "ask":
-      return op.node ? `Ask Aden about ${t(op.node)}` : "Ask Aden";
+      return op.node ? `Ask your coach about ${t(op.node)}` : "Ask your coach";
     case "taskedit":
       return `On ${t(op.node)}, change ${taskOf(op.node, op.task)} to “${op.title}”`;
     case "taskdrop":

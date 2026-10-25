@@ -16,25 +16,25 @@
  * went with it, because on the floor position is derived from sequence.
  */
 
-import { el, mount } from "../dom.js?v=ff2922c-202610250636";
-import { btn, toast } from "../ui.js?v=ff2922c-202610250636";
-import { createScene3d } from "../graph/scene3d/index.js?v=ff2922c-202610250636";
-import { createRezScene } from "../graph/rez/index.js?v=ff2922c-202610250636";
-import { STATUS, nextUp, progress, visibleGraph, stepNumber } from "../graph/model.js?v=ff2922c-202610250636";
-import { LEGEND, STANDING, STANDING_LABEL, standingOf, legendKeyOf } from "../graph/standing.js?v=ff2922c-202610250636";
-import { trackLabel } from "../copy.js?v=ff2922c-202610250636";
-import { mapList } from "./map-list.js?v=ff2922c-202610250636";
-import { dueLabel } from "./from-aden.js?v=ff2922c-202610250636";
-import { createGridState, hashFor, RESERVED_ARGS, VIEW } from "./grid-state.js?v=ff2922c-202610250636";
-import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=ff2922c-202610250636";
-import { isProgressReadOnly } from "../store.js?v=ff2922c-202610250636";
-import { doneForYou, nextMove, movesAfterNext, isTypedMap } from "../engine.js?v=ff2922c-202610250636";
-import { matchedRoles, fetchPacks, radarReady } from "../roles-remote.js?v=ff2922c-202610250636";
-import { careerOf } from "../search.js?v=ff2922c-202610250636";
-import { isoDate } from "../time.js?v=ff2922c-202610250636";
-import { routeGraph, isLandmark } from "../graph/route.js?v=ff2922c-202610250636";
-import { isFreeMap, upgradeHref } from "../prep.js?v=ff2922c-202610250636";
-import { createSuggest } from "./suggest.js?v=ff2922c-202610250636";
+import { el, mount } from "../dom.js?v=2b0f46b-202610250651";
+import { btn, toast } from "../ui.js?v=2b0f46b-202610250651";
+import { createScene3d } from "../graph/scene3d/index.js?v=2b0f46b-202610250651";
+import { createRezScene } from "../graph/rez/index.js?v=2b0f46b-202610250651";
+import { STATUS, nextUp, progress, visibleGraph, stepNumber } from "../graph/model.js?v=2b0f46b-202610250651";
+import { LEGEND, STANDING, STANDING_LABEL, standingOf, legendKeyOf } from "../graph/standing.js?v=2b0f46b-202610250651";
+import { trackLabel } from "../copy.js?v=2b0f46b-202610250651";
+import { mapList } from "./map-list.js?v=2b0f46b-202610250651";
+import { dueLabel } from "./from-aden.js?v=2b0f46b-202610250651";
+import { createGridState, hashFor, RESERVED_ARGS, VIEW } from "./grid-state.js?v=2b0f46b-202610250651";
+import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=2b0f46b-202610250651";
+import { isProgressReadOnly } from "../store.js?v=2b0f46b-202610250651";
+import { doneForYou, nextMove, movesAfterNext, isTypedMap } from "../engine.js?v=2b0f46b-202610250651";
+import { matchedRoles, fetchPacks, radarReady } from "../roles-remote.js?v=2b0f46b-202610250651";
+import { careerOf } from "../search.js?v=2b0f46b-202610250651";
+import { isoDate } from "../time.js?v=2b0f46b-202610250651";
+import { routeGraph, isLandmark } from "../graph/route.js?v=2b0f46b-202610250651";
+import { isFreeMap, upgradeHref } from "../prep.js?v=2b0f46b-202610250651";
+import { createSuggest } from "./suggest.js?v=2b0f46b-202610250651";
 
 /** Right side clears the control column, top clears the legend bar. */
 const INSETS = { top: 76, right: 132, bottom: 72, left: 40 };
@@ -207,7 +207,7 @@ export function renderMap(ctx, initialArg) {
   function renderAden() {
     const item = (careerOf(current.state.student).working ?? []).find((w) => !w.done && w.text);
     adenLine.hidden = !hasBand() || isList() || !item || suggest.isOn();
-    if (item) mount(adenLine, el("span.adenline__dot", { "aria-hidden": "true" }), el("span", {}, `Aden is working on: ${item.text}`));
+    if (item) mount(adenLine, el("span.adenline__dot", { "aria-hidden": "true" }), el("span", {}, `Your coach is working on: ${item.text}`));
   }
 
   /** The bottom bar: the one next move, docked, so it never covers the map. Agrees with the white ring. */
@@ -512,7 +512,7 @@ export function renderMap(ctx, initialArg) {
                 type: "button",
                 class: suggest.isOn() ? "is-on" : null,
                 "aria-pressed": String(suggest.isOn()),
-                title: "Propose steps, tasks or changes. Aden reviews them before your map changes.",
+                title: "Propose steps, tasks or changes. Your coach reviews them before your map changes.",
                 onclick: () => suggest.setOn(!suggest.isOn()),
               },
               suggest.isOn() ? "Editing…" : "Edit my map"

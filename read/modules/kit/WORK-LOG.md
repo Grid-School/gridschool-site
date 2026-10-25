@@ -1,6 +1,6 @@
 # Work and learning record
 
-Keep this record in your private project repository. Share the relevant entry with Aden during your weekly meeting. Remove private data before publishing an excerpt.
+Keep this record in your private project repository. Share the relevant entry with your coach during your weekly meeting. Remove private data before publishing an excerpt.
 
 | Date | Task or activity | Planned minutes | Active minutes | Waiting minutes | Rework minutes within active time | Evidence link | What to change next |
 |---|---|---|---|---|---|---|---|
@@ -26,7 +26,7 @@ Record meetings, reading, engineering, career work, and assessment once each. Re
 - Feedback plan and comparable after measurement:
 - Data permission, cost limit, and actions requiring approval:
 - Small first version and stopping condition:
-- Aden's decision, reason, and date:
+- Your coach's decision, reason, and date:
 
 ## Foundations check
 

@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { NODE_IDS, SLIDES, nodeDone, doneNodes, firstOpen, nextNode, prevNode, partDone, scriptDone } from "./campaign-steps.js?v=ff2922c-202610250636";
-import { BEATS } from "./loom-script.js?v=ff2922c-202610250636";
+import { NODE_IDS, SLIDES, nodeDone, doneNodes, firstOpen, nextNode, prevNode, partDone, scriptDone } from "./campaign-steps.js?v=2b0f46b-202610250651";
+import { BEATS } from "./loom-script.js?v=2b0f46b-202610250651";
 
 const examples = Object.fromEntries(BEATS.flatMap((beat) => beat.blanks.map((b) => [b.id, b.example])));
 
@@ -43,7 +43,7 @@ test("a campaign from before the script builder opens where it really is", () =>
 });
 
 test("loomStatus says where each company's Loom stands", async () => {
-  const { loomStatus } = await import("./campaign-steps.js?v=ff2922c-202610250636");
+  const { loomStatus } = await import("./campaign-steps.js?v=2b0f46b-202610250651");
   assert.equal(loomStatus({}), null);
   assert.equal(loomStatus({ loomScript: { hello: "Hey ___" } }).key, "writing");
   assert.equal(loomStatus({ loomScript: examples }).key, "script");

@@ -1,6 +1,6 @@
 # Project menu
 
-Choose one project with Aden after you have completed the Northline observation and scoped your first reviewed change. Bring a person who has the problem and the baseline from the Reality Gate reading. Aden helps you choose a useful version that fits the intensive. You can propose your own problem after the intensive using the same review.
+Choose one project with your coach after you have completed the Northline observation and scoped your first reviewed change. Bring a person who has the problem and the baseline from the Reality Gate reading. Your coach helps you choose a useful version that fits the intensive. You can propose your own problem after the intensive using the same review.
 
 Every project needs one real user, permission to use its data, a baseline, a check that can fail, a cost model, a running version, and feedback from the person using it. An incident report may describe a deliberately injected failure when no real incident has occurred; label the exercise. Three-dimensional graphics are optional. A clear screen recording of a useful workflow is enough.
 
@@ -44,6 +44,6 @@ Measure accepted solutions per attempt and cost per accepted solution. Separate 
 
 ## Choosing together
 
-Pick the project whose user you can reach and whose result you can check. If two choices fit equally well, choose the one you would enjoy showing. Keep additional visualization and infrastructure ideas as later extensions. At project review, bring your Reality Gate answers and stack decision. Aden records acceptance before you build.
+Pick the project whose user you can reach and whose result you can check. If two choices fit equally well, choose the one you would enjoy showing. Keep additional visualization and infrastructure ideas as later extensions. At project review, bring your Reality Gate answers and stack decision. Your coach records acceptance before you build.
 
-**Done when** you have chosen one project, identified its user, recorded its baseline, and received Aden's acceptance of the first version.
+**Done when** you have chosen one project, identified its user, recorded its baseline, and received your coach's acceptance of the first version.

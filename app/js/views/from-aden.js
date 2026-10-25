@@ -10,8 +10,8 @@
  * The parsing and formatting are pure and tested; the DOM builders sit on top.
  */
 
-import { el } from "../dom.js?v=ff2922c-202610250636";
-import { isHttpUrl, isValidDate } from "../modules.js?v=ff2922c-202610250636";
+import { el } from "../dom.js?v=2b0f46b-202610250651";
+import { isHttpUrl, isValidDate } from "../modules.js?v=2b0f46b-202610250651";
 
 /** Up to this many links show as buttons; more show as a numbered list. */
 const LINK_BUTTONS = 4;
@@ -128,8 +128,8 @@ export function fromAdenCard(node) {
   if (!model) return null;
   return el(
     "section.fromaden",
-    { "aria-label": "From Aden" },
-    el("header.fromaden__head", {}, el("b.eyebrow", {}, "From Aden"), model.dueIso ? dueBadge(model.dueIso) : null),
+    { "aria-label": "From your coach" },
+    el("header.fromaden__head", {}, el("b.eyebrow", {}, "From your coach"), model.dueIso ? dueBadge(model.dueIso) : null),
     model.blocks.length
       ? el(
           "div.fromaden__notes",

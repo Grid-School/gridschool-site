@@ -3,12 +3,12 @@
  * Receipts live on the map list. Today owns what to do next.
  */
 
-import { el } from "../dom.js?v=ff2922c-202610250636";
-import { panel, empty, btn } from "../ui.js?v=ff2922c-202610250636";
-import { buildQueue, remainingMinutes, formatEstimate } from "../tasks.js?v=ff2922c-202610250636";
-import { STATUS, stepNumber } from "../graph/model.js?v=ff2922c-202610250636";
-import { taskRow } from "./parts.js?v=ff2922c-202610250636";
-import { dueLabel, dueBadge } from "./from-aden.js?v=ff2922c-202610250636";
+import { el } from "../dom.js?v=2b0f46b-202610250651";
+import { panel, empty, btn } from "../ui.js?v=2b0f46b-202610250651";
+import { buildQueue, remainingMinutes, formatEstimate } from "../tasks.js?v=2b0f46b-202610250651";
+import { STATUS, stepNumber } from "../graph/model.js?v=2b0f46b-202610250651";
+import { taskRow } from "./parts.js?v=2b0f46b-202610250651";
+import { dueLabel, dueBadge } from "./from-aden.js?v=2b0f46b-202610250651";
 
 export function renderTasks(ctx) {
   const { state, store, navigate } = ctx;
@@ -84,7 +84,7 @@ export function steerNote(student) {
   return el(
     "div.steer",
     {},
-    el("b.eyebrow", {}, "From Aden this week"),
+    el("b.eyebrow", {}, "From your coach this week"),
     focus && el("p", {}, el("b", {}, "Focus: "), focus),
     next && el("p", {}, el("b", {}, "Next: "), next)
   );
@@ -110,7 +110,7 @@ export function dueNote(graph, navigate) {
   return el(
     "div.steer.steer--due",
     {},
-    el("b.eyebrow", {}, "Dated by Aden"),
+    el("b.eyebrow", {}, "Dated by your coach"),
     rows.map((row) =>
       el(
         "p.steer__due",

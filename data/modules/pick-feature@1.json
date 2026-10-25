@@ -12,7 +12,7 @@
   "tasks": [
     {
       "id": "choose",
-      "title": "Choose the feature with Aden and write what done looks like",
+      "title": "Choose the feature with your coach and write what done looks like",
       "kind": "write",
       "est": 30,
       "done_when": "Feature, who it helps, how you'll show it (screens, diagram, gif), done-when.",

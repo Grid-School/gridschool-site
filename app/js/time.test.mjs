@@ -1,15 +1,15 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { eventsForWeek, ownSchedule, studentWeek, joinedDate, nextCall } from "./time.js?v=ff2922c-202610250636";
+import { eventsForWeek, ownSchedule, studentWeek, joinedDate, nextCall } from "./time.js?v=2b0f46b-202610250651";
 
 const cohort = JSON.parse(readFileSync(new URL("../../data/cohort.json", import.meta.url), "utf8"));
 
-test("the shipped cohort has no group call; the 1:1 is a Discord voice call with Aden", () => {
+test("the shipped cohort has no group call; the 1:1 is a Discord voice call with your coach", () => {
   assert.equal(cohort.recurring.find((rule) => rule.id === "cohort"), undefined);
   const one = cohort.recurring.find((rule) => rule.id === "oneone");
   assert.equal(one.where, "Discord voice");
-  assert.equal(one.who, "You and Aden");
+  assert.equal(one.who, "You and your coach");
   assert.equal(one.room, undefined, "the call link is per student, not a shared config link");
   assert.equal(cohort.tz, "America/Denver");
   assert.match(one.agenda, /^Your map/);

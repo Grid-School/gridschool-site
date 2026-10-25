@@ -150,7 +150,7 @@ function missingNode(inst, map) {
     family: inst.family ?? map?.families?.[0]?.id ?? "side",
     kind: "core",
     completion: "tasks",
-    why: `This step uses module ${ref}, which is not in the library. Tell Aden: the map needs fixing.`,
+    why: `This step uses module ${ref}, which is not in the library. Tell your coach: the map needs fixing.`,
     evidence: "",
     tasks: [],
     moduleRef: ref,

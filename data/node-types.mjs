@@ -17,7 +17,7 @@ export const NODE_TYPES = {
       "canBeNext": true
     },
     "check": {
-      "label": "Aden checks",
+      "label": "Your coach checks",
       "who": "aden",
       "completes": "signoff",
       "onRoad": true,
@@ -49,13 +49,13 @@ export const NODE_TYPES = {
       "tag": "Every week"
     },
     "meeting": {
-      "label": "With Aden",
+      "label": "With your coach",
       "who": "both",
       "completes": "tasks",
       "onRoad": true,
       "gates": true,
       "canBeNext": true,
-      "tag": "With Aden"
+      "tag": "With your coach"
     },
     "reference": {
       "label": "For you to read",

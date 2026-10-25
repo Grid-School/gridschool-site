@@ -4,8 +4,8 @@
  * node it's about, not in a chat thread that has lost the context.
  */
 
-import { el } from "../dom.js?v=ff2922c-202610250636";
-import { btn, toast } from "../ui.js?v=ff2922c-202610250636";
+import { el } from "../dom.js?v=2b0f46b-202610250651";
+import { btn, toast } from "../ui.js?v=2b0f46b-202610250651";
 
 export function helpBlock({ node, store, isAdmin = false }) {
   if (isAdmin || node.kind === "future" || node.type === "reference") return null;
@@ -18,11 +18,11 @@ export function helpBlock({ node, store, isAdmin = false }) {
     el(
       "div.task__field",
       {},
-      el("label", { for: id }, "Ask Aden here. He gets it with a link to this step."),
+      el("label", { for: id }, "Ask your coach here. They get it with a link to this step."),
       box
     ),
     btn({
-      label: "Ask Aden",
+      label: "Ask your coach",
       variant: "quiet",
       onclick: () => {
         const text = box.value.trim();
@@ -33,7 +33,7 @@ export function helpBlock({ node, store, isAdmin = false }) {
         box.value = "";
         // Saving redraws the step, so the confirmation lives in a toast, not on the page.
         store.askAboutStep({ nodeId: node.id, title: node.title, text });
-        toast("Sent to Aden. He'll answer on Discord.");
+        toast("Sent to your coach. They'll answer on Discord.");
       },
     })
   );

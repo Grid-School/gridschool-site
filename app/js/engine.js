@@ -13,7 +13,7 @@
  * Pure: the map (graph/rez) draws these; the tools live in views/hire.js.
  */
 
-import { nextUp } from "./graph/model.js?v=ff2922c-202610250636";
+import { nextUp } from "./graph/model.js?v=2b0f46b-202610250651";
 import {
   searchOf,
   careerOf,
@@ -27,7 +27,7 @@ import {
   networkOf,
   insideConnections,
   shortTitle,
-} from "./search.js?v=ff2922c-202610250636";
+} from "./search.js?v=2b0f46b-202610250651";
 
 export const TOOLS = {
   today: { label: "Today", hint: "Every move for today, in order" },
@@ -67,7 +67,7 @@ export function doneForYou({ student, roles = [], packs = {} }) {
   const s = searchOf(student);
   const applied = new Set(s.apps.map((a) => a.roleKey).filter(Boolean));
   const found = roles.filter((r) => !applied.has(r.key) && !packs[r.key]).length;
-  const onIt = (careerOf(student).working ?? []).filter((w) => !w.done && w.text).map((w) => ({ kind: "aden", tool: "today", label: `Aden is on: ${w.text}` }));
+  const onIt = (careerOf(student).working ?? []).filter((w) => !w.done && w.text).map((w) => ({ kind: "aden", tool: "today", label: `Your coach is on: ${w.text}` }));
   const ready = readyItems({ student, roles, packs });
   return { found, onIt, ready, readyShown: ready.slice(0, READY_SHOWN), readyMore: Math.max(0, ready.length - READY_SHOWN) };
 }

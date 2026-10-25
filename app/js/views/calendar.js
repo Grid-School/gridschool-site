@@ -4,14 +4,14 @@
  * already answers where you are. This page does not teach those jobs again.
  */
 
-import { el } from "../dom.js?v=ff2922c-202610250636";
-import { panel, btn, empty } from "../ui.js?v=ff2922c-202610250636";
-import { eventsForWeek, weekRange, fmtShort, programPhase, relativeDay, displayZone } from "../time.js?v=ff2922c-202610250636";
-import { zoneLabel } from "../call-slot.js?v=ff2922c-202610250636";
-import { PERSIST, isPlaceholder } from "../../../config.js?v=ff2922c-202610250636";
-import { eventRow } from "./parts.js?v=ff2922c-202610250636";
-import { requestSystemReminders } from "../reminders.js?v=ff2922c-202610250636";
-import { toast } from "../ui.js?v=ff2922c-202610250636";
+import { el } from "../dom.js?v=2b0f46b-202610250651";
+import { panel, btn, empty } from "../ui.js?v=2b0f46b-202610250651";
+import { eventsForWeek, weekRange, fmtShort, programPhase, relativeDay, displayZone } from "../time.js?v=2b0f46b-202610250651";
+import { zoneLabel } from "../call-slot.js?v=2b0f46b-202610250651";
+import { PERSIST, isPlaceholder } from "../../../config.js?v=2b0f46b-202610250651";
+import { eventRow } from "./parts.js?v=2b0f46b-202610250651";
+import { requestSystemReminders } from "../reminders.js?v=2b0f46b-202610250651";
+import { toast } from "../ui.js?v=2b0f46b-202610250651";
 
 export function renderCalendar(ctx, weekArg) {
   const { state, navigate } = ctx;
@@ -43,7 +43,7 @@ export function renderCalendar(ctx, weekArg) {
         {},
         hasCall || student.oneone?.weekday != null
           ? "An email reaches you one hour before your 1:1, and this page reminds you again at fifteen minutes while it is open. "
-          : "Your 1:1 shows here once Aden sets its time. ",
+          : "Your 1:1 shows here once your coach sets its time. ",
         systemReminderControl()
       ),
       feedLinks(state.calendarFeed),

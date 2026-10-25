@@ -2,8 +2,8 @@
  * Admin persist calls. Desk only. Student boards never import this.
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=ff2922c-202610250636";
-import { persistToken } from "./session.js?v=ff2922c-202610250636";
+import { PERSIST, isPlaceholder } from "../../config.js?v=2b0f46b-202610250651";
+import { persistToken } from "./session.js?v=2b0f46b-202610250651";
 
 function endpoint() {
   return String(PERSIST.endpoint || "").replace(/\/$/, "");
@@ -191,4 +191,9 @@ export async function listMapVersions(slug) {
 /** One stored version, with its map. */
 export function fetchMapVersion(slug, version) {
   return request("GET", `/students/${encodeURIComponent(slug)}/map?version=${encodeURIComponent(version)}`);
+}
+
+/** Draft (again) what to add for one ask in a suggestion (map_ask_draft.py). Answers the updated suggestion. */
+export async function draftMapAsk(slug, id, op) {
+  return (await request("POST", `/students/${encodeURIComponent(slug)}/map/proposals/${id}/draft`, { op })).proposal;
 }

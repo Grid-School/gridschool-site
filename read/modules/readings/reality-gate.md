@@ -2,7 +2,7 @@
 
 Before you commit to your own project, find someone who can show you the work the project would improve. A real dataset can help you test software, but the dataset cannot tell you whether another person needs the result.
 
-The **Reality Gate** is the project review you complete with Aden before implementation. Copy the questions below into your project specification. Keep names and private interview notes in the private version; use a role or an agreed pseudonym in public work.
+The **Reality Gate** is the project review you complete with your coach before implementation. Copy the questions below into your project specification. Keep names and private interview notes in the private version; use a role or an agreed pseudonym in public work.
 
 | Question | What to bring to the review |
 |---|---|
@@ -15,9 +15,9 @@ The **Reality Gate** is the project review you complete with Aden before impleme
 | Can you finish a useful slice? | One workflow that fits your remaining hours, a cost limit, and the work you will leave out |
 | What would make you stop? | A result that would justify changing the approach or ending the project |
 
-The named user, access, baseline, consequence, and feedback plan must all be present. Aden records **accepted** or **revise**, the reason, and the next action in the project review. You can interview and investigate while the review is pending. Start implementation after acceptance.
+The named user, access, baseline, consequence, and feedback plan must all be present. Your coach records **accepted** or **revise**, the reason, and the next action in the project review. You can interview and investigate while the review is pending. Start implementation after acceptance.
 
-If nobody is available, ask Aden to introduce a practice user or use a classmate who actually has the problem. Label that relationship. If access is still missing after two working sessions, reduce the project or switch problems with Aden. A simulated exercise remains useful practice, but it does not establish customer value.
+If nobody is available, ask your coach to introduce a practice user or use a classmate who actually has the problem. Label that relationship. If access is still missing after two working sessions, reduce the project or switch problems with your coach. A simulated exercise remains useful practice, but it does not establish customer value.
 
 ## Measure without overstating the result
 
@@ -27,4 +27,4 @@ For example, these invented teaching numbers show how to calculate a result: six
 
 At the next review, choose continue, change, or stop and explain the evidence behind the decision. A project that correctly reveals that no software is needed can pass the problem-framing exercise. You will still need a separate shipped change for the engineering requirements.
 
-**Done when** Aden has accepted the project review and you can show the baseline and the scheduled feedback session.
+**Done when** your coach has accepted the project review and you can show the baseline and the scheduled feedback session.

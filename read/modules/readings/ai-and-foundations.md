@@ -24,7 +24,7 @@ Keep one entry in your failure log when evidence changes your mind: assumption, 
 
 ## The foundations check
 
-In weeks 1, 3, 5, and 7, part of your 45-minute meeting is a short check with AI closed. You may read the code and use ordinary documentation. Aden asks you to trace a request, explain a failure, or write a small piece of pseudocode. You are assessed on the explanation and the check you propose. Remembering an obscure API is unnecessary.
+In weeks 1, 3, 5, and 7, part of your 45-minute meeting is a short check with AI closed. You may read the code and use ordinary documentation. Your coach asks you to trace a request, explain a failure, or write a small piece of pseudocode. You are assessed on the explanation and the check you propose. Remembering an obscure API is unnecessary.
 
 A missing concept leads to one focused exercise and a changed example at the next meeting. Start with a hint, work through an example together if needed, then try independently. If the gap affects permissions, data loss, or external actions, keep that work in a sandbox with review until the gap is resolved. You can continue other course work.
 

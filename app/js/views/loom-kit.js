@@ -13,10 +13,10 @@
  * pointing at real work is the costly signal; a generated one would spend it.
  */
 
-import { el } from "../dom.js?v=ff2922c-202610250636";
-import { btn } from "../ui.js?v=ff2922c-202610250636";
-import { BEATS, composeBeats, tidyAnswers, scriptSeconds, blanksLeft, voiceFlags } from "../loom-script.js?v=ff2922c-202610250636";
-import { SLIDES, partDone, scriptDone } from "../campaign-steps.js?v=ff2922c-202610250636";
+import { el } from "../dom.js?v=2b0f46b-202610250651";
+import { btn } from "../ui.js?v=2b0f46b-202610250651";
+import { BEATS, composeBeats, tidyAnswers, scriptSeconds, blanksLeft, voiceFlags } from "../loom-script.js?v=2b0f46b-202610250651";
+import { SLIDES, partDone, scriptDone } from "../campaign-steps.js?v=2b0f46b-202610250651";
 
 /** Seconds a Loom should land in. */
 export const PACE = { min: 45, low: 60, high: 90, max: 105 };
@@ -343,7 +343,7 @@ export function openRehearsal({ company, beats, onTake = () => {} }) {
   const timer = el("span.rh__timer", {}, "0:00");
   const band = el("span.rh__band", {}, `aim ${clock(PACE.low)}–${clock(PACE.high)}`);
   const big = el("div.rh__count", { hidden: true });
-  const note = el("p.rh__note", {}, "Take one is a warm-up. Nobody sees it, including Aden.");
+  const note = el("p.rh__note", {}, "Take one is a warm-up. Nobody sees it, including your coach.");
   const controls = el("div.rh__controls");
 
   const layer = el(

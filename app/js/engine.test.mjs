@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { nextMove, doneForYou, movesAfterNext, READY_SHOWN } from "./engine.js?v=ff2922c-202610250636";
+import { nextMove, doneForYou, movesAfterNext, READY_SHOWN } from "./engine.js?v=2b0f46b-202610250651";
 
 const now = new Date(2026, 9, 9, 10);
 const graph = { nodes: [{ id: "p.rewrite", status: "open", n: 1, family: "presence", title: "Headline", why: "w" }], byId: new Map() };
@@ -44,7 +44,7 @@ test("doneForYou: found is matched but not prepared or applied; ready is capped;
   };
   const col = doneForYou({ student, roles, packs });
   assert.equal(col.found, 1, "k4 only: k1/k2 prepared, k3 applied");
-  assert.deepEqual(col.onIt.map((o) => o.label), ["Aden is on: Finding the hiring manager"]);
+  assert.deepEqual(col.onIt.map((o) => o.label), ["Your coach is on: Finding the hiring manager"]);
   assert.equal(col.ready.length, 4, "weak fit left out");
   assert.equal(col.readyShown.length, READY_SHOWN);
   assert.equal(col.readyMore, 1);

@@ -82,7 +82,7 @@
      "id": "v.complete-today",
      "title": "Today's ten minutes, done on screen",
      "mins": 3,
-     "summary": "Aden does one of these ten-minute steps himself, start to finish, so you can see what done looks like."
+     "summary": "Your coach does one of these ten-minute steps themselves, start to finish, so you can see what done looks like."
     },
     "how": [
      "Open your LinkedIn profile and click the pencil beside your name.",
@@ -182,7 +182,7 @@
      },
      {
       "id": "review",
-      "label": "Aden reviewing"
+      "label": "Coach reviewing"
      },
      {
       "id": "ready",
@@ -204,7 +204,7 @@
      "id": "v.complete-prepared",
      "title": "What we prepare, and what to check before it goes out",
      "mins": 5,
-     "summary": "Aden opens a finished piece of prepared work, reads it the way you should, and shows what to check before anything goes out under your name."
+     "summary": "Your coach opens a finished piece of prepared work, reads it the way you should, and shows what to check before anything goes out under your name."
     },
     "evidence": "Five notes have gone to hiring managers.",
     "group": "g.now"
@@ -244,7 +244,7 @@
      },
      {
       "id": "review",
-      "label": "Aden reviewing"
+      "label": "Coach reviewing"
      },
      {
       "id": "ready",
@@ -274,7 +274,7 @@
      "id": "v.complete-prepared",
      "title": "What we prepare, and what to check before it goes out",
      "mins": 5,
-     "summary": "Aden opens a finished piece of prepared work, reads it the way you should, and shows what to check before anything goes out under your name."
+     "summary": "Your coach opens a finished piece of prepared work, reads it the way you should, and shows what to check before anything goes out under your name."
     },
     "evidence": "Your resume and LinkedIn lead with the role you want.",
     "group": "g.now"
@@ -312,7 +312,7 @@
      },
      {
       "id": "review",
-      "label": "Aden reviewing"
+      "label": "Coach reviewing"
      },
      {
       "id": "ready",
@@ -342,7 +342,7 @@
      "id": "v.complete-prepared",
      "title": "What we prepare, and what to check before it goes out",
      "mins": 5,
-     "summary": "Aden opens a finished piece of prepared work, reads it the way you should, and shows what to check before anything goes out under your name."
+     "summary": "Your coach opens a finished piece of prepared work, reads it the way you should, and shows what to check before anything goes out under your name."
     },
     "evidence": "One verified audit is linked at the top of your resume.",
     "group": "g.now"
@@ -532,14 +532,14 @@
     "completion": "tasks",
     "opens": "2026-10-30",
     "coming": "One question about how your search feels, a week after you started.",
-    "why": "A week in, one question. Your answer goes to Aden.",
+    "why": "A week in, one question. Your answer goes to your coach.",
     "tasks": [
      {
       "id": "w.checkin.feel",
       "title": "How do you feel about your search now?",
       "kind": "write",
       "done_when": "You've answered.",
-      "changed": "Your answer is with Aden.",
+      "changed": "Your answer is with your coach.",
       "est": 2,
       "fields": [
        {

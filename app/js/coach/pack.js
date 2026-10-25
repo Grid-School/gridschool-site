@@ -9,13 +9,13 @@
  * concatenate user text into the system prompt.
  */
 
-import { COACH } from "../../../config.js?v=ff2922c-202610250636";
-import { nextAction } from "./next.js?v=ff2922c-202610250636";
-import { retrieve, formatSnippets } from "./memory.js?v=ff2922c-202610250636";
-import { credits, formatUsd } from "./credits.js?v=ff2922c-202610250636";
-import { modeOf } from "../modes.js?v=ff2922c-202610250636";
-import { artifactOf } from "../artifacts.js?v=ff2922c-202610250636";
-import { stepNumber } from "../graph/model.js?v=ff2922c-202610250636";
+import { COACH } from "../../../config.js?v=2b0f46b-202610250651";
+import { nextAction } from "./next.js?v=2b0f46b-202610250651";
+import { retrieve, formatSnippets } from "./memory.js?v=2b0f46b-202610250651";
+import { credits, formatUsd } from "./credits.js?v=2b0f46b-202610250651";
+import { modeOf } from "../modes.js?v=2b0f46b-202610250651";
+import { artifactOf } from "../artifacts.js?v=2b0f46b-202610250651";
+import { stepNumber } from "../graph/model.js?v=2b0f46b-202610250651";
 
 const FENCE = "-----";
 
@@ -34,7 +34,7 @@ export function nodeLines(node) {
     mode.key === "open" ? null : `Mode: ${mode.label}. ${mode.rule}`,
     artifact ? `Edits: ${artifact.label}. Keep them on that artifact; a new tool is not the answer here.` : null,
     node.proves?.falsification ? `Would show they do not have it: ${node.proves.falsification}` : null,
-    node.awaitingSignoff ? "Standing: submitted, awaiting sign-off. It lights when Aden's review returns." : null,
+    node.awaitingSignoff ? "Standing: submitted, awaiting sign-off. It lights when your coach's review returns." : null,
     node.offered ? "Standing: on offer, not yet picked. Depth is the student's choice." : null,
   ].filter((line) => line !== null);
 }

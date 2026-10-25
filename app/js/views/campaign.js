@@ -11,14 +11,14 @@
  * in their own mail app, the call is their phone, LinkedIn is their click.
  */
 
-import { el, mount } from "../dom.js?v=ff2922c-202610250636";
-import { btn, copy, toast, field } from "../ui.js?v=ff2922c-202610250636";
-import { createModal } from "../modal.js?v=ff2922c-202610250636";
-import { DAY0, FOLLOWUP_DAYS, nextTouch, fillLinks, peopleLinks } from "../search.js?v=ff2922c-202610250636";
-import { draftCampaign } from "../roles-remote.js?v=ff2922c-202610250636";
-import { scriptWizard, recordNode, closeRehearsal } from "./loom-kit.js?v=ff2922c-202610250636";
-import { nodeRail, nodeIntro } from "./node-rail.js?v=ff2922c-202610250636";
-import { NODES, doneNodes, firstOpen, nextNode, prevNode, labelOf } from "../campaign-steps.js?v=ff2922c-202610250636";
+import { el, mount } from "../dom.js?v=2b0f46b-202610250651";
+import { btn, copy, toast, field } from "../ui.js?v=2b0f46b-202610250651";
+import { createModal } from "../modal.js?v=2b0f46b-202610250651";
+import { DAY0, FOLLOWUP_DAYS, nextTouch, fillLinks, peopleLinks } from "../search.js?v=2b0f46b-202610250651";
+import { draftCampaign } from "../roles-remote.js?v=2b0f46b-202610250651";
+import { scriptWizard, recordNode, closeRehearsal } from "./loom-kit.js?v=2b0f46b-202610250651";
+import { nodeRail, nodeIntro } from "./node-rail.js?v=2b0f46b-202610250651";
+import { NODES, doneNodes, firstOpen, nextNode, prevNode, labelOf } from "../campaign-steps.js?v=2b0f46b-202610250651";
 
 export function createCampaignDrawer({ slug, getTarget, onPatch, onTouch, getPortfolio, readOnly = () => false }) {
   const modal = createModal({ label: "Target campaign", size: "reading", onClose: () => closeRehearsal() || close() });
@@ -150,7 +150,7 @@ export function createCampaignDrawer({ slug, getTarget, onPatch, onTouch, getPor
       el(
         "div.camp__people",
         {},
-        el("p.pack__hint", {}, "Aden found these people and wrote each message. After the email above, send these from your own email or LinkedIn, starting with the ones marked send first. Email addresses follow the company's format and aren't confirmed: if one bounces, use LinkedIn. If you skipped the Loom for someone, delete the P.S. line."),
+        el("p.pack__hint", {}, "Your coach found these people and wrote each message. After the email above, send these from your own email or LinkedIn, starting with the ones marked send first. Email addresses follow the company's format and aren't confirmed: if one bounces, use LinkedIn. If you skipped the Loom for someone, delete the P.S. line."),
         people.map((p, i) => {
           const channel = `p${i + 1}`;
           const message = fillLinks(p.message, links);
