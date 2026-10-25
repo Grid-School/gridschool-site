@@ -16,6 +16,16 @@ export const POST_NODES = [
 
 export const TOOLS = { projects: "projects", posts: "posts" };
 
+/** Earlier rounds of ideas, newest first, each with a readable date. */
+export function earlierRounds(section) {
+  return (section?.rounds ?? []).filter((r) => (r?.ideas ?? []).length).map((r) => ({ ideas: r.ideas, when: roundDate(r.at) }));
+}
+
+export function roundDate(iso) {
+  const at = iso ? new Date(iso) : null;
+  return at && !Number.isNaN(at.getTime()) ? at.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }) : "Earlier";
+}
+
 export function toolOf(arg) {
   return arg === "posts" ? "posts" : "projects";
 }

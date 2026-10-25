@@ -5,7 +5,7 @@
  * them (visible or as a tooltip and aria-label) carries the meaning.
  */
 
-import { el } from "./dom.js?v=d177a03-202610252138";
+import { el } from "./dom.js?v=6b238ed-202610252203";
 
 function svg(...children) {
   return el(
@@ -24,6 +24,14 @@ export const ICONS = {
   tasks: () => svg(path("M4 7h2M9 7h11M4 12h2M9 12h11M4 17h2M9 17h11")),
   /** The job search: a briefcase. */
   search: () => svg(el("rect", { x: 3.5, y: 7.5, width: 17, height: 12, rx: 2 }), path("M9 7.5V6a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 6v1.5M3.5 12.5h17")),
+  /** The resume builder: a page with a folded corner and lines. */
+  resume: () => svg(path("M6.5 3.5h7.5l4 4v11.5A1.5 1.5 0 0 1 16.5 20.5h-10A1.5 1.5 0 0 1 5 19V5a1.5 1.5 0 0 1 1.5-1.5zM14 3.5V7.5h4M8.5 12h7M8.5 15.5h7")),
+  /** Project ideas: a lightbulb. */
+  projects: () => svg(path("M9 18h6M10 21h4M12 3.5a5.5 5.5 0 0 0-3.2 10c.7.5 1.2 1.3 1.2 2.2V16h4v-.3c0-.9.5-1.7 1.2-2.2A5.5 5.5 0 0 0 12 3.5z")),
+  /** Post drafts: a pen. */
+  drafts: () => svg(path("M4 20l1-4.5L15.5 5a2.1 2.1 0 0 1 3 3L8 18.5zM13.5 7l3 3")),
+  /** Profile photos: a picture. */
+  photos: () => svg(el("rect", { x: 3.5, y: 5, width: 17, height: 14, rx: 2 }), el("circle", { cx: 9, cy: 10, r: 1.6 }), path("M3.5 17l5-4.5 3.5 3 3-2.5 5.5 4.5")),
   /** Calendar. */
   calendar: () => svg(el("rect", { x: 3.5, y: 5, width: 17, height: 15.5, rx: 2.5 }), path("M3.5 10h17M8 3v4M16 3v4")),
   /** The coach: a speech mark. */

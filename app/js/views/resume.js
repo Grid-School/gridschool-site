@@ -11,13 +11,13 @@
  * confirms it. Every saved version has a name, the date and time it was made, and can be downloaded again.
  */
 
-import { el, mount } from "../dom.js?v=d177a03-202610252138";
-import { btn, toast } from "../ui.js?v=d177a03-202610252138";
-import { nodeRail } from "./node-rail.js?v=d177a03-202610252138";
-import { nextUp } from "../graph/model.js?v=d177a03-202610252138";
-import { isProgressReadOnly } from "../store.js?v=d177a03-202610252138";
-import { upgradeHref } from "../prep.js?v=d177a03-202610252138";
-import * as api from "../resume-remote.js?v=d177a03-202610252138";
+import { el, mount } from "../dom.js?v=6b238ed-202610252203";
+import { btn, toast } from "../ui.js?v=6b238ed-202610252203";
+import { nodeRail } from "./node-rail.js?v=6b238ed-202610252203";
+import { nextUp } from "../graph/model.js?v=6b238ed-202610252203";
+import { isProgressReadOnly } from "../store.js?v=6b238ed-202610252203";
+import { upgradeHref } from "../prep.js?v=6b238ed-202610252203";
+import * as api from "../resume-remote.js?v=6b238ed-202610252203";
 
 const PDF_JS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs";
 const PDF_WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs";

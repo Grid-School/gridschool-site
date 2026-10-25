@@ -8,11 +8,11 @@
  * the work here (picking, posting) checks that task too.
  */
 
-import { el, mount } from "../dom.js?v=d177a03-202610252138";
-import { btn, toast } from "../ui.js?v=d177a03-202610252138";
-import { nodeRail, nodeIntro } from "./node-rail.js?v=d177a03-202610252138";
-import * as api from "../studio-remote.js?v=d177a03-202610252138";
-import * as model from "../studio-model.js?v=d177a03-202610252138";
+import { el, mount } from "../dom.js?v=6b238ed-202610252203";
+import { btn, toast } from "../ui.js?v=6b238ed-202610252203";
+import { nodeRail, nodeIntro } from "./node-rail.js?v=6b238ed-202610252203";
+import * as api from "../studio-remote.js?v=6b238ed-202610252203";
+import * as model from "../studio-model.js?v=6b238ed-202610252203";
 
 function wait(text) {
   return el("div.pack__wait", {}, el("span.pack__spinner", { "aria-hidden": "true" }), el("p", {}, text));
@@ -135,11 +135,33 @@ export function renderStudio(ctx, toolArg, taskArg) {
     return [
       nodeIntro("Pick the one you'd enjoy building", "It becomes a step on your map with this brief. Change anything in it once it's there; it's yours."),
       el("ul.rz__lines", {}, ideas.map((p) => projectCard(p, picked))),
-      picked && !ideas.some((p) => p.id === picked.id) ? el("p.rz__why", {}, `On your map now: ${picked.title}.`) : null,
+      picked && !model.earlierRounds(s.projects).some((r) => r.ideas.some((p) => p.id === picked.id)) && !ideas.some((p) => p.id === picked.id)
+        ? el("p.rz__why", {}, `On your map now: ${picked.title}.`) : null,
+      history("Earlier project ideas", model.earlierRounds(s.projects), (p) => projectCard(p, picked)),
     ];
   }
 
+  /** Every earlier round, newest first, folded: nothing we made is lost, and any of it can still be used. */
+  function history(title, rounds, card) {
+    if (!rounds.length) return null;
+    return el("section.st__history", {},
+      el("h3.st__historytitle", {}, title),
+      rounds.map((round) => el("details.st__more", {},
+        el("summary", {}, `${round.when} · ${round.ideas.length} ${round.ideas.length === 1 ? "idea" : "ideas"}`),
+        el("ul.rz__lines", {}, round.ideas.map(card)))));
+  }
+
   /* ---------- Posts ---------- */
+  function postIdeaCard(i) {
+    return el("li.rz__line.st__card", {},
+      el("p.st__shape", {}, model.SHAPE_LABEL[i.shape] ?? ""),
+      el("h3.st__title", {}, i.hook),
+      el("p.rz__linetext", {}, i.angle),
+      i.from ? el("p.rz__was", {}, `From: ${i.from}`) : null,
+      el("div.rz__row", {}, btn({ label: "Draft this one", variant: "solid", disabled: Boolean(busy),
+        onclick: () => run("Drafting it in your voice. About 15 seconds.", () => api.draftFromIdea(slug, i.id), (out) => { openDraft = out?.studio?.posts?.drafts?.[0]?.id ?? null; here = "drafts"; }) })));
+  }
+
   function voiceBody() {
     const voice = rec.studio.voice;
     const paste = el("textarea.rz__text", { rows: 8, placeholder: "Paste two or three things you wrote: posts, long messages, a paragraph from anything. Put a line with three dashes (---) between them." });
@@ -183,17 +205,12 @@ export function renderStudio(ctx, toolArg, taskArg) {
       nodeIntro(ideas.length ? "Post ideas from your week" : "Five post ideas from your week",
         "Built from the steps you finished, your practice project and what you're into. Pick one and the drafter writes it in your voice."),
       model.hasVoice(rec.studio) ? null : el("p.rz__why", {}, "Tip: build your voice doc first, so drafts sound like you."),
-      ideas.length ? el("ul.rz__lines", {}, ideas.map((i) => el("li.rz__line.st__card", {},
-        el("p.st__shape", {}, model.SHAPE_LABEL[i.shape] ?? ""),
-        el("h3.st__title", {}, i.hook),
-        el("p.rz__linetext", {}, i.angle),
-        i.from ? el("p.rz__was", {}, `From: ${i.from}`) : null,
-        el("div.rz__row", {}, btn({ label: "Draft this one", variant: "solid", disabled: Boolean(busy),
-          onclick: () => run("Drafting it in your voice. About 15 seconds.", () => api.draftFromIdea(slug, i.id), (out) => { openDraft = out?.studio?.posts?.drafts?.[0]?.id ?? null; here = "drafts"; }) }))))) : null,
+      ideas.length ? el("ul.rz__lines", {}, ideas.map(postIdeaCard)) : null,
       el("div.rz__row", {},
         btn({ label: ideas.length ? "Five fresh ideas" : "Write my five ideas", variant: ideas.length ? "ghost" : "solid", disabled: Boolean(busy),
           onclick: () => run("Reading your week for post ideas. About 20 seconds.", () => api.makePostIdeas(slug)) }),
         el("span.rz__meta", {}, model.weekLine(rec.week, "post-ideas", "rounds"))),
+      history("Earlier post ideas", model.earlierRounds(rec.studio.posts), postIdeaCard),
       el("details.st__more", {}, el("summary", {}, "Draft your own idea"), hook, angle,
         el("div.rz__row", {}, btn({ label: "Draft it", variant: "ghost", disabled: Boolean(busy),
           onclick: () => run("Drafting it in your voice.", () => api.draftOwnIdea(slug, hook.value, angle.value), (out) => { openDraft = out?.studio?.posts?.drafts?.[0]?.id ?? null; here = "drafts"; }) }))),

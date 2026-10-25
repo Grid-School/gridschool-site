@@ -5,27 +5,46 @@
  * the path, the every-day tools on it, and what to do next), then the Calendar, each an
  * icon with its word under it so nothing needs a tooltip to be understood,
  * and the Map carrying the one count that matters (required lit / total).
- * Under a hairline, Posts: the day's LinkedIn comments.
- * Coach and Posts are drawn only when they work (features.js); otherwise the
- * rail is Map, Calendar, and You.
+ * Under a hairline, the tools they come back to: the resume builder, the job
+ * search, project ideas, post drafts, profile photos, and Posts (the day's
+ * LinkedIn comments). Each also opens from its step on the map; the rail is the
+ * way back to it once that step is done. On a phone the tools ride in the same
+ * scrolling row as the doors.
+ * Coach and Posts are drawn only when they work (features.js).
  * At the bottom, the student, as an avatar that opens the profile sheet.
  * Nothing about instructors or dev lives here; that is instructor-strip.js,
  * mounted only when the device is flagged, so a student rail is a student
  * rail without a mode.
  */
 
-import { el, mount } from "./dom.js?v=d177a03-202610252138";
-import { gmark } from "../../js/brand.js?v=d177a03-202610252138";
-import { icon } from "./icons.js?v=d177a03-202610252138";
-import { returnedUnread } from "./tasks.js?v=d177a03-202610252138";
-import { progress } from "./graph/model.js?v=d177a03-202610252138";
-import { enabledViews, isViewEnabled } from "./features.js?v=d177a03-202610252138";
+import { el, mount } from "./dom.js?v=6b238ed-202610252203";
+import { gmark } from "../../js/brand.js?v=6b238ed-202610252203";
+import { icon } from "./icons.js?v=6b238ed-202610252203";
+import { returnedUnread } from "./tasks.js?v=6b238ed-202610252203";
+import { progress } from "./graph/model.js?v=6b238ed-202610252203";
+import { enabledViews, isViewEnabled } from "./features.js?v=6b238ed-202610252203";
 
 export const DOORS = [
   { id: "map", label: "Map", icon: "map", hint: "Your path, the tools you use every day, and what to do next" },
   { id: "calendar", label: "Calendar", icon: "calendar", hint: "The week's clock" },
   { id: "today", label: "Coach", icon: "coach", hint: "Talk a next move through" },
 ];
+
+/** Tools used more than once. `route` is where the door goes; its id is what setActive matches. */
+export const TOOLS = [
+  { id: "resume", route: "resume", label: "Resume", icon: "resume", hint: "Build, tailor and download your resume" },
+  { id: "do", route: "do", label: "Jobs", icon: "search", hint: "Roles, people and follow-ups for today" },
+  { id: "studio/projects", route: "studio/projects", label: "Projects", icon: "projects", hint: "Practice project ideas written for you" },
+  { id: "studio/posts", route: "studio/posts", label: "Drafts", icon: "drafts", hint: "Post ideas and drafts in your voice" },
+  { id: "images", route: "images", label: "Photos", icon: "photos", hint: "Your headshot and banner, sized for LinkedIn" },
+  { id: "posts", route: "posts", label: "Posts", icon: "posts", hint: "Posts worth a comment today" },
+];
+
+/** What a route lights on the rail: a tool's own door, else the view itself. */
+export function activeDoor(name, args = []) {
+  if (name === "studio") return args[0] === "posts" ? "studio/posts" : "studio/projects";
+  return name;
+}
 
 export function createRail({ onNavigate, onProfile, flags = enabledViews() }) {
   const nav = el("nav.rail__nav", { "aria-label": "Where to go" });
@@ -52,21 +71,26 @@ export function createRail({ onNavigate, onProfile, flags = enabledViews() }) {
     nav.append(link);
   }
 
-  const posts = !isViewEnabled("posts", flags) ? null : el(
-    "a.rail__door",
-    {
-      href: "#/posts",
-      title: "Posts worth a comment today",
-      "aria-label": "Posts",
-      onclick: (event) => {
-        event.preventDefault();
-        onNavigate("posts");
+  const tools = TOOLS.filter((tool) => isViewEnabled(tool.route.split("/")[0], flags));
+  if (tools.length) nav.append(el("span.rail__sep", { role: "separator", "aria-hidden": "true" }));
+  for (const tool of tools) {
+    const link = el(
+      "a.rail__door.rail__door--tool",
+      {
+        href: `#/${tool.route}`,
+        title: tool.hint,
+        "aria-label": tool.label,
+        onclick: (event) => {
+          event.preventDefault();
+          onNavigate(...tool.route.split("/"));
+        },
       },
-    },
-    el("span.rail__glyph", {}, icon("posts")),
-    el("span.rail__word", {}, "Posts")
-  );
-  if (posts) links.set("posts", posts);
+      el("span.rail__glyph", {}, icon(tool.icon)),
+      el("span.rail__word", {}, tool.label)
+    );
+    links.set(tool.id, link);
+    nav.append(link);
+  }
 
   const avatar = el("span.rail__avatar", { "aria-hidden": "true" }, "");
   const profile = el(
@@ -81,7 +105,6 @@ export function createRail({ onNavigate, onProfile, flags = enabledViews() }) {
     {},
     el("a.rail__brand", { href: "../", title: "GridSchool", "aria-label": "GridSchool home" }, gmark({ className: "rail__logo" })),
     nav,
-    posts ? el("div.rail__extra", {}, posts) : null,
     el("div.rail__foot", {}, profile)
   );
 

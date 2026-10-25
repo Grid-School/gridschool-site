@@ -3,8 +3,8 @@
  * Same shape as resume-remote.js: a failed call throws with the server's own sentence.
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=d177a03-202610252138";
-import { persistToken } from "./session.js?v=d177a03-202610252138";
+import { PERSIST, isPlaceholder } from "../../config.js?v=6b238ed-202610252203";
+import { persistToken } from "./session.js?v=6b238ed-202610252203";
 
 export function studioReady() {
   return Boolean(persistToken() && PERSIST?.endpoint && !isPlaceholder(PERSIST.endpoint));

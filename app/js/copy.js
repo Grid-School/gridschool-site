@@ -6,7 +6,7 @@
  * or a review. The student sees that in ordinary words, not as a lighting rule.
  */
 
-import { STATUS } from "./graph/model.js?v=d177a03-202610252138";
+import { STATUS } from "./graph/model.js?v=6b238ed-202610252203";
 
 export const RULE = "Each step tells you whether to finish its tasks, save a link, or wait for review.";
 /** @deprecated use RULE, kept so old imports do not break mid-edit */

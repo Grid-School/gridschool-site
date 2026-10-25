@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
+  earlierRounds,
   toolOf,
   projectDone,
   postDone,
@@ -11,7 +12,7 @@ import {
   completionFor,
   weekLine,
   seedHints,
-} from "./studio-model.js?v=d177a03-202610252138";
+} from "./studio-model.js?v=6b238ed-202610252203";
 
 test("the tool comes from the route, projects by default", () => {
   assert.equal(toolOf("posts"), "posts");
@@ -72,4 +73,12 @@ test("week line and seed hints", () => {
   assert.equal(weekLine(undefined, "draft", "drafts"), "");
   assert.deepEqual(seedHints({ complete: { target: true, interests: false, proof: false } }), ["what you're interested in", "a few confirmed lines on your resume"]);
   assert.deepEqual(seedHints(undefined).length, 3);
+});
+
+test("earlier rounds keep every idea, newest first, and skip empty ones", () => {
+  const rounds = earlierRounds({ ideas: [{ id: "c-1" }], rounds: [{ ideas: [{ id: "b-1" }], at: "2026-10-24T10:00:00Z" }, { ideas: [] }, { ideas: [{ id: "a-1" }], at: "bad" }] });
+  assert.deepEqual(rounds.map((r) => r.ideas[0].id), ["b-1", "a-1"]);
+  assert.equal(rounds[1].when, "Earlier");
+  assert.match(rounds[0].when, /2026/);
+  assert.deepEqual(earlierRounds(undefined), []);
 });

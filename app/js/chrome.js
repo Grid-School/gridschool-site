@@ -11,13 +11,13 @@
  *   call-band.js         the 1:1 within a day, with the join link
  */
 
-import { el, mount } from "./dom.js?v=d177a03-202610252138";
-import { signOut } from "./session.js?v=d177a03-202610252138";
-import { lock } from "./gate.js?v=d177a03-202610252138";
-import { createRail } from "./rail.js?v=d177a03-202610252138";
-import { createInstructorStrip } from "./instructor-strip.js?v=d177a03-202610252138";
-import { createProfile } from "./profile.js?v=d177a03-202610252138";
-import { createCallBand } from "./call-band.js?v=d177a03-202610252138";
+import { el, mount } from "./dom.js?v=6b238ed-202610252203";
+import { signOut } from "./session.js?v=6b238ed-202610252203";
+import { lock } from "./gate.js?v=6b238ed-202610252203";
+import { createRail } from "./rail.js?v=6b238ed-202610252203";
+import { createInstructorStrip } from "./instructor-strip.js?v=6b238ed-202610252203";
+import { createProfile } from "./profile.js?v=6b238ed-202610252203";
+import { createCallBand } from "./call-band.js?v=6b238ed-202610252203";
 
 export function createChrome({
   onNavigate,

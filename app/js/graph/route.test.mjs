@@ -1,8 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { buildGraph, progress, nextUp } from "./model.js?v=d177a03-202610252138";
-import { routeGraph, biggestWin, previewHint, isLandmark } from "./route.js?v=d177a03-202610252138";
+import { buildGraph, progress, nextUp } from "./model.js?v=6b238ed-202610252203";
+import { routeGraph, biggestWin, previewHint, isLandmark } from "./route.js?v=6b238ed-202610252203";
 
 const demo = (name) => JSON.parse(readFileSync(new URL(`../../../demo/${name}`, import.meta.url), "utf8"));
 const DAY = new Date(2099, 0, 1);

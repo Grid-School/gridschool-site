@@ -72,12 +72,10 @@ body[data-view="step"] .gridbg { display: none; }
 
 .rail__foot { margin-top: auto; display: flex; flex-direction: column; gap: 6px; }
 
-/* Posts: under a hairline because it is not part of the path. */
-.rail__extra {
-  border-top: 1px solid var(--line); padding-top: 6px;
-  display: flex; flex-direction: column; gap: 4px;
-}
-.rail__extra > .rail__door { width: 100%; }
+/* The tools they come back to sit under a hairline: not part of the path. The rail scrolls when they don't fit. */
+.rail__nav { overflow-y: auto; scrollbar-width: none; min-height: 0; }
+.rail__nav::-webkit-scrollbar { display: none; }
+.rail__sep { flex: none; height: 1px; margin: 6px 6px; background: var(--line); }
 .rail__avatar {
   display: inline-flex; align-items: center; justify-content: center;
   width: 30px; height: 30px; border-radius: 50%;
@@ -1081,7 +1079,8 @@ html.vid-lock, html.vid-lock body { overflow: hidden; }
   .rail__word { font-size: 10px; letter-spacing: .02em; }
   .rail__door.is-active::before { left: 10px; right: 10px; top: auto; bottom: -1px; width: auto; height: 2px; }
   .rail__foot { margin-top: 0; flex-direction: row; }
-  .rail__extra { border-top: 0; padding-top: 0; }
+  .rail__nav { overflow-y: visible; }
+  .rail__sep { width: 1px; height: 28px; margin: 0 4px; }
   .istrip { flex-direction: row; border: 0; padding: 0; border-left: 1px solid var(--line); padding-left: 6px; }
   .istrip__tag { display: none; }
   .profile__links { grid-template-columns: 1fr; }

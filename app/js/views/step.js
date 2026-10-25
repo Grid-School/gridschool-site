@@ -8,36 +8,36 @@
  * reading as a shareable page).
  */
 
-import { el, mount } from "../dom.js?v=d177a03-202610252138";
-import { btn, placeholder, toast, field } from "../ui.js?v=d177a03-202610252138";
-import { STATUS, blockedBy, progress, isSpine, nextUp, stepNumber } from "../graph/model.js?v=d177a03-202610252138";
-import { taskRow, reviewScores } from "./parts.js?v=d177a03-202610252138";
-import { statusLabel, trackLabel, ccvvLabel, stepRule } from "../copy.js?v=d177a03-202610252138";
-import { videoCard, resolveMedia, filmSummary } from "./video.js?v=d177a03-202610252138";
-import { handoffDisclosure } from "./handoff.js?v=d177a03-202610252138";
-import { withSavedState, isCountTask } from "../task-state.js?v=d177a03-202610252138";
-import { renderMarkdown, splitTitle } from "../markdown.js?v=d177a03-202610252138";
-import { hydrateMermaid, mermaidSource } from "../mermaid.js?v=d177a03-202610252138";
-import { provesBlock } from "./proves.js?v=d177a03-202610252138";
-import { modeLine } from "./mode.js?v=d177a03-202610252138";
-import { artifactLine } from "./artifact.js?v=d177a03-202610252138";
-import { refsBlock } from "./refs.js?v=d177a03-202610252138";
-import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=d177a03-202610252138";
-import { electiveBlock } from "./elective.js?v=d177a03-202610252138";
-import { fromAdenCard } from "./from-aden.js?v=d177a03-202610252138";
-import { helpBlock } from "./step-help.js?v=d177a03-202610252138";
-import { signoffNotice, submitLabel, linkHint } from "./signoff.js?v=d177a03-202610252138";
-import { stepSpine, isStepComplete, canAdvance, readyToSave, readFlag } from "./step-progress.js?v=d177a03-202610252138";
-import { createReadingModal } from "./reading-modal.js?v=d177a03-202610252138";
-import { bindDraft, clearDraft } from "../drafts.js?v=d177a03-202610252138";
-import { registerLeaveGuard, clearLeaveGuard, isLeaveDirty } from "../leave-guard.js?v=d177a03-202610252138";
-import { isPreviewMedia } from "../preview-mode.js?v=d177a03-202610252138";
-import { isViewEnabled } from "../features.js?v=d177a03-202610252138";
-import { siteOverridesDoc, dropSiteOverridesCache } from "../../../js/site-overrides.js?v=d177a03-202610252138";
-import { isCompleteMap, isFreeMap, stageTime, upgradeHref, PAID_ASK, PAID_TASKS, PAID_VIDEO, DFY_LINE, FILM_COMING, COURSE_LINE, COURSE_ASK, COURSE_TASKS } from "../prep.js?v=d177a03-202610252138";
-import { sampleBlock } from "./sample.js?v=d177a03-202610252138";
-import { answerBlock } from "./answer.js?v=d177a03-202610252138";
-import { renderResume } from "./resume.js?v=d177a03-202610252138";
+import { el, mount } from "../dom.js?v=6b238ed-202610252203";
+import { btn, placeholder, toast, field } from "../ui.js?v=6b238ed-202610252203";
+import { STATUS, blockedBy, progress, isSpine, nextUp, stepNumber } from "../graph/model.js?v=6b238ed-202610252203";
+import { taskRow, reviewScores } from "./parts.js?v=6b238ed-202610252203";
+import { statusLabel, trackLabel, ccvvLabel, stepRule } from "../copy.js?v=6b238ed-202610252203";
+import { videoCard, resolveMedia, filmSummary } from "./video.js?v=6b238ed-202610252203";
+import { handoffDisclosure } from "./handoff.js?v=6b238ed-202610252203";
+import { withSavedState, isCountTask } from "../task-state.js?v=6b238ed-202610252203";
+import { renderMarkdown, splitTitle } from "../markdown.js?v=6b238ed-202610252203";
+import { hydrateMermaid, mermaidSource } from "../mermaid.js?v=6b238ed-202610252203";
+import { provesBlock } from "./proves.js?v=6b238ed-202610252203";
+import { modeLine } from "./mode.js?v=6b238ed-202610252203";
+import { artifactLine } from "./artifact.js?v=6b238ed-202610252203";
+import { refsBlock } from "./refs.js?v=6b238ed-202610252203";
+import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=6b238ed-202610252203";
+import { electiveBlock } from "./elective.js?v=6b238ed-202610252203";
+import { fromAdenCard } from "./from-aden.js?v=6b238ed-202610252203";
+import { helpBlock } from "./step-help.js?v=6b238ed-202610252203";
+import { signoffNotice, submitLabel, linkHint } from "./signoff.js?v=6b238ed-202610252203";
+import { stepSpine, isStepComplete, canAdvance, readyToSave, readFlag } from "./step-progress.js?v=6b238ed-202610252203";
+import { createReadingModal } from "./reading-modal.js?v=6b238ed-202610252203";
+import { bindDraft, clearDraft } from "../drafts.js?v=6b238ed-202610252203";
+import { registerLeaveGuard, clearLeaveGuard, isLeaveDirty } from "../leave-guard.js?v=6b238ed-202610252203";
+import { isPreviewMedia } from "../preview-mode.js?v=6b238ed-202610252203";
+import { isViewEnabled } from "../features.js?v=6b238ed-202610252203";
+import { siteOverridesDoc, dropSiteOverridesCache } from "../../../js/site-overrides.js?v=6b238ed-202610252203";
+import { isCompleteMap, isFreeMap, stageTime, upgradeHref, PAID_ASK, PAID_TASKS, PAID_VIDEO, DFY_LINE, FILM_COMING, COURSE_LINE, COURSE_ASK, COURSE_TASKS } from "../prep.js?v=6b238ed-202610252203";
+import { sampleBlock } from "./sample.js?v=6b238ed-202610252203";
+import { answerBlock } from "./answer.js?v=6b238ed-202610252203";
+import { renderResume } from "./resume.js?v=6b238ed-202610252203";
 
 /* A "builder" node is its tool: the step page shows the tool itself in place of a task list that points
    somewhere else. One instance per node, kept across repaints so an answer being typed survives. */
@@ -53,7 +53,7 @@ function builderBlock(ctx, node) {
   }
   return el("section.step__tool", {}, tool.node);
 }
-import { videoAccess, isFilmed } from "../../../data/video-access.mjs?v=d177a03-202610252138";
+import { videoAccess, isFilmed } from "../../../data/video-access.mjs?v=6b238ed-202610252203";
 
 const FALLBACK_VIDEO = {
   title: "Lesson",
@@ -919,7 +919,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
       );
 
       async function save(entry) {
-        const { fetchSiteOverrides, saveSiteOverrides } = await import("../persist-admin.js?v=d177a03-202610252138");
+        const { fetchSiteOverrides, saveSiteOverrides } = await import("../persist-admin.js?v=6b238ed-202610252203");
         const current = await fetchSiteOverrides().catch(() => ({ doc: {} }));
         const doc = current.doc ?? {};
         const nodes = { ...(doc.copy?.nodes ?? {}) };

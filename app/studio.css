@@ -13,3 +13,9 @@
 .st__more { margin-top: 16px; }
 .st__more summary { cursor: pointer; color: var(--muted); font-size: 14px; }
 .st__more > .rz__text, .st__more > .rz__input { margin-top: 10px; }
+
+/* Earlier rounds: folded, newest first. */
+.st__history { margin-top: 28px; border-top: 1px solid var(--line); padding-top: 14px; }
+.st__historytitle { margin: 0; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.st__history > .st__more { margin-top: 10px; }
+.st__history .rz__lines { margin-top: 10px; }
