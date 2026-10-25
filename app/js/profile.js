@@ -8,15 +8,15 @@
  * and this sheet says so rather than pretending to a ledger it does not hold.
  */
 
-import { el } from "./dom.js?v=f9fea94-202610250751";
-import { btn, kv } from "./ui.js?v=f9fea94-202610250751";
-import { createModal } from "./modal.js?v=f9fea94-202610250751";
-import { icon } from "./icons.js?v=f9fea94-202610250751";
-import { link } from "../../config.js?v=f9fea94-202610250751";
-import { returnedUnread } from "./tasks.js?v=f9fea94-202610250751";
-import { initials } from "./rail.js?v=f9fea94-202610250751";
-import { slotSummary } from "./call-slot.js?v=f9fea94-202610250751";
-import { displayZone, studentSlot } from "./time.js?v=f9fea94-202610250751";
+import { el } from "./dom.js?v=8b2a230-202610250853";
+import { btn, kv } from "./ui.js?v=8b2a230-202610250853";
+import { createModal } from "./modal.js?v=8b2a230-202610250853";
+import { icon } from "./icons.js?v=8b2a230-202610250853";
+import { link } from "../../config.js?v=8b2a230-202610250853";
+import { returnedUnread } from "./tasks.js?v=8b2a230-202610250853";
+import { initials } from "./rail.js?v=8b2a230-202610250853";
+import { slotSummary } from "./call-slot.js?v=8b2a230-202610250853";
+import { displayZone, studentSlot } from "./time.js?v=8b2a230-202610250853";
 
 
 export function createProfile({ getState, onExport, onReset, onSignOut, onNavigate }) {

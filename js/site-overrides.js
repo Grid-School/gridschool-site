@@ -16,8 +16,8 @@
  * here; that lives in git where it is reviewed as writing.
  */
 
-import { LINKS, PERSIST, PRIVATE_LINK_KEYS, isPlaceholder, isPrivateLinkKey } from "../config.js?v=f9fea94-202610250751";
-import { persistToken } from "../app/js/session.js?v=f9fea94-202610250751";
+import { LINKS, PERSIST, PRIVATE_LINK_KEYS, isPlaceholder, isPrivateLinkKey } from "../config.js?v=8b2a230-202610250853";
+import { persistToken } from "../app/js/session.js?v=8b2a230-202610250853";
 
 /** config.js values as shipped, captured before any mutation. */
 const CONFIG_DEFAULTS = Object.freeze({ ...LINKS });

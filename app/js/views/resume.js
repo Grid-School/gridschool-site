@@ -8,10 +8,10 @@
  * Nothing prints on the resume until they confirm it.
  */
 
-import { el, mount } from "../dom.js?v=f9fea94-202610250751";
-import { btn, toast } from "../ui.js?v=f9fea94-202610250751";
-import { nodeRail, nodeIntro } from "./node-rail.js?v=f9fea94-202610250751";
-import * as api from "../resume-remote.js?v=f9fea94-202610250751";
+import { el, mount } from "../dom.js?v=8b2a230-202610250853";
+import { btn, toast } from "../ui.js?v=8b2a230-202610250853";
+import { nodeRail, nodeIntro } from "./node-rail.js?v=8b2a230-202610250853";
+import * as api from "../resume-remote.js?v=8b2a230-202610250853";
 
 const PDF_JS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs";
 const PDF_WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs";

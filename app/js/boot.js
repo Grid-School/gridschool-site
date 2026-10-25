@@ -10,31 +10,31 @@
  * aliases so links already in the wild still land somewhere true.
  */
 
-import { el, mount, download } from "./dom.js?v=f9fea94-202610250751";
-import * as store from "./store.js?v=f9fea94-202610250751";
-import { resolveSlug, slugFromUrl, currentSession, signOut, setPersistToken, inviteFromUrl, persistToken } from "./session.js?v=f9fea94-202610250751";
-import { tryStoredKey } from "./gate.js?v=f9fea94-202610250751";
-import { createRouter } from "./router.js?v=f9fea94-202610250751";
-import { createChrome } from "./chrome.js?v=f9fea94-202610250751";
-import { toast } from "./ui.js?v=f9fea94-202610250751";
-import { isTestSeat } from "./test-seats.js?v=f9fea94-202610250751";
-import { renderLogin } from "./views/login.js?v=f9fea94-202610250751";
-import { renderToday } from "./views/today.js?v=f9fea94-202610250751";
-import { renderMap } from "./views/map.js?v=f9fea94-202610250751";
-import { renderStep, isStepArgs, moduleIdFromArgs } from "./views/step.js?v=f9fea94-202610250751";
-import { renderTasks } from "./views/tasks.js?v=f9fea94-202610250751";
-import { renderCalendar } from "./views/calendar.js?v=f9fea94-202610250751";
-import { renderLibrary } from "./views/library.js?v=f9fea94-202610250751";
-import { renderPosts } from "./views/posts.js?v=f9fea94-202610250751";
-import { renderHire } from "./views/hire.js?v=f9fea94-202610250751";
-import { renderResume } from "./views/resume.js?v=f9fea94-202610250751";
-import { toggleDevUnlock, setDevUnlock } from "./dev-mode.js?v=f9fea94-202610250751";
-import { togglePreviewMedia, setPreviewMedia, isPreviewMedia } from "./preview-mode.js?v=f9fea94-202610250751";
-import { isInstructorDevice } from "./instructor-mode.js?v=f9fea94-202610250751";
-import { startReminders } from "./reminders.js?v=f9fea94-202610250751";
-import { watchReviewArrivals } from "./review-arrivals.js?v=f9fea94-202610250751";
-import { enterView, leaveView } from "./transitions.js?v=f9fea94-202610250751";
-import { gateRoutes } from "./features.js?v=f9fea94-202610250751";
+import { el, mount, download } from "./dom.js?v=8b2a230-202610250853";
+import * as store from "./store.js?v=8b2a230-202610250853";
+import { resolveSlug, slugFromUrl, currentSession, signOut, setPersistToken, inviteFromUrl, persistToken } from "./session.js?v=8b2a230-202610250853";
+import { tryStoredKey } from "./gate.js?v=8b2a230-202610250853";
+import { createRouter } from "./router.js?v=8b2a230-202610250853";
+import { createChrome } from "./chrome.js?v=8b2a230-202610250853";
+import { toast } from "./ui.js?v=8b2a230-202610250853";
+import { isTestSeat } from "./test-seats.js?v=8b2a230-202610250853";
+import { renderLogin } from "./views/login.js?v=8b2a230-202610250853";
+import { renderToday } from "./views/today.js?v=8b2a230-202610250853";
+import { renderMap } from "./views/map.js?v=8b2a230-202610250853";
+import { renderStep, isStepArgs, moduleIdFromArgs } from "./views/step.js?v=8b2a230-202610250853";
+import { renderTasks } from "./views/tasks.js?v=8b2a230-202610250853";
+import { renderCalendar } from "./views/calendar.js?v=8b2a230-202610250853";
+import { renderLibrary } from "./views/library.js?v=8b2a230-202610250853";
+import { renderPosts } from "./views/posts.js?v=8b2a230-202610250853";
+import { renderHire } from "./views/hire.js?v=8b2a230-202610250853";
+import { renderResume } from "./views/resume.js?v=8b2a230-202610250853";
+import { toggleDevUnlock, setDevUnlock } from "./dev-mode.js?v=8b2a230-202610250853";
+import { togglePreviewMedia, setPreviewMedia, isPreviewMedia } from "./preview-mode.js?v=8b2a230-202610250853";
+import { isInstructorDevice } from "./instructor-mode.js?v=8b2a230-202610250853";
+import { startReminders } from "./reminders.js?v=8b2a230-202610250853";
+import { watchReviewArrivals } from "./review-arrivals.js?v=8b2a230-202610250853";
+import { enterView, leaveView } from "./transitions.js?v=8b2a230-202610250853";
+import { gateRoutes } from "./features.js?v=8b2a230-202610250853";
 
 /* Coach (today) and Posts are gated in features.js: switched off, they are
    not routes at all, so their links land on the Map. */

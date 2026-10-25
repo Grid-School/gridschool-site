@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { BEATS, BLANK_IDS, composeBeats, scriptSeconds, blanksLeft, voiceFlags, tidyAnswers } from "./loom-script.js?v=f9fea94-202610250751";
+import { BEATS, BLANK_IDS, composeBeats, scriptSeconds, blanksLeft, voiceFlags, tidyAnswers } from "./loom-script.js?v=8b2a230-202610250853";
 
 const examples = Object.fromEntries(BEATS.flatMap((beat) => beat.blanks.map((b) => [b.id, b.example])));
 

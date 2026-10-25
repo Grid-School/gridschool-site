@@ -3,7 +3,7 @@
  * The real handoff is POST /leads/apply. Mailto is only a fallback if that fails.
  */
 
-import { LINKS, PERSIST, isPlaceholder } from "../config.js?v=f9fea94-202610250751";
+import { LINKS, PERSIST, isPlaceholder } from "../config.js?v=8b2a230-202610250853";
 
 const KEY = "gridschool.application.v1";
 const PAID_KEY = "gridschool.enrollment.v1";

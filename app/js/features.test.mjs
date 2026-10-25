@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { enabledViews, isViewEnabled, gateRoutes } from "./features.js?v=f9fea94-202610250751";
+import { enabledViews, isViewEnabled, gateRoutes } from "./features.js?v=8b2a230-202610250853";
 
 test("coach and posts are off with a placeholder endpoint and no flag", () => {
   const flags = enabledViews({ coach: { endpoint: "REPLACE_ME_COACH_ENDPOINT" }, features: {} });

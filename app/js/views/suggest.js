@@ -19,10 +19,10 @@
  * it's sent; sending again replaces an open suggestion.
  */
 
-import { el, mount, clear } from "../dom.js?v=f9fea94-202610250751";
-import { btn, toast } from "../ui.js?v=f9fea94-202610250751";
-import { buildGraph } from "../graph/model.js?v=f9fea94-202610250751";
-import { isLandmark } from "../graph/route.js?v=f9fea94-202610250751";
+import { el, mount, clear } from "../dom.js?v=8b2a230-202610250853";
+import { btn, toast } from "../ui.js?v=8b2a230-202610250853";
+import { buildGraph } from "../graph/model.js?v=8b2a230-202610250853";
+import { isLandmark } from "../graph/route.js?v=8b2a230-202610250853";
 import {
   applyOps,
   checkOps,
@@ -36,7 +36,7 @@ import {
   MAX_NOTE,
   MAX_TITLE,
   NEW_PREFIX,
-} from "../../../data/map-proposal.mjs?v=f9fea94-202610250751";
+} from "../../../data/map-proposal.mjs?v=8b2a230-202610250853";
 import {
   suggestReady,
   listSuggestions,
@@ -46,7 +46,7 @@ import {
   writeDraft,
   answerSeen,
   markAnswerSeen,
-} from "../suggest-remote.js?v=f9fea94-202610250751";
+} from "../suggest-remote.js?v=8b2a230-202610250853";
 
 const DRAG_SLOP = 8;
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -65,6 +65,7 @@ export function plainError(error, titleOf) {
   if (/cannot require side quest/.test(error)) return "A main step can't wait on a side quest. Put it after a main step.";
   if (/cycle/.test(error)) return "That would make a loop: each step would be waiting on the other.";
   if (/must come after a/.test(error)) return "This kind of step has to come after a call with your coach.";
+  if (/is not on your map/.test(error)) return "Your map changed since you started editing. Reload the page; your other edits are kept.";
   return `This would break a rule of the map (${error}).`;
 }
 
@@ -88,7 +89,9 @@ export function createSuggest({ ctx, redraw }) {
 
   const slug = () => ctx().state.slug;
   const curriculum = () => ctx().state.curriculum;
-  const ready = () => suggestReady(slug()) && Boolean(curriculum()?.nodes?.length);
+  /* Only a map the coach published can be edited: on the fallback (no published map yet) every change
+     would be against steps that aren't the student's, so the button doesn't appear at all. */
+  const ready = () => suggestReady(slug()) && Boolean(curriculum()?.nodes?.length) && Number.isInteger(ctx().state.mapVersion);
   const open = () => s.proposals.find((p) => p.status === "open") ?? null;
 
   const bar = el("div.sgbar", { hidden: true, role: "region", "aria-label": "Your map edits" });
@@ -511,7 +514,7 @@ export function createSuggest({ ctx, redraw }) {
       await refresh();
     } catch (error) {
       s.sending = false;
-      s.error = error.errors?.length ? error.errors[0] : `Not sent: ${error.message}. Your changes are kept here.`;
+      s.error = error.errors?.length ? plainError(error.errors[0], titleOf) : `Not sent: ${error.message} Your changes are kept here.`;
       renderCard();
     }
   }

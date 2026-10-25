@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { vslEmbed, checkSource } from "./vsl.mjs?v=f9fea94-202610250751";
+import { vslEmbed, checkSource } from "./vsl.mjs?v=8b2a230-202610250853";
 
 test("the video shows as a file or an embed, and nothing until it's a real https link", () => {
   assert.deepEqual(vslEmbed("https://dn1lktb897fdd.cloudfront.net/lessons/v.vsl/mp4/1080.mp4"), { kind: "file", src: "https://dn1lktb897fdd.cloudfront.net/lessons/v.vsl/mp4/1080.mp4" });
