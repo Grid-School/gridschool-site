@@ -2293,6 +2293,7 @@ pre.diagram--failed { border-color: var(--amber); }
 .task__pick:hover:not(:disabled) { border-color: color-mix(in srgb, var(--cyan) 60%, var(--hair-strong)); }
 .task__pick[aria-pressed="true"] { border-color: var(--cyan); background: var(--tint-cyan); color: #fff; }
 .task__pick:disabled { cursor: default; opacity: .7; }
+.task__pick--choice { height: auto; min-height: 44px; padding: 8px 14px; font: 500 14px var(--font-sans); text-align: left; }
 .task__ends { display: flex; justify-content: space-between; gap: 12px; max-width: 300px; }
 
 /* A free map (prep.js isFreeMap): a prepared step shows as part of the paid plan, no tracker. */
@@ -2574,3 +2575,53 @@ pre.diagram--failed { border-color: var(--amber); }
 .sgcard__tasks li:not(.sgcard__taskhead) { display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--text); }
 .sgcard__tasks li > span { flex: 1; min-width: 0; line-height: 1.4; }
 .sgcard__tasks .b { padding: 3px 7px; font-size: 12px; }
+
+/* A q-step's questions, answered on the step (views/answer.js). */
+.step__answer {
+  margin-top: var(--sp-5); padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--line); border-radius: var(--radius);
+  background: color-mix(in srgb, var(--text) 2%, transparent);
+  max-width: calc(var(--measure) + 48px);
+}
+.step__answer .eyebrow { color: var(--cyan); }
+.step__answer-lead { margin: 6px 0 var(--sp-3); color: var(--muted); font-size: 14.5px; line-height: 1.55; }
+.answer__list { display: grid; gap: var(--sp-4); }
+.answer__q { display: grid; gap: 8px; }
+.answer__prompt { margin: 0; color: #fff; font-size: 16px; line-height: 1.45; display: flex; gap: 10px; align-items: baseline; }
+.answer__n {
+  flex: none; width: 22px; height: 22px; border-radius: 50%; display: inline-grid; place-items: center;
+  border: 1px solid color-mix(in srgb, var(--cyan) 55%, var(--line)); font: 500 11.5px var(--font-mono); color: var(--cyan);
+}
+.answer__help { margin: 0 0 0 32px; color: var(--muted); font-size: 13.5px; line-height: 1.5; }
+.answer__opts, .answer__range, .answer__input, .answer__later, .answer__err { margin-left: 32px; }
+.answer__opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.answer__opt {
+  min-height: 40px; padding: 8px 12px; border-radius: var(--radius-sm); cursor: pointer; text-align: left;
+  border: 1px solid var(--hair-strong); background: var(--calm-1); color: var(--text); font: inherit; font-size: 14px;
+}
+.answer__opt:hover { border-color: color-mix(in srgb, var(--cyan) 60%, var(--hair-strong)); }
+.answer__opt[aria-pressed="true"] { border-color: var(--cyan); background: var(--tint-cyan); color: #fff; }
+.answer__input {
+  width: calc(100% - 32px); font: inherit; font-size: 14px; color: var(--text);
+  background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 9px 11px; resize: vertical;
+}
+.answer__range { display: flex; flex-wrap: wrap; gap: 12px; }
+.answer__range-part { display: grid; gap: 4px; font-size: 12.5px; color: var(--muted); }
+.answer__range-part input { width: 180px; font: inherit; font-size: 14px; color: var(--text); background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 9px 11px; }
+.answer__later { margin-top: 0; margin-bottom: 0; color: var(--muted); font-size: 13.5px; }
+.answer__err { margin-top: 0; margin-bottom: 0; color: var(--amber); font-size: 13px; }
+.answer__err:empty { display: none; }
+.answer__acts { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: var(--sp-4); }
+.answer__count { margin: 0; color: var(--muted); font: 400 12px var(--font-mono); letter-spacing: .06em; }
+.answer__status { margin: var(--sp-2) 0 0; color: var(--text); font-size: 14px; line-height: 1.5; }
+.answer__status:empty { display: none; }
+.answer__status--done { margin: 0 0 var(--sp-3); color: var(--ok); }
+.answer__summary { margin: 0; display: grid; gap: 4px 0; }
+.answer__summary dt { color: var(--muted); font-size: 13px; margin-top: 10px; }
+.answer__summary dd { margin: 0; color: #fff; font-size: 15px; line-height: 1.5; overflow-wrap: anywhere; white-space: pre-line; }
+@media (max-width: 600px) {
+  .step__answer { padding: var(--sp-2) var(--sp-3); }
+  .answer__help, .answer__opts, .answer__range, .answer__input, .answer__later, .answer__err { margin-left: 0; }
+  .answer__input { width: 100%; }
+  .answer__range-part input { width: 100%; }
+}

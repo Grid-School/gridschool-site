@@ -17,6 +17,6 @@ export function vslEmbed(value) {
 
 /** The check's ?from= for someone who watched: "vsl", or "vsl:<ad>" when the page itself came from an ad. */
 export function checkSource(from) {
-  const ad = String(from || "").replace(/[^\w.-]/g, "").slice(0, 50);
+  const ad = String(from || "").replace(/[^\w.:-]/g, "").slice(0, 50);
   return ad && ad !== "vsl" ? `vsl:${ad}` : "vsl";
 }

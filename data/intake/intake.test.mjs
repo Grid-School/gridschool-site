@@ -18,7 +18,7 @@ import {
   diagnosisMap,
   questionOf,
   SIGNALS,
-} from "./intake.mjs?v=8b2a230-202610250853";
+} from "./intake.mjs?v=d177a03-202610252138";
 
 const catalog = JSON.parse(readFileSync(new URL("./questions.json", import.meta.url)));
 
@@ -166,3 +166,12 @@ for (const c of SHARED.cases) {
     assert.deepEqual(bottlenecks(catalog, c.state, c.read), c.expect);
   });
 }
+
+test("c7 asks what they're into, with the ids seeds.py reads, and stays off the check's map", () => {
+  const ids = catalog.questions.filter((q) => q.chunk === "c7").map((q) => q.id);
+  assert.deepEqual(ids, ["techInterests", "personalInterests", "styleWords", "styleRefs", "voiceSample"]);
+  assert.ok(chunkMinutes(chunkQuestions(catalog, "c7", emptyState())) <= 5);
+  assert.equal(nextChunk(catalog, emptyState(), ["c0", "c1", "c2", "c3", "c4", "c5", "c6"]), "c7");
+  const map = diagnosisMap(catalog, emptyState());
+  assert.ok(!map.nodes.some((node) => node.chunk === "c7"));
+});

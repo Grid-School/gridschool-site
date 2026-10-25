@@ -22,6 +22,7 @@ export const STUDENT_KEYS = [
   "prefs",
   "search",
   "network",
+  "studio",
 ];
 
 export const INSTRUCTOR_KEYS = [

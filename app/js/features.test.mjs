@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { enabledViews, isViewEnabled, gateRoutes } from "./features.js?v=8b2a230-202610250853";
+import { enabledViews, isViewEnabled, gateRoutes } from "./features.js?v=d177a03-202610252138";
 
 test("coach and posts are off with a placeholder endpoint and no flag", () => {
   const flags = enabledViews({ coach: { endpoint: "REPLACE_ME_COACH_ENDPOINT" }, features: {} });
@@ -24,6 +24,6 @@ test("gateRoutes drops switched-off views only", () => {
   assert.deepEqual(Object.keys(gateRoutes(routes, { today: false, posts: true })), ["map", "tasks", "posts"]);
 });
 
-test("shipped config hides coach and posts", () => {
-  assert.deepEqual(enabledViews(), { today: false, posts: false });
+test("shipped config shows the coach (on the notebook server) and hides posts", () => {
+  assert.deepEqual(enabledViews(), { today: true, posts: false });
 });

@@ -2,12 +2,12 @@
   "id": "build-posts",
   "version": 1,
   "title": "Post the build: three posts from real work",
-  "purpose": "Three posts from the build: a decision, a diagram, the system in motion.",
+  "purpose": "Three posts from your build, drafted for you from your project: a decision, a diagram, the system in motion.",
   "lane": "network",
   "phase": "prove",
   "kind": "core",
   "completion": "link",
-  "why": "Screenshots alone don't land. What problem the screen represents, the decision you made, and why it matters is what makes people stop.",
+  "why": "Screenshots alone don't land. What problem the screen represents, the decision you made, and why it matters is what makes people stop. The drafter writes each one from your project and your week; you add the screenshot, fill the brackets and post.",
   "evidence": "Link to your best post of the three.",
   "modules": [
     {
@@ -19,24 +19,48 @@
   "tasks": [
     {
       "id": "decision",
-      "title": "Screenshot + the decision behind it",
+      "title": "Screenshot + the decision behind it (start from a decision draft)",
       "kind": "post",
       "est": 45,
-      "done_when": "Says what problem, what you decided, why it matters."
+      "done_when": "Says what problem, what you decided, why it matters.",
+      "open": {
+        "route": "studio",
+        "args": [
+          "posts"
+        ],
+        "withTask": true,
+        "label": "Open your post drafts"
+      }
     },
     {
       "id": "diagram",
-      "title": "Architecture or workflow diagram post",
+      "title": "Architecture or workflow diagram post (start from a build draft)",
       "kind": "post",
       "est": 60,
-      "done_when": "Someone who never saw the code understands the system."
+      "done_when": "Someone who never saw the code understands the system.",
+      "open": {
+        "route": "studio",
+        "args": [
+          "posts"
+        ],
+        "withTask": true,
+        "label": "Open your post drafts"
+      }
     },
     {
       "id": "motion",
-      "title": "A gif or short video of the system working",
+      "title": "A gif or short video of the system working (start from a build draft)",
       "kind": "post",
       "est": 90,
-      "done_when": "Shows the feature doing its job, start to finish."
+      "done_when": "Shows the feature doing its job, start to finish.",
+      "open": {
+        "route": "studio",
+        "args": [
+          "posts"
+        ],
+        "withTask": true,
+        "label": "Open your post drafts"
+      }
     }
   ],
   "slots": [

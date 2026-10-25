@@ -16,10 +16,10 @@
  * never gate a node: a habit is kept, not finished.
  */
 
-import { taskIsComplete, isCountTask } from "../task-state.js?v=8b2a230-202610250853";
-import { typeOf, specOf } from "../../../data/node-types.mjs?v=8b2a230-202610250853";
-import { prepOf, prepHint, opensLater, shortDay, isFreeMap, PAID_HINT, COURSE_HINT } from "../prep.js?v=8b2a230-202610250853";
-import { FREE_MODULES, isCourseStep, moduleId } from "../../../data/video-access.mjs?v=8b2a230-202610250853";
+import { taskIsComplete, isCountTask } from "../task-state.js?v=d177a03-202610252138";
+import { typeOf, specOf } from "../../../data/node-types.mjs?v=d177a03-202610252138";
+import { prepOf, prepHint, opensLater, shortDay, isFreeMap, PAID_HINT, COURSE_HINT } from "../prep.js?v=d177a03-202610252138";
+import { FREE_MODULES, isCourseStep, moduleId } from "../../../data/video-access.mjs?v=d177a03-202610252138";
 
 export { typeOf, specOf };
 
@@ -165,6 +165,8 @@ export function buildGraph(curriculum, student, { unlockAll = false, now = new D
       node.prep = prep;
       // Their tasks wait for our work, unless the step says they come first.
       node.preparing = node.prepFirst !== false && !prep.ready;
+      // The prepared work, once it's theirs, reads in the step's "From your coach" card.
+      if (prep.out && !node.fromAden) node.fromAden = { notes: prep.out.notes ?? null, links: prep.out.links ?? [], due: null };
       if (node.status !== STATUS.LIT) node.hint = prepHint(prep);
     }
     if (node.opens && node.status !== STATUS.LIT && opensLater(node, now)) {

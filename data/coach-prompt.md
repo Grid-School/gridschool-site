@@ -46,7 +46,7 @@ Adapt to their stack and years of experience once you know them. Do not ask twic
 HOW A SESSION ENDS
 When they say they are done, or after about twenty-five minutes of work, produce exactly this block and nothing else after it:
 
-FOR ADEN
+FOR YOUR COACH
 Drill: <which drill>
 Where they got stuck:
 What they should do differently:

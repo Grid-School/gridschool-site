@@ -6,7 +6,7 @@
  * or a review. The student sees that in ordinary words, not as a lighting rule.
  */
 
-import { STATUS } from "./graph/model.js?v=8b2a230-202610250853";
+import { STATUS } from "./graph/model.js?v=d177a03-202610252138";
 
 export const RULE = "Each step tells you whether to finish its tasks, save a link, or wait for review.";
 /** @deprecated use RULE, kept so old imports do not break mid-edit */
@@ -14,6 +14,7 @@ export const LAW = RULE;
 
 export function stepRule(node) {
   if (!node || node.kind === "future") return "";
+  if (node.type === "builder") return "Work through it below. It checks itself, and you finish when you say it's right.";
   if (node.completion === "tasks") return "Finish every task to complete this step.";
   if (node.signoff) return "This step is complete after the reviewer accepts your work.";
   return "Save the required link to complete this step.";

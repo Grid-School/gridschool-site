@@ -403,6 +403,8 @@ export function diagnosisMap(catalog, state, read = null, { done = ["c0"], top =
   }
   for (const id of queue) {
     const chunk = chunkOf(catalog, id);
+    // A chunk asked only on the board (c7, what they're into) tests no bottleneck, so the check's map leaves it out.
+    if (chunk.onCheck === false) continue;
     const asked = chunkQuestions(catalog, id, state);
     nodes.push({
       id: `lock.${id}`,

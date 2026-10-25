@@ -8,15 +8,15 @@
  * position; a task marked done elsewhere must not throw you back to the top.
  */
 
-import { el, mount } from "../dom.js?v=8b2a230-202610250853";
-import { btn, toast } from "../ui.js?v=8b2a230-202610250853";
-import { COACH } from "../../../config.js?v=8b2a230-202610250853";
-import { nextAction } from "../coach/next.js?v=8b2a230-202610250853";
-import { nextUp } from "../graph/model.js?v=8b2a230-202610250853";
-import { credits, formatUsd, attachmentBudget } from "../coach/credits.js?v=8b2a230-202610250853";
-import { rememberIntent } from "../coach/memory.js?v=8b2a230-202610250853";
-import { sendTurn, coachIsLive } from "../coach/client.js?v=8b2a230-202610250853";
-import { systemLine } from "./system-line.js?v=8b2a230-202610250853";
+import { el, mount } from "../dom.js?v=d177a03-202610252138";
+import { btn, toast } from "../ui.js?v=d177a03-202610252138";
+import { COACH } from "../../../config.js?v=d177a03-202610252138";
+import { nextAction } from "../coach/next.js?v=d177a03-202610252138";
+import { nextUp } from "../graph/model.js?v=d177a03-202610252138";
+import { credits, formatUsd, attachmentBudget } from "../coach/credits.js?v=d177a03-202610252138";
+import { rememberIntent } from "../coach/memory.js?v=d177a03-202610252138";
+import { sendTurn, coachIsLive, lastMonth } from "../coach/client.js?v=d177a03-202610252138";
+import { systemLine } from "./system-line.js?v=d177a03-202610252138";
 
 const TEXT_FILES = /\.(txt|md|markdown|json|diff|patch|py|js|mjs|ts|tsx|jsx|css|html|rs|go|java|rb|sh|yml|yaml|toml|csv)$/i;
 
@@ -57,7 +57,7 @@ export function renderToday(ctx) {
       "div.composer__bar",
       {},
       attachBtn,
-      el("span.composer__hint", {}, coachIsLive() ? COACH.model : "Practice mode. Replies are scripted until the Coach goes live."),
+      el("span.composer__hint", {}, coachIsLive(ctx.state.slug) ? "Your coach reads your map before answering." : "Practice mode. Replies are scripted until you sign in."),
       creditsEl,
       sendBtn
     ),
@@ -106,7 +106,11 @@ export function renderToday(ctx) {
   }
 
   function paintCredits() {
-    const budget = credits(current.state.student);
+    // The hosted coach's allowance comes from the server once it has answered; until then, the local meter.
+    const month = lastMonth();
+    const budget = month
+      ? { cap: month.cap, spent: month.spent, left: Math.max(0, month.cap - month.spent), model: "your coach" }
+      : credits(current.state.student);
     creditsEl.textContent = `${formatUsd(budget.left)} left`;
     creditsEl.title = `${formatUsd(budget.spent)} of ${formatUsd(budget.cap)} used this month on ${budget.model}`;
     creditsEl.classList.toggle("is-low", budget.left < 5);
@@ -153,9 +157,9 @@ export function renderToday(ctx) {
         el(
           "div.bubble",
           { class: `bubble--${turn.role}${turn.live === false ? " is-demo" : ""}` },
-          el("b.bubble__who", {}, turn.role === "assistant" ? "Coach" : "You"),
+          el("b.bubble__who", {}, turn.role === "assistant" ? "Your coach" : "You"),
           el("p", {}, turn.text),
-          turn.files?.length && el("div.bubble__files", {}, turn.files.map((f) => el("span", {}, f.name)))
+          turn.files?.length ? el("div.bubble__files", {}, turn.files.map((f) => el("span", {}, f.name))) : null
         )
       )
     );
@@ -207,7 +211,7 @@ export function renderToday(ctx) {
       current.store.appendChat(userTurn);
       current.store.appendChat({
         role: "assistant",
-        text: `I could not reach the model. ${error.message}`,
+        text: error.status ? error.message : `I could not reach your coach. ${error.message}`,
         at: new Date().toISOString(),
         live: false,
       });

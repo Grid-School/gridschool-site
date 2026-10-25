@@ -3,9 +3,9 @@
  * the notebook token and the cohort access key so the client can inject both.
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=8b2a230-202610250853";
-import { setPersistToken, signIn } from "./session.js?v=8b2a230-202610250853";
-import { unlock } from "./gate.js?v=8b2a230-202610250853";
+import { PERSIST, isPlaceholder } from "../../config.js?v=d177a03-202610252138";
+import { setPersistToken, signIn } from "./session.js?v=d177a03-202610252138";
+import { unlock } from "./gate.js?v=d177a03-202610252138";
 
 function endpoint() {
   return String(PERSIST.endpoint || "").replace(/\/$/, "");
@@ -42,8 +42,9 @@ export function peekInvite(invite) {
   return request("GET", `/auth/invite?token=${encodeURIComponent(invite)}`);
 }
 
-export function redeemInvite(invite, password) {
-  return request("POST", "/auth/redeem", { invite, password });
+/* email: only used when the seat has none yet (it becomes their sign-in). */
+export function redeemInvite(invite, password, email = "") {
+  return request("POST", "/auth/redeem", { invite, password, email });
 }
 
 export function loginWithPassword(email, password) {

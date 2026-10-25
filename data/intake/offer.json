@@ -19,15 +19,15 @@
   "payNote": "Less than two days of a typical software developer's pay.",
   "payNoteSource": "BLS OEWS May 2025: software developers' median annual wage $135,980, about $523 per working day (260 days). Check the current release before changing.",
   "prepared": {
-    "reach": "We find five fresh roles that fit you, the hiring manager for each, and a short note to each one in your voice.",
+    "reach": "We find five fresh roles that fit you, who to look for on each team, and a short note to the hiring manager in your voice.",
     "story": "We rewrite your headline and the top of your resume from what you've told us, and flag any number we need you to confirm.",
     "volume": "Every weekday we line up fresh roles under your exact title, with what to lead with for each.",
     "target": "We compare your history with live postings and recommend the one title your experience supports best.",
     "gap": "We draft a \"currently\" line for your resume and LinkedIn from what you're building or learning.",
-    "proof": "We line up an AI-built app whose owner wants it checked, set up the introduction, and give you the audit checklist and a report outline.",
+    "proof": "We give you the audit checklist, a report outline, where to find an AI-built app whose owner wants it checked, and a note to send them.",
     "screen": "We draft your 30-second answer to \"tell me about yourself\" for the role you want.",
     "technical": "We line up practice problems shaped like the round that stopped you.",
-    "final": "We go through your last final round with you and find where it slipped.",
+    "final": "We read what you tell us about your last final round and point to where it most likely slipped.",
     "level": "We find roles one level below your target to send alongside your usual ones."
   }
 }

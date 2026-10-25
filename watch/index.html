@@ -13,8 +13,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../rez.css?v=8b2a230-202610250853">
-<link rel="stylesheet" href="../js/sales.css?v=8b2a230-202610250853">
+<link rel="stylesheet" href="../rez.css?v=d177a03-202610252138">
+<link rel="stylesheet" href="../js/sales.css?v=d177a03-202610252138">
 </head>
 <body class="rez-page" data-from="watch">
 
@@ -75,7 +75,7 @@
     <h2>Skip to the full course.</h2>
     <p class="lede">$997 once for 12 months, or 7 days free and then $97 a month. Your map, every module and film, and the first week's work prepared for you.</p>
     <p class="sales-cta">
-      <a class="btn btn--solid" href="../checkout/?plan=complete&amp;from=vsl">Choose how to pay <span class="arr" aria-hidden="true">→</span></a>
+      <a class="btn btn--solid" href="../checkout/?plan=complete&amp;from=vsl" data-checkout>Choose how to pay <span class="arr" aria-hidden="true">→</span></a>
     </p>
     <p class="sales-fine">Free for 7 days, then $97 a month until you cancel, for at most 12 payments ($1,164). We email you 3 days before the first charge. Cancel any time online. 14-day refund on the one-time price. Prices are in US dollars and include any sales tax or VAT. Checkout shows them in your own currency.</p>
     <p class="sales-fine">Want me building it with you? <a class="link" href="../residency/">The Residency</a>. Buying it for someone else? <a class="link" href="../gift/">Give it as a gift</a>.</p>
@@ -86,17 +86,21 @@
 <footer><div class="wrap">GridSchool · <a href="mailto:support@gridschool.org">support@gridschool.org</a> · <a href="../terms/">Terms</a> · <a href="../privacy/">Privacy</a> · © 2026 GRID SCHOOL LLC · Boise, Idaho<br>A company's yes is theirs. Your evidence won't be.</div></footer>
 
 <script type="module">
-import { link } from "../config.js?v=8b2a230-202610250853";
-import { vslEmbed, checkSource } from "../js/vsl.mjs?v=8b2a230-202610250853";
+import { link, PERSIST } from "../config.js?v=d177a03-202610252138";
+import { vslEmbed, checkSource } from "../js/vsl.mjs?v=d177a03-202610252138";
+import { track } from "../check/events.js?v=d177a03-202610252138";
 
 const params = new URLSearchParams(location.search);
-// Opened from an ad (?from=meta-x): the check hears vsl:meta-x.
+// Opened from an ad (?from=meta-x): the check and checkout hear vsl:meta-x.
 const source = checkSource(params.get("from"));
-for (const anchor of document.querySelectorAll("a[data-check]")) {
+for (const anchor of document.querySelectorAll("a[data-check], a[data-checkout]")) {
   const url = new URL(anchor.getAttribute("href"), location.href);
   url.searchParams.set("from", source);
   anchor.href = url.toString();
 }
+// The event log (server/events.py WATCH): the page opened, the video started.
+track(PERSIST.endpoint, "watch.view", { source });
+const played = () => track(PERSIST.endpoint, "vsl.play", { source });
 const embed = vslEmbed(link("vslVideo"));
 if (embed) {
   const frame = document.getElementById("vsl");
@@ -105,6 +109,9 @@ if (embed) {
       ? Object.assign(document.createElement("video"), { src: embed.src, controls: true, playsInline: true, preload: "metadata" })
       : Object.assign(document.createElement("iframe"), { src: embed.src, title: "Why your applications get no replies", allow: "autoplay; fullscreen; picture-in-picture", loading: "lazy" });
   frame.replaceChildren(media);
+  if (embed.kind === "file") media.addEventListener("play", played, { once: true });
+  // An embedded player can't tell this page it started; focus moving into its frame is the click on play.
+  else window.addEventListener("blur", () => setTimeout(() => document.activeElement === media && played(), 0));
 }
 </script>
 </body>

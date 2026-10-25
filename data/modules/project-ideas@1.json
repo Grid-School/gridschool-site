@@ -1,14 +1,14 @@
 {
   "id": "project-ideas",
   "version": 1,
-  "title": "Five to ten agentic additions to a system you already have",
-  "purpose": "List AI/agentic additions to a real system, each tied to what users need.",
+  "title": "Pick your practice project from five made for you",
+  "purpose": "Five practice projects aimed at the job you want, written from your record; you pick one and it goes on your map.",
   "lane": "proof",
   "phase": "position",
   "kind": "core",
   "completion": "tasks",
-  "why": "A system that already runs is the fastest proof. Adding agent reliability, human approval, tool integration, or observability turns it into evidence of exactly what applied-AI roles hire for.",
-  "evidence": "A list of 5–10 ideas, each tied to something you read while commenting.",
+  "why": "A system that works, in public, is the fastest proof. Your coach's project generator reads your target job, your resume and your interests, and writes five ideas that each ship in days and fill a gap in your record. Your job is the choice: the one you'd actually enjoy building.",
+  "evidence": "The project you picked, on your map with its brief.",
   "modules": [
     {
       "id": "disciplines/05-agentic-workflow-engineering",
@@ -19,19 +19,23 @@
   "tasks": [
     {
       "id": "list",
-      "title": "List 5–10 possible AI/agentic additions (reliability, approval, tool/API integration, evals, regulated workflow)",
+      "title": "Read the five ideas and pick the one you'd enjoy building",
       "kind": "write",
-      "est": 60,
-      "done_when": "Each idea says what it adds and why a user would care.",
-      "fields": [
-        {
-          "id": "ideas",
-          "label": "Your ideas",
-          "textarea": true,
-          "rows": 8,
-          "required": true
-        }
-      ]
+      "est": 15,
+      "how": [
+        "Open the project ideas. Each says why it matters for the job you want, what it proves, the stack and the first three steps.",
+        "Want different ones? Make a fresh list. Your target job and interests shape it, so answering more questions makes it sharper.",
+        "Pick one. It becomes a step on your map with its brief, ready to build."
+      ],
+      "done_when": "Your practice project is a step on your map.",
+      "open": {
+        "route": "studio",
+        "args": [
+          "projects"
+        ],
+        "withTask": true,
+        "label": "Open your project ideas"
+      }
     }
   ],
   "slots": [
@@ -43,6 +47,6 @@
     "id": "v.project-ideas",
     "title": "Project ideas aimed at the job you want",
     "mins": 6,
-    "summary": "Reading postings for the problems teams actually have, and turning them into five project ideas you could ship."
+    "summary": "How to choose between project ideas: the one that proves the most of the job you want, in the fewest days."
   }
 }

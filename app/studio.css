@@ -1,0 +1,15 @@
+/* The studio (js/views/studio.js): project ideas and post drafts. Built on the resume builder's layout (resume.css). */
+.view--studio .rz { max-width: 860px; }
+.st__card { display: grid; gap: 6px; }
+.st__title { margin: 0; font-size: 17px; line-height: 1.3; }
+.st__days { color: var(--muted); font-weight: 400; font-size: 14px; }
+.st__line { margin: 0; font-size: 14px; line-height: 1.5; color: var(--text); }
+.st__line b { color: var(--muted); font-weight: 600; }
+.st__steps { margin: 4px 0 0; padding-left: 20px; font-size: 14px; line-height: 1.5; }
+.st__shape { margin: 0; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.st__label { display: block; margin: 14px 0 6px; font-size: 14px; font-weight: 600; }
+.st__draft { min-height: 240px; }
+.st__warn { color: var(--warn, #e0b44c); }
+.st__more { margin-top: 16px; }
+.st__more summary { cursor: pointer; color: var(--muted); font-size: 14px; }
+.st__more > .rz__text, .st__more > .rz__input { margin-top: 10px; }

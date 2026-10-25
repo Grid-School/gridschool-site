@@ -5,7 +5,7 @@
   "version": "complete-2",
   "title": "Your map",
   "law": "Every step either clears a likely bottleneck or tells us more about one.",
-  "started": "2026-10-23",
+  "started": "2026-10-24",
   "families": [
    {
     "id": "interview",
@@ -82,7 +82,7 @@
      "id": "v.complete-today",
      "title": "Today's ten minutes, done on screen",
      "mins": 3,
-     "summary": "Your coach does one of these ten-minute steps themselves, start to finish, so you can see what done looks like."
+     "summary": "Your coach does one of these ten-minute steps, start to finish, so you can see what done looks like."
     },
     "how": [
      "Open your LinkedIn profile and click the pencil beside your name.",
@@ -118,7 +118,7 @@
      "company": "Larkspur Pay",
      "title": "Backend Engineer, Payments",
      "url": "",
-     "posted": "2026-10-23",
+     "posted": "2026-10-24",
      "where": "Remote, US",
      "lead": [
       "Six years running payment and data APIs in Python and Go, which is the core of this role.",
@@ -146,8 +146,53 @@
     "evidence": "One fresh role has your application, led with what fits."
    },
    {
-    "id": "b.reach",
+    "id": "b.resume",
     "n": 3,
+    "type": "builder",
+    "kind": "core",
+    "phase": "now",
+    "family": "presence",
+    "title": "Build your resume, one question at a time",
+    "why": "Hiring software checks each required skill against your lines, and a recruiter skims the top in seconds. Specific, checkable lines are what still stand out now that anyone can polish a resume with AI.",
+    "evidence": "A downloaded resume where you confirmed every line.",
+    "requires": [],
+    "completion": "tasks",
+    "moduleRef": "resume-engine@1",
+    "tasks": [
+     {
+      "id": "b.resume.build",
+      "title": "Answer the questions and confirm every line",
+      "kind": "write",
+      "est": 45,
+      "how": [
+       "Start from the resume you have. The builder reads every line, keeps your words, and asks about what's missing, one question at a time.",
+       "Rough numbers are fine; say \"about\". Skip anything you can't answer.",
+       "Only lines you confirm go on your resume."
+      ],
+      "done_when": "Every line on your resume is confirmed.",
+      "open": {
+       "route": "resume",
+       "label": "Open the resume builder"
+      },
+      "changed": "Every line on your resume is one you confirmed, and your role reads and campaigns now work from it."
+     },
+     {
+      "id": "b.resume.download",
+      "title": "Download it as Word and PDF",
+      "kind": "ship",
+      "est": 5,
+      "done_when": "You have the Word file and the PDF saved where you apply from.",
+      "open": {
+       "route": "resume",
+       "label": "Open the resume builder"
+      },
+      "changed": "You have a Word file and a PDF of a resume you can explain line by line."
+     }
+    ]
+   },
+   {
+    "id": "b.reach",
+    "n": 4,
     "title": "Get your applications in front of a person",
     "family": "pipeline",
     "phase": "now",
@@ -166,7 +211,7 @@
      ],
      "rule": "reach"
     },
-    "prepared": "We find five fresh roles that fit you, the hiring manager for each, and a short note to each one in your voice.",
+    "prepared": "We find five fresh roles that fit you, who to look for on each team, and a short note to the hiring manager in your voice.",
     "stages": [
      {
       "id": "roles",
@@ -174,7 +219,7 @@
      },
      {
       "id": "managers",
-      "label": "Finding hiring managers"
+      "label": "Working out who to contact"
      },
      {
       "id": "notes",
@@ -182,7 +227,7 @@
      },
      {
       "id": "review",
-      "label": "Coach reviewing"
+      "label": "Checking the draft"
      },
      {
       "id": "ready",
@@ -211,7 +256,7 @@
    },
    {
     "id": "b.story",
-    "n": 4,
+    "n": 5,
     "title": "Make your resume read like the role you want",
     "family": "presence",
     "phase": "now",
@@ -244,7 +289,7 @@
      },
      {
       "id": "review",
-      "label": "Coach reviewing"
+      "label": "Checking the draft"
      },
      {
       "id": "ready",
@@ -281,7 +326,7 @@
    },
    {
     "id": "b.proof",
-    "n": 5,
+    "n": 6,
     "title": "Show you can catch what AI gets wrong",
     "family": "proof",
     "phase": "now",
@@ -300,19 +345,19 @@
      ],
      "rule": "proof"
     },
-    "prepared": "We line up an AI-built app whose owner wants it checked, set up the introduction, and give you the audit checklist and a report outline.",
+    "prepared": "We give you the audit checklist, a report outline, where to find an AI-built app whose owner wants it checked, and a note to send them.",
     "stages": [
      {
       "id": "match",
-      "label": "Finding an app to audit"
+      "label": "Gathering where to find an app"
      },
      {
       "id": "intro",
-      "label": "Setting up the introduction"
+      "label": "Drafting your note to the owner"
      },
      {
       "id": "review",
-      "label": "Coach reviewing"
+      "label": "Checking the draft"
      },
      {
       "id": "ready",
@@ -349,12 +394,13 @@
    },
    {
     "id": "q.c1",
-    "n": 6,
+    "n": 7,
     "title": "Your target roles, set: 5 questions",
     "family": "pipeline",
     "phase": "learn",
     "kind": "core",
     "requires": [],
+    "completion": "tasks",
     "chunk": "c1",
     "why": "Tell us what a good next job looks like for you, and what it can't cost you.",
     "basis": {
@@ -378,12 +424,13 @@
    },
    {
     "id": "q.c2",
-    "n": 7,
+    "n": 8,
     "title": "Where to apply, mapped: 5 questions",
     "family": "pipeline",
     "phase": "learn",
     "kind": "core",
     "requires": [],
+    "completion": "tasks",
     "chunk": "c2",
     "why": "Let's look at where your applications go and what comes back.",
     "basis": {
@@ -407,12 +454,13 @@
    },
    {
     "id": "q.c4",
-    "n": 8,
+    "n": 9,
     "title": "Your LinkedIn, checked: 6 questions",
     "family": "presence",
     "phase": "learn",
     "kind": "core",
     "requires": [],
+    "completion": "tasks",
     "chunk": "c4",
     "why": "This is what a recruiter sees in their first seven seconds. We'll handle the rewriting and the design.",
     "basis": {
@@ -427,21 +475,22 @@
       "title": "Answer the 6 questions (about 3 min)",
       "kind": "write",
       "done_when": "Your answers are in.",
-      "changed": "We're preparing your profile now. A person will review it within 24 hours.",
+      "changed": "We're preparing your profile now. It shows up on your map when it's ready.",
       "est": 3
      }
     ],
-    "evidence": "We're preparing your profile now. A person will review it within 24 hours.",
+    "evidence": "We're preparing your profile now. It shows up on your map when it's ready.",
     "group": "g.learn"
    },
    {
     "id": "q.c3",
-    "n": 9,
+    "n": 10,
     "title": "Your proof, sorted: 5 questions",
     "family": "proof",
     "phase": "learn",
     "kind": "core",
     "requires": [],
+    "completion": "tasks",
     "chunk": "c3",
     "why": "Let's look at the work you've shipped that someone else could open and check.",
     "basis": {
@@ -465,12 +514,13 @@
    },
    {
     "id": "q.c5",
-    "n": 10,
+    "n": 11,
     "title": "Your interviews, prepped: 2 questions",
     "family": "interview",
     "phase": "learn",
     "kind": "core",
     "requires": [],
+    "completion": "tasks",
     "chunk": "c5",
     "why": "Tell us about the interviews you've had and where they ended.",
     "basis": {
@@ -494,12 +544,13 @@
    },
    {
     "id": "q.c6",
-    "n": 11,
+    "n": 12,
     "title": "Your targets, sharpened: 4 questions",
     "family": "network",
     "phase": "learn",
     "kind": "core",
     "requires": [],
+    "completion": "tasks",
     "chunk": "c6",
     "why": "Tell us where you'd like to work, and where you wouldn't.",
     "basis": {
@@ -522,15 +573,45 @@
     "group": "g.learn"
    },
    {
+    "id": "q.c7",
+    "n": 13,
+    "title": "Your interests and voice, noted: 5 questions",
+    "family": "presence",
+    "phase": "learn",
+    "kind": "core",
+    "requires": [],
+    "completion": "tasks",
+    "chunk": "c7",
+    "why": "What you like working on, the look you like, and how you write. Project ideas, posts and drafts start from here.",
+    "basis": {
+     "confidence": "unassessed",
+     "because": [
+      "Answering opens up project ideas, posts and drafts that sound like you."
+     ]
+    },
+    "tasks": [
+     {
+      "id": "q.c7.answer",
+      "title": "Answer the 5 questions (about 4 min)",
+      "kind": "write",
+      "done_when": "Your answers are in.",
+      "changed": "Your interests and voice are on your map.",
+      "est": 4
+     }
+    ],
+    "evidence": "Your interests and voice are on your map.",
+    "group": "g.learn"
+   },
+   {
     "id": "w.checkin",
-    "n": 12,
+    "n": 14,
     "title": "Week one check-in",
     "family": "pipeline",
     "phase": "week",
     "kind": "core",
     "requires": [],
     "completion": "tasks",
-    "opens": "2026-10-30",
+    "opens": "2026-10-31",
     "coming": "One question about how your search feels, a week after you started.",
     "why": "A week in, one question. Your answer goes to your coach.",
     "tasks": [
@@ -562,7 +643,7 @@
    },
    {
     "id": "m.profile-images",
-    "n": 13,
+    "n": 15,
     "requires": [],
     "module": "profile-images@1",
     "family": "presence",
@@ -570,7 +651,7 @@
    },
    {
     "id": "m.profile-rewrite",
-    "n": 14,
+    "n": 16,
     "requires": [],
     "module": "profile-rewrite@1",
     "family": "presence",
@@ -578,7 +659,7 @@
    },
    {
     "id": "m.design-board",
-    "n": 15,
+    "n": 17,
     "requires": [],
     "module": "design-board@1",
     "family": "presence",
@@ -586,7 +667,7 @@
    },
    {
     "id": "m.portfolio-site",
-    "n": 16,
+    "n": 18,
     "requires": [],
     "module": "portfolio-site@1",
     "family": "presence",
@@ -594,7 +675,7 @@
    },
    {
     "id": "m.pinned-repos",
-    "n": 17,
+    "n": 19,
     "requires": [],
     "module": "pinned-repos@1",
     "family": "presence",
@@ -602,7 +683,7 @@
    },
    {
     "id": "m.project-ideas",
-    "n": 18,
+    "n": 20,
     "requires": [],
     "module": "project-ideas@1",
     "family": "proof",
@@ -610,7 +691,7 @@
    },
    {
     "id": "m.pick-feature",
-    "n": 19,
+    "n": 21,
     "requires": [],
     "module": "pick-feature@1",
     "family": "proof",
@@ -618,7 +699,7 @@
    },
    {
     "id": "m.build-agentic-feature",
-    "n": 20,
+    "n": 22,
     "requires": [],
     "module": "build-agentic-feature@1",
     "family": "proof",
@@ -626,7 +707,7 @@
    },
    {
     "id": "m.case-study",
-    "n": 21,
+    "n": 23,
     "requires": [],
     "module": "case-study@1",
     "family": "proof",
@@ -634,7 +715,7 @@
    },
    {
     "id": "m.target-list",
-    "n": 22,
+    "n": 24,
     "requires": [],
     "module": "target-list@1",
     "family": "network",
@@ -642,7 +723,7 @@
    },
    {
     "id": "m.posting-kit",
-    "n": 23,
+    "n": 25,
     "requires": [],
     "module": "posting-kit@1",
     "family": "network",
@@ -650,7 +731,7 @@
    },
    {
     "id": "m.build-posts",
-    "n": 24,
+    "n": 26,
     "requires": [],
     "module": "build-posts@1",
     "family": "network",
@@ -658,7 +739,7 @@
    },
    {
     "id": "m.network-sprint",
-    "n": 25,
+    "n": 27,
     "requires": [],
     "module": "network-sprint@1",
     "family": "network",
@@ -666,7 +747,7 @@
    },
    {
     "id": "m.in-person",
-    "n": 26,
+    "n": 28,
     "requires": [],
     "module": "in-person@1",
     "family": "network",
@@ -674,7 +755,7 @@
    },
    {
     "id": "m.title-cluster",
-    "n": 27,
+    "n": 29,
     "requires": [],
     "module": "title-cluster@1",
     "family": "pipeline",
@@ -682,7 +763,7 @@
    },
    {
     "id": "m.target-campaign",
-    "n": 28,
+    "n": 30,
     "requires": [],
     "module": "target-campaign@1",
     "family": "pipeline",
@@ -690,7 +771,7 @@
    },
    {
     "id": "m.warm-path",
-    "n": 29,
+    "n": 31,
     "requires": [],
     "module": "warm-path@1",
     "family": "pipeline",
@@ -698,7 +779,7 @@
    },
    {
     "id": "m.application-engine",
-    "n": 30,
+    "n": 32,
     "requires": [],
     "module": "application-engine@1",
     "family": "pipeline",
@@ -706,7 +787,7 @@
    },
    {
     "id": "m.story-bank",
-    "n": 31,
+    "n": 33,
     "requires": [],
     "module": "story-bank@1",
     "family": "interview",
@@ -714,7 +795,7 @@
    },
    {
     "id": "m.company-prep",
-    "n": 32,
+    "n": 34,
     "requires": [],
     "module": "company-prep@1",
     "family": "interview",
@@ -722,7 +803,7 @@
    },
    {
     "id": "m.mock-interview",
-    "n": 33,
+    "n": 35,
     "requires": [],
     "module": "mock-interview@1",
     "family": "interview",
@@ -730,7 +811,7 @@
    },
    {
     "id": "m.offer-reported",
-    "n": 34,
+    "n": 36,
     "requires": [],
     "module": "offer-reported@1",
     "family": "pipeline",
@@ -755,16 +836,16 @@
   "b.reach": {
    "stage": "managers",
    "at": {
-    "roles": "2026-10-24T00:35:39+00:00",
-    "managers": "2026-10-24T17:35:39+00:00"
+    "roles": "2026-10-25T01:26:51+00:00",
+    "managers": "2026-10-25T18:26:51+00:00"
    }
   },
   "b.story": {
    "stage": "review",
    "at": {
-    "reading": "2026-10-23T22:35:39+00:00",
-    "rewriting": "2026-10-24T11:35:39+00:00",
-    "review": "2026-10-24T18:35:39+00:00"
+    "reading": "2026-10-24T23:26:51+00:00",
+    "rewriting": "2026-10-25T12:26:51+00:00",
+    "review": "2026-10-25T19:26:51+00:00"
    }
   }
  }

@@ -3,9 +3,10 @@
  *
  * 1. Sign in: the link in the welcome email does it, or the email they paid with gets a code.
  * 2. Wait for the seat: the payment webhook makes it, usually within seconds.
- * 3. Welcome: their first name, the first thing their own check found, Aden's
- *    video when LINKS.welcomeVideo is set, and what happens next with a real time
- *    (when.js). People read most right after they buy; this is the page they reread.
+ * 3. Welcome: their first name, the first thing their own check found (or, with no check, that the
+ *    map starts with a few questions), the welcome video when LINKS.welcomeVideo is set, and what
+ *    happens next (welcome-copy.js). Complete is self-serve, so nothing here promises a review.
+ *    People read most right after they buy; this is the page they reread.
  * 4. Open the map: the account becomes a board session (POST /account/seat) and the board opens.
  *    If that hand-off says the sign-in expired, the sign-in form comes back.
  *
@@ -14,10 +15,11 @@
  * step 4 opens the board they already had, with everything they did on it.
  */
 
-import { PERSIST, link } from "../config.js?v=8b2a230-202610250853";
-import * as Account from "../check/account.js?v=8b2a230-202610250853";
-import { enterSeat } from "../app/js/persist-auth.js?v=8b2a230-202610250853";
-import { reviewLabel } from "./when.js?v=8b2a230-202610250853";
+import { PERSIST, link } from "../config.js?v=d177a03-202610252138";
+import * as Account from "../check/account.js?v=d177a03-202610252138";
+import { enterSeat } from "../app/js/persist-auth.js?v=d177a03-202610252138";
+import { startingOn, nextSteps, WAIT_LINE } from "./welcome-copy.js?v=d177a03-202610252138";
+import { track } from "../check/events.js?v=d177a03-202610252138";
 
 // Localhost never talks to production: ?api= when given, else the page's own origin.
 const API = (() => {
@@ -27,6 +29,8 @@ const API = (() => {
   return PERSIST.endpoint;
 })();
 const card = document.getElementById("card");
+// The event log (server/events.py ONBOARDING): someone who paid reached this page.
+track(API, "begin.view", { source: new URLSearchParams(location.search).get("from") || "" });
 const WAIT_MS = 90_000;
 
 /** Our words for a failure, never the browser's ("Failed to fetch"). */
@@ -34,27 +38,6 @@ function say(problem) {
   const message = problem?.message || "";
   if (!message || problem instanceof TypeError || /fetch|network|load failed/i.test(message)) return "We couldn't reach our server. Nothing is lost; try again in a moment.";
   return message;
-}
-
-/** What the map starts on, by the check's first finding (ids from intake_rules.RULES). */
-const STARTING_ON = {
-  reach: "getting your applications in front of a person",
-  story: "making your resume read like the role you want",
-  volume: "sending more of the right applications",
-  target: "settling on one role to aim for",
-  gap: "showing what you're doing now",
-  proof: "giving reviewers something of yours they can open",
-  screen: "winning the first recruiter call",
-  technical: "getting you through the technical round",
-  final: "turning final rounds into offers",
-  level: "aiming at the level your work supports",
-};
-
-function startingOn(me) {
-  const first = (me.checks || []).find((check) => Array.isArray(check.top) && check.top.length)?.top[0];
-  if (!first) return "Your map starts with what you told us in the free check. Each step says why it's there and what we're preparing for you.";
-  if (STARTING_ON[first.id]) return `We're starting where your free check pointed first: ${STARTING_ON[first.id]}.`;
-  return first.title ? `We're starting where your free check pointed first: ${first.title.replace(/\.$/, "")}.` : "Your map starts with what your free check found.";
 }
 
 function h(tag, className, text, attrs = {}, children = []) {
@@ -130,7 +113,7 @@ function codeView(email) {
 
 async function waitForSeat() {
   const started = Date.now();
-  show(h("p", "eyebrow", "Almost there"), h("h1", "card__title", "Setting up your map…"), h("div", "steps-wait", null, {}, [h("div", "dots", null, { "aria-hidden": "true" }), h("span", "", "Carrying over what your free check found.")]));
+  show(h("p", "eyebrow", "Almost there"), h("h1", "card__title", "Setting up your map…"), h("div", "steps-wait", null, {}, [h("div", "dots", null, { "aria-hidden": "true" }), h("span", "", WAIT_LINE)]));
   while (Date.now() - started < WAIT_MS) {
     const me = await Account.me(API);
     if (!me) return signInView("Your sign-in expired. Sign in again.");
@@ -145,12 +128,8 @@ async function waitForSeat() {
   );
 }
 
-function nextBlock() {
-  const steps = [
-    [`By ${reviewLabel()}`, "Aden goes through your map himself and changes anything the check got wrong."],
-    ["This week", "We start on the work marked Prepared for you on each step. When a piece is ready, it shows up on your map."],
-    ["Your part", "Only what needs you: sending from your own accounts, and confirming facts about yourself."],
-  ];
+function nextBlock(me) {
+  const steps = nextSteps(me);
   return h("section", "next", null, { "aria-label": "What happens next" }, [
     h("p", "card__sub next__title", "What happens next"),
     h("ol", "next__list", null, {}, steps.map(([when, what]) => h("li", "", null, {}, [h("span", "next__when", when), h("span", "next__what", what)]))),
@@ -189,8 +168,8 @@ function welcomeView(me) {
     h("p", "eyebrow", "You're in"),
     h("h1", "card__title", first ? `Welcome, ${first}.` : "Welcome."),
     h("p", "card__lead", startingOn(me)),
-    video ? h("iframe", "video", null, { src: video, title: "A welcome from Aden", allow: "fullscreen; picture-in-picture", loading: "lazy" }) : null,
-    nextBlock(),
+    video ? h("iframe", "video", null, { src: video, title: "A welcome from your coach", allow: "fullscreen; picture-in-picture", loading: "lazy" }) : null,
+    nextBlock(me),
     h("div", "card__row", null, {}, [open]),
     error,
     h("p", "card__fine", "Changed your mind? On the one-time price you have 14 days to ask for a full refund. On the monthly plan, cancel any time from the link in your email. Or reply to any email from us.")

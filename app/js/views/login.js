@@ -2,15 +2,15 @@
  * Invite set-password and return login. Demo never lands here.
  */
 
-import { el, mount } from "../dom.js?v=8b2a230-202610250853";
-import { gmark, wordmark } from "../../../js/brand.js?v=8b2a230-202610250853";
+import { el, mount } from "../dom.js?v=d177a03-202610252138";
+import { gmark, wordmark } from "../../../js/brand.js?v=d177a03-202610252138";
 import {
   enterSeat,
   loginWithPassword,
   peekInvite,
   redeemInvite,
   requestLoginLink,
-} from "../persist-auth.js?v=8b2a230-202610250853";
+} from "../persist-auth.js?v=d177a03-202610252138";
 
 const FIELD =
   "width:100%;font:inherit;font-size:15px;color:var(--text);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:11px 13px;";
@@ -108,12 +108,19 @@ function renderRedeem(app, invite) {
     placeholder: "Same password again",
   });
   const err = el("p.login__err", { hidden: true }, "");
+  /* A seat enrolled without an email takes the one typed here; it's how they sign in from then on. */
+  let needsEmail = false;
+  const emailHint = el("p.login__hint", { hidden: true, style: "margin:4px 0 0;font-size:13px;color:var(--muted)" },
+    "This is the email you'll sign in with from now on.");
 
   peekInvite(invite)
     .then((row) => {
       email.value = row.email || "";
-      email.placeholder = row.email ? "" : "Your email";
-      if (!row.email) email.readOnly = false;
+      needsEmail = !row.email;
+      email.placeholder = needsEmail ? "you@example.com" : "";
+      email.readOnly = !needsEmail;
+      emailHint.hidden = !needsEmail;
+      if (needsEmail) email.focus();
     })
     .catch((error) => {
       // A used or expired link is not a dead end: it becomes the normal sign-in,
@@ -129,6 +136,12 @@ function renderRedeem(app, invite) {
       onsubmit: async (event) => {
         event.preventDefault();
         err.hidden = true;
+        if (needsEmail && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.value.trim())) {
+          err.textContent = "Enter the email you'll sign in with.";
+          err.hidden = false;
+          email.focus();
+          return;
+        }
         if (password.value.length < 8) {
           err.textContent = "Password must be at least 8 characters.";
           err.hidden = false;
@@ -142,7 +155,7 @@ function renderRedeem(app, invite) {
           return;
         }
         try {
-          const result = await redeemInvite(invite, password.value);
+          const result = await redeemInvite(invite, password.value, needsEmail ? email.value.trim() : "");
           await enterSeat(result);
           goBoard(result.slug);
         } catch (error) {
@@ -153,6 +166,7 @@ function renderRedeem(app, invite) {
     },
     label("login-email", "Email"),
     email,
+    emailHint,
     label("login-password", "Password"),
     password,
     label("login-confirm", "Confirm password"),
@@ -163,7 +177,7 @@ function renderRedeem(app, invite) {
 
   mount(
     app,
-    shell("Set your password", "Your email is already on the seat. Pick a password. That is the whole door.", form)
+    shell("Set your password", "Pick a password. You'll sign in with your email and this password from now on.", form)
   );
 }
 
@@ -228,7 +242,7 @@ function renderReturn(app, presetEmail, notice = "") {
           try {
             await requestLoginLink(value);
             err.style.color = "var(--muted)";
-            err.textContent = "If that email has a seat, a new link is on the way. Check that inbox.";
+            err.textContent = "If that email is on an account, a new link is on the way. Nothing after 5 minutes? Check spam, then ask your coach for a new link.";
             err.hidden = false;
           } catch (error) {
             err.style.color = "";

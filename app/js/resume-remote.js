@@ -3,8 +3,8 @@
  * answers with the current record, which the page simply takes and keeps going.
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=8b2a230-202610250853";
-import { persistToken } from "./session.js?v=8b2a230-202610250853";
+import { PERSIST, isPlaceholder } from "../../config.js?v=d177a03-202610252138";
+import { persistToken } from "./session.js?v=d177a03-202610252138";
 
 export function resumeReady() {
   return Boolean(persistToken() && PERSIST?.endpoint && !isPlaceholder(PERSIST.endpoint));
@@ -37,6 +37,12 @@ export const skipQuestion = (slug, version, questionId) => call("POST", `${base(
 export const writeLines = (slug, version) => call("POST", `${base(slug)}/write`, { version });
 export const confirmLine = (slug, version, claimId, decision, { text, defense } = {}) =>
   call("POST", `${base(slug)}/confirm`, { version, claim_id: claimId, decision, text, defense });
+/* Saved versions: name it, keep it, download it again exactly as saved. */
+export const listSaves = (slug) => call("GET", `${base(slug)}/saves`);
+export const saveResume = (slug, name) => call("POST", `${base(slug)}/saves`, { name });
+export const renderSave = (slug, id, format) => call("POST", `${base(slug)}/saves/${id}/render`, { format });
+export const reportProblem = (slug, text, saveId) => call("POST", `${base(slug)}/report`, { text, save_id: saveId ?? null });
+
 /* The console's reads (admin token): one student's run trace, and every student's sends before vs after. */
 export const loadTrace = (slug) => call("GET", `${base(slug)}/trace`);
 export const loadOutcomes = () => call("GET", "/resume/outcomes");

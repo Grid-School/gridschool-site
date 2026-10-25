@@ -9,17 +9,17 @@
  * action, so nothing on this page needs instructions.
  *
  * Below the run: the route to a hire (where they stand), their people, their
- * pipeline, and, quieter, the story Aden set, their resume, and a way to bring
+ * pipeline, and, quieter, their story (drafted from their resume or set by their coach), their resume, and a way to bring
  * in a posting they found anywhere.
  *
  * Persistent (boot.js): polls and saves update in place without wiping a
  * half-typed form. Aden sees it read-only from the desk.
  */
 
-import { el, mount } from "../dom.js?v=8b2a230-202610250853";
-import { panel, btn, field, toast, copy } from "../ui.js?v=8b2a230-202610250853";
-import { isoDate, fmtDay } from "../time.js?v=8b2a230-202610250853";
-import { STATUS } from "../graph/model.js?v=8b2a230-202610250853";
+import { el, mount } from "../dom.js?v=d177a03-202610252138";
+import { panel, btn, field, toast, copy } from "../ui.js?v=d177a03-202610252138";
+import { isoDate, fmtDay } from "../time.js?v=d177a03-202610252138";
+import { STATUS } from "../graph/model.js?v=d177a03-202610252138";
 import {
   STAGES,
   RELATIONS,
@@ -63,14 +63,14 @@ import {
   nextTouch,
   targetCandidates,
   MAX_ACTIVE_TARGETS,
-} from "../search.js?v=8b2a230-202610250853";
-import { storyCard, appRow } from "./search-parts.js?v=8b2a230-202610250853";
-import { TOOLS } from "../engine.js?v=8b2a230-202610250853";
-import { PERSIST } from "../../../config.js?v=8b2a230-202610250853";
-import { matchedRoles, radarReady, fetchPacks, winsState, shareWin } from "../roles-remote.js?v=8b2a230-202610250853";
-import { createPackDrawer } from "./pack.js?v=8b2a230-202610250853";
-import { createCampaignDrawer } from "./campaign.js?v=8b2a230-202610250853";
-import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=8b2a230-202610250853";
+} from "../search.js?v=d177a03-202610252138";
+import { storyCard, appRow } from "./search-parts.js?v=d177a03-202610252138";
+import { TOOLS } from "../engine.js?v=d177a03-202610252138";
+import { PERSIST } from "../../../config.js?v=d177a03-202610252138";
+import { matchedRoles, radarReady, fetchPacks, winsState, shareWin, draftPositioning } from "../roles-remote.js?v=d177a03-202610252138";
+import { createPackDrawer } from "./pack.js?v=d177a03-202610252138";
+import { createCampaignDrawer } from "./campaign.js?v=d177a03-202610252138";
+import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=d177a03-202610252138";
 
 const RUN_FAMILIES = ["proof", "presence", "network", "interview"];
 /** How many moves the day leads with. More than this reads as a wall, not a plan. */
@@ -80,7 +80,7 @@ const TOOL_STEPS = {
   applications: ["application-engine", "title-cluster"],
   targets: ["target-campaign", "company-prep"],
   people: ["warm-path", "target-list", "network-sprint"],
-  profile: ["profile-rewrite", "profile-images"],
+  profile: ["resume-engine", "profile-rewrite", "title-cluster", "profile-images"],
   today: [],
 };
 const TOOL_WHY = {
@@ -88,7 +88,7 @@ const TOOL_WHY = {
   targets: "Five companies where hiring, size and fit overlap, worked on every channel: an email with a Loom, a LinkedIn request, a call, and follow-ups on day 3, 7 and 14.",
   people: "Referrals turn into interviews far more often than applications. Former colleagues first, then people you've met, then people in the seat.",
   applications: "Fresh roles that match your titles, strongest fits first. Prepare reads each one against your record; any posting you find can be prepared too.",
-  profile: "Recruiters search all day. Your story, headline and About from your coach, and the resume and portfolio every tool reads.",
+  profile: "Recruiters search all day. Your story, headline, About and the titles you search under, drafted from your resume, and the resume and portfolio every tool reads.",
 };
 
 /** Which lane of the grid each kind of move works. */
@@ -165,7 +165,7 @@ export function renderHire(ctx, initialTool, campaignId) {
     }
   }
 
-  async function loadRadar() {
+  async function loadRadar(titles = null) {
     if (!radarReady()) return;
     void loadRadarNote();
     fetchPacks(ctx.state.slug)
@@ -175,8 +175,9 @@ export function renderHire(ctx, initialTool, campaignId) {
       })
       .catch(() => {});
     const career = careerOf(student());
+    const search = titles?.length ? titles : career.titles;
     try {
-      radar = { ...(await matchedRoles({ titles: career.titles.length ? career.titles : ["Software Engineer"], years: career.years ?? null, limit: 60 })), loading: false };
+      radar = { ...(await matchedRoles({ titles: search.length ? search : ["Software Engineer"], years: career.years ?? null, limit: 60 })), loading: false };
     } catch (error) {
       radar = { roles: [], off: false, loading: false, error: error.message };
     }
@@ -850,15 +851,83 @@ export function renderHire(ctx, initialTool, campaignId) {
     document.title = `${TOOLS[focus].label} · ${s.name} · GridSchool`;
   }
 
+  /* ---------- positioning: headline, About and titles, drafted from their resume (positioning_api.py) ---------- */
+
+  let positioning = { busy: false, result: null, error: "" };
+  async function runPositioning() {
+    if (positioning.busy || readOnly()) return;
+    positioning = { busy: true, result: null, error: "" };
+    redraw();
+    try {
+      const result = await draftPositioning(ctx.state.slug);
+      positioning = { busy: false, result, error: "" };
+      toast(result.saved ? "Your headline and About are ready." : "Your draft is ready to compare.");
+      if (result.titles?.length) void loadRadar(result.titles);
+    } catch (error) {
+      positioning = { busy: false, result: null, error: error.message };
+    }
+    redraw();
+  }
+
   const profileStep = () => {
     const career = careerOf(student());
-    if (!career.headline) return el("p.muted", {}, "Your coach writes your headline and story with you on your next call. They show up here.");
+    const result = positioning.result;
+    const mine = Boolean(student()?.career?.auto?.positioning) || Boolean(result?.saved);
+    const headline = result?.saved ? result.draft.headline : career.headline;
+    const about = result?.saved ? result.draft.about : career.about;
+    const status = positioning.busy
+      ? el("p.muted", {}, "Drafting from your resume. This takes up to a minute.")
+      : positioning.error
+        ? el("p.muted", {}, positioning.error)
+        : result
+          ? el("p.muted", {}, result.note)
+          : null;
+    const draftBtn = readOnly() || !radarReady()
+      ? null
+      : btn({
+          label: positioning.busy ? "Drafting…" : !headline ? "Draft my headline and About" : mine ? "Draft again" : "Draft my own to compare",
+          variant: headline ? "quiet" : "solid",
+          onclick: () => runPositioning(),
+        });
+    const compare =
+      result && !result.saved
+        ? el(
+            "div.sstory",
+            {},
+            el("b", {}, "Your draft"),
+            result.draft.headline ? el("p.sstory__headline", {}, result.draft.headline) : null,
+            el(
+              "div.row",
+              {},
+              result.draft.headline ? btn({ label: "Copy headline", variant: "ghost", onclick: () => copy(result.draft.headline, "Headline copied.") }) : null,
+              result.draft.about ? btn({ label: "Copy About", variant: "quiet", onclick: () => copy(result.draft.about, "About copied.") }) : null
+            )
+          )
+        : null;
+    const confirm = (result?.draft?.confirm ?? (mine ? career.confirm : [])).filter(Boolean);
+    const check = confirm.length ? el("div.sstory__part", {}, el("b", {}, "Answer these for yourself before you post"), el("ul", {}, confirm.map((q) => el("li", {}, q)))) : null;
+    if (!headline)
+      return el(
+        "div",
+        {},
+        el("p.muted", {}, "Draft your headline, your About and the titles to search under from the resume you built. Your coach can sharpen it with you on a call."),
+        el("div.row", {}, draftBtn),
+        status
+      );
     return el(
-      "div.row",
+      "div",
       {},
-      btn({ label: "Copy headline", variant: "ghost", onclick: () => copy(career.headline, "Headline copied.") }),
-      career.about ? btn({ label: "Copy About", variant: "ghost", onclick: () => copy(career.about, "About copied.") }) : null,
-      readOnly() || searchOf(student()).profileAt ? null : btn({ label: "It's live on LinkedIn", variant: "solid", onclick: () => save(() => ({ profileAt: new Date().toISOString() }), { kind: "search.profile", payload: {} }) })
+      el(
+        "div.row",
+        {},
+        btn({ label: "Copy headline", variant: "ghost", onclick: () => copy(headline, "Headline copied.") }),
+        about ? btn({ label: "Copy About", variant: "ghost", onclick: () => copy(about, "About copied.") }) : null,
+        readOnly() || searchOf(student()).profileAt ? null : btn({ label: "It's live on LinkedIn", variant: "solid", onclick: () => save(() => ({ profileAt: new Date().toISOString() }), { kind: "search.profile", payload: {} }) }),
+        draftBtn
+      ),
+      status,
+      check,
+      compare
     );
   };
   const profileActions = el("div");
@@ -874,7 +943,7 @@ export function renderHire(ctx, initialTool, campaignId) {
       freshBox,
       el("div.hire__quiet", {}, el("details.hire__fold", { open: "" }, el("summary", {}, "Bring a posting from anywhere"), pasteForm), el("details.hire__fold", {}, el("summary", {}, "Live conversations"), liveBox), el("details.hire__fold", {}, el("summary", {}, "Log something you sent"), logForm), el("details.hire__fold", {}, el("summary", {}, "Everything you've sent"), allBox))
     ),
-    profile: el("section.tool__body", {}, panel({ eyebrow: "From your coach", title: "Your story" }, storyBox, profileActions), panel({ eyebrow: "Keep it current", title: "Resume and portfolio" }, el("div.sresume", {}, rLink.node, rPortfolio.node, rText.node, el("div.row", {}, rSave, rStamp)))),
+    profile: el("section.tool__body", {}, panel({ eyebrow: "Your positioning", title: "Your story" }, storyBox, profileActions), panel({ eyebrow: "Keep it current", title: "Resume and portfolio" }, el("div.sresume", {}, rLink.node, rPortfolio.node, rText.node, el("div.row", {}, rSave, rStamp)))),
   };
 
   const node = el("div.view.view--hire.view--tool", {}, headBox, ...Object.values(sections), drawer.layer, camp.layer);

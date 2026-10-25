@@ -10,14 +10,14 @@
  * day or week, because "3 comments a day" is never finished, only kept.
  */
 
-import { el } from "../dom.js?v=8b2a230-202610250853";
-import { btn, toast } from "../ui.js?v=8b2a230-202610250853";
-import { KIND_LABEL, TASK_STATE, formatEstimate } from "../tasks.js?v=8b2a230-202610250853";
-import { taskIsComplete, isCountTask, countOf } from "../task-state.js?v=8b2a230-202610250853";
-import { fmtDay, fmtTime, relativeDay } from "../time.js?v=8b2a230-202610250853";
-import { joinIsLive } from "../call-slot.js?v=8b2a230-202610250853";
-import { isPrivateLinkKey, link } from "../../../config.js?v=8b2a230-202610250853";
-export { statusLabel } from "../copy.js?v=8b2a230-202610250853";
+import { el } from "../dom.js?v=d177a03-202610252138";
+import { btn, toast } from "../ui.js?v=d177a03-202610252138";
+import { KIND_LABEL, TASK_STATE, formatEstimate } from "../tasks.js?v=d177a03-202610252138";
+import { taskIsComplete, isCountTask, countOf } from "../task-state.js?v=d177a03-202610252138";
+import { fmtDay, fmtTime, relativeDay } from "../time.js?v=d177a03-202610252138";
+import { joinIsLive } from "../call-slot.js?v=d177a03-202610252138";
+import { isPrivateLinkKey, link } from "../../../config.js?v=d177a03-202610252138";
+export { statusLabel } from "../copy.js?v=d177a03-202610252138";
 
 export const stateIdOf = (task) => task.weekKey ?? task.id;
 
@@ -89,6 +89,36 @@ function scaleField(item, inputId, value, done) {
   );
 }
 
+/**
+ * One of a few answers (a field with `choices`: [{value, label}]), e.g. how a student is named next to
+ * their words and where they may appear. Same pattern as the scale: buttons, the pick in a hidden input.
+ */
+function choiceField(item, inputId, value, done) {
+  const input = el("input", { id: inputId, type: "hidden", value: String(value ?? "") });
+  const buttons = item.choices.map((choice, index) =>
+    el(
+      "button.task__pick.task__pick--choice",
+      {
+        type: "button",
+        "aria-pressed": String(String(value) === String(choice.value)),
+        disabled: done,
+        onclick: () => {
+          input.value = String(choice.value);
+          buttons.forEach((other, i) => other.setAttribute("aria-pressed", String(i === index)));
+        },
+      },
+      choice.label
+    )
+  );
+  return el(
+    "div.task__field.task__field--scale",
+    { role: "radiogroup", "aria-label": item.label },
+    el("span", {}, item.label),
+    el("div.task__scale", {}, buttons),
+    input
+  );
+}
+
 function taskOpen(task, { navigate } = {}) {
   const open = task.open;
   if (!open) return null;
@@ -96,7 +126,8 @@ function taskOpen(task, { navigate } = {}) {
     return btn({
       label: open.label || "Open task",
       variant: "quiet",
-      onclick: () => navigate?.(open.route, ...(open.args ?? [])),
+      // withTask: the tool learns which task opened it, so finishing the work there checks the task.
+      onclick: () => navigate?.(open.route, ...(open.args ?? []), ...(open.withTask && task.id ? [task.id] : [])),
     });
   }
   if (open.key) {
@@ -205,6 +236,7 @@ export function taskRow(task, { store, navigate, showGo = false } = {}) {
             fields.map((item) => {
               const inputId = `task-${id}-${item.id}`;
               if (item.scale) return scaleField(item, inputId, answers[item.id] ?? "", done);
+              if (Array.isArray(item.choices)) return choiceField(item, inputId, answers[item.id] ?? "", done);
               const props = {
                 id: inputId,
                 placeholder: item.placeholder ?? "",

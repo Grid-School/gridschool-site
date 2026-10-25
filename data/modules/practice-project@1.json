@@ -1,0 +1,67 @@
+{
+  "id": "practice-project",
+  "version": 1,
+  "title": "Your practice project: build it, ship it, post it",
+  "purpose": "The project you picked from your list, scoped to ship in days, on your map with its brief.",
+  "lane": "proof",
+  "phase": "prove",
+  "kind": "core",
+  "completion": "tasks",
+  "why": "A small project that works, in public, with a README that says what it proves, is checkable proof for the job you want. Ship the smallest version first, in a few days.",
+  "evidence": "A public repo with a README and a demo, and one post about it.",
+  "tasks": [
+    {
+      "id": "build",
+      "title": "Build the first version, starting from the three steps in the brief",
+      "kind": "ship",
+      "est": 600,
+      "how": [
+        "The brief above is yours to change. Cut anything that won't fit in the days it names.",
+        "Work in a public repo from the first commit, so the history shows how you think.",
+        "Stop when the smallest version works end to end. Polish comes after it's live."
+      ],
+      "done_when": "The smallest version works end to end, in a public repo."
+    },
+    {
+      "id": "ship",
+      "title": "Ship it: a README that says what it proves, and a demo anyone can open",
+      "kind": "ship",
+      "est": 90,
+      "done_when": "A stranger can open the link, see it work, and read in the README what problem it solves and what you decided.",
+      "fields": [
+        {
+          "id": "url",
+          "label": "Link to the repo or the demo",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "post",
+      "title": "Post about it: pick a draft written from your project and make it yours",
+      "kind": "post",
+      "est": 20,
+      "done_when": "The post is live and every claim in it is something you did.",
+      "open": {
+        "route": "studio",
+        "args": [
+          "posts"
+        ],
+        "withTask": true,
+        "label": "Open your post drafts"
+      },
+      "fields": [
+        {
+          "id": "url",
+          "label": "Link to the post",
+          "required": true
+        }
+      ]
+    }
+  ],
+  "slots": [
+    "notes",
+    "links",
+    "due"
+  ]
+}

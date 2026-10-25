@@ -8,68 +8,64 @@ founding slice: enough that a first customer can talk, be steered, be remembered
 in a small way, and see how much of their month is left. Everything below the
 line is a later enhancement, not a missing piece of the MVP.
 
-## What founding students get
 
-- A conversation on Today, input at the bottom, the way Cursor sits.
-- Credits on the right of that input. Cap is **$50 of real xAI usage per student
- per calendar month**. The meter is honest: it counts tokens, prices them, and
- refuses the next turn when the month is spent.
-- Board context in every turn: the open node, the top task and its `done_when`,
- Aden's Focus and Next, unread reviews. The model is not allowed to invent a
+## What students get
+
+- A conversation on the Coach door, input at the bottom, the way Cursor sits.
+- The model is Claude (`COACH_MODEL`, default Sonnet), behind the notebook
+ server's own route, `POST /students/<slug>/coach` (`site/server/coach_api.py`).
+ The browser never holds a key; the student's own sign-in token is the auth.
+- A monthly allowance per student, by plan, in real dollars of model use
+ (`coach_api.MONTHLY_USD`: free 1, Complete 10, Residency 25). It is counted
+ server-side in `ai_usage` (kind `coach`), so it holds across devices and
+ deploys, and the server answers 429 when the month is spent. The meter beside
+ the input shows what the server last reported.
+- Context in every turn, built on the server: the coach prompt and teaching
+ corpus (`data/coach-prompt.md` + `data/coach-corpus.md`, a cached prefix),
+ the student's seeds (`seeds.py`: target, level, skills, interests, confirmed
+ proof) and their published map with finished steps marked. The page adds the
+ board lines only it can work out: the open node, the top task, the coach's
+ Focus and Next, and retrieved memory. The model is not allowed to invent a
  different "what now".
 - A small memory: notes the student asks it to keep, plus text files they
  attach. Retrieval is keyword overlap over that list. No vector database.
-- Limits on paste and attachments, because an unbounded paste is how a $50 cap
- dies in one afternoon.
-- A teaching corpus (`data/coach-prompt.md` + `data/coach-corpus.md`) that we
- can grow as videos and better methods land. The model is instructed to take
- hard stances, stay on the next action, and treat anything inside a user or
- file fence as untrusted data.
+- Limits on paste and attachments (client and server), because an unbounded
+ paste is how a monthly allowance dies in one afternoon.
+- The student's message and files travel inside USER and FILE fences the prompt
+ calls untrusted data. The coach has no tools.
 
-Until `COACH.endpoint` is a live proxy with an xAI key, the client answers
-locally from the same packed context. The UI, the credits, the memory, and the
-limits are real either way. Hooking Grok is one file and one environment
-variable (`site/server/coach.py` + `XAI_API_KEY`).
+The demo board, and any device without a sign-in token, gets practice replies
+composed locally from the same pack, labelled as practice. With
+`ANTHROPIC_API_KEY` unset on the server the route answers 503 and says so.
+"Need help with this step?" on each step still sends the question to the
+student's coach with a link to the step; it does not go through the model.
 
 ## Why not pull an open-source memory stack
 
 mem0, Chroma, LlamaIndex, and friends are built for long-lived corpora and a
-server. Five founding students, a 12-week intensive, and a $50/month cap do not
-need that. They need notes that survive a refresh and get quoted when the
-student mentions the same topic again.
+server. A small cohort and a monthly allowance do not need that. They need
+notes that survive a refresh and get quoted when the student mentions the same
+topic again.
 
 The retrieval function is one file (`memory.js`) with a stable shape:
-`retrieve(memory, query) → snippets`. When the corpus outgrows keyword search - 
-video transcripts, every review, every failure log, swap the body of that
+`retrieve(memory, query) → snippets`. When the corpus outgrows keyword search
+(video transcripts, every review, every failure log), swap the body of that
 function. Candidates when that day comes, in order of simplicity:
 
 1. **sqlite-vec** or **LanceDB** next to the student JSON, still local.
 2. **mem0** only if we already have a real backend and want managed extraction.
 3. Never a hosted "second brain" product that phones home with student code.
 
-Cloud file storage is the same story: founding writes text into the student
-overlay (the same place evidence already lives). A real bucket is a later swap
-of `store.addMemoryFile`, not a new UI.
+## The math
 
-## The $50 math (August 2026 rates)
+A typical turn is about 3k tokens of cached prompt, 2k of context and history,
+and 300 out: roughly two cents on Sonnet. Complete's allowance is a few hundred
+turns a month. The cap exists so a student cannot paste a repo and idle-loop
+the model overnight, not because conversation is expensive.
 
-Default model is `grok-4.3`: **$1.25 / $2.50 per million** input/output under
-200k prompt tokens. It is the current general-purpose Grok that does not jump
-to long-context pricing on a normal mentoring turn.
+Hard rules:
 
-A typical packed turn here is ~2.5k input + ~400 output ≈ **$0.004**. At that
-rate $50 is more than ten thousand turns. The cap exists so a student cannot
-paste a repo and idle-loop the model overnight, not because conversation is
-expensive.
-
-`grok-4.6` ($2 / $6, 500k context) is the upgrade when we want deeper reasoning
-or code review. It stays a config change. Do not point founding traffic at it
-until the corpus and the retrieval are good enough that the extra spend buys
-something.
-
-Hard rules baked into the client:
-
-- Refuse the turn if remaining budget < the estimated cost of this prompt.
+- The server refuses the turn once the month's allowance is spent.
 - Combined paste + files capped at `COACH.maxPasteChars` (24k ≈ 6k tokens).
 - At most `COACH.maxFiles` attachments, each `COACH.maxFileBytes`.
 - Only the last `COACH.maxTurnsKept` turns travel with the request. Older turns
@@ -101,6 +97,6 @@ Hard rules baked into the client:
 
 - Make the Coach the person who decides the next node. The board decides.
  The Coach recites it and helps them do it.
-- Meter Aden's own tokens as if they were the student's. The $50 is theirs.
+- Meter the coach's own tokens as if they were the student's. The allowance is theirs.
 - Fake a live model. Demo replies are labelled. The credit meter still moves,
  so the student learns the shape before a key is pasted.

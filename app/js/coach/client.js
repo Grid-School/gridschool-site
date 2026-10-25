@@ -7,10 +7,11 @@
  * estimate, so a student learns the meter before anyone pastes an API key.
  */
 
-import { COACH, isPlaceholder } from "../../../config.js?v=8b2a230-202610250853";
-import { loadCoachPrompt } from "../api.js?v=8b2a230-202610250853";
-import { packContext, recentTurns } from "./pack.js?v=8b2a230-202610250853";
-import { estimateTokens, costUsd, monthKey, wouldExceed } from "./credits.js?v=8b2a230-202610250853";
+import { COACH, PERSIST, isPlaceholder } from "../../../config.js?v=d177a03-202610252138";
+import { loadCoachPrompt } from "../api.js?v=d177a03-202610252138";
+import { persistToken } from "../session.js?v=d177a03-202610252138";
+import { packContext, recentTurns } from "./pack.js?v=d177a03-202610252138";
+import { estimateTokens, costUsd, monthKey, wouldExceed } from "./credits.js?v=d177a03-202610252138";
 
 const corpusCache = { text: null, promise: null };
 
@@ -25,9 +26,27 @@ async function loadCorpus() {
   return corpusCache.text;
 }
 
-function live() {
-  return Boolean(COACH.hosted && COACH.endpoint && !isPlaceholder(COACH.endpoint));
+/**
+ * The hosted coach lives on the notebook server (server/coach_api.py): COACH.endpoint "persist" means
+ * POST <PERSIST.endpoint>/students/<slug>/coach with the student's own token. The demo board and a
+ * device without a token stay on practice replies.
+ */
+export function coachUrl(slug, { coach = COACH, persist = PERSIST, token = persistToken() } = {}) {
+  if (!coach.hosted || !coach.endpoint || isPlaceholder(coach.endpoint)) return null;
+  if (coach.endpoint !== "persist") return coach.endpoint;
+  if (!slug || slug === "demo" || !token || !persist?.endpoint || isPlaceholder(persist.endpoint)) return null;
+  return `${persist.endpoint.replace(/\/$/, "")}/students/${encodeURIComponent(slug)}/coach`;
 }
+
+let liveSlug = null;
+
+function live(slug = liveSlug) {
+  return Boolean(coachUrl(slug));
+}
+
+/** What the server said about this month the last time it answered: { spent, cap }. */
+let serverMonth = null;
+export const lastMonth = () => serverMonth;
 
 function localReply(pack, userText) {
   const { next } = pack;
@@ -48,20 +67,25 @@ function localReply(pack, userText) {
   return `${opener} ${closer}`;
 }
 
-async function postLive({ system, history, user }) {
-  const res = await fetch(COACH.endpoint, {
+async function postLive({ url, board, history, userText, files }) {
+  const res = await fetch(url, {
     method: "POST",
-    headers: { "content-type": "application/json" },
+    headers: { "content-type": "application/json", Authorization: `Bearer ${persistToken()}` },
     body: JSON.stringify({
-      model: COACH.model,
-      messages: [{ role: "system", content: system }, ...history, { role: "user", content: user }],
+      message: userText,
+      board,
+      history: history.map((turn) => ({ role: turn.role, text: turn.content })),
+      files: files.map((file) => ({ name: file.name, text: file.text })),
     }),
   });
+  const payload = await res.json().catch(() => ({}));
+  if (payload?.month) serverMonth = payload.month;
   if (!res.ok) {
-    const detail = await res.text().catch(() => "");
-    throw new Error(detail || `Coach proxy returned ${res.status}`);
+    const error = new Error(payload?.error || `The coach answered ${res.status}`);
+    error.status = res.status;
+    throw error;
   }
-  return res.json();
+  return payload;
 }
 
 /**
@@ -72,7 +96,8 @@ export async function sendTurn({ state, userText, files = [] }) {
   const prompt = await loadCoachPrompt(COACH.promptUrl);
   const corpus = await loadCorpus();
   const pack = packContext({ state, prompt, corpus, userText, files });
-  const gate = wouldExceed(state.student, `${pack.system}\n${pack.user}`);
+  // Practice replies keep the local meter; the hosted coach's allowance is the server's to enforce.
+  const gate = coachUrl(state.slug) ? { blocked: false } : wouldExceed(state.student, `${pack.system}\n${pack.user}`);
   if (gate.blocked) {
     return {
       ok: false,
@@ -87,12 +112,15 @@ export async function sendTurn({ state, userText, files = [] }) {
   const history = recentTurns(state.student.chat?.turns);
   const inputTokens = estimateTokens([pack.system, ...history.map((t) => t.content), pack.user].join("\n"));
 
-  if (live()) {
-    const payload = await postLive({ system: pack.system, history, user: pack.user });
-    const text = payload?.text ?? payload?.choices?.[0]?.message?.content ?? "";
+  liveSlug = state.slug;
+  const url = coachUrl(state.slug);
+  if (url) {
+    // The server holds the real monthly allowance and answers 429 when it is spent.
+    const payload = await postLive({ url, board: pack.board, history, userText, files });
+    const text = String(payload?.text ?? "");
     const usage = payload?.usage ?? {};
-    const inTok = usage.prompt_tokens ?? inputTokens;
-    const outTok = usage.completion_tokens ?? estimateTokens(text);
+    const inTok = usage.inTokens ?? inputTokens;
+    const outTok = usage.outTokens ?? estimateTokens(text);
     return {
       ok: true,
       text: text.trim(),
@@ -103,7 +131,7 @@ export async function sendTurn({ state, userText, files = [] }) {
         month: monthKey(),
         inTokens: inTok,
         outTokens: outTok,
-        usd: costUsd({ inputTokens: inTok, outputTokens: outTok }),
+        usd: usage.usd ?? costUsd({ inputTokens: inTok, outputTokens: outTok }),
       },
     };
   }

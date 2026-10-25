@@ -8,11 +8,18 @@
  * The server side is site/server/gifts_api.py. Words for each outcome: gift-words.mjs.
  */
 
-import { PERSIST, link } from "../config.js?v=8b2a230-202610250853";
-import { DONE, claimTitle, shareLabel } from "./gift-words.mjs?v=8b2a230-202610250853";
+import { PERSIST, link } from "../config.js?v=d177a03-202610252138";
+import { DONE, claimTitle, shareLabel, giftSource } from "./gift-words.mjs?v=d177a03-202610252138";
 
 const params = new URLSearchParams(location.search);
 const $ = (id) => document.getElementById(id);
+
+// Opened from an ad (?from=meta:P-TABLE-01): checkout hears gift:meta:P-TABLE-01, so a gift joins back to its ad.
+for (const anchor of document.querySelectorAll('a[href*="checkout/"]')) {
+  const url = new URL(anchor.getAttribute("href"), location.href);
+  url.searchParams.set("from", giftSource(params.get("from")));
+  anchor.href = url.toString();
+}
 
 async function post(path, body) {
   const res = await fetch(`${PERSIST.endpoint}/gift/${path}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });

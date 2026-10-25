@@ -1,0 +1,45 @@
+/* Profile images (js/views/images.js): photos, three options to pick from, and a crop at LinkedIn's sizes. */
+.view--images { padding: 24px 16px 64px; }
+.im { max-width: 960px; margin: 0 auto; }
+.im__head { display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
+.im__head > div { flex: 1 1 320px; }
+.im__title { font-size: clamp(22px, 3vw, 30px); margin: 4px 0 0; line-height: 1.15; }
+.im__card { margin-top: 14px; padding: 22px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.im__card .cnode__head h2 { margin: 0 0 6px; font-size: 20px; }
+.im__card .cnode__what { color: var(--muted); margin: 0 0 16px; }
+.im__why, .im__meta { color: var(--muted); font-size: 14px; margin: 8px 0 0; }
+.im__meta { margin: 0; }
+.im__note { margin: 0 0 14px; padding: 12px 14px; border-radius: var(--radius-sm); background: var(--bg2); border: 1px solid var(--line); }
+.im__empty { color: var(--muted); }
+.im__row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 14px; }
+.im__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin: 6px 0 12px; }
+.im__item { margin: 0; display: grid; gap: 6px; justify-items: start; }
+.im__item figcaption { font-size: 13px; color: var(--muted); }
+.im__thumb { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: var(--radius-sm); background: var(--bg2); border: 1px solid var(--line); }
+.im__drop { display: grid; gap: 4px; align-content: center; min-height: 120px; padding: 16px; border: 1px dashed var(--line); border-radius: var(--radius-sm); cursor: pointer; }
+.im__drop span { color: var(--muted); font-size: 13px; }
+.im__file { margin-top: 6px; color: var(--muted); max-width: 100%; }
+.im__more { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
+.im__more h3, .im__piece h3 { margin: 0; font-size: 16px; }
+.im__input { width: 100%; box-sizing: border-box; background: var(--bg2); color: var(--text); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 10px 12px; font: inherit; font-size: 15px; margin-top: 14px; }
+.im__input:focus { outline: none; border-color: var(--cyan); }
+.im__options { display: grid; gap: 12px; }
+.im__options.is-square { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+.im__options.is-wide { grid-template-columns: 1fr; }
+.im__option { display: grid; gap: 8px; padding: 8px; border: 2px solid var(--line); border-radius: var(--radius); background: var(--bg2); color: var(--text); cursor: pointer; text-align: left; font: inherit; }
+.im__option.is-picked { border-color: var(--ok); }
+.im__option:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+.im__opt { width: 100%; border-radius: var(--radius-sm); display: block; }
+.is-square .im__opt { aspect-ratio: 1; object-fit: cover; }
+.is-wide .im__opt { aspect-ratio: 4 / 1; object-fit: cover; }
+.im__check { font-size: 14px; color: var(--muted); }
+.is-picked .im__check { color: var(--ok); }
+.im__piece { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
+.im__cropper { display: grid; gap: 10px; margin-top: 10px; }
+.im__crop { width: 100%; max-width: 792px; height: auto; border-radius: var(--radius-sm); background: var(--bg2); }
+.im__crop.is-round { max-width: 280px; border-radius: 50%; }
+.im__sliders { display: grid; gap: 6px; max-width: 420px; }
+.im__slider { display: grid; grid-template-columns: 120px 1fr; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); }
+.im__slider input { width: 100%; }
+.im__thumb.is-broken, .im__opt.is-broken { visibility: hidden; }
+@media (max-width: 520px) { .im__card { padding: 16px; } .im__slider { grid-template-columns: 1fr; gap: 2px; } }

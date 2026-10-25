@@ -10,31 +10,35 @@
  * aliases so links already in the wild still land somewhere true.
  */
 
-import { el, mount, download } from "./dom.js?v=8b2a230-202610250853";
-import * as store from "./store.js?v=8b2a230-202610250853";
-import { resolveSlug, slugFromUrl, currentSession, signOut, setPersistToken, inviteFromUrl, persistToken } from "./session.js?v=8b2a230-202610250853";
-import { tryStoredKey } from "./gate.js?v=8b2a230-202610250853";
-import { createRouter } from "./router.js?v=8b2a230-202610250853";
-import { createChrome } from "./chrome.js?v=8b2a230-202610250853";
-import { toast } from "./ui.js?v=8b2a230-202610250853";
-import { isTestSeat } from "./test-seats.js?v=8b2a230-202610250853";
-import { renderLogin } from "./views/login.js?v=8b2a230-202610250853";
-import { renderToday } from "./views/today.js?v=8b2a230-202610250853";
-import { renderMap } from "./views/map.js?v=8b2a230-202610250853";
-import { renderStep, isStepArgs, moduleIdFromArgs } from "./views/step.js?v=8b2a230-202610250853";
-import { renderTasks } from "./views/tasks.js?v=8b2a230-202610250853";
-import { renderCalendar } from "./views/calendar.js?v=8b2a230-202610250853";
-import { renderLibrary } from "./views/library.js?v=8b2a230-202610250853";
-import { renderPosts } from "./views/posts.js?v=8b2a230-202610250853";
-import { renderHire } from "./views/hire.js?v=8b2a230-202610250853";
-import { renderResume } from "./views/resume.js?v=8b2a230-202610250853";
-import { toggleDevUnlock, setDevUnlock } from "./dev-mode.js?v=8b2a230-202610250853";
-import { togglePreviewMedia, setPreviewMedia, isPreviewMedia } from "./preview-mode.js?v=8b2a230-202610250853";
-import { isInstructorDevice } from "./instructor-mode.js?v=8b2a230-202610250853";
-import { startReminders } from "./reminders.js?v=8b2a230-202610250853";
-import { watchReviewArrivals } from "./review-arrivals.js?v=8b2a230-202610250853";
-import { enterView, leaveView } from "./transitions.js?v=8b2a230-202610250853";
-import { gateRoutes } from "./features.js?v=8b2a230-202610250853";
+import { el, mount, download } from "./dom.js?v=d177a03-202610252138";
+import * as store from "./store.js?v=d177a03-202610252138";
+import { resolveSlug, slugFromUrl, currentSession, signOut, setPersistToken, inviteFromUrl, persistToken } from "./session.js?v=d177a03-202610252138";
+import { tryStoredKey } from "./gate.js?v=d177a03-202610252138";
+import { peekInvite } from "./persist-auth.js?v=d177a03-202610252138";
+import { createRouter } from "./router.js?v=d177a03-202610252138";
+import { createChrome } from "./chrome.js?v=d177a03-202610252138";
+import { toast } from "./ui.js?v=d177a03-202610252138";
+import { isTestSeat } from "./test-seats.js?v=d177a03-202610252138";
+import { renderLogin } from "./views/login.js?v=d177a03-202610252138";
+import { renderToday } from "./views/today.js?v=d177a03-202610252138";
+import { renderMap } from "./views/map.js?v=d177a03-202610252138";
+import { renderStep, isStepArgs, moduleIdFromArgs } from "./views/step.js?v=d177a03-202610252138";
+import { renderTasks } from "./views/tasks.js?v=d177a03-202610252138";
+import { renderCalendar } from "./views/calendar.js?v=d177a03-202610252138";
+import { renderLibrary } from "./views/library.js?v=d177a03-202610252138";
+import { renderPosts } from "./views/posts.js?v=d177a03-202610252138";
+import { renderHire } from "./views/hire.js?v=d177a03-202610252138";
+import { renderResume } from "./views/resume.js?v=d177a03-202610252138";
+import { renderImages } from "./views/images.js?v=d177a03-202610252138";
+import { renderStudio } from "./views/studio.js?v=d177a03-202610252138";
+import { toggleDevUnlock, setDevUnlock } from "./dev-mode.js?v=d177a03-202610252138";
+import { togglePreviewMedia, setPreviewMedia, isPreviewMedia } from "./preview-mode.js?v=d177a03-202610252138";
+import { isInstructorDevice } from "./instructor-mode.js?v=d177a03-202610252138";
+import { startReminders } from "./reminders.js?v=d177a03-202610252138";
+import { watchReviewArrivals } from "./review-arrivals.js?v=d177a03-202610252138";
+import { enterView, leaveView } from "./transitions.js?v=d177a03-202610252138";
+import { gateRoutes } from "./features.js?v=d177a03-202610252138";
+import * as measure from "./measure.js?v=d177a03-202610252138";
 
 /* Coach (today) and Posts are gated in features.js: switched off, they are
    not routes at all, so their links land on the Map. */
@@ -48,6 +52,10 @@ const VIEWS = gateRoutes({
   do: { render: renderHire, persistent: true },
   /* No tab of its own: the resume builder opens from its node on the map. */
   resume: { render: renderResume, persistent: true },
+  /* The same for the profile images tool: opened from the profile-images step. */
+  images: { render: renderImages, persistent: true },
+  /* Same: project ideas and post drafts open from the steps that use them. */
+  studio: { render: renderStudio, persistent: true },
 });
 
 /** Old links keep working after surfaces folded. */
@@ -109,7 +117,7 @@ let shownStep = null;
 function syncChrome() {
   const ctx = context();
   const state = ctx.state;
-  chrome.setActive(route.name === "do" || route.name === "resume" ? "map" : route.name);
+  chrome.setActive(route.name === "do" || route.name === "resume" || route.name === "images" || route.name === "studio" ? "map" : route.name);
   chrome.setBanner(state);
   chrome.setCall(state);
   chrome.setSignals(state);
@@ -228,14 +236,27 @@ async function start() {
   /* Invite or return login injects both secrets. The student never types them.
      Demo stays the public tour: no account, no lesson text on the live site. */
   const invite = inviteFromUrl();
-  // Already signed in on this browser: the invite was used, so open the board.
   const signedIn = currentSession();
   if (invite && signedIn?.persistToken && signedIn.slug && signedIn.slug !== "demo") {
-    const url = new URL(location.href);
-    url.searchParams.delete("invite");
-    url.searchParams.set("s", signedIn.slug);
-    location.replace(url);
-    return;
+    /* A link that still works always wins over a remembered sign-in: that sign-in may be from a paused
+       or restored seat, and quietly using it sent people to the login screen with no way forward. A link
+       already used means they're in: open the board. */
+    let live = false;
+    try {
+      await peekInvite(invite);
+      live = true;
+    } catch {
+      live = false;
+    }
+    if (live) {
+      signOut();
+    } else {
+      const url = new URL(location.href);
+      url.searchParams.delete("invite");
+      url.searchParams.set("s", signedIn.slug);
+      location.replace(url);
+      return;
+    }
   }
   if (invite) {
     renderLogin(app, { invite });
@@ -316,6 +337,10 @@ async function start() {
     markReady();
     return;
   }
+
+  // The event log hears the map opened (measure.js): a student on their own seat only.
+  measure.enable({ role, slug, test: isTestSeat(slug) });
+  measure.mapOpened();
 
   chrome = createChrome({
     role,

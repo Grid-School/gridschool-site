@@ -15,7 +15,17 @@
       "title": "Titles you'll search: every name the market uses for the job you want",
       "kind": "write",
       "est": 15,
-      "done_when": "Your final list, with any you're dropping and why."
+      "how": [
+        "Your profile drafts a title cluster from the target in your resume. Read it, drop any you wouldn't apply under, and say why."
+      ],
+      "done_when": "Your final list, with any you're dropping and why.",
+      "open": {
+        "route": "do",
+        "args": [
+          "profile"
+        ],
+        "label": "Open your profile"
+      }
     },
     {
       "id": "companies",

@@ -5,8 +5,10 @@
  *
  * The tracker. A step's `stages` are in order and end in "ready". Where it
  * stands is instructor state, `prep[nodeId] = { stage, at: { [stageId]: iso } }`,
- * moved by ops/prep-stage.py. A stage reads done only when it is before the
- * current one and has a time: nothing is drawn done unless someone set it.
+ * moved by the prep runner (server/prep_runner.py) or by hand with ops/prep-stage.py.
+ * A stage reads done only when it is before the current one and has a time:
+ * nothing is drawn done unless it was set. A ready entry may carry `out`
+ * ({ notes, links }): the prepared work itself, shown on the step.
  *
  * Opening on a date. A step with `opens` (YYYY-MM-DD) stays "opens later"
  * until that local day, then opens like any other step.
@@ -71,14 +73,15 @@ export function prepOf(node, prep = {}) {
     else if (index < current && at) state = "done";
     return { id: stage.id, label: stage.label, state, at: state === "todo" ? null : at };
   });
-  return { stages: rows, current: current >= 0 ? rows[current] : null, ready, started: current >= 0 };
+  const out = ready && entry.out && typeof entry.out === "object" ? entry.out : null;
+  return { stages: rows, current: current >= 0 ? rows[current] : null, ready, started: current >= 0, out };
 }
 
 /** The short line under a tracked step on the map. */
 export function prepHint(prep) {
   if (!prep) return null;
   if (prep.ready) return "Ready for you";
-  return prep.current ? prep.current.label : "In your coach's queue";
+  return prep.current ? prep.current.label : "Starting soon";
 }
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];

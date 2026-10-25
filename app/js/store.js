@@ -9,9 +9,9 @@
  * data/students/<slug>.json.
  */
 
-import { loadBoard, boardCurriculum, libraryFor } from "./api.js?v=8b2a230-202610250853";
-import { buildGraph } from "./graph/model.js?v=8b2a230-202610250853";
-import { weekNumber, studentWeek, ownSchedule, hasOwnMap } from "./time.js?v=8b2a230-202610250853";
+import { loadBoard, boardCurriculum, libraryFor } from "./api.js?v=d177a03-202610252138";
+import { buildGraph } from "./graph/model.js?v=d177a03-202610252138";
+import { weekNumber, studentWeek, ownSchedule, hasOwnMap } from "./time.js?v=d177a03-202610252138";
 import {
   read,
   clear as clearPersist,
@@ -21,10 +21,11 @@ import {
   mergeStudent,
   STUDENT_KEYS,
   INSTRUCTOR_KEYS,
-} from "./persist.js?v=8b2a230-202610250853";
-import { flushAfterLocalWrite, hydrateFromRemote, persistStatus, startPolling } from "./persist-remote.js?v=8b2a230-202610250853";
-import { validReviewReturn } from "./review.js?v=8b2a230-202610250853";
-import { isDevUnlock } from "./dev-mode.js?v=8b2a230-202610250853";
+} from "./persist.js?v=d177a03-202610252138";
+import { flushAfterLocalWrite, hydrateFromRemote, persistStatus, startPolling } from "./persist-remote.js?v=d177a03-202610252138";
+import { validReviewReturn } from "./review.js?v=d177a03-202610252138";
+import { isDevUnlock } from "./dev-mode.js?v=d177a03-202610252138";
+import * as measure from "./measure.js?v=d177a03-202610252138";
 
 export { validReviewReturn };
 
@@ -210,6 +211,7 @@ function commitInstructor(mutate, event = null) {
 /* ---------- tasks ---------- */
 
 export function setTaskState(id, taskState, answers = null) {
+  measure.taskChecked(id, taskState, answers);
   return commitStudent(() => {
     overlay.tasks = { ...(overlay.tasks ?? {}) };
     const previous = overlay.tasks[id] ?? mergedStudent().tasks?.[id] ?? {};

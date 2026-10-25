@@ -73,28 +73,29 @@ export const LEGAL = {
 };
 
 /**
- * Coach. Today talks to Grok through a tiny proxy (`site/server/coach.py`)
- * when `endpoint` is a real URL. Until then the same conversation runs locally
- * so the product is walkable. Rates are xAI list prices as of 2026-08; change
- * them here when xAI does, not in the UI.
+ * Coach. `endpoint: "persist"` means the coach route on the notebook server
+ * (POST <PERSIST.endpoint>/students/<slug>/coach, server/coach_api.py), which
+ * answers with Claude and holds each student's monthly allowance. A signed-in
+ * student talks to it; the demo board and a device without a token get the
+ * practice replies built from the same pack. A full URL here still works for a
+ * stand-in server; REPLACE_ME hides the Coach door.
  *
- * `monthlyUsd` is the hard cap per student per calendar month. The client
- * refuses a turn that would cross it. Reasoning for the model choice and the
- * memory shape: `app/js/coach/README.md`.
+ * `monthlyUsd` and `rates` only drive the practice meter (Claude Sonnet list
+ * prices); the hosted coach reports the real month from the server.
+ * Reasoning for the memory shape: `app/js/coach/README.md`.
  */
 export const COACH = {
   promptUrl: "../data/coach-prompt.md",
   corpusUrl: "../data/coach-corpus.md",
-  hosted: false,
-  endpoint: "REPLACE_ME_COACH_ENDPOINT",
-  model: "grok-4.3",
-  monthlyUsd: 50,
-  rates: { inputPerM: 1.25, cachedPerM: 0.2, outputPerM: 2.5 },
+  hosted: true,
+  endpoint: "persist",
+  model: "claude-sonnet-5-5",
+  monthlyUsd: 10,
+  rates: { inputPerM: 2, cachedPerM: 0.1, outputPerM: 10 },
   maxPasteChars: 24000,
   maxFiles: 3,
   maxFileBytes: 40000,
   maxTurnsKept: 16,
-  hostedNote: "Paste an xAI key into site/server/coach.py and point endpoint at it.",
 };
 
 /**

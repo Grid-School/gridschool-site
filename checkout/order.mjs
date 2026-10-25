@@ -17,8 +17,8 @@ export const PLANS = {
     line: "The whole course and the system, with the first week's work prepared for you.",
     items: [
       "Every module and every film: profile, proof, people, search, interviews and the offer",
-      "Five fresh roles that fit your map, the hiring manager for each, and a note to each in your voice",
-      "Aden approves every note before you send it",
+      "Fresh roles that fit your map, who to reach on each team, and a note to each in your voice",
+      "Your resume, headshot and banner, and posts drafted from your own work",
       "12 months on your map",
     ],
     billing: {

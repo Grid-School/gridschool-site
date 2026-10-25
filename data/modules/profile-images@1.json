@@ -11,18 +11,65 @@
   "evidence": "Both images live on your profile.",
   "tasks": [
     {
-      "id": "banner",
-      "title": "New banner: high resolution, colors that read as trust",
+      "id": "photos",
+      "title": "Add 1 to 3 photos of your face",
       "kind": "ship",
-      "est": 45,
-      "done_when": "The banner is live and matches the headshot's color grade."
+      "est": 5,
+      "how": [
+        "Face a window, hold your phone at eye level, and take off any sunglasses.",
+        "Add your current profile photo and banner too, if you have them.",
+        "Only you can see these."
+      ],
+      "done_when": "At least one clear photo of your face is added.",
+      "open": {
+        "route": "images",
+        "label": "Open your images"
+      }
     },
     {
       "id": "headshot",
-      "title": "New headshot: camera further back, dressed for the seat you want, graded to match the banner",
+      "title": "Pick your headshot",
       "kind": "ship",
-      "est": 60,
-      "done_when": "The headshot is live and shows your shoulders, not just a face."
+      "est": 5,
+      "how": [
+        "We make three from your photos, dressed for the job you want, with the same face.",
+        "Pick the one that looks most like you on a good day. Ask for three more if none do."
+      ],
+      "done_when": "You picked a headshot that looks like you.",
+      "open": {
+        "route": "images",
+        "label": "Open your images"
+      }
+    },
+    {
+      "id": "banner",
+      "title": "Pick your banner",
+      "kind": "ship",
+      "est": 5,
+      "how": [
+        "We make three from the job you're aiming at and the style words you gave us.",
+        "Pick the one you'd be glad to have behind your name."
+      ],
+      "done_when": "You picked a banner that matches your headshot.",
+      "open": {
+        "route": "images",
+        "label": "Open your images"
+      }
+    },
+    {
+      "id": "post",
+      "title": "Download both and put them on your LinkedIn profile",
+      "kind": "post",
+      "est": 10,
+      "how": [
+        "Download each one at LinkedIn's sizes from the last step of the tool.",
+        "On LinkedIn, open your profile: click your photo to change it, and the camera on the banner to change that."
+      ],
+      "done_when": "Both images are live on your profile.",
+      "open": {
+        "route": "images",
+        "label": "Open your images"
+      }
     }
   ],
   "slots": [

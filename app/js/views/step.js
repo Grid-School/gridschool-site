@@ -8,35 +8,52 @@
  * reading as a shareable page).
  */
 
-import { el, mount } from "../dom.js?v=8b2a230-202610250853";
-import { btn, placeholder, toast, field } from "../ui.js?v=8b2a230-202610250853";
-import { STATUS, blockedBy, progress, isSpine, nextUp, stepNumber } from "../graph/model.js?v=8b2a230-202610250853";
-import { taskRow, reviewScores } from "./parts.js?v=8b2a230-202610250853";
-import { statusLabel, trackLabel, ccvvLabel, stepRule } from "../copy.js?v=8b2a230-202610250853";
-import { videoCard, resolveMedia, filmSummary } from "./video.js?v=8b2a230-202610250853";
-import { handoffDisclosure } from "./handoff.js?v=8b2a230-202610250853";
-import { withSavedState, isCountTask } from "../task-state.js?v=8b2a230-202610250853";
-import { renderMarkdown, splitTitle } from "../markdown.js?v=8b2a230-202610250853";
-import { hydrateMermaid, mermaidSource } from "../mermaid.js?v=8b2a230-202610250853";
-import { provesBlock } from "./proves.js?v=8b2a230-202610250853";
-import { modeLine } from "./mode.js?v=8b2a230-202610250853";
-import { artifactLine } from "./artifact.js?v=8b2a230-202610250853";
-import { refsBlock } from "./refs.js?v=8b2a230-202610250853";
-import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=8b2a230-202610250853";
-import { electiveBlock } from "./elective.js?v=8b2a230-202610250853";
-import { fromAdenCard } from "./from-aden.js?v=8b2a230-202610250853";
-import { helpBlock } from "./step-help.js?v=8b2a230-202610250853";
-import { signoffNotice, submitLabel, linkHint } from "./signoff.js?v=8b2a230-202610250853";
-import { stepSpine, isStepComplete, canAdvance, readyToSave, readFlag } from "./step-progress.js?v=8b2a230-202610250853";
-import { createReadingModal } from "./reading-modal.js?v=8b2a230-202610250853";
-import { bindDraft, clearDraft } from "../drafts.js?v=8b2a230-202610250853";
-import { registerLeaveGuard, clearLeaveGuard, isLeaveDirty } from "../leave-guard.js?v=8b2a230-202610250853";
-import { isPreviewMedia } from "../preview-mode.js?v=8b2a230-202610250853";
-import { isViewEnabled } from "../features.js?v=8b2a230-202610250853";
-import { siteOverridesDoc, dropSiteOverridesCache } from "../../../js/site-overrides.js?v=8b2a230-202610250853";
-import { isCompleteMap, isFreeMap, stageTime, upgradeHref, PAID_ASK, PAID_TASKS, PAID_VIDEO, DFY_LINE, FILM_COMING, COURSE_LINE, COURSE_ASK, COURSE_TASKS } from "../prep.js?v=8b2a230-202610250853";
-import { sampleBlock } from "./sample.js?v=8b2a230-202610250853";
-import { videoAccess, isFilmed } from "../../../data/video-access.mjs?v=8b2a230-202610250853";
+import { el, mount } from "../dom.js?v=d177a03-202610252138";
+import { btn, placeholder, toast, field } from "../ui.js?v=d177a03-202610252138";
+import { STATUS, blockedBy, progress, isSpine, nextUp, stepNumber } from "../graph/model.js?v=d177a03-202610252138";
+import { taskRow, reviewScores } from "./parts.js?v=d177a03-202610252138";
+import { statusLabel, trackLabel, ccvvLabel, stepRule } from "../copy.js?v=d177a03-202610252138";
+import { videoCard, resolveMedia, filmSummary } from "./video.js?v=d177a03-202610252138";
+import { handoffDisclosure } from "./handoff.js?v=d177a03-202610252138";
+import { withSavedState, isCountTask } from "../task-state.js?v=d177a03-202610252138";
+import { renderMarkdown, splitTitle } from "../markdown.js?v=d177a03-202610252138";
+import { hydrateMermaid, mermaidSource } from "../mermaid.js?v=d177a03-202610252138";
+import { provesBlock } from "./proves.js?v=d177a03-202610252138";
+import { modeLine } from "./mode.js?v=d177a03-202610252138";
+import { artifactLine } from "./artifact.js?v=d177a03-202610252138";
+import { refsBlock } from "./refs.js?v=d177a03-202610252138";
+import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=d177a03-202610252138";
+import { electiveBlock } from "./elective.js?v=d177a03-202610252138";
+import { fromAdenCard } from "./from-aden.js?v=d177a03-202610252138";
+import { helpBlock } from "./step-help.js?v=d177a03-202610252138";
+import { signoffNotice, submitLabel, linkHint } from "./signoff.js?v=d177a03-202610252138";
+import { stepSpine, isStepComplete, canAdvance, readyToSave, readFlag } from "./step-progress.js?v=d177a03-202610252138";
+import { createReadingModal } from "./reading-modal.js?v=d177a03-202610252138";
+import { bindDraft, clearDraft } from "../drafts.js?v=d177a03-202610252138";
+import { registerLeaveGuard, clearLeaveGuard, isLeaveDirty } from "../leave-guard.js?v=d177a03-202610252138";
+import { isPreviewMedia } from "../preview-mode.js?v=d177a03-202610252138";
+import { isViewEnabled } from "../features.js?v=d177a03-202610252138";
+import { siteOverridesDoc, dropSiteOverridesCache } from "../../../js/site-overrides.js?v=d177a03-202610252138";
+import { isCompleteMap, isFreeMap, stageTime, upgradeHref, PAID_ASK, PAID_TASKS, PAID_VIDEO, DFY_LINE, FILM_COMING, COURSE_LINE, COURSE_ASK, COURSE_TASKS } from "../prep.js?v=d177a03-202610252138";
+import { sampleBlock } from "./sample.js?v=d177a03-202610252138";
+import { answerBlock } from "./answer.js?v=d177a03-202610252138";
+import { renderResume } from "./resume.js?v=d177a03-202610252138";
+
+/* A "builder" node is its tool: the step page shows the tool itself in place of a task list that points
+   somewhere else. One instance per node, kept across repaints so an answer being typed survives. */
+const builders = new Map();
+function builderBlock(ctx, node) {
+  const key = `${ctx.state.slug}:${node.id}`;
+  let tool = builders.get(key);
+  if (!tool) {
+    tool = renderResume(ctx, { embedded: true, node });
+    builders.set(key, tool);
+  } else {
+    tool.update(ctx, { node });
+  }
+  return el("section.step__tool", {}, tool.node);
+}
+import { videoAccess, isFilmed } from "../../../data/video-access.mjs?v=d177a03-202610252138";
 
 const FALLBACK_VIDEO = {
   title: "Lesson",
@@ -100,7 +117,7 @@ export function tasksLead(node, welcome = false) {
 
 /**
  * GridSchool Complete: the work we're doing for them, as a tracker (prep.js).
- * A stage is lit only once Aden set it; nothing is guessed from the clock.
+ * A stage is lit only once it was set; nothing is guessed from the clock.
  */
 export function prepBlock(node, { upgrade = null } = {}) {
   // A free map, a course step past the free ones: what it is, and one way to get it.
@@ -131,7 +148,7 @@ export function prepBlock(node, { upgrade = null } = {}) {
         "div.dfy__head",
         {},
         el("span.dfy__avatar", { "aria-hidden": "true" }, "C"),
-        el("div", {}, el("b.eyebrow", {}, DFY_LINE), el("p.dfy__who", {}, "Your coach checks every piece before it reaches you."))
+        el("div", {}, el("b.eyebrow", {}, DFY_LINE), el("p.dfy__who", {}, "Made for you from your answers and your resume."))
       ),
       node.prepared ? el("p.step__prep-what", {}, node.prepared) : null,
       lockedPreview(node, upgrade),
@@ -154,8 +171,8 @@ export function prepBlock(node, { upgrade = null } = {}) {
   const note = prep.ready
     ? "It's ready. Your part is below."
     : prep.started
-      ? `Now: ${prep.current.label}. Each stage lights up when your coach moves it forward.`
-      : "This is in your coach's queue. Each stage lights up when your coach moves it forward.";
+      ? `Now: ${prep.current.label}. Each stage lights up as the work moves forward.`
+      : "This starts in a few minutes. Each stage lights up as the work moves forward.";
   return el(
     "section.step__prep",
     { "aria-label": "Prepared for you" },
@@ -399,7 +416,8 @@ export function renderStep(ctx, nodeId, moduleId = null) {
       );
     }
 
-    const spine = stepSpine({ node, student, store: current.store, onChange: () => paint() });
+    // A builder node's tool shows its own progress; the task spine beside it would say the same thing twice.
+    const spine = node.type === "builder" ? null : stepSpine({ node, student, store: current.store, onChange: () => paint() });
     const tasksBlock = node.tasks?.length
       ? el(
           "section.step__tasks",
@@ -497,8 +515,14 @@ export function renderStep(ctx, nodeId, moduleId = null) {
             when: "You may read this page now. The tasks become available when the step opens.",
           })
         : null,
-      welcome || node.kind === "future" ? null : howBlock(node),
-      welcome || node.kind === "future" ? null : tasksBlock,
+      welcome || node.kind === "future" || node.type === "builder" ? null : howBlock(node),
+      welcome || node.kind === "future"
+        ? null
+        : node.type === "builder"
+          ? builderBlock(current, node)
+          : node.chunk && node.tasks?.length
+            ? questionsBlock(node)
+            : tasksBlock,
       welcome ? null : helpBlock({ node, store: current.store, isAdmin }),
       isCompleteMap(graph) ? changedBlock(node) : null,
       node.kind === "future" || node.completion === "tasks"
@@ -554,6 +578,17 @@ export function renderStep(ctx, nodeId, moduleId = null) {
       stepBar({ node, graph, student, locked: false }),
       isAdmin ? adminBlock(node, graph) : null
     );
+  }
+
+  /** A q-step (complete_map.py `chunk`): its questions, answered here; saving checks its one task (views/answer.js). */
+  function questionsBlock(node) {
+    const task = node.tasks[0];
+    return answerBlock({
+      node,
+      slug: current.state.slug,
+      done: node.status === STATUS.LIT,
+      onSaved: () => current.store.setTaskState(task.id, "done"),
+    });
   }
 
   /** Sticky exit + continue. Next enables only when this step is actually done. */
@@ -884,7 +919,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
       );
 
       async function save(entry) {
-        const { fetchSiteOverrides, saveSiteOverrides } = await import("../persist-admin.js?v=8b2a230-202610250853");
+        const { fetchSiteOverrides, saveSiteOverrides } = await import("../persist-admin.js?v=d177a03-202610252138");
         const current = await fetchSiteOverrides().catch(() => ({ doc: {} }));
         const doc = current.doc ?? {};
         const nodes = { ...(doc.copy?.nodes ?? {}) };

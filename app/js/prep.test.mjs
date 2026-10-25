@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { prepOf, prepHint, opensLater, shortDay, isCompleteMap, stageTime, isFreeMap, upgradeHref } from "./prep.js?v=8b2a230-202610250853";
-import { buildGraph, nextUp, STATUS } from "./graph/model.js?v=8b2a230-202610250853";
+import { prepOf, prepHint, opensLater, shortDay, isCompleteMap, stageTime, isFreeMap, upgradeHref } from "./prep.js?v=d177a03-202610252138";
+import { buildGraph, nextUp, STATUS } from "./graph/model.js?v=d177a03-202610252138";
 
 const STAGES = [
   { id: "roles", label: "Finding roles" },
@@ -15,7 +15,7 @@ test("nothing set: every stage waits, and the map says it's queued", () => {
   const prep = prepOf(NODE, {});
   assert.deepEqual(prep.stages.map((s) => s.state), ["todo", "todo", "todo", "todo"]);
   assert.equal(prep.started, false);
-  assert.equal(prepHint(prep), "In your coach's queue");
+  assert.equal(prepHint(prep), "Starting soon");
 });
 
 test("a stage is done only when it was set and is behind the current one", () => {
@@ -69,7 +69,7 @@ const DAY_ONE = new Date(2026, 9, 19, 10, 0);
 test("day one: a step waiting on our work is never next, so today's ten minutes is", () => {
   const graph = buildGraph(MAP, { tasks: {} }, { now: DAY_ONE });
   assert.equal(graph.byId.get("b.reach").preparing, true);
-  assert.equal(graph.byId.get("b.reach").hint, "In your coach's queue");
+  assert.equal(graph.byId.get("b.reach").hint, "Starting soon");
   // A step whose task is what we work from never waits.
   assert.equal(graph.byId.get("b.final").preparing, false);
   assert.equal(nextUp(graph, DAY_ONE).id, "b.final");
@@ -83,6 +83,19 @@ test("ready opens the step's tasks and makes it next", () => {
   const graph = buildGraph(MAP, { prep, tasks: {} }, { now: DAY_ONE });
   assert.equal(graph.byId.get("b.reach").preparing, false);
   assert.equal(nextUp(graph, DAY_ONE).id, "b.reach");
+});
+
+test("ready work made by the prep runner reads on the step, and its tasks open", () => {
+  const at = { roles: "x", managers: "x", review: "x", ready: "2026-10-19T10:05:00Z" };
+  const out = { notes: "**1. Backend Engineer at Acme**\n> Hi, I saw your payments work.", links: [{ label: "Acme: Backend Engineer", url: "https://example.com/job" }] };
+  assert.equal(prepOf(NODE, { "b.reach": { stage: "ready", at, by: "auto", out } }).out, out);
+  // Not ready yet: nothing is shown, even if an out were there.
+  assert.equal(prepOf(NODE, { "b.reach": { stage: "roles", at: { roles: "x" }, out } }).out, null);
+  const graph = buildGraph(MAP, { tasks: {}, prep: { "b.reach": { stage: "ready", at, by: "auto", out } } }, { now: DAY_ONE });
+  const node = graph.byId.get("b.reach");
+  assert.equal(node.preparing, false);
+  assert.equal(node.fromAden.notes, out.notes);
+  assert.deepEqual(node.fromAden.links, out.links);
 });
 
 test("the check-in opens on its day, and finishing a Complete step lights it", () => {

@@ -8,6 +8,12 @@ export function claimTitle(gift) {
   return `${you ? `${you}, ` : ""}${who} gave you ${PLAN[gift?.plan] || PLAN.complete}.`;
 }
 
+/** checkout/'s ?from= for a gift bought from this page: "gift", or "gift:<ad>" when the page came from an ad. */
+export function giftSource(from) {
+  const ad = String(from || "").replace(/[^\w.:-]/g, "").slice(0, 50);
+  return ad && ad !== "gift" ? `gift:${ad}` : "gift";
+}
+
 export function shareLabel(gift) {
   const who = String(gift?.from || "").trim() || "them";
   return `Send ${who} a short weekly progress note.`;

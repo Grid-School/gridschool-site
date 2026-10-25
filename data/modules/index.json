@@ -52,9 +52,9 @@
     {
       "id": "posting-kit",
       "version": 1,
-      "title": "Posting kit: make one draft yours and post it",
+      "title": "Posting kit: your voice doc and your first post",
       "lane": "network",
-      "purpose": "Turn a draft built on something you noticed into a first post in your own voice."
+      "purpose": "Your voice doc built from your own writing, then a first post drafted in that voice for you to make yours and post."
     },
     {
       "id": "network-sprint",
@@ -68,14 +68,14 @@
       "version": 1,
       "title": "Post the build: three posts from real work",
       "lane": "network",
-      "purpose": "Three posts from the build: a decision, a diagram, the system in motion."
+      "purpose": "Three posts from your build, drafted for you from your project: a decision, a diagram, the system in motion."
     },
     {
       "id": "project-ideas",
       "version": 1,
-      "title": "Five to ten agentic additions to a system you already have",
+      "title": "Pick your practice project from five made for you",
       "lane": "proof",
-      "purpose": "List AI/agentic additions to a real system, each tied to what users need."
+      "purpose": "Five practice projects aimed at the job you want, written from your record; you pick one and it goes on your map."
     },
     {
       "id": "pick-feature",
@@ -83,6 +83,13 @@
       "title": "Pick one small, highly visual feature",
       "lane": "proof",
       "purpose": "Choose one feature you can build in weeks and show clearly, with its done-when."
+    },
+    {
+      "id": "practice-project",
+      "version": 1,
+      "title": "Your practice project: build it, ship it, post it",
+      "lane": "proof",
+      "purpose": "The project you picked from your list, scoped to ship in days, on your map with its brief."
     },
     {
       "id": "linear-build",

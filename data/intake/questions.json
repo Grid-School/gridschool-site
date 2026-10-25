@@ -46,7 +46,7 @@
       "unlocks": "Your LinkedIn, banner and photo",
       "family": "presence",
       "intro": "This is what a recruiter sees in their first seven seconds. We'll handle the rewriting and the design.",
-      "done": "We're preparing your profile now. A person will review it within 24 hours."
+      "done": "We're preparing your profile now. It shows up on your map when it's ready."
     },
     {
       "id": "c5",
@@ -63,6 +63,15 @@
       "family": "network",
       "intro": "Tell us where you'd like to work, and where you wouldn't.",
       "done": "We're preparing your outreach now."
+    },
+    {
+      "id": "c7",
+      "title": "What you're into",
+      "unlocks": "Project ideas, posts and drafts that sound like you",
+      "family": "presence",
+      "onCheck": false,
+      "intro": "What you like working on, the look you like, and how you write. Project ideas, posts and drafts start from here.",
+      "done": "Your interests and voice are on your map."
     }
   ],
   "questions": [
@@ -552,6 +561,51 @@
       "kind": "text",
       "max": 300,
       "affects": ["pipeline", "proof"]
+    },
+    {
+      "id": "techInterests",
+      "chunk": "c7",
+      "prompt": "What technical things do you most enjoy working on?",
+      "help": "A few, separated by commas. For example agents, data pipelines, developer tools or game engines.",
+      "kind": "text",
+      "max": 600,
+      "affects": ["proof", "network"]
+    },
+    {
+      "id": "personalInterests",
+      "chunk": "c7",
+      "prompt": "What are you into outside of work?",
+      "help": "A few, separated by commas. Hobbies, sports, causes, anything you'd happily talk about.",
+      "kind": "text",
+      "max": 600,
+      "affects": ["proof", "network"]
+    },
+    {
+      "id": "styleWords",
+      "chunk": "c7",
+      "prompt": "Which 3 to 5 words describe the look and feel you like?",
+      "help": "For example calm, bold, playful, minimal or technical. We use them for your banner and portfolio.",
+      "kind": "text",
+      "max": 120,
+      "affects": ["presence"]
+    },
+    {
+      "id": "styleRefs",
+      "chunk": "c7",
+      "prompt": "Whose style do you like? Name sites, designs or people.",
+      "help": "Links or names both work, one per line.",
+      "kind": "text",
+      "max": 1200,
+      "affects": ["presence"]
+    },
+    {
+      "id": "voiceSample",
+      "chunk": "c7",
+      "prompt": "Paste something you wrote: a post, an email or a message.",
+      "help": "A few sentences or more, in your normal voice. Drafts we write for you will sound like this.",
+      "kind": "text",
+      "max": 4000,
+      "affects": ["presence", "network"]
     }
   ]
 }

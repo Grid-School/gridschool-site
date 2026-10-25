@@ -10,8 +10,8 @@
  * When the radar is off the match is simply empty and the page says so.
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=8b2a230-202610250853";
-import { persistToken } from "./session.js?v=8b2a230-202610250853";
+import { PERSIST, isPlaceholder } from "../../config.js?v=d177a03-202610252138";
+import { persistToken } from "./session.js?v=d177a03-202610252138";
 
 export function radarReady() {
   return Boolean(persistToken() && PERSIST?.endpoint && !isPlaceholder(PERSIST.endpoint));
@@ -78,4 +78,12 @@ export function shareWin(slug, { appId, includeCompany = false, dryRun = false }
 /** A multi-channel campaign for one target (campaign_draft.py): radar roleKey, or a role {company, title, url, description}. */
 export function draftCampaign(slug, { roleKey, role, insider = "", portfolio = "" }) {
   return call("POST", `/students/${encodeURIComponent(slug)}/campaign/draft`, { ...(roleKey ? { roleKey } : { role }), insider, portfolio });
+}
+
+/**
+ * Their own positioning (positioning_api.py): headline, About, story and the titles to search under, drafted
+ * from the lines they confirmed in the resume builder. Saved to their profile unless their coach wrote one.
+ */
+export function draftPositioning(slug, { goal = "" } = {}) {
+  return call("POST", `/students/${encodeURIComponent(slug)}/career/position`, goal ? { goal } : {});
 }
