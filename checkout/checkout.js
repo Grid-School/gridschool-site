@@ -5,12 +5,23 @@
  * and checkout.start (server/events.py).
  */
 
-import { PERSIST, link } from "../config.js?v=506a0c6-202610250354";
-import { track, visitorId } from "../check/events.js?v=506a0c6-202610250354";
-import { MONEY, PLANS, order, payUrl, readParams } from "./order.mjs?v=506a0c6-202610250354";
+import { PERSIST, link } from "../config.js?v=391fdce-202610250551";
+import { track, visitorId } from "../check/events.js?v=391fdce-202610250551";
+import { MONEY, PLANS, order, payUrl, readParams } from "./order.mjs?v=391fdce-202610250551";
 
 const $ = (id) => document.getElementById(id);
 const state = readParams(location.search);
+// From the in-map offer: the free seat's account email, so the payment upgrades that seat (check/check.js).
+// Read once from this tab's session storage; never from the address.
+state.email = (() => {
+  try {
+    const email = sessionStorage.getItem("gridschool.checkout.email") || "";
+    sessionStorage.removeItem("gridschool.checkout.email");
+    return email;
+  } catch {
+    return "";
+  }
+})();
 
 function option(group, value, { title, price = "", detail = "", checked = false, disabled = false }) {
   const label = document.createElement("label");
@@ -67,7 +78,8 @@ function render() {
   $("summary-next").replaceChildren(...o.next.map((text) => Object.assign(document.createElement("li"), { textContent: text })));
   $("money").textContent = MONEY;
 
-  const url = payUrl(link(o.linkKey), { ck: state.ck, visitor: visitorId() });
+  // A gift is paid by someone else, so their own email goes in at Stripe, not the seat's.
+  const url = payUrl(link(o.linkKey), { ck: state.ck, visitor: visitorId(), email: o.gift ? "" : state.email });
   const pay = $("pay");
   pay.hidden = !url;
   $("closed").hidden = Boolean(url);

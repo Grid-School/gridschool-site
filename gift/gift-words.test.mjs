@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { DONE, claimTitle, shareLabel } from "./gift-words.mjs?v=506a0c6-202610250354";
+import { DONE, claimTitle, shareLabel } from "./gift-words.mjs?v=391fdce-202610250551";
 
 test("the claim page names the giver, the person and the plan", () => {
   assert.equal(claimTitle({ from: "Mei", name: "Jay", plan: "complete" }), "Jay, Mei gave you GridSchool Complete.");

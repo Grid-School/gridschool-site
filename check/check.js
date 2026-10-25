@@ -14,14 +14,14 @@
  * this browser so a refresh loses nothing; the resume text never does.
  */
 
-import { PERSIST, link } from "../config.js?v=506a0c6-202610250354";
-import * as I from "../data/intake/intake.mjs?v=506a0c6-202610250354";
-import { mountCheckMap } from "./check-map.js?v=506a0c6-202610250354";
-import * as Account from "./account.js?v=506a0c6-202610250354";
-import { enterSeat } from "../app/js/persist-auth.js?v=506a0c6-202610250354";
-import { track, visitorId } from "./events.js?v=506a0c6-202610250354";
-import * as Share from "./share.mjs?v=506a0c6-202610250354";
-import { drawShareCard, cardBlob } from "./share-card.js?v=506a0c6-202610250354";
+import { PERSIST, link } from "../config.js?v=391fdce-202610250551";
+import * as I from "../data/intake/intake.mjs?v=391fdce-202610250551";
+import { mountCheckMap } from "./check-map.js?v=391fdce-202610250551";
+import * as Account from "./account.js?v=391fdce-202610250551";
+import { enterSeat } from "../app/js/persist-auth.js?v=391fdce-202610250551";
+import { track, visitorId } from "./events.js?v=391fdce-202610250551";
+import * as Share from "./share.mjs?v=391fdce-202610250551";
+import { drawShareCard, cardBlob } from "./share-card.js?v=391fdce-202610250551";
 
 const KEY = "gridschool.check.v1";
 const SHARE_KEY = "gridschool.share.v1";
@@ -463,7 +463,8 @@ const RESULT_STEPS = {
   },
 
   offer(hits) {
-    const checkout = DEMO ? DEMO_CHECKOUT : link("completeCheckout");
+    // The real offer goes on to checkout/, which picks how to pay (once or the trial) and holds the Stripe links.
+    const checkout = DEMO ? DEMO_CHECKOUT : "../checkout/?plan=complete&from=offer";
     // Reached from their board ("Have us do this"): back goes to the map they came from.
     const fromBoard = /\/app\//.test(document.referrer);
     return [offerBlock(hits, checkout), row(fromBoard ? link_("Back to my map", () => history.back()) : backTo("next"))];
@@ -893,12 +894,17 @@ async function goToCheckout(checkout, email = "") {
     return;
   }
   if (!store.saved?.id) await saveCheck(email);
-  const url = new URL(checkout);
-  url.searchParams.set("client_reference_id", store.saved.id);
-  // A free seat coming from its board (?step=offer) pays with its account email, so the payment finds that seat.
+  // On to checkout/ with this check's id, so the payment builds (or upgrades) this exact map.
+  const url = new URL(checkout, location.href);
+  url.searchParams.set("ck", store.saved.id);
+  // A free seat pays with its account email, so the payment finds that seat. It travels in this tab's
+  // session storage, not the address, so it never sits in a URL (checkout/checkout.js reads it once).
   const payEmail = store.saved.email || Account.session()?.email || "";
-  if (payEmail) url.searchParams.set("prefilled_email", payEmail);
-  count("checkout.start");
+  try {
+    if (payEmail) sessionStorage.setItem("gridschool.checkout.email", payEmail);
+  } catch {
+    /* checkout still works; the buyer types their email at Stripe */
+  }
   location.href = url.toString();
 }
 
@@ -910,7 +916,6 @@ async function goToCheckout(checkout, email = "") {
  */
 function offerBlock(hits, checkout) {
   const price = offer.price;
-  const monthly = DEMO ? `${DEMO_CHECKOUT}?plan=monthly` : link("completeCheckoutMonthly");
   const photo = link("adenPhoto");
   const section = h("section", "offer", null, { "aria-labelledby": "offer-title" });
   const error = h("p", "card__error", "", { role: "alert" });
@@ -965,16 +970,10 @@ function offerBlock(hits, checkout) {
     ].filter(Boolean)),
     h("p", "offer__price", null, {}, [
       h("b", "", `$${price.full}`),
-      h("span", "", ` once, for ${price.months} months${monthly ? `, or $${price.monthly} a month after a ${price.trialDays}-day free trial` : ""}`),
+      h("span", "", ` once, for ${price.months} months, or $${price.monthly} a month after a ${price.trialDays}-day free trial`),
       h("span", "offer__refund", `${price.refundDays}-day refund on the one-time price, no questions asked`),
     ]),
-    checkout || monthly
-      ? row(
-          checkout ? button(`Start my map, $${price.full}`, () => start(checkout), { arrow: true }) : null,
-          monthly ? link_(`Or try it free for ${price.trialDays} days, then $${price.monthly} a month`, () => start(monthly)) : null
-        )
-      : h("p", "card__help", "Online checkout opens soon. To start now, write to support@gridschool.org from the email you saved your map with, and we'll set it up by hand."),
-    monthly ? h("p", "card__fine", trialTerms(price)) : null,
+    row(button("Choose how to pay", () => start(checkout), { arrow: true })),
     ask,
     error,
     h("p", "card__fine", offer.payNote),
@@ -987,12 +986,6 @@ function offerBlock(hits, checkout) {
     row(shareButton(hits))
   );
   return section;
-}
-
-/** The monthly plan's terms, next to its button (California's automatic-renewal rules: before they agree, plainly). */
-function trialTerms(price) {
-  const most = price.monthly * price.monthlyMax;
-  return `Free for ${price.trialDays} days, then $${price.monthly} a month until you cancel, for at most ${price.monthlyMax} payments ($${most.toLocaleString("en-US")}). We email you 3 days before the first charge. Cancel any time online.`;
 }
 
 /**

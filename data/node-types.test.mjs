@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { NODE_TYPES } from "./node-types.mjs?v=506a0c6-202610250354";
+import { NODE_TYPES } from "./node-types.mjs?v=391fdce-202610250551";
 
 test("the browser's node types match data/node-types.json exactly", () => {
   assert.deepEqual(NODE_TYPES, JSON.parse(readFileSync(new URL("./node-types.json", import.meta.url))));

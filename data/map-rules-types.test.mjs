@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { validateMap } from "./map-rules.mjs?v=506a0c6-202610250354";
+import { validateMap } from "./map-rules.mjs?v=391fdce-202610250551";
 
 /** Python quotes a value with ' and JS with ": the same message either way. */
 const norm = (errors) => errors.map((e) => e.replaceAll("'", '"'));
