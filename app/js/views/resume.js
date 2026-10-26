@@ -11,20 +11,21 @@
  * confirms it. Every saved version has a name, the date and time it was made, and can be downloaded again.
  */
 
-import { el, mount } from "../dom.js?v=6313a80-202610261633";
-import { btn, toast } from "../ui.js?v=6313a80-202610261633";
-import { nodeRail } from "./node-rail.js?v=6313a80-202610261633";
-import { nextUp } from "../graph/model.js?v=6313a80-202610261633";
-import { isProgressReadOnly } from "../store.js?v=6313a80-202610261633";
-import { upgradeHref } from "../prep.js?v=6313a80-202610261633";
-import * as api from "../resume-remote.js?v=6313a80-202610261633";
-import { patient } from "../patient.js?v=6313a80-202610261633";
-import { doneIds } from "../steps.js?v=6313a80-202610261633";
-import { workPanel } from "./work.js?v=6313a80-202610261633";
-import { needsPanel, needFor } from "./needs.js?v=6313a80-202610261633";
-import { talkButton, canTalk } from "./voice.js?v=6313a80-202610261633";
-import { roundState, gained, RANGES, wantsNumber, addRange } from "../interview.js?v=6313a80-202610261633";
-import { stepsFor, claimsOf, linesOf, hasOutput, allConfirmed as confirmedAll, changedSinceSave as changedSince, savedAndDownloaded } from "../resume-stages.js?v=6313a80-202610261633";
+import { el, mount } from "../dom.js?v=6536b3c-202610261714";
+import { btn, toast } from "../ui.js?v=6536b3c-202610261714";
+import { nodeRail } from "./node-rail.js?v=6536b3c-202610261714";
+import { nextUp } from "../graph/model.js?v=6536b3c-202610261714";
+import { isProgressReadOnly } from "../store.js?v=6536b3c-202610261714";
+import { upgradeHref } from "../prep.js?v=6536b3c-202610261714";
+import * as api from "../resume-remote.js?v=6536b3c-202610261714";
+import { patient } from "../patient.js?v=6536b3c-202610261714";
+import { doneIds } from "../steps.js?v=6536b3c-202610261714";
+import { workPanel } from "./work.js?v=6536b3c-202610261714";
+import { needsPanel, needFor } from "./needs.js?v=6536b3c-202610261714";
+import { titleRow } from "./titles.js?v=6536b3c-202610261714";
+import { talkButton, canTalk } from "./voice.js?v=6536b3c-202610261714";
+import { roundState, gained, RANGES, wantsNumber, addRange } from "../interview.js?v=6536b3c-202610261714";
+import { stepsFor, claimsOf, linesOf, hasOutput, allConfirmed as confirmedAll, changedSinceSave as changedSince, savedAndDownloaded } from "../resume-stages.js?v=6536b3c-202610261714";
 
 const PDF_JS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs";
 const PDF_WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs";
@@ -33,6 +34,11 @@ const PDF_WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.wo
 /* The steps each model call goes through, shown while it runs; the server's own (work_progress.py) replace
    these as soon as it reports, with the notes of what it found. Same ids and order as resume_api.py. */
 const WORK = {
+  target: [
+    { id: "read", label: "Reading the title or posting" },
+    { id: "needs", label: "Working out what this job is screened for" },
+    { id: "next", label: "Choosing the questions that matter most for it" },
+  ],
   import: [
     { id: "got", label: "Got your resume" },
     { id: "read", label: "Reading every job and line, word for word" },
@@ -233,6 +239,8 @@ export function renderResume(ctx, options = {}) {
         if (!out.round?.done) keepGoing = false;
         // A fresh read moves on to whatever comes next (the questions), even if they'd opened Start by hand.
         if (work === WORK.import) stage = null;
+        // A new title opens on its own questions: that's where its checklist and gaps are.
+        if (work === WORK.target) stage = out.next ? "questions" : null;
         take(out);
       }
     } catch (e) {
@@ -634,7 +642,16 @@ export function renderResume(ctx, options = {}) {
           el("div", {}, el("b.eyebrow", {}, "Resume"), el("h1.rz__title", {}, target?.titles?.[0] ? `Your resume for ${target.titles[0]}` : "Build your resume, one question at a time")),
           el("p.rz__meta", {}, meta),
           btn({ label: "← Map", variant: "quiet", onclick: () => current.navigate("map") }));
+    // One record, many titles: the row switches the lens (titles.js); nothing is copied.
+    const titles = titleRow({
+      targets: rec.targets || [],
+      busy: Boolean(busy),
+      onSwitch: readOnly() ? null : (t) => { stage = null; run(`Switching to ${t.title}.`, () => api.switchTarget(slug, rec.version, t.id)); },
+      onAdd: readOnly() ? null : (text) => { stage = null; run("Working out what this job is screened for.", (r) => api.addTarget(slug, rec.version, text, r), WORK.target); },
+      onRemove: readOnly() ? null : (t) => { stage = null; run("Removing.", () => api.removeTarget(slug, rec.version, t.id)); },
+    });
     const main = el("section.rz__main", {},
+      titles,
       nodeRail({ nodes: stages(), done: doneStages(), here, onGo: go, label: "Resume steps" }),
       readOnly() ? el("p.rz__readonly", {}, "View only: this is the student's own resume. Changes are theirs to make.") : null,
       el("div.rz__card", { "aria-busy": busy ? "true" : null }, busy ? panel?.node ?? el("div.pack__wait", {}, el("span.pack__spinner", { "aria-hidden": "true" }), el("p", {}, busy)) : body));

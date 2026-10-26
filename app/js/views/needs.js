@@ -4,8 +4,8 @@
  * weak. A need that isn't for them can be switched off; it stops being asked about.
  */
 
-import { el } from "../dom.js?v=6313a80-202610261633";
-import { btn } from "../ui.js?v=6313a80-202610261633";
+import { el } from "../dom.js?v=6536b3c-202610261714";
+import { btn } from "../ui.js?v=6536b3c-202610261714";
 
 const STATUS = {
   shown: { text: "On your resume", cls: "is-shown" },

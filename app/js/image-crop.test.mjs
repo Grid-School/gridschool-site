@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { cropBox, shrinkTo, needsShrink, doneStages, firstOpen, sourceFor, allowanceLine } from "./image-crop.js?v=6313a80-202610261633";
+import { cropBox, shrinkTo, needsShrink, doneStages, firstOpen, sourceFor, allowanceLine } from "./image-crop.js?v=6536b3c-202610261714";
 
 const near = (a, b) => assert.ok(Math.abs(a - b) < 1e-6, `${a} != ${b}`);
 

@@ -6,9 +6,9 @@
  * touches evidence.
  */
 
-import { el } from "../dom.js?v=6313a80-202610261633";
-import { btn, toast } from "../ui.js?v=6313a80-202610261633";
-import { STATUS } from "../graph/model.js?v=6313a80-202610261633";
+import { el } from "../dom.js?v=6536b3c-202610261714";
+import { btn, toast } from "../ui.js?v=6536b3c-202610261714";
+import { STATUS } from "../graph/model.js?v=6536b3c-202610261714";
 
 export function isElective(node) {
   return node.track === "depth" && node.kind !== "future";

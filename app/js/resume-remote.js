@@ -3,8 +3,8 @@
  * answers with the current record, which the page simply takes and keeps going.
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=6313a80-202610261633";
-import { persistToken } from "./session.js?v=6313a80-202610261633";
+import { PERSIST, isPlaceholder } from "../../config.js?v=6536b3c-202610261714";
+import { persistToken } from "./session.js?v=6536b3c-202610261714";
 
 export function resumeReady() {
   return Boolean(persistToken() && PERSIST?.endpoint && !isPlaceholder(PERSIST.endpoint));
@@ -38,6 +38,10 @@ export const writeLines = (slug, version, run) => call("POST", `${base(slug)}/wr
 /* What the target job is screened for (server/resume_needs.py): switch one off or on, or work them out. */
 export const setNeed = (slug, version, needId, state) => call("POST", `${base(slug)}/needs`, { version, need_id: needId, state });
 export const refreshNeeds = (slug, version) => call("POST", `${base(slug)}/needs`, { version, refresh: true });
+/* One record, many titles (resume_api._targets): add one (a title or a pasted posting), switch, or remove. */
+export const addTarget = (slug, version, text, run) => call("POST", `${base(slug)}/targets`, { version, add: text, run });
+export const switchTarget = (slug, version, id) => call("POST", `${base(slug)}/targets`, { version, switch: id });
+export const removeTarget = (slug, version, id) => call("POST", `${base(slug)}/targets`, { version, remove: id });
 /* What the call in flight is doing (server/work_progress.py): steps, and notes of what the model found so far. */
 export const loadProgress = (slug) => call("GET", `${base(slug)}/progress`);
 export const confirmLine = (slug, version, claimId, decision, { text, defense } = {}) =>

@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { eventForTask, counts } from "./measure.js?v=6313a80-202610261633";
+import { eventForTask, counts } from "./measure.js?v=6536b3c-202610261714";
 
 test("an answered intake chunk and the week-one check-in are events; other tasks are not", () => {
   assert.deepEqual(eventForTask("q.c3.answer", "done"), { name: "intake.chunk_done", props: { chunk: "c3" } });

@@ -7,7 +7,7 @@ import {
   queueEnabled,
   queueMode,
   retireOpportunity,
-} from "./remote.js?v=6313a80-202610261633";
+} from "./remote.js?v=6536b3c-202610261714";
 
 function storage(values = {}) {
   const map = new Map(Object.entries(values));

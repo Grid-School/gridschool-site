@@ -112,6 +112,20 @@
 .view--profile .answer__opts, .view--profile .answer__input { margin-left: 0; }
 .view--profile .answer__input { width: 100%; box-sizing: border-box; }
 
+/* The title row (js/views/titles.js): every title they're aiming at; the active one is the lens. */
+.tt { margin: 0 0 6px; }
+.tt__chips { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.tt__chip { display: inline-flex; align-items: center; gap: 8px; background: var(--bg2); border: 1px solid var(--line); color: var(--muted); border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 13.5px; cursor: pointer; }
+.tt__chip:hover { border-color: var(--cyan); color: var(--text); }
+.tt__chip.is-active { border-color: #fff; color: #fff; background: color-mix(in srgb, #fff 8%, var(--bg2)); cursor: default; }
+.tt__chip--add { border-style: dashed; }
+.tt__fit { font-family: var(--font-mono); font-size: 11.5px; color: var(--ok); }
+.tt__chip:not(.is-active) .tt__fit { opacity: .8; }
+.tt__remove { background: none; border: 0; color: var(--ghost); font: inherit; font-size: 12px; cursor: pointer; padding: 2px 4px; }
+.tt__remove:hover { color: var(--warn); text-decoration: underline; }
+.tt__add { margin-top: 10px; display: grid; gap: 4px; }
+.tt__box { min-height: 56px; }
+
 /* What the job is screened for (js/views/needs.js): why the questions are the questions. */
 .nd { margin: 0 0 18px; padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--bg2); }
 .nd__head { display: flex; align-items: center; gap: 8px 12px; flex-wrap: wrap; font-size: 14px; cursor: pointer; list-style: none; }
