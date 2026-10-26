@@ -5,10 +5,12 @@
 .rz__head > div { flex: 1 1 320px; }
 .rz__title { font-size: clamp(22px, 3vw, 30px); margin: 4px 0 0; line-height: 1.15; }
 .rz__meta { color: var(--muted); font-size: 14px; margin: 0; }
-.rz__grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
-@container (min-width: 900px) { .rz__grid { grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); align-items: start; } }
+/* Rhythm: 24px between bands (titles, steps, card), 32px between the two columns, 24px inside the card. */
+.rz__grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; }
+@container (min-width: 900px) { .rz__grid { grid-template-columns: minmax(0, 1.1fr) minmax(340px, 0.9fr); gap: 32px; align-items: start; } }
 .rz__main { min-width: 0; }
-.rz__card { margin-top: 14px; padding: 22px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.rz .cnodes { margin: 0 0 24px; padding: 0; }
+.rz__card { margin-top: 0; padding: 24px 26px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
 .rz__card .cnode__head h2 { margin: 0 0 6px; font-size: 20px; }
 .rz__card .cnode__what { color: var(--muted); margin: 0 0 16px; }
 .rz__q { margin: 6px 0 14px; }
@@ -35,7 +37,7 @@
 .rz__line .rz__input { margin-top: 8px; }
 .rz__downloads { display: flex; gap: 10px; flex-wrap: wrap; }
 .rz__empty { color: var(--muted); }
-.rz__preview { position: sticky; top: 16px; min-width: 0; }
+.rz__preview { position: sticky; top: 24px; min-width: 0; }
 .rz-doc { margin-top: 8px; background: #fbfbf8; color: #15171a; border-radius: var(--radius-sm); padding: 28px 30px; font: 13.5px/1.45 Calibri, "IBM Plex Sans", Arial, sans-serif; box-shadow: 0 10px 40px rgba(0, 0, 0, .35); max-height: calc(100vh - 120px); overflow: auto; }
 .rz-doc__name { font-size: 22px; margin: 0 0 2px; color: #000; }
 .rz-doc__top { margin: 1px 0; color: #333; overflow-wrap: anywhere; }
@@ -86,7 +88,7 @@
 .step__tool { margin: 8px 0 24px; grid-column: 1 / -1; min-width: 0; }
 .rz--embedded { max-width: none; }
 .step__tool .view--resume { padding: 0; }
-.rz__head--embedded { margin-bottom: 8px; }
+.rz__head--embedded { margin-bottom: 16px; }
 
 /* Who you are (views/profile.js): the same shape as the resume builder; the card is the seeds record. */
 .pf__card { margin-top: 8px; padding: 18px 20px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--bg2); }
@@ -113,18 +115,26 @@
 .view--profile .answer__input { width: 100%; box-sizing: border-box; }
 
 /* The title row (js/views/titles.js): every title they're aiming at; the active one is the lens. */
-.tt { margin: 0 0 6px; }
-.tt__chips { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-.tt__chip { display: inline-flex; align-items: center; gap: 8px; background: var(--bg2); border: 1px solid var(--line); color: var(--muted); border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 13.5px; cursor: pointer; }
+.tt { margin: 0 0 24px; }
+.tt__chips { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.tt__item { display: inline-flex; align-items: stretch; }
+.tt__chip { display: inline-flex; align-items: center; gap: 10px; background: var(--bg2); border: 1px solid var(--line); color: var(--muted); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; line-height: 1.2; cursor: pointer; }
 .tt__chip:hover { border-color: var(--cyan); color: var(--text); }
-.tt__chip.is-active { border-color: #fff; color: #fff; background: color-mix(in srgb, #fff 8%, var(--bg2)); cursor: default; }
+.tt__item.is-active .tt__chip { border-color: #fff; color: #fff; background: color-mix(in srgb, #fff 8%, var(--bg2)); cursor: default; }
+.tt__item.is-active .tt__chip:has(+ .tt__x) { border-radius: 999px 0 0 999px; border-right: 0; padding-right: 10px; }
+.tt__x { background: color-mix(in srgb, #fff 8%, var(--bg2)); border: 1px solid #fff; border-left: 1px solid color-mix(in srgb, #fff 25%, transparent); color: var(--muted); border-radius: 0 999px 999px 0; padding: 0 12px 0 8px; font: inherit; font-size: 16px; line-height: 1; cursor: pointer; }
+.tt__x:hover { color: var(--warn); }
 .tt__chip--add { border-style: dashed; }
-.tt__fit { font-family: var(--font-mono); font-size: 11.5px; color: var(--ok); }
-.tt__chip:not(.is-active) .tt__fit { opacity: .8; }
-.tt__remove { background: none; border: 0; color: var(--ghost); font: inherit; font-size: 12px; cursor: pointer; padding: 2px 4px; }
-.tt__remove:hover { color: var(--warn); text-decoration: underline; }
-.tt__add { margin-top: 10px; display: grid; gap: 4px; }
+.tt__fit { font-family: var(--font-mono); font-size: 12px; color: var(--ok); }
+.tt__item:not(.is-active) .tt__fit { opacity: .8; }
+.tt__add { margin-top: 12px; display: grid; gap: 6px; max-width: 640px; }
 .tt__box { min-height: 56px; }
+@container (max-width: 520px) {
+  .tt__chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+  .tt__item, .tt__chip--add { flex: 0 0 auto; }
+  .rz__head > button { display: none; } /* the rail already has Map; the header shouldn't spend a row on it */
+  .rz__head { margin-bottom: 20px; }
+}
 
 /* What the job is screened for (js/views/needs.js): why the questions are the questions. */
 .nd { margin: 0 0 18px; padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--bg2); }

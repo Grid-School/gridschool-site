@@ -26,10 +26,10 @@
  * it's sent; sending again replaces an open suggestion.
  */
 
-import { el, mount, clear } from "../dom.js?v=200c41d-202610261730";
-import { btn, toast } from "../ui.js?v=200c41d-202610261730";
-import { buildGraph } from "../graph/model.js?v=200c41d-202610261730";
-import { isLandmark } from "../graph/route.js?v=200c41d-202610261730";
+import { el, mount, clear } from "../dom.js?v=9300f22-202610261745";
+import { btn, toast } from "../ui.js?v=9300f22-202610261745";
+import { buildGraph } from "../graph/model.js?v=9300f22-202610261745";
+import { isLandmark } from "../graph/route.js?v=9300f22-202610261745";
 import {
   applyOps,
   checkOps,
@@ -43,7 +43,7 @@ import {
   MAX_NOTE,
   MAX_TITLE,
   NEW_PREFIX,
-} from "../../../data/map-proposal.mjs?v=200c41d-202610261730";
+} from "../../../data/map-proposal.mjs?v=9300f22-202610261745";
 import {
   suggestReady,
   listSuggestions,
@@ -53,7 +53,7 @@ import {
   writeDraft,
   answerSeen,
   markAnswerSeen,
-} from "../suggest-remote.js?v=200c41d-202610261730";
+} from "../suggest-remote.js?v=9300f22-202610261745";
 
 const DRAG_SLOP = 8;
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -518,14 +518,15 @@ export function createSuggest({ ctx, redraw }) {
     s.error = null;
     renderCard();
     try {
-      await sendSuggestion(slug(), { base: s.base ?? ctx().state.mapVersion ?? null, ops: s.ops, note: s.note.trim() });
+      const sent = await sendSuggestion(slug(), { base: s.base ?? ctx().state.mapVersion ?? null, ops: s.ops, note: s.note.trim() });
       writeDraft(slug(), null);
       s.sending = false;
       s.ops = [];
       s.note = "";
       closeCard({ quiet: true });
       setOn(false);
-      toast("Sent to your coach. Your map stays as it is until they publish the update.");
+      // A self-serve map takes the change at once (map_automerge.py); a coach-kept map waits for the coach.
+      toast(sent?.status === "merged" ? "Done. It's on your map." : "Sent to your coach. Your map stays as it is until they publish the update.");
       await refresh();
     } catch (error) {
       s.sending = false;

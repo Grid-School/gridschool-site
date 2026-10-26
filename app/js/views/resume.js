@@ -11,23 +11,23 @@
  * confirms it. Every saved version has a name, the date and time it was made, and can be downloaded again.
  */
 
-import { el, mount } from "../dom.js?v=200c41d-202610261730";
-import { btn, toast } from "../ui.js?v=200c41d-202610261730";
-import { nodeRail } from "./node-rail.js?v=200c41d-202610261730";
-import { nextUp } from "../graph/model.js?v=200c41d-202610261730";
-import { isProgressReadOnly } from "../store.js?v=200c41d-202610261730";
-import { upgradeHref } from "../prep.js?v=200c41d-202610261730";
-import * as api from "../resume-remote.js?v=200c41d-202610261730";
-import { patient } from "../patient.js?v=200c41d-202610261730";
-import { doneIds } from "../steps.js?v=200c41d-202610261730";
-import { workPanel } from "./work.js?v=200c41d-202610261730";
-import { needsPanel, needFor, planBlock } from "./needs.js?v=200c41d-202610261730";
-import { sendSuggestion } from "../suggest-remote.js?v=200c41d-202610261730";
-import { newOpId } from "../../../data/map-proposal.mjs?v=200c41d-202610261730";
-import { titleRow } from "./titles.js?v=200c41d-202610261730";
-import { talkButton, canTalk } from "./voice.js?v=200c41d-202610261730";
-import { roundState, gained, RANGES, wantsNumber, addRange } from "../interview.js?v=200c41d-202610261730";
-import { stepsFor, claimsOf, linesOf, hasOutput, allConfirmed as confirmedAll, changedSinceSave as changedSince, savedAndDownloaded } from "../resume-stages.js?v=200c41d-202610261730";
+import { el, mount } from "../dom.js?v=9300f22-202610261745";
+import { btn, toast } from "../ui.js?v=9300f22-202610261745";
+import { nodeRail } from "./node-rail.js?v=9300f22-202610261745";
+import { nextUp } from "../graph/model.js?v=9300f22-202610261745";
+import { isProgressReadOnly, refresh as refreshStore } from "../store.js?v=9300f22-202610261745";
+import { upgradeHref } from "../prep.js?v=9300f22-202610261745";
+import * as api from "../resume-remote.js?v=9300f22-202610261745";
+import { patient } from "../patient.js?v=9300f22-202610261745";
+import { doneIds } from "../steps.js?v=9300f22-202610261745";
+import { workPanel } from "./work.js?v=9300f22-202610261745";
+import { needsPanel, needFor, planBlock } from "./needs.js?v=9300f22-202610261745";
+import { sendSuggestion } from "../suggest-remote.js?v=9300f22-202610261745";
+import { newOpId } from "../../../data/map-proposal.mjs?v=9300f22-202610261745";
+import { titleRow } from "./titles.js?v=9300f22-202610261745";
+import { talkButton, canTalk } from "./voice.js?v=9300f22-202610261745";
+import { roundState, gained, RANGES, wantsNumber, addRange } from "../interview.js?v=9300f22-202610261745";
+import { stepsFor, claimsOf, linesOf, hasOutput, allConfirmed as confirmedAll, changedSinceSave as changedSince, savedAndDownloaded } from "../resume-stages.js?v=9300f22-202610261745";
 
 const PDF_JS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs";
 const PDF_WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs";
@@ -357,7 +357,7 @@ export function renderResume(ctx, options = {}) {
     busy = "Sending it to your map.";
     render();
     try {
-      await sendSuggestion(slug, {
+      const sent = await sendSuggestion(slug, {
         base: current.state.mapVersion ?? null,
         ops: [{ kind: "add", id: newOpId(), after, type: "step", title: n.plan.do.slice(0, 120),
           note: `For ${rec.graph.targets?.[0]?.titles?.[0] || "the job I want"}: ${n.label}. When it's done, this line goes on my resume: “${n.plan.line}”`.slice(0, 600),
@@ -365,7 +365,9 @@ export function renderResume(ctx, options = {}) {
         note: `From my resume: a step to earn "${n.label}" (${n.plan.weeks ? `about ${n.plan.weeks} weeks` : "a few weeks"}).`,
       });
       take(await api.needMapped(slug, rec.version, n.id));
-      toast("Sent to your map. It shows there once it's merged in.", "ok", { ms: 5000 });
+      // A self-serve map took it at once (map_automerge.py); a coach-kept map waits for the coach.
+      toast(sent?.status === "merged" ? "It's on your map." : "Sent to your coach to add to your map.", "ok", { ms: 5000 });
+      if (sent?.status === "merged") refreshStore();
     } catch (e) {
       toast(e.message, "warn", { ms: 5000 });
     } finally {

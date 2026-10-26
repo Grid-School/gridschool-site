@@ -13,18 +13,18 @@
  * builder made; a coach's map is left alone), or "Something's off" sends the coach a note.
  */
 
-import { el, mount } from "../dom.js?v=200c41d-202610261730";
-import { btn, toast } from "../ui.js?v=200c41d-202610261730";
-import { nodeRail } from "./node-rail.js?v=200c41d-202610261730";
-import { doneIds } from "../steps.js?v=200c41d-202610261730";
-import { nextUp } from "../graph/model.js?v=200c41d-202610261730";
-import { isProgressReadOnly } from "../store.js?v=200c41d-202610261730";
-import * as A from "../answer-chunk.js?v=200c41d-202610261730";
-import * as I from "../../../data/intake/intake.mjs?v=200c41d-202610261730";
-import { control } from "./answer.js?v=200c41d-202610261730";
-import { filePayload } from "./images.js?v=200c41d-202610261730";
-import { intakeReady, loadIntake, saveChunk, rebuildMap, loadSeeds } from "../intake-remote.js?v=200c41d-202610261730";
-import { imagesReady, loadImages, uploadImage, removeImage, imageUrl } from "../images-remote.js?v=200c41d-202610261730";
+import { el, mount } from "../dom.js?v=9300f22-202610261745";
+import { btn, toast } from "../ui.js?v=9300f22-202610261745";
+import { nodeRail } from "./node-rail.js?v=9300f22-202610261745";
+import { doneIds } from "../steps.js?v=9300f22-202610261745";
+import { nextUp } from "../graph/model.js?v=9300f22-202610261745";
+import { isProgressReadOnly } from "../store.js?v=9300f22-202610261745";
+import * as A from "../answer-chunk.js?v=9300f22-202610261745";
+import * as I from "../../../data/intake/intake.mjs?v=9300f22-202610261745";
+import { control } from "./answer.js?v=9300f22-202610261745";
+import { filePayload } from "./images.js?v=9300f22-202610261745";
+import { intakeReady, loadIntake, saveChunk, rebuildMap, loadSeeds } from "../intake-remote.js?v=9300f22-202610261745";
+import { imagesReady, loadImages, uploadImage, removeImage, imageUrl } from "../images-remote.js?v=9300f22-202610261745";
 
 /* The stages, each a few questions from one chunk. Upload questions name the images kind they go to.
    A question stage is done when every question it asks now is answered or skipped; Finish is done when

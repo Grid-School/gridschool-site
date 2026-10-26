@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { PLANS, order, readParams, payUrl } from "./order.mjs?v=200c41d-202610261730";
+import { PLANS, order, readParams, payUrl } from "./order.mjs?v=9300f22-202610261745";
 
 const OFFER = JSON.parse(readFileSync(new URL("../data/intake/offer.json", import.meta.url), "utf8"));
 const dollars = (n) => `$${n.toLocaleString("en-US")}`;

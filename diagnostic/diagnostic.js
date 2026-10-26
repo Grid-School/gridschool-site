@@ -7,7 +7,7 @@
  * locally so the application flow can refer back to it.
  */
 
-import { LINKS } from "../config.js?v=200c41d-202610261730";
+import { LINKS } from "../config.js?v=9300f22-202610261745";
 
 const KEY = "gridschool.diagnostic.v1";
 

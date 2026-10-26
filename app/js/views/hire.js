@@ -16,10 +16,10 @@
  * half-typed form. Aden sees it read-only from the desk.
  */
 
-import { el, mount } from "../dom.js?v=200c41d-202610261730";
-import { panel, btn, field, toast, copy } from "../ui.js?v=200c41d-202610261730";
-import { isoDate, fmtDay } from "../time.js?v=200c41d-202610261730";
-import { STATUS } from "../graph/model.js?v=200c41d-202610261730";
+import { el, mount } from "../dom.js?v=9300f22-202610261745";
+import { panel, btn, field, toast, copy } from "../ui.js?v=9300f22-202610261745";
+import { isoDate, fmtDay } from "../time.js?v=9300f22-202610261745";
+import { STATUS } from "../graph/model.js?v=9300f22-202610261745";
 import {
   STAGES,
   RELATIONS,
@@ -63,14 +63,14 @@ import {
   nextTouch,
   targetCandidates,
   MAX_ACTIVE_TARGETS,
-} from "../search.js?v=200c41d-202610261730";
-import { storyCard, appRow } from "./search-parts.js?v=200c41d-202610261730";
-import { TOOLS } from "../engine.js?v=200c41d-202610261730";
-import { PERSIST } from "../../../config.js?v=200c41d-202610261730";
-import { matchedRoles, radarReady, fetchPacks, winsState, shareWin, draftPositioning } from "../roles-remote.js?v=200c41d-202610261730";
-import { createPackDrawer } from "./pack.js?v=200c41d-202610261730";
-import { createCampaignDrawer } from "./campaign.js?v=200c41d-202610261730";
-import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=200c41d-202610261730";
+} from "../search.js?v=9300f22-202610261745";
+import { storyCard, appRow } from "./search-parts.js?v=9300f22-202610261745";
+import { TOOLS } from "../engine.js?v=9300f22-202610261745";
+import { PERSIST } from "../../../config.js?v=9300f22-202610261745";
+import { matchedRoles, radarReady, fetchPacks, winsState, shareWin, draftPositioning } from "../roles-remote.js?v=9300f22-202610261745";
+import { createPackDrawer } from "./pack.js?v=9300f22-202610261745";
+import { createCampaignDrawer } from "./campaign.js?v=9300f22-202610261745";
+import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=9300f22-202610261745";
 
 const RUN_FAMILIES = ["proof", "presence", "network", "interview"];
 /** How many moves the day leads with. More than this reads as a wall, not a plan. */

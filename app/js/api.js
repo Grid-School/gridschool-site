@@ -3,13 +3,13 @@
  * student file seeds identity from the notebook API.
  */
 
-import { loadPrivateJson } from "./gate.js?v=200c41d-202610261730";
-import { seedFromSnapshot } from "./persist.js?v=200c41d-202610261730";
-import { fetchSnapshot, remoteEnabled } from "./persist-remote.js?v=200c41d-202610261730";
-import { applySiteOverrides, applyPrivateLinks, applyCopyOverrides } from "../../js/site-overrides.js?v=200c41d-202610261730";
-import { revealMemberInvite } from "../../js/member-invite.js?v=200c41d-202610261730";
-import { numberCurriculumReadings } from "./reading-order.js?v=200c41d-202610261730";
-import { resolveMap, loadModules, moduleRefs } from "./modules.js?v=200c41d-202610261730";
+import { loadPrivateJson } from "./gate.js?v=9300f22-202610261745";
+import { seedFromSnapshot } from "./persist.js?v=9300f22-202610261745";
+import { fetchSnapshot, remoteEnabled } from "./persist-remote.js?v=9300f22-202610261745";
+import { applySiteOverrides, applyPrivateLinks, applyCopyOverrides } from "../../js/site-overrides.js?v=9300f22-202610261745";
+import { revealMemberInvite } from "../../js/member-invite.js?v=9300f22-202610261745";
+import { numberCurriculumReadings } from "./reading-order.js?v=9300f22-202610261745";
+import { resolveMap, loadModules, moduleRefs } from "./modules.js?v=9300f22-202610261745";
 
 const BASE = "../data/";
 const cache = new Map();
