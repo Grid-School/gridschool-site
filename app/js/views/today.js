@@ -8,15 +8,15 @@
  * position; a task marked done elsewhere must not throw you back to the top.
  */
 
-import { el, mount } from "../dom.js?v=9300f22-202610261745";
-import { btn, toast } from "../ui.js?v=9300f22-202610261745";
-import { COACH } from "../../../config.js?v=9300f22-202610261745";
-import { nextAction } from "../coach/next.js?v=9300f22-202610261745";
-import { nextUp } from "../graph/model.js?v=9300f22-202610261745";
-import { credits, formatUsd, attachmentBudget } from "../coach/credits.js?v=9300f22-202610261745";
-import { rememberIntent } from "../coach/memory.js?v=9300f22-202610261745";
-import { sendTurn, coachIsLive, lastMonth } from "../coach/client.js?v=9300f22-202610261745";
-import { systemLine } from "./system-line.js?v=9300f22-202610261745";
+import { el, mount } from "../dom.js?v=a3b9988-202610262033";
+import { btn, toast } from "../ui.js?v=a3b9988-202610262033";
+import { COACH } from "../../../config.js?v=a3b9988-202610262033";
+import { nextAction } from "../coach/next.js?v=a3b9988-202610262033";
+import { nextUp } from "../graph/model.js?v=a3b9988-202610262033";
+import { credits, formatUsd, attachmentBudget } from "../coach/credits.js?v=a3b9988-202610262033";
+import { rememberIntent } from "../coach/memory.js?v=a3b9988-202610262033";
+import { sendTurn, coachIsLive, lastMonth } from "../coach/client.js?v=a3b9988-202610262033";
+import { systemLine } from "./system-line.js?v=a3b9988-202610262033";
 
 const TEXT_FILES = /\.(txt|md|markdown|json|diff|patch|py|js|mjs|ts|tsx|jsx|css|html|rs|go|java|rb|sh|yml|yaml|toml|csv)$/i;
 

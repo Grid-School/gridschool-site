@@ -3,8 +3,8 @@
  * answers with the current record, which the page simply takes and keeps going.
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=9300f22-202610261745";
-import { persistToken } from "./session.js?v=9300f22-202610261745";
+import { PERSIST, isPlaceholder } from "../../config.js?v=a3b9988-202610262033";
+import { persistToken } from "./session.js?v=a3b9988-202610262033";
 
 export function resumeReady() {
   return Boolean(persistToken() && PERSIST?.endpoint && !isPlaceholder(PERSIST.endpoint));
@@ -46,6 +46,8 @@ export const switchTarget = (slug, version, id) => call("POST", `${base(slug)}/t
 export const removeTarget = (slug, version, id) => call("POST", `${base(slug)}/targets`, { version, remove: id });
 /* What the call in flight is doing (server/work_progress.py): steps, and notes of what the model found so far. */
 export const loadProgress = (slug) => call("GET", `${base(slug)}/progress`);
+/* The send loop's read-out: plain lines and the comparisons by version, timing, portfolio, named person. */
+export const loadReadout = (slug) => call("GET", `${base(slug)}/readout`);
 export const confirmLine = (slug, version, claimId, decision, { text, defense } = {}) =>
   call("POST", `${base(slug)}/confirm`, { version, claim_id: claimId, decision, text, defense });
 /* Saved versions: name it, keep it, download it again exactly as saved. */

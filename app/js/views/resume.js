@@ -11,23 +11,23 @@
  * confirms it. Every saved version has a name, the date and time it was made, and can be downloaded again.
  */
 
-import { el, mount } from "../dom.js?v=9300f22-202610261745";
-import { btn, toast } from "../ui.js?v=9300f22-202610261745";
-import { nodeRail } from "./node-rail.js?v=9300f22-202610261745";
-import { nextUp } from "../graph/model.js?v=9300f22-202610261745";
-import { isProgressReadOnly, refresh as refreshStore } from "../store.js?v=9300f22-202610261745";
-import { upgradeHref } from "../prep.js?v=9300f22-202610261745";
-import * as api from "../resume-remote.js?v=9300f22-202610261745";
-import { patient } from "../patient.js?v=9300f22-202610261745";
-import { doneIds } from "../steps.js?v=9300f22-202610261745";
-import { workPanel } from "./work.js?v=9300f22-202610261745";
-import { needsPanel, needFor, planBlock } from "./needs.js?v=9300f22-202610261745";
-import { sendSuggestion } from "../suggest-remote.js?v=9300f22-202610261745";
-import { newOpId } from "../../../data/map-proposal.mjs?v=9300f22-202610261745";
-import { titleRow } from "./titles.js?v=9300f22-202610261745";
-import { talkButton, canTalk } from "./voice.js?v=9300f22-202610261745";
-import { roundState, gained, RANGES, wantsNumber, addRange } from "../interview.js?v=9300f22-202610261745";
-import { stepsFor, claimsOf, linesOf, hasOutput, allConfirmed as confirmedAll, changedSinceSave as changedSince, savedAndDownloaded } from "../resume-stages.js?v=9300f22-202610261745";
+import { el, mount } from "../dom.js?v=a3b9988-202610262033";
+import { btn, toast } from "../ui.js?v=a3b9988-202610262033";
+import { nodeRail } from "./node-rail.js?v=a3b9988-202610262033";
+import { nextUp } from "../graph/model.js?v=a3b9988-202610262033";
+import { isProgressReadOnly, refresh as refreshStore } from "../store.js?v=a3b9988-202610262033";
+import { upgradeHref } from "../prep.js?v=a3b9988-202610262033";
+import * as api from "../resume-remote.js?v=a3b9988-202610262033";
+import { patient } from "../patient.js?v=a3b9988-202610262033";
+import { doneIds } from "../steps.js?v=a3b9988-202610262033";
+import { workPanel } from "./work.js?v=a3b9988-202610262033";
+import { needsPanel, needFor, planBlock } from "./needs.js?v=a3b9988-202610262033";
+import { sendSuggestion } from "../suggest-remote.js?v=a3b9988-202610262033";
+import { newOpId } from "../../../data/map-proposal.mjs?v=a3b9988-202610262033";
+import { titleRow } from "./titles.js?v=a3b9988-202610262033";
+import { talkButton, canTalk } from "./voice.js?v=a3b9988-202610262033";
+import { roundState, gained, RANGES, wantsNumber, addRange } from "../interview.js?v=a3b9988-202610262033";
+import { stepsFor, claimsOf, linesOf, hasOutput, allConfirmed as confirmedAll, changedSinceSave as changedSince, savedAndDownloaded, readiness } from "../resume-stages.js?v=a3b9988-202610262033";
 
 const PDF_JS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs";
 const PDF_WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs";
@@ -702,8 +702,16 @@ export function renderResume(ctx, options = {}) {
       onAdd: readOnly() ? null : (text) => { stage = null; run("Working out what this job is screened for.", (r) => api.addTarget(slug, rec.version, text, r), WORK.target); },
       onRemove: readOnly() ? null : (t) => { stage = null; run("Removing.", () => api.removeTarget(slug, rec.version, t.id)); },
     });
+    // Ready to send? Three facts (resume-stages.readiness), the same ones the Send node opens on.
+    const ready = readiness({ rec, saves });
+    const readyLine = rec.graph.targets?.length
+      ? el("p.rz__ready", { "data-verdict": ready.verdict },
+          ready.ready ? `${ready.verdict === "nearly" ? "Nearly ready to send" : "Ready to send"}${ready.note ? `: ${ready.note.charAt(0).toLowerCase()}${ready.note.slice(1)}` : "."}`
+            : `Not ready to send yet: ${ready.checks.filter((c) => !c.ok).map((c) => c.label.toLowerCase()).join(", ")}.`)
+      : null;
     const main = el("section.rz__main", {},
       titles,
+      readyLine,
       nodeRail({ nodes: stages(), done: doneStages(), here, onGo: go, label: "Resume steps" }),
       readOnly() ? el("p.rz__readonly", {}, "View only: this is the student's own resume. Changes are theirs to make.") : null,
       el("div.rz__card", { "aria-busy": busy ? "true" : null }, busy ? panel?.node ?? el("div.pack__wait", {}, el("span.pack__spinner", { "aria-hidden": "true" }), el("p", {}, busy)) : body));

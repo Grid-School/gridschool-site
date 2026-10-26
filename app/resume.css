@@ -188,6 +188,41 @@
 .rz__gain ul { margin: 0; padding-left: 18px; color: var(--muted); }
 .rz__gainshown { margin: 0 0 4px; color: var(--ok); }
 
+/* Ready to send: three facts, at the top of the resume tool. */
+.rz__ready { margin: -8px 0 24px; font-size: 14px; color: var(--muted); padding-left: 14px; border-left: 2px solid var(--locked); }
+.rz__ready[data-verdict="ready"] { color: var(--ok); border-color: var(--ok); }
+.rz__ready[data-verdict="nearly"] { color: var(--warn); border-color: var(--warn); }
+
+/* Send this week (js/views/send.js): locked checks, the five, one job, the asks, the read-out. */
+.sd__card, .sd__job, .sd__asks, .sd__readout { padding: 24px 26px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.sd__card + .sd__readout, .sd__asks + .sd__card, .sd__asks + .sd__job, .sd__job + .sd__readout { margin-top: 24px; }
+.sd__card h2, .sd__job h2 { margin: 0 0 6px; font-size: 20px; }
+.sd__job h2 small { color: var(--muted); font-weight: 400; font-size: 15px; }
+.sd__checks { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 10px; }
+.sd__check { display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; gap: 10px; align-items: center; font-size: 15px; color: var(--muted); }
+.sd__check.is-ok { color: var(--text); }
+.sd__tick { width: 16px; height: 16px; border-radius: 50%; border: 1px solid var(--locked); display: grid; place-items: center; font-size: 10px; font-weight: 700; }
+.sd__check.is-ok .sd__tick { background: var(--ok); border-color: var(--ok); color: #02050a; }
+.sd__five { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 10px; }
+.sd__pickbtn { display: grid; gap: 4px; width: 100%; text-align: left; background: var(--bg2); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 12px 14px; font: inherit; color: var(--text); cursor: pointer; position: relative; }
+.sd__pickbtn:hover { border-color: var(--cyan); }
+.sd__who { font-size: 15px; padding-right: 90px; }
+.sd__why { font-size: 13px; color: var(--muted); }
+.sd__label { position: absolute; right: 12px; top: 12px; font-family: var(--font-mono); font-size: 11.5px; letter-spacing: .04em; text-transform: uppercase; color: var(--ok); }
+.sd__pick[data-verdict="reach"] .sd__label { color: var(--cyan); }
+.sd__verdict { margin: 0 0 12px; font-size: 14px; color: var(--ok); }
+.sd__verdict[data-verdict="reach"] { color: var(--cyan); }
+.sd__facts { margin: 0 0 14px; padding-left: 18px; color: var(--muted); font-size: 14px; display: grid; gap: 4px; }
+.sd__with { font-size: 14px; margin: 0 0 12px; }
+.sd__with small { color: var(--muted); }
+.sd__before { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 13.5px; color: var(--muted); margin: 0 0 6px; }
+.sd__before .rz__chip[aria-pressed="true"] { border-color: var(--cyan); color: var(--cyan); }
+.sd__fact { font-size: 13.5px; color: var(--muted); }
+.sd__ask { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; padding: 10px 0; border-top: 1px solid var(--line); font-size: 14px; }
+.sd__ask .rz__row { margin-top: 0; }
+.sd__readout ul { margin: 8px 0 0; padding-left: 18px; font-size: 14px; display: grid; gap: 6px; }
+.rz__muted { color: var(--muted); font-size: 13.5px; }
+
 /* No output yet (resume-stages.hasOutput): the steps take the whole width, at a readable measure. */
 .rz__grid.rz__grid--solo { grid-template-columns: minmax(0, 1fr); max-width: 780px; }
 .nd__head--plain { cursor: default; margin: 0 0 8px; }

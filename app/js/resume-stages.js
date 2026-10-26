@@ -38,5 +38,31 @@ export const FINISH = { id: "finish", label: "Finish", done: ({ nodeDone }) => B
 /** The steps for where the builder is shown: on its node it ends with Finish. */
 export const stepsFor = (embedded) => (embedded ? [...STEPS, FINISH] : STEPS);
 
+/**
+ * Ready to send for this title? Three facts, not a feeling: every line kept, a version saved and downloaded,
+ * and the job's checklist worked out. Fit is reported, never required (sending is also how we learn).
+ * The Send node (views/send.js) opens on `ready`; the resume tool shows the same checks at the top.
+ */
+export function readiness({ rec, saves = [] }) {
+  const needs = (rec?.needs || []).filter((n) => n.state !== "off");
+  const shown = needs.filter((n) => n.status === "shown").length;
+  const later = needs.filter((n) => n.state === "later").length;
+  const checks = [
+    { id: "check", label: "Every line checked and kept", ok: allConfirmed(rec), go: linesOf(rec).length ? "check" : "write" },
+    { id: "save", label: "A version saved and downloaded", ok: savedAndDownloaded({ rec, saves }), go: "save" },
+    { id: "needs", label: "The job's checklist worked out", ok: needs.length > 0, go: "questions" },
+  ];
+  const ready = checks.every((c) => c.ok);
+  const fit = needs.length ? { shown, total: needs.length - later, later } : null;
+  const fixable = needs.filter((n) => n.state === "on" && n.status !== "shown").length;
+  return {
+    ready,
+    checks,
+    fit,
+    verdict: !ready ? "not_yet" : fit && fit.total && shown / fit.total < 0.5 ? "nearly" : "ready",
+    note: !ready ? null : fit && fixable ? `${shown} of ${fit.total} on the checklist; ${fixable} you could still fix in the questions.` : fit ? `${shown} of ${fit.total} on the checklist.` : null,
+  };
+}
+
 /** The resume preview shows only once it has one of their lines on it: a line goes on when it's kept. */
 export const hasOutput = (rec) => linesOf(rec).some((c) => c.status === "confirmed");

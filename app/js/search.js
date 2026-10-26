@@ -13,7 +13,7 @@
  * calendar draws.
  */
 
-import { isoDate, weekStart, addDays, parseDate } from "./time.js?v=9300f22-202610261745";
+import { isoDate, weekStart, addDays, parseDate } from "./time.js?v=a3b9988-202610262033";
 
 /** How far one application got. Each stage implies every stage before it. */
 export const STAGES = [
@@ -69,9 +69,81 @@ export function normalizeApp(raw = {}, now = new Date()) {
     roleKey: clip(raw.roleKey, 200) || undefined,
     followed: /^\d{4}-\d{2}-\d{2}$/.test(String(raw.followed ?? "")) ? raw.followed : undefined,
     nudges: Number.isInteger(raw.nudges) ? raw.nudges : undefined,
+    // What was sent (the send loop, views/send.js): the resume version and title, whether a portfolio link
+    // or a named person went with it, how old the posting was, and whether they'd applied there before.
+    ...sendTags(raw),
     at: raw.at ?? now.toISOString(),
     moved: raw.moved ?? raw.at ?? now.toISOString(),
   };
+}
+
+const BEFORE = ["yes", "no", "unsure"];
+
+function sendTags(raw) {
+  const out = {};
+  if (raw.resume && typeof raw.resume === "object") {
+    const r = raw.resume;
+    const resume = { saveId: Number.isInteger(r.saveId) ? r.saveId : undefined, name: clip(r.name, 120) || undefined, targetId: clip(r.targetId, 20) || undefined, title: clip(r.title, 120) || undefined };
+    if (resume.saveId || resume.name || resume.title) out.resume = resume;
+  }
+  if (raw.portfolio === true) out.portfolio = true;
+  if (raw.named === true) out.named = true;
+  if (Number.isInteger(raw.age) && raw.age >= 0) out.age = raw.age;
+  if (BEFORE.includes(raw.before)) out.before = raw.before;
+  if (Number.isInteger(raw.asked) && raw.asked > 0) out.asked = raw.asked;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(String(raw.askedAt ?? ""))) out.askedAt = raw.askedAt;
+  return out;
+}
+
+/* ---------- the send loop: one question later, silence becomes a fact, versions alternate ---------- */
+
+export const ASK_AFTER_DAYS = [3, 10];
+export const NO_REPLY_DAYS = 21;
+
+/** Sends still at "sent" that it's time to ask about: 3 days after sending, then 10. Never more than twice. */
+export function outcomeAsks(apps, now = new Date()) {
+  const today = isoDate(now);
+  return (apps ?? [])
+    .filter((app) => !app.closed && app.stage === "sent")
+    .filter((app) => {
+      const asked = app.asked ?? 0;
+      if (asked >= ASK_AFTER_DAYS.length) return false;
+      const since = asked === 0 ? app.date : app.askedAt || app.date;
+      return isoDate(addDays(parseDate(since), asked === 0 ? ASK_AFTER_DAYS[0] : ASK_AFTER_DAYS[1] - ASK_AFTER_DAYS[0])) <= today;
+    })
+    .sort((a, b) => a.date.localeCompare(b.date));
+}
+
+/** Their one-tap answer. "nothing" counts the ask; a stage moves the send. */
+export function answerAsk(apps, id, answer, now = new Date()) {
+  if (answer === "nothing") {
+    return (apps ?? []).map((app) => (app.id === id ? { ...app, asked: (app.asked ?? 0) + 1, askedAt: isoDate(now), moved: now.toISOString() } : app));
+  }
+  return STAGE_IDS.includes(answer) ? moveApp(apps, id, answer, now) : apps;
+}
+
+/** Sent, asked about twice (or three weeks old), still nothing: a fact, not a pending question. */
+export function noReply(app, now = new Date()) {
+  if (app.closed || app.stage !== "sent") return false;
+  return (app.asked ?? 0) >= ASK_AFTER_DAYS.length || app.date <= isoDate(addDays(now, -NO_REPLY_DAYS));
+}
+
+/** Which saved version to send next for a title: the one sent least recently, so two versions alternate
+    across the same jobs and weeks and can be compared without any history. */
+export function pickVersion(saves, apps, targetId = null) {
+  const mine = (saves ?? []).filter((s) => !targetId || !s.targetId || s.targetId === targetId);
+  if (!mine.length) return null;
+  const lastSent = new Map();
+  for (const app of apps ?? []) {
+    if (app.resume?.saveId) lastSent.set(app.resume.saveId, app.date > (lastSent.get(app.resume.saveId) ?? "") ? app.date : lastSent.get(app.resume.saveId));
+  }
+  return [...mine].sort((a, b) => (lastSent.get(a.id) ?? "").localeCompare(lastSent.get(b.id) ?? "") || String(b.created_at ?? "").localeCompare(String(a.created_at ?? "")))[0];
+}
+
+/** Have they sent to this company (or this exact role) before? The board's own memory, from the first send on. */
+export function sentBefore(apps, { company, roleKey } = {}) {
+  const key = companyKey(company);
+  return (apps ?? []).find((app) => (roleKey && app.roleKey === roleKey) || (key && companyKey(app.company) === key)) ?? null;
 }
 
 export function searchOf(student) {

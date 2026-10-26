@@ -5,8 +5,8 @@
  * Only a student on their own seat counts; the coach's console, the demo and test seats never do.
  */
 
-import { PERSIST } from "../../config.js?v=9300f22-202610261745";
-import { track } from "../../check/events.js?v=9300f22-202610261745";
+import { PERSIST } from "../../config.js?v=a3b9988-202610262033";
+import { track } from "../../check/events.js?v=a3b9988-202610262033";
 
 const CHUNK_TASK = /^q\.(c\d+)\.answer$/;
 const CHECKIN_TASK = "w.checkin.feel";
