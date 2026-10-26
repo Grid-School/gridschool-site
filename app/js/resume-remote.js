@@ -3,8 +3,8 @@
  * answers with the current record, which the page simply takes and keeps going.
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=c18e1b4-202610261602";
-import { persistToken } from "./session.js?v=c18e1b4-202610261602";
+import { PERSIST, isPlaceholder } from "../../config.js?v=6313a80-202610261633";
+import { persistToken } from "./session.js?v=6313a80-202610261633";
 
 export function resumeReady() {
   return Boolean(persistToken() && PERSIST?.endpoint && !isPlaceholder(PERSIST.endpoint));
@@ -35,6 +35,9 @@ export const startFresh = (slug, version, replace = false) => call("POST", `${ba
 export const answerQuestion = (slug, version, questionId, answer, run) => call("POST", `${base(slug)}/answer`, { version, question_id: questionId, answer, run });
 export const skipQuestion = (slug, version, questionId) => call("POST", `${base(slug)}/answer`, { version, question_id: questionId, skip: true });
 export const writeLines = (slug, version, run) => call("POST", `${base(slug)}/write`, { version, run });
+/* What the target job is screened for (server/resume_needs.py): switch one off or on, or work them out. */
+export const setNeed = (slug, version, needId, state) => call("POST", `${base(slug)}/needs`, { version, need_id: needId, state });
+export const refreshNeeds = (slug, version) => call("POST", `${base(slug)}/needs`, { version, refresh: true });
 /* What the call in flight is doing (server/work_progress.py): steps, and notes of what the model found so far. */
 export const loadProgress = (slug) => call("GET", `${base(slug)}/progress`);
 export const confirmLine = (slug, version, claimId, decision, { text, defense } = {}) =>

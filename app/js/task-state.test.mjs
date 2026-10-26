@@ -9,9 +9,9 @@ import {
   savedTask,
   countOf,
   withSavedState,
-} from "./task-state.js?v=c18e1b4-202610261602";
-import { buildQueue } from "./tasks.js?v=c18e1b4-202610261602";
-import { buildGraph } from "./graph/model.js?v=c18e1b4-202610261602";
+} from "./task-state.js?v=6313a80-202610261633";
+import { buildQueue } from "./tasks.js?v=6313a80-202610261633";
+import { buildGraph } from "./graph/model.js?v=6313a80-202610261633";
 
 test("required fields block completion until they have text", () => {
   const task = { fields: [{ id: "a", required: true }, { id: "b", required: false }] };

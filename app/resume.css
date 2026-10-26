@@ -112,5 +112,47 @@
 .view--profile .answer__opts, .view--profile .answer__input { margin-left: 0; }
 .view--profile .answer__input { width: 100%; box-sizing: border-box; }
 
+/* What the job is screened for (js/views/needs.js): why the questions are the questions. */
+.nd { margin: 0 0 18px; padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--bg2); }
+.nd__head { display: flex; align-items: center; gap: 8px 12px; flex-wrap: wrap; font-size: 14px; cursor: pointer; list-style: none; }
+.nd__head::-webkit-details-marker { display: none; }
+.nd > .nd__head { padding: 0; font-weight: 400; color: var(--text); } /* the site's details styling, minus its own padding */
+.nd .nd__empty { padding: 0; }
+.nd[open] .nd__head { margin-bottom: 10px; }
+.nd__dots { display: inline-flex; gap: 4px; }
+.nd__dots i { width: 8px; height: 8px; border-radius: 50%; border: 1px solid var(--locked); }
+.nd__dots i.is-shown { background: var(--ok); border-color: var(--ok); }
+.nd__dots i.is-weak { border: 2px solid var(--warn); }
+.nd__item.is-current .nd__label { color: var(--cyan); }
+.nd__score { color: var(--muted); font-size: 13px; }
+.nd__empty { color: var(--muted); font-size: 13.5px; margin: 0 0 10px; }
+.nd__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.nd__item { display: grid; grid-template-columns: 16px minmax(0, 1fr) auto; gap: 10px; align-items: start; font-size: 14px; line-height: 1.35; }
+.nd__label small { display: block; font-size: 12px; color: var(--muted); margin-top: 1px; }
+.nd__dot { width: 14px; height: 14px; margin-top: 2px; border-radius: 50%; border: 1px solid var(--locked); display: grid; place-items: center; font-size: 9px; font-weight: 700; }
+.nd__item.is-shown .nd__dot { background: var(--ok); border-color: var(--ok); color: #02050a; }
+.nd__item.is-shown .nd__label small { color: var(--ok); }
+.nd__item.is-weak .nd__dot { border: 2px solid var(--warn); }
+.nd__item.is-weak .nd__label small { color: var(--warn); }
+.nd__item.is-off { opacity: .5; }
+.nd__item.is-off .nd__label { text-decoration: line-through; }
+.nd__toggle { background: none; border: 0; color: var(--muted); font: inherit; font-size: 12px; cursor: pointer; padding: 2px 0; white-space: nowrap; }
+.nd__toggle:hover { color: var(--text); text-decoration: underline; }
+
+/* Answering made easy: talk instead of type, tap a range instead of recalling a number. */
+.rz__aids { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; margin-top: 10px; }
+.rz__talk { background: none; border: 1px solid var(--line); color: var(--text); border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 13px; cursor: pointer; }
+.rz__talk[aria-pressed="true"] { border-color: var(--warn); color: var(--warn); }
+.rz__ranges { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12.5px; color: var(--muted); }
+.rz__chip { background: var(--surface); border: 1px solid var(--line); color: var(--text); border-radius: 999px; padding: 4px 10px; font: inherit; font-size: 12.5px; cursor: pointer; }
+.rz__chip:hover, .rz__talk:hover { border-color: var(--cyan); }
+
+/* The payoff for an answer: what it added, and anything the job checks that's now shown. */
+.rz__gain { margin-top: 16px; padding: 12px 14px; border-left: 2px solid var(--ok); background: color-mix(in srgb, var(--ok) 6%, transparent); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; font-size: 13.5px; animation: work-note .45s ease-out both; }
+.rz__gain b { display: block; margin-bottom: 4px; }
+.rz__gain ul { margin: 0; padding-left: 18px; color: var(--muted); }
+.rz__gainshown { margin: 0 0 4px; color: var(--ok); }
+
 /* No output yet (resume-stages.hasOutput): the steps take the whole width, at a readable measure. */
 .rz__grid.rz__grid--solo { grid-template-columns: minmax(0, 1fr); max-width: 780px; }
+.nd__head--plain { cursor: default; margin: 0 0 8px; }

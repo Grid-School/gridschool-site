@@ -11,17 +11,20 @@
  * confirms it. Every saved version has a name, the date and time it was made, and can be downloaded again.
  */
 
-import { el, mount } from "../dom.js?v=c18e1b4-202610261602";
-import { btn, toast } from "../ui.js?v=c18e1b4-202610261602";
-import { nodeRail } from "./node-rail.js?v=c18e1b4-202610261602";
-import { nextUp } from "../graph/model.js?v=c18e1b4-202610261602";
-import { isProgressReadOnly } from "../store.js?v=c18e1b4-202610261602";
-import { upgradeHref } from "../prep.js?v=c18e1b4-202610261602";
-import * as api from "../resume-remote.js?v=c18e1b4-202610261602";
-import { patient } from "../patient.js?v=c18e1b4-202610261602";
-import { doneIds } from "../steps.js?v=c18e1b4-202610261602";
-import { workPanel } from "./work.js?v=c18e1b4-202610261602";
-import { stepsFor, claimsOf, linesOf, hasOutput, allConfirmed as confirmedAll, changedSinceSave as changedSince, savedAndDownloaded } from "../resume-stages.js?v=c18e1b4-202610261602";
+import { el, mount } from "../dom.js?v=6313a80-202610261633";
+import { btn, toast } from "../ui.js?v=6313a80-202610261633";
+import { nodeRail } from "./node-rail.js?v=6313a80-202610261633";
+import { nextUp } from "../graph/model.js?v=6313a80-202610261633";
+import { isProgressReadOnly } from "../store.js?v=6313a80-202610261633";
+import { upgradeHref } from "../prep.js?v=6313a80-202610261633";
+import * as api from "../resume-remote.js?v=6313a80-202610261633";
+import { patient } from "../patient.js?v=6313a80-202610261633";
+import { doneIds } from "../steps.js?v=6313a80-202610261633";
+import { workPanel } from "./work.js?v=6313a80-202610261633";
+import { needsPanel, needFor } from "./needs.js?v=6313a80-202610261633";
+import { talkButton, canTalk } from "./voice.js?v=6313a80-202610261633";
+import { roundState, gained, RANGES, wantsNumber, addRange } from "../interview.js?v=6313a80-202610261633";
+import { stepsFor, claimsOf, linesOf, hasOutput, allConfirmed as confirmedAll, changedSinceSave as changedSince, savedAndDownloaded } from "../resume-stages.js?v=6313a80-202610261633";
 
 const PDF_JS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs";
 const PDF_WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs";
@@ -38,7 +41,7 @@ const WORK = {
   ],
   answer: [
     { id: "read", label: "Reading your answer for facts: what you did, what changed, any numbers" },
-    { id: "merge", label: "Adding them to your lines, keeping only what you said" },
+    { id: "merge", label: "Adding it to your record, keeping only what you said" },
     { id: "next", label: "Choosing the next question" },
   ],
   write: [
@@ -156,6 +159,8 @@ export function renderResume(ctx, options = {}) {
   let reporting = false;
   let error = "";
   let panel = null;
+  let lastGain = null;
+  let keepGoing = false;
 
   const readOnly = () => isProgressReadOnly();
   const stages = () => stepsFor(embedded);
@@ -223,6 +228,9 @@ export function renderResume(ctx, options = {}) {
       }
       if (out?.graph) {
         lastReport = out.recovered ? lastReport : out.report || null;
+        // The payoff for answering: what that answer added, and anything the job checks that's now shown.
+        lastGain = work === WORK.answer && !out.recovered ? gained(rec, out, out.report?.touched || []) : null;
+        if (!out.round?.done) keepGoing = false;
         // A fresh read moves on to whatever comes next (the questions), even if they'd opened Start by hand.
         if (work === WORK.import) stage = null;
         take(out);
@@ -303,31 +311,70 @@ export function renderResume(ctx, options = {}) {
   }
 
   /* ---------- Questions ---------- */
+  /* ---------- Questions: an interview about the job they want ---------- */
+  function needsMap(q = null) {
+    const title = rec.graph.targets?.[0]?.titles?.[0];
+    return needsPanel({
+      title,
+      needs: rec.needs || [],
+      busy: Boolean(busy),
+      // The whole list until they start answering; then one line, so the question comes first.
+      open: !q || !(rec.round?.done > 0),
+      current: needFor(q, rec.needs),
+      onToggle: readOnly() ? null : (n, state) => run(state === "off" ? "Leaving that out." : "Adding it back.", () => api.setNeed(slug, rec.version, n.id, state)),
+      onRefresh: readOnly() ? null : () => run("Working out what this job is screened for.", () => api.refreshNeeds(slug, rec.version)),
+    });
+  }
+
+  function gainBlock() {
+    if (!lastGain || (!lastGain.lines.length && !lastGain.nowShown.length)) return reportLine();
+    return el("div.rz__gain", { "aria-live": "polite" },
+      el("b", {}, "From that answer"),
+      lastGain.nowShown.length ? el("p.rz__gainshown", {}, `✓ Now on your resume: ${lastGain.nowShown.join(", ")}`) : null,
+      lastGain.lines.length ? el("ul", {}, lastGain.lines.slice(0, 4).map((line) => el("li", {}, line))) : null);
+  }
+
   function questionsBody() {
     const q = rec.next;
-    const open = (rec.graph.queue || []).filter((x) => x.state === "open").length;
-    const answered = (rec.graph.queue || []).filter((x) => x.state === "done").length;
+    const round = roundState(rec, { keepGoing });
     if (!q) {
-      return stageCard("That's every question", "Next, we write each line of your resume from what you told us.", null, nextBtn("Write my lines", "write"));
+      return stageCard("That's every question", "Next, we write each line of your resume from what you told us.", [needsMap(), gainBlock()], nextBtn("Write my lines", "write"));
     }
-    const box = el("textarea.rz__text", { rows: 6, placeholder: "Type it the way you'd say it. A rough number is fine: say \"about\"." });
+    if (round.over) {
+      return stageCard(
+        "That's the round",
+        `You've been through ${round.size} questions. Write your lines now: everything you said goes in, and the other ${plural(round.open, "question")} will be here if you want to add more later.`,
+        [needsMap(), gainBlock()],
+        [nextBtn("Write my lines", "write"), btn({ label: `Keep going (${round.open} more)`, variant: "ghost", onclick: () => { keepGoing = true; render(); } })]
+      );
+    }
+    const box = el("textarea.rz__text", { rows: 6, placeholder: "Talk it through the way you would to a friend. Rough numbers are fine: say \"about\"." });
     const send = () => (box.value.trim() ? run("Reading your answer.", (r) => api.answerQuestion(slug, rec.version, q.id, box.value, r), WORK.answer) : toast("Type an answer, or press Skip.", "warn"));
+    const skipIt = (label) => run(label, () => api.skipQuestion(slug, rec.version, q.id));
     box.addEventListener("keydown", (e) => {
       if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) send();
     });
     setTimeout(() => box.focus({ preventScroll: true }), 0);
+    const ranges = wantsNumber(q)
+      ? el("div.rz__ranges", { "aria-label": "Quick answers for a number" },
+          el("span", {}, "Not sure of the number? Tap one:"),
+          RANGES.map((r) => el("button.rz__chip", { type: "button", onclick: () => { box.value = addRange(box.value, r); box.focus(); } }, r)))
+      : null;
     return stageCard(
-      `Question ${answered + 1}`,
-      `${plural(open - 1, "more question")} after this one. Skip any you can't answer.`,
+      round.title,
+      `${round.after} Skip any you can't answer.`,
       [
+        q.node === "T1" ? null : needsMap(q),
         el("div.rz__q", {}, el("p.rz__qtext", {}, q.text), q.why ? el("p.rz__why", {}, q.why) : null),
         box,
-        el("p.rz__hint", {}, "Tip: press Cmd+Enter to save."),
-        reportLine(),
+        el("div.rz__aids", {}, talkButton(box), ranges),
+        el("p.rz__hint", {}, canTalk() ? "Tip: talking is faster. Press Cmd+Enter to save." : "Tip: press Cmd+Enter to save."),
+        gainBlock(),
       ],
       [
         btn({ label: busy ? "Saving…" : "Save answer", variant: "solid", disabled: Boolean(busy), onclick: send }),
-        btn({ label: "Skip", variant: "quiet", disabled: Boolean(busy), onclick: () => run("Skipping.", () => api.skipQuestion(slug, rec.version, q.id)) }),
+        wantsNumber(q) ? btn({ label: "I don't know", variant: "quiet", disabled: Boolean(busy), onclick: () => skipIt("Skipping.") }) : null,
+        btn({ label: "Skip", variant: "quiet", disabled: Boolean(busy), onclick: () => skipIt("Skipping.") }),
         claimsOf(rec).length ? btn({ label: "Stop here and write my lines", variant: "ghost", disabled: Boolean(busy), onclick: () => go("write") }) : null,
       ]
     );
