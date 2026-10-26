@@ -7,7 +7,7 @@
  * and the estimate is only for the "will this turn fit" check.
  */
 
-import { COACH } from "../../../config.js?v=4f66e99-202610260029";
+import { COACH } from "../../../config.js?v=4f66e99-202610260033";
 
 const CHARS_PER_TOKEN = 4;
 

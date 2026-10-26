@@ -8,8 +8,8 @@
  * The server side is site/server/gifts_api.py. Words for each outcome: gift-words.mjs.
  */
 
-import { PERSIST, link } from "../config.js?v=4f66e99-202610260029";
-import { DONE, claimTitle, shareLabel, giftSource } from "./gift-words.mjs?v=4f66e99-202610260029";
+import { PERSIST, link } from "../config.js?v=4f66e99-202610260033";
+import { DONE, claimTitle, shareLabel, giftSource } from "./gift-words.mjs?v=4f66e99-202610260033";
 
 const params = new URLSearchParams(location.search);
 const $ = (id) => document.getElementById(id);

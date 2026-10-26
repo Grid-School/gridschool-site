@@ -18,13 +18,13 @@
  * view glides to it. Nothing idles. Reduced motion jumps.
  */
 
-import { el, clear } from "../../dom.js?v=4f66e99-202610260029";
-import { traceSet, stepNumber } from "../model.js?v=4f66e99-202610260029";
-import { STANDING, standingOf, inSequence } from "../standing.js?v=4f66e99-202610260029";
-import { typeOf, specOf } from "../model.js?v=4f66e99-202610260029";
-import { isTypedMap } from "../../engine.js?v=4f66e99-202610260029";
-import { isCompleteMap, isFreeMap } from "../../prep.js?v=4f66e99-202610260029";
-import { WIN_LABEL } from "../route.js?v=4f66e99-202610260029";
+import { el, clear } from "../../dom.js?v=4f66e99-202610260033";
+import { traceSet, stepNumber } from "../model.js?v=4f66e99-202610260033";
+import { STANDING, standingOf, inSequence } from "../standing.js?v=4f66e99-202610260033";
+import { typeOf, specOf } from "../model.js?v=4f66e99-202610260033";
+import { isTypedMap } from "../../engine.js?v=4f66e99-202610260033";
+import { isCompleteMap, isFreeMap } from "../../prep.js?v=4f66e99-202610260033";
+import { WIN_LABEL } from "../route.js?v=4f66e99-202610260033";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 /** "2026-10-16" → "Due Oct 16". */
@@ -42,7 +42,7 @@ import {
   runCurrent,
   rezIn,
   prefersReducedMotion,
-} from "../../../../js/rez/road.js?v=4f66e99-202610260029";
+} from "../../../../js/rez/road.js?v=4f66e99-202610260033";
 
 /*
  * One grid under everything, in the board's own units (as on the landing):

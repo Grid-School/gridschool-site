@@ -18,7 +18,7 @@ import {
   diagnosisMap,
   questionOf,
   SIGNALS,
-} from "./intake.mjs?v=4f66e99-202610260029";
+} from "./intake.mjs?v=4f66e99-202610260033";
 
 const catalog = JSON.parse(readFileSync(new URL("./questions.json", import.meta.url)));
 
