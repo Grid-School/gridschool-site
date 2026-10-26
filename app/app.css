@@ -616,22 +616,25 @@ body[data-view="step"] .view--step { flex: 1 1 auto; min-height: 0; }
   background: linear-gradient(to bottom, rgba(5, 7, 12, .92), transparent);
 }
 .hud__group { display: flex; gap: 14px; align-items: center; }
-.hud__count { color: #fff; font-size: 13.5px; }
 .hud__depth, .hud__side { color: var(--muted); font-size: 12.5px; }
 .hud__law { color: var(--muted); font-size: 12px; }
 .legend { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--muted); }
+/* The map controls: a small stack in the bottom-right corner, above the next-step card (--nextbar-h, map.js). */
 .hud--side {
-  top: 56px; right: 14px; flex-direction: column; gap: 5px; align-items: stretch;
-  transition: right .18s ease;
+  right: 16px; bottom: calc(var(--nextbar-h, 0px) + 16px); flex-direction: column; gap: 0;
+  border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
+  background: rgba(6, 10, 18, .9); backdrop-filter: blur(6px); box-shadow: 0 6px 24px rgba(0, 0, 0, .45);
+  transition: right .18s ease, bottom .18s ease;
 }
-/* map controls read as controls: same width, real edges, glass over the grid */
-.hud--side .b {
-  min-width: 104px; justify-content: center;
-  background: rgba(6, 10, 18, .9); backdrop-filter: blur(6px);
-  border-color: var(--line); color: var(--text);
+.hud--side:empty { display: none; }
+.mapctl {
+  display: grid; place-items: center; width: 40px; height: 40px; padding: 0;
+  color: var(--muted); background: none; border: 0; cursor: pointer;
 }
-.hud--side .b:hover { border-color: var(--cyan); color: #fff; }
-.hud--side .b--solid { background: #10203a; border-color: #1a4a5c; color: #fff; }
+.mapctl + .mapctl { border-top: 1px solid var(--line); }
+.mapctl .icon { width: 20px; height: 20px; }
+.mapctl:hover { color: #fff; background: var(--bg2); }
+.mapctl:focus-visible { outline: 1px solid var(--cyan); outline-offset: -2px; }
 .hud--status {
   bottom: 16px; left: 18px; padding: 7px 13px; border-radius: var(--radius-sm);
   background: rgba(5, 7, 12, .9); border: 1px solid color-mix(in srgb, var(--amber) 30%, var(--line));
@@ -1088,12 +1091,7 @@ html.vid-lock, html.vid-lock body { overflow: hidden; }
   .b { padding: 10px 15px; }
   .b--quiet { padding: 10px 12px; }
   .view { padding: 22px 18px 60px; }
-  /* map controls sit along the bottom: a vertical stack would eat half the width */
-  .hud--side {
-    top: auto; bottom: 12px; left: 12px; right: 12px;
-    flex-direction: row; flex-wrap: wrap; gap: 8px;
-  }
-  .hud--side .b { min-width: 0; flex: 1 1 auto; }
+  .hud--side { right: 12px; bottom: calc(var(--nextbar-h, 0px) + 12px); }
   .hud--top { gap: 6px; flex-direction: column; align-items: flex-start; }
   /* a phone has no side room, so the room fills the map area edge to edge */
   .modal__panel { --room-gap: 8px; }
@@ -2185,13 +2183,6 @@ pre.diagram--failed { border-color: var(--amber); }
 }
 .adenline__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 6px var(--ok); }
 
-/* The legend in plain words: what a ring, a square, green and white mean. */
-.hud__key { gap: 16px; }
-.key { display: inline-block; width: 11px; height: 11px; border: 1.4px solid var(--muted); border-radius: 50%; }
-.key--tag { width: auto; height: auto; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--cyan) 40%, transparent); background: color-mix(in srgb, var(--cyan) 14%, transparent); color: var(--cyan); font-style: normal; font-size: 10px; padding: 1px 6px; }
-.key--done { border-color: var(--ok); background: color-mix(in srgb, var(--ok) 25%, transparent); }
-.key--next { border-color: #fff; background: #fff; box-shadow: 0 0 6px var(--cyan); }
-
 /* The next move, docked along the bottom: never covers a node. */
 .nextbar {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 3;
@@ -2207,9 +2198,6 @@ pre.diagram--failed { border-color: var(--amber); }
   .nextbar { flex-wrap: wrap; padding: 12px 14px; }
   .nextbar__text { flex-basis: calc(100% - 30px); }
 }
-/* Map controls live in the top bar, small; the canvas stays clear. */
-.hud__controls { gap: 2px; }
-.hud__controls .b { padding: 5px 9px; font-size: 12.5px; }
 .view--map .hud--status { bottom: 86px; }
 
 
@@ -2230,10 +2218,9 @@ pre.diagram--failed { border-color: var(--amber); }
 .run__item.is-first { background: color-mix(in srgb, var(--cyan) 6%, transparent); box-shadow: inset 3px 0 0 var(--cyan); }
 
 @media (max-width: 720px) {
-  /* One quiet line on a phone: the toggle and the count. Pinch replaces the buttons; the legend lives on wider screens. */
-  .view--map .hud__key, .view--map .hud__controls, .view--map .hud__side { display: none; }
+  /* A phone pinches to zoom: only the crosshair stays. */
+  .view--map .hud__side, .view--map .hud--side .mapctl + .mapctl { display: none; }
   .view--map .hud--top { flex-wrap: nowrap; padding: 10px 12px; }
-  .view--map .hud__count { font-size: 12.5px; white-space: nowrap; }
 }
 
 /* ---------- GridSchool Complete: the work we're doing for them (prep.js) ---------- */
@@ -2485,39 +2472,107 @@ pre.diagram--failed { border-color: var(--amber); }
 .hud__suggest { padding: 5px 11px; font-size: 12.5px; }
 .hud__suggest.is-on { border-color: var(--sg); color: var(--sg); background: color-mix(in srgb, var(--sg) 12%, transparent); }
 
-/* The bar replaces "do this next" while suggesting: the tools, what's going on, send. */
-.sgbar {
-  position: absolute; left: 0; right: 0; bottom: 0; z-index: 4;
-  display: flex; align-items: center; gap: 14px; padding: 12px 20px;
-  background: rgba(5, 8, 14, .95); backdrop-filter: blur(6px);
-  border-top: 1px solid color-mix(in srgb, var(--sg) 40%, var(--line));
+/* Editing: the map takes a violet tint and a frame, so it never looks like the live map. */
+.view--map.is-editing::after {
+  content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: color-mix(in srgb, var(--sg) 5%, transparent);
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--sg) 45%, transparent);
 }
-.sgbar__tools { display: flex; gap: 8px; flex: none; }
-.sgbar__text { display: grid; gap: 2px; min-width: 0; flex: 1; }
-.sgbar__text b { color: var(--sg); font-weight: 500; font-size: 13px; letter-spacing: .02em; }
-.sgbar__text span { color: var(--muted); font-size: 13px; line-height: 1.4; }
+.view--map.is-editing .hud--side { bottom: 16px; }
+.view--map.is-dragging, .view--map.is-dragging * { cursor: grabbing !important; }
+.view--map.is-editing .world3d-host { user-select: none; -webkit-user-select: none; }
+
+/* The tray: what can be dragged onto the map. Floats bottom-centre, clear of the panel. */
+.sgtray {
+  position: absolute; left: 16px; right: 352px; bottom: 16px; z-index: 4;
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 10px 12px;
+  background: rgba(8, 10, 20, .94); backdrop-filter: blur(8px);
+  border: 1px solid color-mix(in srgb, var(--sg) 40%, var(--line)); border-radius: 14px;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, .45);
+}
+.sgtray__chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.sgtray__line { color: var(--muted); font-size: 12.5px; line-height: 1.4; flex: 1 1 200px; min-width: 0; }
+.sgchip.sgtray__changes { display: none; }
 .sgchip {
+  display: inline-flex; align-items: center; gap: 8px;
   font: 500 13px var(--font-sans); color: var(--text); cursor: grab; touch-action: none; user-select: none;
   padding: 7px 12px; border-radius: 999px; border: 1px dashed var(--sg);
   background: color-mix(in srgb, var(--sg) 14%, transparent);
 }
+.sgchip:hover { background: color-mix(in srgb, var(--sg) 24%, transparent); }
 .sgchip:active { cursor: grabbing; }
-.sgchip--ask { border-style: solid; cursor: pointer; background: transparent; }
-@media (max-width: 640px) {
-  .sgbar { flex-wrap: wrap; padding: 10px 14px; }
-  .sgbar__text { flex-basis: 100%; order: -1; }
+.sgchip--ask, .sgtray__changes { border-style: solid; cursor: pointer; background: transparent; }
+/* Each tray item's mark looks like what it draws on the map. */
+.sgglyph { display: inline-block; width: 12px; height: 12px; border: 1.6px solid var(--sg); border-radius: 50%; flex: none; }
+.sgglyph--habit { box-shadow: 0 0 0 2px var(--bg), 0 0 0 3.4px var(--sg); width: 9px; height: 9px; }
+.sgglyph--milestone { border-radius: 2px; transform: rotate(45deg); width: 10px; height: 10px; }
+.sgglyph--task { width: 7px; height: 7px; background: var(--sg); border: 0; }
+
+/* The panel: every change so far, each with Undo, and send. */
+.sgpanel {
+  position: absolute; right: 16px; top: 64px; z-index: 4; width: 320px; max-height: calc(100% - 220px); overflow-y: auto;
+  background: rgba(8, 10, 20, .94); backdrop-filter: blur(8px);
+  border: 1px solid color-mix(in srgb, var(--sg) 35%, var(--line)); border-radius: 14px;
+  padding: 16px; box-shadow: 0 10px 32px rgba(0, 0, 0, .45);
+}
+
+/* Naming something where it landed. */
+.sgpop {
+  position: absolute; z-index: 8; width: min(320px, calc(100% - 16px)); display: grid; gap: 8px;
+  padding: 12px; border-radius: 12px; background: color-mix(in srgb, var(--surface) 96%, #000);
+  border: 1px solid var(--sg); box-shadow: 0 16px 40px rgba(0, 0, 0, .55);
+}
+.sgpop__title { color: #fff; font-size: 13.5px; font-weight: 500; line-height: 1.35; }
+.sgpop input, .sgpop textarea {
+  width: 100%; font: 14px var(--font-sans); color: #fff; background: var(--bg); resize: vertical;
+  border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px;
+}
+.sgpop input:focus, .sgpop textarea:focus { outline: none; border-color: var(--sg); }
+.sgpop__err { color: var(--amber); font-size: 12.5px; line-height: 1.4; }
+.sgpop__err:empty { display: none; }
+.sgpop__acts { display: flex; justify-content: flex-end; gap: 6px; }
+
+/* On each step while editing: its × (top left), its task dots and + (right), its name (click to rename). */
+.sgx__x { cursor: pointer; }
+.sgx__x circle { fill: var(--bg); stroke: color-mix(in srgb, var(--sg) 60%, var(--line)); stroke-width: 1.2; }
+.sgx__x path { stroke: var(--muted); stroke-width: 1.5; stroke-linecap: round; }
+.sgx__x:hover circle { stroke: var(--amber); } .sgx__x:hover path { stroke: var(--amber); }
+.sgx__dot { fill: var(--bg); stroke: var(--sg); stroke-width: 1.2; cursor: pointer; }
+.sgx__dot.is-done { fill: var(--ok); stroke: var(--ok); }
+.sgx__dot.is-new { stroke-dasharray: 2 1.5; }
+.sgx__more { fill: var(--muted); font-size: 9.5px; font-family: var(--font-mono); }
+.sgx__add { cursor: pointer; }
+.sgx__add circle { fill: color-mix(in srgb, var(--sg) 18%, var(--bg)); stroke: var(--sg); stroke-width: 1.2; }
+.sgx__add path { stroke: #fff; stroke-width: 1.5; stroke-linecap: round; }
+.sgx__add:hover circle { fill: color-mix(in srgb, var(--sg) 40%, var(--bg)); }
+.view--map.is-editing .rz-title.sgx__name { cursor: text; }
+.view--map.is-editing .rz-title.sgx__name:hover { fill: var(--sg); }
+.rz-seg.is-drop-target { stroke: var(--sg) !important; stroke-width: 5 !important; opacity: 1 !important; }
+.rz-seg.is-drop-bad, .rz-node.is-drop-bad .rz-ring { stroke: var(--amber) !important; }
+
+@media (max-width: 720px) {
+  .sgpanel { display: none; }
+  .sgtray { right: 16px; }
+  .sgchip.sgtray__changes { display: inline-flex; }
+  .sgtray { gap: 8px; padding: 8px 10px; }
+  .sgtray__line { flex-basis: 100%; order: -1; font-size: 12px; }
+  .sgtray__chips { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; flex: 1 1 100%; }
+  .sgtray__chips::-webkit-scrollbar { display: none; }
+  .sgchip { flex: none; padding: 6px 10px; }
+  .view--map.is-editing .hud--side { right: 12px; bottom: 150px; }
+  .sgpanel { max-height: none; }
 }
 
 /* One card at a time: a step's actions, a form, or the review. */
 .sgcard {
-  position: absolute; right: 18px; top: 64px; bottom: 84px; z-index: 6;
+  position: absolute; right: 352px; top: 64px; bottom: 84px; z-index: 6;
   width: min(380px, calc(100% - 32px)); overflow-y: auto;
   background: color-mix(in srgb, var(--surface) 95%, #000);
   border: 1px solid color-mix(in srgb, var(--sg) 35%, var(--line)); border-radius: var(--radius);
   padding: 16px 18px; box-shadow: 0 18px 48px rgba(0, 0, 0, .45);
   height: fit-content; max-height: calc(100% - 172px);
 }
-@media (max-width: 640px) { .sgcard { left: 16px; right: 16px; width: auto; top: auto; bottom: 120px; } }
+@media (max-width: 720px) { .sgcard { left: 16px; right: 16px; width: auto; top: auto; bottom: 120px; } }
 .sgcard__title { display: block; color: #fff; font-size: 15px; font-weight: 500; line-height: 1.35; margin-bottom: 10px; }
 .sgcard__tag { display: inline-block; margin: -4px 0 10px; font-size: 11px; color: var(--sg); border: 1px solid var(--sg); border-radius: 999px; padding: 1px 8px; }
 .sgcard__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -2553,10 +2608,10 @@ pre.diagram--failed { border-color: var(--amber); }
 .sgpill__reply { display: block; color: var(--muted); font-style: italic; margin-top: 2px; }
 .sgpill__b { font: 500 12px var(--font-sans); color: var(--sg); background: none; border: 1px solid color-mix(in srgb, var(--sg) 45%, transparent); border-radius: 999px; padding: 3px 10px; cursor: pointer; flex: none; }
 
-/* What follows the pointer while dragging. */
+/* What follows the pointer while dragging: what it is, and what dropping here does (or why it can't). */
 .sgghost {
-  position: fixed; left: 0; top: 0; z-index: 50; pointer-events: none;
-  font: 500 12.5px var(--font-sans); color: #fff; padding: 5px 10px; border-radius: 999px;
+  position: fixed; left: 0; top: 0; z-index: 50; pointer-events: none; display: grid; gap: 2px; max-width: 300px;
+  font: 500 12.5px var(--font-sans); color: #fff; padding: 6px 11px; border-radius: 10px;
   background: color-mix(in srgb, var(--sg) 70%, #000); box-shadow: 0 8px 24px rgba(0, 0, 0, .4);
 }
 
@@ -2568,6 +2623,8 @@ pre.diagram--failed { border-color: var(--amber); }
 .rz-node.is-sg-retire .rz-title { text-decoration: line-through; }
 .rz-node.is-suggested:not(.is-sg-add) .rz-halo { stroke: var(--sg); stroke-width: 1.4; stroke-dasharray: 2 4; fill: none; opacity: 1; }
 .rz-node.is-drop-target .rz-ring { stroke: var(--sg); stroke-width: 3; }
+.sgghost span { font-weight: 400; color: color-mix(in srgb, #fff 85%, var(--sg)); line-height: 1.35; }
+.sgghost span.is-bad { color: #ffd59a; }
 .rz-node.is-drop-target .rz-halo { fill: color-mix(in srgb, var(--sg) 25%, transparent); opacity: 1; }
 .sgcard__tasks { list-style: none; padding: 12px 0 0; margin: 12px 0 0; border-top: 1px solid var(--hair); display: grid; gap: 4px; }
 .sgcard__taskhead { color: var(--muted); font-size: 12px; letter-spacing: .04em; text-transform: uppercase; margin-bottom: 2px; }

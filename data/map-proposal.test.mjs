@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { validateMap } from "./map-rules.mjs?v=6b238ed-202610252203";
-import { applyOps, checkOps, opsShapeErrors, opShapeErrors, describeOp, withoutOp, newOpId, renumber, newNodeId } from "./map-proposal.mjs?v=6b238ed-202610252203";
+import { validateMap } from "./map-rules.mjs?v=4f66e99-202610260029";
+import { applyOps, checkOps, opsShapeErrors, opShapeErrors, describeOp, withoutOp, newOpId, renumber, newNodeId } from "./map-proposal.mjs?v=4f66e99-202610260029";
 
 const map = () => ({
   version: "1",
@@ -57,6 +57,27 @@ test("add: a new step after a real step, in its lane, renumbered, marked in prev
   assert.equal(node.n, 2);
   assert.deepEqual(validateMap(out), []);
   assert.equal(map().nodes.length, 7, "the input is never edited");
+});
+
+test("add between: the step after waits on the new one; a milestone keeps its type", () => {
+  const op = { id: "bbbb", kind: "add", after: "a", before: "b", type: "milestone", title: "First offer call" };
+  const { map: out, results } = applyOps(map(), [op], { mode: "merge" });
+  assert.equal(results[0].ok, true);
+  const added = out.nodes.find((n) => n.id === newNodeId(op));
+  assert.deepEqual([added.type, added.requires, added.completion], ["milestone", ["a"], "tasks"]);
+  assert.deepEqual(out.nodes.find((n) => n.id === "b").requires, [newNodeId(op)]);
+  assert.deepEqual(validateMap(out), []);
+  assert.match(describeOp(op, (id) => id), /New milestone between “a” and “b”/);
+});
+
+test("add between refuses what the map rules refuse, and a step that isn't right after", () => {
+  // Nothing may wait on a habit, so a habit between two steps is refused; after a step it's fine.
+  const between = { id: "cccc", kind: "add", after: "a", before: "b", type: "habit", title: "Apply weekly" };
+  assert.equal(checkOps(map(), [between])[0].ok, false);
+  const { [0]: alone } = checkOps(map(), [{ ...between, before: undefined }]);
+  assert.equal(alone.ok, true);
+  const { results } = applyOps(map(), [{ id: "dddd", kind: "add", after: "a", before: "d", title: "X" }]);
+  assert.match(results[0].conflict, /doesn't come right after/);
 });
 
 test("merge leaves no marks", () => {

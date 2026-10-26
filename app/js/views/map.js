@@ -16,28 +16,29 @@
  * went with it, because on the floor position is derived from sequence.
  */
 
-import { el, mount } from "../dom.js?v=6b238ed-202610252203";
-import { btn, toast } from "../ui.js?v=6b238ed-202610252203";
-import { createScene3d } from "../graph/scene3d/index.js?v=6b238ed-202610252203";
-import { createRezScene } from "../graph/rez/index.js?v=6b238ed-202610252203";
-import { STATUS, nextUp, progress, visibleGraph, stepNumber } from "../graph/model.js?v=6b238ed-202610252203";
-import { LEGEND, STANDING, STANDING_LABEL, standingOf, legendKeyOf } from "../graph/standing.js?v=6b238ed-202610252203";
-import { trackLabel } from "../copy.js?v=6b238ed-202610252203";
-import { mapList } from "./map-list.js?v=6b238ed-202610252203";
-import { dueLabel } from "./from-aden.js?v=6b238ed-202610252203";
-import { createGridState, hashFor, RESERVED_ARGS, VIEW } from "./grid-state.js?v=6b238ed-202610252203";
-import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=6b238ed-202610252203";
-import { isProgressReadOnly } from "../store.js?v=6b238ed-202610252203";
-import { doneForYou, nextMove, movesAfterNext, isTypedMap } from "../engine.js?v=6b238ed-202610252203";
-import { matchedRoles, fetchPacks, radarReady } from "../roles-remote.js?v=6b238ed-202610252203";
-import { careerOf } from "../search.js?v=6b238ed-202610252203";
-import { isoDate } from "../time.js?v=6b238ed-202610252203";
-import { routeGraph, isLandmark } from "../graph/route.js?v=6b238ed-202610252203";
-import { isFreeMap, upgradeHref } from "../prep.js?v=6b238ed-202610252203";
-import { createSuggest } from "./suggest.js?v=6b238ed-202610252203";
+import { el, mount } from "../dom.js?v=4f66e99-202610260029";
+import { btn, toast } from "../ui.js?v=4f66e99-202610260029";
+import { createScene3d } from "../graph/scene3d/index.js?v=4f66e99-202610260029";
+import { createRezScene } from "../graph/rez/index.js?v=4f66e99-202610260029";
+import { STATUS, nextUp, progress, visibleGraph, stepNumber } from "../graph/model.js?v=4f66e99-202610260029";
+import { STANDING, STANDING_LABEL, standingOf } from "../graph/standing.js?v=4f66e99-202610260029";
+import { icon } from "../icons.js?v=4f66e99-202610260029";
+import { trackLabel } from "../copy.js?v=4f66e99-202610260029";
+import { mapList } from "./map-list.js?v=4f66e99-202610260029";
+import { dueLabel } from "./from-aden.js?v=4f66e99-202610260029";
+import { createGridState, hashFor, RESERVED_ARGS, VIEW } from "./grid-state.js?v=4f66e99-202610260029";
+import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=4f66e99-202610260029";
+import { isProgressReadOnly } from "../store.js?v=4f66e99-202610260029";
+import { doneForYou, nextMove, movesAfterNext, isTypedMap } from "../engine.js?v=4f66e99-202610260029";
+import { matchedRoles, fetchPacks, radarReady } from "../roles-remote.js?v=4f66e99-202610260029";
+import { careerOf } from "../search.js?v=4f66e99-202610260029";
+import { isoDate } from "../time.js?v=4f66e99-202610260029";
+import { routeGraph, isLandmark } from "../graph/route.js?v=4f66e99-202610260029";
+import { isFreeMap, upgradeHref } from "../prep.js?v=4f66e99-202610260029";
+import { createSuggest } from "./suggest.js?v=4f66e99-202610260029";
 
-/** Right side clears the control column, top clears the legend bar. */
-const INSETS = { top: 76, right: 132, bottom: 72, left: 40 };
+/** Top clears the bar, right the control stack, bottom the next-step card. */
+const INSETS = { top: 64, right: 72, bottom: 96, left: 40 };
 
 export const MAP_STYLE = { FLOOR: "floor", ROUTE: "route" };
 const STYLE_KEY = "gridschool.mapStyle";
@@ -70,6 +71,11 @@ export function renderMap(ctx, initialArg) {
   const world = el("div.world3d-host", { role: "application", "aria-label": "Your path" });
   const canvas = el("div.view.view--map", {}, world, hudTop, adenLine, hudSide, status, nextCard, invite);
   const list = el("div.view.view--maplist", { hidden: true });
+  // The control stack rides just above the next-step card, however tall it wraps.
+  const nextbarSize = typeof ResizeObserver === "function"
+    ? new ResizeObserver(() => canvas.style.setProperty("--nextbar-h", `${nextCard.hidden ? 0 : nextCard.offsetHeight}px`))
+    : null;
+  nextbarSize?.observe(nextCard);
   const root = el("div.mapview", {}, canvas, list, lockFloat);
 
   let current = ctx;
@@ -332,6 +338,8 @@ export function renderMap(ctx, initialArg) {
         } else {
           made.paint(graph, options);
         }
+        // Editing marks (task dots, ×, names to rename) ride on the steps while editing, and come off after.
+        suggest.decorate(made.nodeEls);
       },
       () => {}
     );
@@ -447,12 +455,14 @@ export function renderMap(ctx, initialArg) {
 
   /* ---------- HUD ---------- */
 
+  function iconBtn(name, label, onclick) {
+    return el("button.mapctl", { type: "button", title: label, "aria-label": label, onclick }, icon(name));
+  }
+
   function renderHud() {
     const { graph } = current.state;
     const prog = progress(graph);
     const free = isFreeMap(graph);
-    // A free map counts only the steps a free seat can finish (model.js progress).
-    const count = free ? `Your steps: ${prog.spine.lit} of ${prog.spine.total}` : hasBand() ? `${prog.spine.lit} of ${prog.spine.total} steps done` : `Required ${prog.spine.lit} of ${prog.spine.total}`;
     const planSwitch = free
       ? el(
           "button.planswitch",
@@ -472,25 +482,12 @@ export function renderMap(ctx, initialArg) {
       : null;
     const startPlan = free && fullPlan ? btn({ label: "Start the full plan", variant: "solid", href: upgradeHref(graph, null, { demo: current.state.slug === "demo" }) }) : null;
 
+    // Map controls, the way every map app does them: a small stack in the corner, icons, no words.
+    // The map frames itself when it opens; scroll or pinch zooms; the crosshair brings you back to your step.
     const controls = [
-      btn({ label: "Fit", variant: "quiet", title: "The whole path", onclick: () => floor?.fit({ insets: INSETS }) }),
-      btn({
-        label: "Here",
-        variant: "quiet",
-        title: "Stand behind the node you are on",
-        onclick: () => standHere(shown(), { glide: true }),
-      }),
-      hasBand() ? null : btn({
-        label: "Next",
-        variant: "quiet",
-        title: "Open the node you are on",
-        onclick: () => {
-          const target = nextUp(graph);
-          if (target) current.navigate("map", target.id);
-        },
-      }),
-      btn({ label: "+", variant: "quiet", title: "Zoom in", onclick: () => floor?.zoomBy(1.25) }),
-      btn({ label: "−", variant: "quiet", title: "Zoom out", onclick: () => floor?.zoomBy(0.8) }),
+      iconBtn("locate", "Back to your step", () => standHere(shown(), { glide: true })),
+      iconBtn("zoomin", "Zoom in", () => floor?.zoomBy(1.25)),
+      iconBtn("zoomout", "Zoom out", () => floor?.zoomBy(0.8)),
     ];
     mount(
       hudTop,
@@ -498,13 +495,16 @@ export function renderMap(ctx, initialArg) {
         "div.hud__group",
         {},
         modeToggle(),
-        el("b.hud__count", {}, count),
         planSwitch,
         startPlan,
         // A personal map has no elective depth; "No depth picked yet" would
         // read as a choice the student cannot make.
         hasDepth(graph, prog) ? el("span.hud__depth", {}, depthLine(prog.depth)) : null,
-        prog.side.total ? el("span.hud__side", {}, `Side quests ${prog.side.lit} of ${prog.side.total}`) : null,
+        prog.side.total ? el("span.hud__side", {}, `Side quests ${prog.side.lit} of ${prog.side.total}`) : null
+      ),
+      el(
+        "div.hud__group",
+        {},
         hasBand() && !free && suggest.ready() && !isList()
           ? el(
               "button.b.b--ghost.hud__suggest",
@@ -515,24 +515,14 @@ export function renderMap(ctx, initialArg) {
                 title: "Propose steps, tasks or changes. Your coach reviews them before your map changes.",
                 onclick: () => suggest.setOn(!suggest.isOn()),
               },
-              suggest.isOn() ? "Editing…" : "Edit my map"
+              suggest.isOn() ? "Done editing" : "Edit my map"
             )
           : null
-      ),
-      hasBand() ? el("div.hud__group.hud__controls", {}, controls) : null,
-      hasBand()
-        ? el(
-            "div.hud__group.hud__key",
-            {},
-            el("span.legend", {}, el("i.key.key--done"), "done"),
-            el("span.legend", {}, el("i.key.key--next"), "do this next"),
-            el("span.legend", {}, el("i.key.key--tag", {}, "tag"), "made for you"),
-            el("span.legend.legend--hint", {}, suggest.isOn() ? "Tap a step to change it" : "Tap a step to open it")
-          )
-        : el("div.hud__group", {}, ...legendFor(graph).map((standing) => legendKey(standing, STANDING_LABEL[standing])))
+      )
     );
 
-    mount(hudSide, ...(hasBand() ? [] : controls));
+    // What each mark means is written on the map itself (YOU ARE HERE, each step's tag), so there is no legend.
+    mount(hudSide, ...controls);
 
     setStatus(null);
     renderNext();
@@ -540,19 +530,6 @@ export function renderMap(ctx, initialArg) {
     suggest.render();
     suggest.renderCard();
     invite.hidden = true;
-  }
-
-  /**
-   * The legend explains what is on the floor, not every state that exists.
-   * "Do this next", "Done" and "Ahead" always read; the rest appear only once
-   * a node on this board stands that way, so a fresh board shows three keys
-   * and a laptop does not wrap eight.
-   */
-  function legendFor(graph) {
-    const nextId = nextUp(graph)?.id ?? null;
-    const present = new Set(graph.nodes.map((node) => legendKeyOf(standingOf(node, nextId))));
-    const always = new Set([STANDING.NEXT, STANDING.LIT, STANDING.LOCKED]);
-    return LEGEND.filter((standing) => always.has(standing) || present.has(standing));
   }
 
   /** Depth exists on this map: a depth-track family, or a node marked depth. */
@@ -602,10 +579,6 @@ export function renderMap(ctx, initialArg) {
     return parts.join(" · ");
   }
 
-  function legendKey(status, label) {
-    return el("span.legend", {}, el("i", { class: `dot dot--${status}` }), label);
-  }
-
   /* ---------- lifecycle ---------- */
 
   requestAnimationFrame(() => {
@@ -639,6 +612,7 @@ export function renderMap(ctx, initialArg) {
     },
     destroy() {
       window.removeEventListener("resize", onResize);
+      nextbarSize?.disconnect();
       suggest.detach();
       floor?.destroy();
     },

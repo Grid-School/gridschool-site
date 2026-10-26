@@ -1,15 +1,22 @@
 /**
- * Suggest changes: the student proposes changes to their own map, on the map.
+ * Edit my map: the student changes their own map by touching the map.
  *
- * The map stays the map (map-is-the-product): suggest mode draws the student's
- * suggestion on their own Route, the new steps dashed and tagged "Your idea",
- * a step they think no longer fits faded. They act on nodes:
+ * The map stays the map (map-is-the-product): editing tints it and draws the
+ * student's changes on their own Route, new steps dashed and tagged "Your idea",
+ * a step that no longer fits faded. Everything is direct:
  *
- *   tap a step       Add a step after it · Add a task · Move it · Rename ·
- *                    Doesn't fit anymore · Ask Aden about it
- *   drag a step      onto another: it comes after that one instead
- *   drag "+ New step" onto the step it comes after
- *   "Ask Aden"       a note for the whole map ("what should I learn next?")
+ *   the tray         drag Step, Every week or Milestone onto a line (it goes
+ *                    between those two steps) or onto a step (it comes after
+ *                    it); drag Task onto a step. Name it where it lands.
+ *   a step           drag it onto another: it comes after that one instead
+ *   its dots         one per task (filled when done), and + to add a task
+ *   its ×            doesn't fit anymore (on a step of their own: take it out)
+ *   its name         click it to rename it in place
+ *   a tap            everything above in one card, for a phone
+ *   the panel        every change so far, each with Undo, and Send to your coach
+ *
+ * While dragging, the target lights and the ghost says what will happen, or why
+ * it can't: a place the map rules refuse never lights as a place to drop.
  *
  * Every change is checked against the map rules as it's made
  * (data/map-proposal.mjs checkOps), so a change that would break the map is
@@ -19,10 +26,10 @@
  * it's sent; sending again replaces an open suggestion.
  */
 
-import { el, mount, clear } from "../dom.js?v=6b238ed-202610252203";
-import { btn, toast } from "../ui.js?v=6b238ed-202610252203";
-import { buildGraph } from "../graph/model.js?v=6b238ed-202610252203";
-import { isLandmark } from "../graph/route.js?v=6b238ed-202610252203";
+import { el, mount, clear } from "../dom.js?v=4f66e99-202610260029";
+import { btn, toast } from "../ui.js?v=4f66e99-202610260029";
+import { buildGraph } from "../graph/model.js?v=4f66e99-202610260029";
+import { isLandmark } from "../graph/route.js?v=4f66e99-202610260029";
 import {
   applyOps,
   checkOps,
@@ -36,7 +43,7 @@ import {
   MAX_NOTE,
   MAX_TITLE,
   NEW_PREFIX,
-} from "../../../data/map-proposal.mjs?v=6b238ed-202610252203";
+} from "../../../data/map-proposal.mjs?v=4f66e99-202610260029";
 import {
   suggestReady,
   listSuggestions,
@@ -46,7 +53,7 @@ import {
   writeDraft,
   answerSeen,
   markAnswerSeen,
-} from "../suggest-remote.js?v=6b238ed-202610252203";
+} from "../suggest-remote.js?v=4f66e99-202610260029";
 
 const DRAG_SLOP = 8;
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -94,7 +101,9 @@ export function createSuggest({ ctx, redraw }) {
   const ready = () => suggestReady(slug()) && Boolean(curriculum()?.nodes?.length) && Number.isInteger(ctx().state.mapVersion);
   const open = () => s.proposals.find((p) => p.status === "open") ?? null;
 
-  const bar = el("div.sgbar", { hidden: true, role: "region", "aria-label": "Your map edits" });
+  const tray = el("div.sgtray", { hidden: true, role: "toolbar", "aria-label": "Add to your map" });
+  const panel = el("aside.sgpanel", { hidden: true, "aria-label": "Your changes" });
+  const pop = el("div.sgpop", { hidden: true, role: "dialog", "aria-label": "Name it" });
   const card = el("div.sgcard", { hidden: true, role: "dialog", "aria-label": "Edit your map" });
   const pill = el("div.sgpill", { hidden: true, role: "status" });
   const ghost = el("div.sgghost", { hidden: true, "aria-hidden": "true" });
@@ -182,7 +191,9 @@ export function createSuggest({ ctx, redraw }) {
     s.error = null;
     save();
     closeCard();
+    closePop();
     redraw();
+    render();
     return true;
   }
 
@@ -190,6 +201,7 @@ export function createSuggest({ ctx, redraw }) {
     s.ops = withoutOp(s.ops, id);
     save();
     redraw();
+    render();
   }
 
   /* ---------- turning it on and off ---------- */
@@ -201,6 +213,7 @@ export function createSuggest({ ctx, redraw }) {
     s.error = null;
     if (on) loadDraft();
     closeCard({ quiet: true });
+    closePop();
     redraw();
   }
 
@@ -432,7 +445,7 @@ export function createSuggest({ ctx, redraw }) {
     });
   }
 
-  function review() {
+  function review({ inPanel = false } = {}) {
     const checked = checkOps(curriculum(), s.ops);
     const live = open();
     const noteBox = el("textarea", { rows: 2, maxlength: MAX_NOTE, placeholder: "Anything your coach should know about these (optional)" });
@@ -445,8 +458,10 @@ export function createSuggest({ ctx, redraw }) {
     return el(
       "div.sgcard__review",
       {},
-      el("b.sgcard__title", {}, `Your edits: ${s.ops.length} change${s.ops.length === 1 ? "" : "s"}`),
-      el("p.sgcard__hint", {}, "Your coach reads each one, keeps what helps, and may adjust it. Your map changes only when they publish."),
+      el("b.sgcard__title", {}, s.ops.length ? `Your changes: ${s.ops.length}` : "Your changes"),
+      el("p.sgcard__hint", {}, s.ops.length
+        ? "Your coach reads each one, keeps what helps, and may adjust it. Your map changes only when they publish."
+        : "Nothing yet. Drag something from the tray onto your map, drag a step to move it, or click a step's name to rename it."),
       el(
         "ol.sgcard__list",
         {},
@@ -458,19 +473,19 @@ export function createSuggest({ ctx, redraw }) {
             el("span.sgcard__what", {}, describeOp(op, titleOf, taskTitleOf)),
             op.note ? el("span.sgcard__note", {}, op.note) : null,
             ok ? null : el("span.sgcard__error", {}, plainError(errors[0], titleOf)),
-            btn({ label: "Remove", variant: "quiet", onclick: () => (removeOp(op.id), s.ops.length ? renderCard() : closeCard()) })
+            btn({ label: "Undo", variant: "quiet", onclick: () => (removeOp(op.id), inPanel ? render() : s.ops.length ? renderCard() : closeCard()) })
           )
         )
       ),
-      el("label.sgcard__field", {}, el("span", {}, "A note for your coach"), noteBox),
+      s.ops.length ? el("label.sgcard__field", {}, el("span", {}, "A note for your coach"), noteBox) : null,
       live ? el("p.sgcard__hint", {}, `This replaces the edits you sent on ${day(live.created_at)}.`) : null,
       s.error ? el("p.sgcard__error", { role: "alert" }, s.error) : null,
       el(
         "div.sgcard__acts",
         {},
         live ? btn({ label: "Withdraw what I sent", variant: "quiet", onclick: () => withdraw(live) }) : null,
-        btn({ label: "Keep editing", variant: "quiet", onclick: () => closeCard() }),
-        btn({ label: s.sending ? "Sending…" : "Send to your coach", variant: "solid", disabled: s.sending || bad.length > 0 || !s.ops.length, onclick: () => send() })
+        inPanel ? null : btn({ label: "Keep editing", variant: "quiet", onclick: () => closeCard() }),
+        s.ops.length ? btn({ label: s.sending ? "Sending…" : "Send to your coach", variant: "solid", disabled: s.sending || bad.length > 0, onclick: () => send() }) : null
       )
     );
   }
@@ -530,31 +545,41 @@ export function createSuggest({ ctx, redraw }) {
     }
   }
 
-  /* ---------- the bar along the bottom and the pill up top ---------- */
+  /* ---------- the tray, the panel and the pill up top ---------- */
+
+  const TRAY = [
+    { drag: "step", label: "Step", hint: "Something you finish" },
+    { drag: "habit", label: "Every week", hint: "Something you keep doing every week" },
+    { drag: "milestone", label: "Milestone", hint: "A moment worth marking, like a first offer call" },
+    { drag: "task", label: "Task", hint: "One thing to do inside a step" },
+  ];
 
   function render() {
     const can = ready();
-    bar.hidden = !s.on;
+    tray.hidden = !s.on;
+    panel.hidden = !s.on;
+    tray.parentElement?.classList.toggle("is-editing", s.on);
     if (s.on) {
       const count = s.ops.length;
       const line = s.picking
         ? `Tap the step “${titleOf(s.picking)}” should come after.`
-        : count
-          ? `${count} change${count === 1 ? "" : "s"} so far. Your map stays as it is until your coach publishes.`
-          : "Tap a step to change it, or drag + New step onto the step it comes after.";
+        : "Drag onto a line to go between two steps, or onto a step to come after it.";
       mount(
-        bar,
+        tray,
         el(
-          "div.sgbar__tools",
+          "div.sgtray__chips",
           {},
-          el("button.sgchip", { type: "button", "data-sg-new": "", title: "Drag onto the step it comes after" }, "+ New step"),
-          el("button.sgchip.sgchip--ask", { type: "button", onclick: () => openCard({ ask: true }) }, "Ask your coach")
+          TRAY.map((item) =>
+            el("button.sgchip", { type: "button", "data-sg-drag": item.drag, title: `${item.hint}. Drag it onto your map.` }, el("i", { class: `sgglyph sgglyph--${item.drag}`, "aria-hidden": "true" }), item.label)
+          )
         ),
-        el("div.sgbar__text", {}, el("b", {}, "Editing your map"), el("span", {}, line)),
+        el("span.sgtray__line", {}, line),
         s.picking ? btn({ label: "Cancel", variant: "quiet", onclick: () => ((s.picking = null), render()) }) : null,
-        count && !s.picking ? btn({ label: "Review and send", variant: "solid", onclick: () => openCard({ review: true }) }) : null,
-        btn({ label: "Done", variant: "quiet", onclick: () => setOn(false) })
+        el("button.sgchip.sgchip--ask", { type: "button", onclick: () => openCard({ ask: true }) }, "Ask your coach"),
+        // A phone has no room for the panel: the changes open as a card.
+        el("button.sgchip.sgtray__changes", { type: "button", onclick: () => openCard({ review: true }) }, `Changes${count ? ` (${count})` : ""}`)
       );
+      mount(panel, review({ inPanel: true }));
     }
     renderPill(can);
   }
@@ -591,7 +616,180 @@ export function createSuggest({ ctx, redraw }) {
     }
   }
 
-  /* ---------- dragging: a step onto a step, or + New step onto a step ---------- */
+  /* ---------- naming things where they land ---------- */
+
+  /** A small form at a point on screen: one field, Enter to add, Escape to leave. */
+  function popAt(x, y, { title, placeholder = "", value = "", textarea = false, max = MAX_TITLE, submitLabel = "Add", required = true, submit }) {
+    const field = textarea ? el("textarea", { rows: 3, maxlength: max, placeholder }) : el("input", { type: "text", maxlength: max, placeholder });
+    field.value = value;
+    const go = () => {
+      const text = field.value.trim();
+      if (required && !text) return field.focus();
+      submit(text);
+    };
+    field.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closePop();
+      if (event.key === "Enter" && (!textarea || event.metaKey || event.ctrlKey)) {
+        event.preventDefault();
+        go();
+      }
+    });
+    mount(
+      pop,
+      el("b.sgpop__title", {}, title),
+      field,
+      el("div.sgpop__err", { role: "alert" }),
+      el("div.sgpop__acts", {}, btn({ label: "Cancel", variant: "quiet", onclick: () => closePop() }), btn({ label: submitLabel, variant: "solid", onclick: go }))
+    );
+    pop.hidden = false;
+    const box = pop.parentElement?.getBoundingClientRect() ?? { left: 0, top: 0, width: innerWidth, height: innerHeight };
+    const w = pop.offsetWidth || 300;
+    const h = pop.offsetHeight || 150;
+    pop.style.left = `${Math.max(8, Math.min(x - box.left - w / 2, box.width - w - 8))}px`;
+    pop.style.top = `${Math.max(8, Math.min(y - box.top + 18, box.height - h - 8))}px`;
+    field.focus({ preventScroll: true });
+  }
+
+  function closePop() {
+    pop.hidden = true;
+    clear(pop);
+  }
+
+  /** A refusal inside the open popover, keeping what they typed. */
+  function popError(text) {
+    const box = pop.querySelector(".sgpop__err");
+    if (box) box.textContent = text;
+  }
+
+  /** Add an op from the popover: refused ops say why in place instead of closing. */
+  function addFromPop(op) {
+    const reasons = refusal(op);
+    if (reasons.length) return popError(reasons[0]);
+    addOp(op);
+  }
+
+  const TYPE_WORD = { step: "step", habit: "every-week habit", milestone: "milestone" };
+
+  function nameNew(x, y, { type, after, before }) {
+    const word = TYPE_WORD[type] ?? "step";
+    popAt(x, y, {
+      title: before ? `A new ${word} between “${titleOf(after)}” and “${titleOf(before)}”` : `A new ${word} after “${titleOf(after)}”`,
+      placeholder: { habit: "Apply to five roles", milestone: "First offer call" }[type] ?? "Ship a small Chrome extension",
+      submit: (title) => addFromPop({ id: newOpId(), kind: "add", after, ...(before ? { before } : {}), ...(type !== "step" ? { type } : {}), title }),
+    });
+  }
+
+  function nameTask(x, y, node) {
+    popAt(x, y, {
+      title: `A new task on “${titleOf(node)}”`,
+      placeholder: "Record a two-minute test Loom",
+      submit: (title) => addFromPop({ id: newOpId(), kind: "task", node, title }),
+    });
+  }
+
+  function renameAt(x, y, id) {
+    const title = titleOf(id);
+    const added = isNew(id) ? addOpFor(id) : null;
+    popAt(x, y, {
+      title: "Rename this step",
+      value: title,
+      submitLabel: "Rename",
+      submit: (next) => {
+        if (next === title) return closePop();
+        if (added) {
+          // Their own new step: just a different name on it.
+          s.ops = s.ops.map((op) => (op === added ? { ...op, title: next } : op));
+          save();
+          closePop();
+          redraw();
+          render();
+          return;
+        }
+        addFromPop({ id: newOpId(), kind: "rename", node: id, title: next });
+      },
+    });
+  }
+
+  function retireAt(x, y, id) {
+    const added = isNew(id) ? addOpFor(id) : null;
+    if (added) {
+      removeOp(added.id);
+      toast("Taken out. Undo it from your changes if you want it back.");
+      return;
+    }
+    popAt(x, y, {
+      title: `“${titleOf(id)}” doesn't fit anymore`,
+      placeholder: "What changed? For example: I already did this at work",
+      textarea: true,
+      max: MAX_NOTE,
+      submitLabel: "Take it out",
+      submit: (note) => addFromPop({ id: newOpId(), kind: "retire", node: id, note }),
+    });
+  }
+
+  /* ---------- on the map: each step's task dots, its ×, its name ---------- */
+
+  const SVG_NS = "http://www.w3.org/2000/svg";
+  const NODE_R = 15;
+  const MAX_DOTS = 8;
+  function svg(tag, attrs, parent) {
+    const node = document.createElementNS(SVG_NS, tag);
+    for (const [key, value] of Object.entries(attrs ?? {})) node.setAttribute(key, value);
+    parent?.append(node);
+    return node;
+  }
+  const stop = (fn) => (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+    fn(event);
+  };
+  const centre = (element) => {
+    const r = element.getBoundingClientRect();
+    return [r.left + r.width / 2, r.top + r.height / 2];
+  };
+
+  /** Draw (or clear) the editing marks on every step. Called after each draw of the map. */
+  function decorate(nodeEls) {
+    const graph = previewGraph() ?? ctx().state.graph;
+    const done = ctx().state.student?.tasks ?? {};
+    for (const [id, g] of nodeEls ?? []) {
+      g.querySelector(".sgx")?.remove();
+      if (!s.on || isLandmark(id)) continue;
+      const node = graph?.byId?.get(id);
+      if (!node) continue;
+      const marks = svg("g", { class: "sgx" }, g);
+      for (const kind of ["pointerdown", "click"]) marks.addEventListener(kind, (event) => event.stopPropagation());
+      // The ×: doesn't fit anymore (or, on their own new step, take it out).
+      const x = svg("g", { class: "sgx__x", transform: `translate(${-NODE_R - 2} ${-NODE_R - 2})`, role: "button", tabindex: 0 }, marks);
+      svg("title", {}, x).textContent = isNew(id) ? "Take out your new step" : "Doesn't fit anymore";
+      svg("circle", { r: 7.5 }, x);
+      svg("path", { d: "M-2.6 -2.6 L2.6 2.6 M2.6 -2.6 L-2.6 2.6" }, x);
+      x.addEventListener("click", stop(() => retireAt(...centre(x), id)));
+      // The task dots, then + for a new one.
+      const tasks = (node.tasks ?? []).filter((task) => task.title);
+      const dots = svg("g", { class: "sgx__dots", transform: `translate(${NODE_R + 10} 0)` }, marks);
+      tasks.slice(0, MAX_DOTS).forEach((task, index) => {
+        const dot = svg("circle", {
+          class: `sgx__dot${done[task.id]?.state === "done" ? " is-done" : ""}${task.suggested ? " is-new" : ""}`,
+          cx: index * 9,
+          r: 3.4,
+        }, dots);
+        svg("title", {}, dot).textContent = task.title;
+        dot.addEventListener("click", stop(() => openCard({ node: id, form: null })));
+      });
+      const more = tasks.length > MAX_DOTS ? svg("text", { class: "sgx__more", x: MAX_DOTS * 9 - 2, y: 3.5 }, dots) : null;
+      if (more) more.textContent = `+${tasks.length - MAX_DOTS}`;
+      const plus = svg("g", { class: "sgx__add", transform: `translate(${Math.min(tasks.length, MAX_DOTS) * 9 + (more ? 18 : 4)} 0)`, role: "button", tabindex: 0 }, dots);
+      svg("title", {}, plus).textContent = "Add a task";
+      svg("circle", { r: 7 }, plus);
+      svg("path", { d: "M-3 0 H3 M0 -3 V3" }, plus);
+      plus.addEventListener("click", stop(() => nameTask(...centre(plus), id)));
+      // The name: click it to rename.
+      g.querySelector(".rz-title")?.classList.add("sgx__name");
+    }
+  }
+
+  /* ---------- dragging: tray items and steps onto lines and steps ---------- */
 
   let drag = null;
   let swallowClick = false;
@@ -599,53 +797,155 @@ export function createSuggest({ ctx, redraw }) {
   const nodeAt = (x, y) => {
     const hit = document.elementFromPoint(x, y)?.closest?.(".rz-node");
     const id = hit?.dataset?.id;
-    return id && !isLandmark(id) ? { id, g: hit } : null;
+    return id && !isLandmark(id) ? { node: id, el: hit } : null;
   };
 
-  function highlight(target) {
-    if (drag?.over?.g && drag.over.g !== target?.g) drag.over.g.classList.remove("is-drop-target");
-    if (target?.g && target.id !== drag.from) target.g.classList.add("is-drop-target");
-    drag.over = target;
+  /** Every road line on screen, sampled, so the nearest one to the pointer can light. */
+  function lineSamples() {
+    return [...document.querySelectorAll(".rz-seg[data-from]")]
+      .filter((path) => !isLandmark(path.dataset.from) && !isLandmark(path.dataset.to))
+      .map((path) => {
+        const m = path.getScreenCTM?.();
+        const len = path.getTotalLength?.() ?? 0;
+        if (!m || !len) return null;
+        const pts = Array.from({ length: 11 }, (_, i) => {
+          const p = path.getPointAtLength((len * (i + 2)) / 14);
+          return { x: m.a * p.x + m.c * p.y + m.e, y: m.b * p.x + m.d * p.y + m.f };
+        });
+        return { el: path, after: path.dataset.from, before: path.dataset.to, pts };
+      })
+      .filter(Boolean);
   }
 
-  function startDrag(event, from, label) {
-    drag = { from, label, x: event.clientX, y: event.clientY, moved: false, over: null, pointerId: event.pointerId };
+  function lineAt(x, y) {
+    let best = null;
+    for (const line of drag.lines ?? []) {
+      for (const p of line.pts) {
+        const d = Math.hypot(p.x - x, p.y - y);
+        if (d < 26 && (!best || d < best.d)) best = { ...line, d };
+      }
+    }
+    return best;
+  }
+
+  /** Does `id` wait on `on`, on the map as it would be with the changes so far? */
+  function waitsOn(id, on) {
+    const nodes = s.ops.length ? applyOps(curriculum(), s.ops).map.nodes : curriculum().nodes;
+    return (nodes.find((node) => node.id === id)?.requires ?? []).includes(on);
+  }
+
+  /** The change a drop here would make, and whether the map rules take it. */
+  function candidate(target) {
+    if (!target) return null;
+    const id = newOpId();
+    if (drag.from === "task") return target.node ? { op: { id, kind: "task", node: target.node, title: "New task" } } : null;
+    if (drag.type) {
+      // A line between two steps where the second really waits on the first: the new step goes in between.
+      // Where the line only shows the order (the second doesn't wait on the first), it comes after the first,
+      // which numbers and draws it between them all the same.
+      const after = target.node ?? target.after;
+      const before = target.before && waitsOn(target.before, after) ? target.before : null;
+      const op = { id, kind: "add", after, ...(before ? { before } : {}), ...(drag.type !== "step" ? { type: drag.type } : {}), title: "New step" };
+      return { op };
+    }
+    if (!target.node || target.node === drag.from) return null;
+    return { op: { id, kind: "move", node: drag.from, after: target.node } };
+  }
+
+  /** Moving their own new step changes its add; any other step gets a move. */
+  function movedOps(from, after) {
+    const added = isNew(from) ? addOpFor(from) : null;
+    return added ? s.ops.map((op) => (op === added ? { ...op, after, before: undefined } : op)) : [...s.ops, { id: newOpId(), kind: "move", node: from, after }];
+  }
+
+  function verdict(found) {
+    if (!found) return null;
+    const ops = found.op.kind === "move" ? movedOps(found.op.node, found.op.after) : [...s.ops, found.op];
+    const bad = checkOps(curriculum(), ops).find((c) => !c.ok);
+    return bad ? plainError(bad.errors?.[0] ?? bad.conflict ?? "", titleOf) : null;
+  }
+
+  function describeDrop(found) {
+    const op = found.op;
+    if (op.kind === "task") return `A task on “${titleOf(op.node)}”`;
+    if (op.kind === "move") return `“${titleOf(op.node)}” comes after “${titleOf(op.after)}”`;
+    const word = TYPE_WORD[op.type ?? "step"];
+    return op.before ? `A new ${word} between “${titleOf(op.after)}” and “${titleOf(op.before)}”` : `A new ${word} after “${titleOf(op.after)}”`;
+  }
+
+  function light(target, bad) {
+    if (drag.lit && drag.lit !== target?.el) drag.lit.classList.remove("is-drop-target", "is-drop-bad");
+    drag.lit = target?.el ?? null;
+    if (drag.lit) {
+      drag.lit.classList.toggle("is-drop-target", !bad);
+      drag.lit.classList.toggle("is-drop-bad", Boolean(bad));
+    }
+  }
+
+  function startDrag(event, from, label, type = null) {
+    drag = { from, label, type, x: event.clientX, y: event.clientY, moved: false, pointerId: event.pointerId, lines: null, lit: null, found: null, bad: null };
   }
 
   function onMove(event) {
     if (!drag || event.pointerId !== drag.pointerId) return;
     if (!drag.moved && Math.hypot(event.clientX - drag.x, event.clientY - drag.y) < DRAG_SLOP) return;
-    drag.moved = true;
+    if (!drag.moved) {
+      drag.moved = true;
+      drag.lines = drag.type ? lineSamples() : [];
+      tray.parentElement?.classList.add("is-dragging");
+    }
+    const hit = nodeAt(event.clientX, event.clientY);
+    const target = hit && hit.node !== drag.from ? hit : drag.type ? lineAt(event.clientX, event.clientY) : null;
+    const found = candidate(target);
+    const bad = verdict(found);
+    drag.found = found;
+    drag.bad = bad;
+    drag.target = target;
+    light(found ? target : null, bad);
     ghost.hidden = false;
-    ghost.textContent = drag.label;
+    mount(ghost, el("b", {}, drag.label), el("span", { class: bad ? "is-bad" : null }, found ? (bad ? bad : describeDrop(found)) : drag.type ? "Drop on a line or a step" : drag.from === "task" ? "Drop on a step" : "Drop on the step it comes after"));
     ghost.style.transform = `translate(${event.clientX + 14}px, ${event.clientY + 10}px)`;
-    highlight(nodeAt(event.clientX, event.clientY));
   }
 
   function onUp(event) {
     if (!drag || event.pointerId !== drag.pointerId) return;
     const done = drag;
-    drag.over?.g?.classList.remove("is-drop-target");
+    light(null);
     drag = null;
     ghost.hidden = true;
+    tray.parentElement?.classList.remove("is-dragging");
     if (!done.moved) return;
+    // The click that ends this drag is swallowed; if none comes (released off the map), the next one isn't.
     swallowClick = true;
-    const target = nodeAt(event.clientX, event.clientY);
-    if (!target) return;
-    if (done.from === "+new") openCard({ node: target.id, form: "add" });
-    else if (target.id !== done.from) openCard({ node: done.from, form: "move", after: target.id });
+    setTimeout(() => (swallowClick = false), 0);
+    if (!done.found) return;
+    if (done.bad) {
+      toast(done.bad, "warn");
+      return;
+    }
+    const op = done.found.op;
+    if (op.kind === "task") return nameTask(event.clientX, event.clientY, op.node);
+    if (op.kind === "add") return nameNew(event.clientX, event.clientY, { type: op.type ?? "step", after: op.after, before: op.before });
+    // A step moved: done at once, like any direct move; Undo is in the panel.
+    s.ops = movedOps(op.node, op.after);
+    save();
+    redraw();
+    render();
   }
 
-  /** Wire dragging onto the map's host (the Route's container). */
+  /** Wire editing onto the map's host (the Route's container). */
   function attach(world) {
     world.addEventListener(
       "pointerdown",
       (event) => {
         if (!s.on || (event.button !== 0 && event.pointerType === "mouse")) return;
+        if (event.target.closest?.(".sgx")) return;
+        // A finger pans the map; a step moves by tapping it, then "Move it".
+        if (event.pointerType === "touch") return;
         const hit = event.target.closest?.(".rz-node");
         const id = hit?.dataset?.id;
         if (!id || isLandmark(id)) return;
-        // In suggest mode a step is picked up, not the map panned.
+        // While editing a step is picked up, not the map panned.
         event.stopPropagation();
         startDrag(event, id, titleOf(id));
       },
@@ -654,22 +954,39 @@ export function createSuggest({ ctx, redraw }) {
     world.addEventListener(
       "click",
       (event) => {
-        if (!swallowClick) return;
-        swallowClick = false;
+        if (swallowClick) {
+          swallowClick = false;
+          event.stopPropagation();
+          event.preventDefault();
+          return;
+        }
+        // Click a step's name to rename it, right there.
+        const name = s.on ? event.target.closest?.(".rz-title") : null;
+        const id = name?.closest?.(".rz-node")?.dataset?.id;
+        if (!id || isLandmark(id)) return;
         event.stopPropagation();
         event.preventDefault();
+        const r = name.getBoundingClientRect();
+        renameAt(r.left + r.width / 2, r.top, id);
       },
       true
     );
-    bar.addEventListener("pointerdown", (event) => {
-      if (!event.target.closest?.("[data-sg-new]")) return;
+    tray.addEventListener("pointerdown", (event) => {
+      const chip = event.target.closest?.("[data-sg-drag]");
+      if (!chip) return;
       event.preventDefault();
-      startDrag(event, "+new", "+ New step");
+      try {
+        chip.setPointerCapture?.(event.pointerId);
+      } catch {
+        /* a pointer the browser no longer tracks: the window listeners still follow it */
+      }
+      const item = TRAY.find((t) => t.drag === chip.dataset.sgDrag);
+      startDrag(event, item.drag === "task" ? "task" : "+new", item.label, item.drag === "task" ? null : item.drag);
     });
-    bar.addEventListener("click", (event) => {
-      if (!event.target.closest?.("[data-sg-new]")) return;
-      // A tap (no drag) on + New step: say how it works.
-      if (!swallowClick) toast("Drag it onto the step it comes after. Or tap a step and pick “Add a step after this”.");
+    tray.addEventListener("click", (event) => {
+      if (!event.target.closest?.("[data-sg-drag]")) return;
+      // A tap (no drag) on a tray item: say how it works.
+      if (!swallowClick) toast("Drag it onto your map: onto a line to go between two steps, or onto a step.");
       swallowClick = false;
     });
     window.addEventListener("pointermove", onMove);
@@ -684,13 +1001,14 @@ export function createSuggest({ ctx, redraw }) {
   }
 
   return {
-    elements: [pill, card, bar, ghost],
+    elements: [pill, card, tray, panel, pop, ghost],
     isOn: () => s.on,
     ready,
     setOn,
     tap,
     attach,
     detach,
+    decorate,
     refresh,
     render,
     renderCard,

@@ -18,13 +18,13 @@
  * view glides to it. Nothing idles. Reduced motion jumps.
  */
 
-import { el, clear } from "../../dom.js?v=6b238ed-202610252203";
-import { traceSet, stepNumber } from "../model.js?v=6b238ed-202610252203";
-import { STANDING, standingOf, inSequence } from "../standing.js?v=6b238ed-202610252203";
-import { typeOf, specOf } from "../model.js?v=6b238ed-202610252203";
-import { isTypedMap } from "../../engine.js?v=6b238ed-202610252203";
-import { isCompleteMap, isFreeMap } from "../../prep.js?v=6b238ed-202610252203";
-import { WIN_LABEL } from "../route.js?v=6b238ed-202610252203";
+import { el, clear } from "../../dom.js?v=4f66e99-202610260029";
+import { traceSet, stepNumber } from "../model.js?v=4f66e99-202610260029";
+import { STANDING, standingOf, inSequence } from "../standing.js?v=4f66e99-202610260029";
+import { typeOf, specOf } from "../model.js?v=4f66e99-202610260029";
+import { isTypedMap } from "../../engine.js?v=4f66e99-202610260029";
+import { isCompleteMap, isFreeMap } from "../../prep.js?v=4f66e99-202610260029";
+import { WIN_LABEL } from "../route.js?v=4f66e99-202610260029";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 /** "2026-10-16" → "Due Oct 16". */
@@ -42,7 +42,7 @@ import {
   runCurrent,
   rezIn,
   prefersReducedMotion,
-} from "../../../../js/rez/road.js?v=6b238ed-202610252203";
+} from "../../../../js/rez/road.js?v=4f66e99-202610260029";
 
 /*
  * One grid under everything, in the board's own units (as on the landing):
@@ -54,7 +54,8 @@ const SPACING = 3 * CELL;
 const LANE_GAP = 2 * CELL;
 /** Typed maps can hold nodes in neighbouring lanes in one column: a full label and YOU ARE HERE fit between. */
 const TYPED_LANE_GAP = 3 * CELL;
-const TOP = 2 * CELL;
+/** The first lane sits below the band labels, so YOU ARE HERE and the pin never run into "START HERE" and its pace. */
+const TOP = 4 * CELL;
 const LEFT = 4 * CELL;
 const RIGHT = 4 * CELL;
 const SIDE_GAP = 3 * CELL;
@@ -490,7 +491,8 @@ export async function createRezScene(container) {
     }
     const road = svgEl("g", { class: "rz-road" }, view);
     for (const [from, to] of roadPairs) {
-      state.segFor.set(`${from}->${to}`, svgEl("path", { class: "rz-seg", d: segment(p.at.get(from), p.at.get(to)).d }, road));
+      // The ends ride on the line, so editing (views/suggest.js) can drop a new step between them.
+      state.segFor.set(`${from}->${to}`, svgEl("path", { class: "rz-seg", d: segment(p.at.get(from), p.at.get(to)).d, "data-from": from, "data-to": to }, road));
     }
 
     const nodes = svgEl("g", { class: "rz-nodes" }, view);

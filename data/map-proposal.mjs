@@ -21,7 +21,10 @@
  * the steps after it are rewired to what came before it, so nothing is left
  * stranded. server/map_proposals.py checks the same shapes before storing.
  *
- *   add     { id, after, title, note?, tasks?: [title] }   a new step after `after`
+ *   add     { id, after, title, note?, tasks?: [title], type?, before? }
+ *                                                           a new step after `after`; with `before` (a step that
+ *                                                           comes right after `after`) it goes between the two;
+ *                                                           type: step (default), habit or milestone
  *   task    { id, node, title, note? }                      a new task on a step
  *   move    { id, node, after, note? }                      `node` comes after `after` instead
  *   retire  { id, node, note }                              this step no longer fits
@@ -37,13 +40,16 @@
  * Pure: no DOM, no network. node --test covers it (map-proposal.test.mjs).
  */
 
-import { validateMap } from "./map-rules.mjs?v=6b238ed-202610252203";
+import { validateMap } from "./map-rules.mjs?v=4f66e99-202610260029";
 
 export const OP_KINDS = ["add", "task", "move", "retire", "rename", "ask", "taskedit", "taskdrop"];
 export const MAX_OPS = 30;
 export const MAX_TITLE = 120;
 export const MAX_NOTE = 600;
 export const MAX_TASKS = 6;
+/** The kinds of step a student may add (node-types.json "who": "student"); meetings and checks are the coach's. */
+export const ADD_TYPES = ["step", "habit", "milestone"];
+const TYPE_WORD = { step: "step", habit: "every-week habit", milestone: "milestone" };
 export const OP_ID = /^[a-z0-9]{4,16}$/;
 /** Suggested steps get their own prefix, so they never collide with Aden's ids (side quests use "s."). */
 export const NEW_PREFIX = "sg.";
@@ -90,6 +96,9 @@ export function opShapeErrors(op) {
   if (["retire", "ask"].includes(op.kind) ? !isText(op.note, MAX_NOTE) : !optionalText(op.note, MAX_NOTE)) {
     errors.push(`${at}: note ${["retire", "ask"].includes(op.kind) ? "is needed and " : ""}must be at most ${MAX_NOTE} characters`);
   }
+  if (op.kind === "add" && op.type !== undefined && !ADD_TYPES.includes(op.type)) errors.push(`${at}: type must be one of ${ADD_TYPES.join(", ")}`);
+  if (op.kind === "add" && !optionalText(op.before, 80)) errors.push(`${at}: before must be a step id`);
+  if (op.kind === "add" && op.before && op.before === op.after) errors.push(`${at}: a step can't go between a step and itself`);
   if (op.kind === "add" && op.tasks !== undefined) {
     if (!Array.isArray(op.tasks) || op.tasks.length > MAX_TASKS || !op.tasks.every((t) => isText(t, MAX_TITLE))) {
       errors.push(`${at}: tasks must be up to ${MAX_TASKS} short titles`);
@@ -209,6 +218,10 @@ function applyOne(map, op, mode, lookup) {
     if (!after) return gone(op.after);
     const id = newNodeId(op);
     if (byId.has(id)) return "this step is already on the map";
+    const next = op.before ? byId.get(op.before) : null;
+    if (op.before && !next) return gone(op.before);
+    if (next && !(next.requires ?? []).includes(after.id)) return `“${op.before}” doesn't come right after “${op.after}”`;
+    const type = ADD_TYPES.includes(op.type) ? op.type : "step";
     // A library step stored as an instance may take its lane from its module: read the resolved step.
     const info = { ...(lookup?.(after.id) ?? {}), ...after };
     const node = {
@@ -218,10 +231,12 @@ function applyOne(map, op, mode, lookup) {
       family: after.family ?? info.family,
       requires: [after.id],
       kind: "core",
-      type: "step",
-      completion: "tasks",
+      type,
+      ...(type === "habit" ? {} : { completion: "tasks" }),
       tasks: (op.tasks ?? []).map((title, index) => ({ id: newTaskId(op, index), title: title.trim(), kind: "ship" })),
     };
+    // Between two steps: the one after now waits on the new step instead.
+    if (next) next.requires = next.requires.map((req) => (req === after.id ? id : req));
     if (after.phase ?? info.phase) node.phase = after.phase ?? info.phase;
     if (after.track) node.track = after.track;
     if (preview) mark(node, op);
@@ -381,7 +396,7 @@ export function describeOp(op, titleOf = (id) => id, taskTitleOf = () => null) {
   };
   switch (op.kind) {
     case "add":
-      return `New step after ${t(op.after)}: “${op.title}”${op.tasks?.length ? ` (${op.tasks.length} task${op.tasks.length === 1 ? "" : "s"})` : ""}`;
+      return `New ${TYPE_WORD[op.type] ?? "step"} ${op.before ? `between ${t(op.after)} and ${t(op.before)}` : `after ${t(op.after)}`}: “${op.title}”${op.tasks?.length ? ` (${op.tasks.length} task${op.tasks.length === 1 ? "" : "s"})` : ""}`;
     case "task":
       return `New task on ${t(op.node)}: “${op.title}”`;
     case "move":
@@ -403,7 +418,7 @@ export function describeOp(op, titleOf = (id) => id, taskTitleOf = () => null) {
 
 /** The ids each op touches, so a change on the map can be found in the list and back. */
 export function opTargets(op) {
-  if (op.kind === "add") return [newNodeId(op), op.after];
+  if (op.kind === "add") return [newNodeId(op), op.after, ...(op.before ? [op.before] : [])];
   if (op.kind === "move") return [op.node, op.after];
   return op.node ? [op.node] : [];
 }
