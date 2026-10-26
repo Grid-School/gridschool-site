@@ -3,8 +3,8 @@
  * answers with the current record, which the page simply takes and keeps going.
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=939d963-202610261500";
-import { persistToken } from "./session.js?v=939d963-202610261500";
+import { PERSIST, isPlaceholder } from "../../config.js?v=c18e1b4-202610261602";
+import { persistToken } from "./session.js?v=c18e1b4-202610261602";
 
 export function resumeReady() {
   return Boolean(persistToken() && PERSIST?.endpoint && !isPlaceholder(PERSIST.endpoint));
@@ -30,11 +30,13 @@ async function call(method, path, body) {
 const base = (slug) => `/students/${encodeURIComponent(slug)}/resume`;
 
 export const loadResume = (slug) => call("GET", base(slug));
-export const importResume = (slug, version, { text, docx, replace }) => call("POST", `${base(slug)}/import`, { version, text, docx, replace });
+export const importResume = (slug, version, { text, docx, replace, run }) => call("POST", `${base(slug)}/import`, { version, text, docx, replace, run });
 export const startFresh = (slug, version, replace = false) => call("POST", `${base(slug)}/start`, { version, replace: replace || undefined });
-export const answerQuestion = (slug, version, questionId, answer) => call("POST", `${base(slug)}/answer`, { version, question_id: questionId, answer });
+export const answerQuestion = (slug, version, questionId, answer, run) => call("POST", `${base(slug)}/answer`, { version, question_id: questionId, answer, run });
 export const skipQuestion = (slug, version, questionId) => call("POST", `${base(slug)}/answer`, { version, question_id: questionId, skip: true });
-export const writeLines = (slug, version) => call("POST", `${base(slug)}/write`, { version });
+export const writeLines = (slug, version, run) => call("POST", `${base(slug)}/write`, { version, run });
+/* What the call in flight is doing (server/work_progress.py): steps, and notes of what the model found so far. */
+export const loadProgress = (slug) => call("GET", `${base(slug)}/progress`);
 export const confirmLine = (slug, version, claimId, decision, { text, defense } = {}) =>
   call("POST", `${base(slug)}/confirm`, { version, claim_id: claimId, decision, text, defense });
 /* Saved versions: name it, keep it, download it again exactly as saved. */

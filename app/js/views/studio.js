@@ -8,11 +8,11 @@
  * the work here (picking, posting) checks that task too.
  */
 
-import { el, mount } from "../dom.js?v=939d963-202610261500";
-import { btn, toast } from "../ui.js?v=939d963-202610261500";
-import { nodeRail, nodeIntro } from "./node-rail.js?v=939d963-202610261500";
-import * as api from "../studio-remote.js?v=939d963-202610261500";
-import * as model from "../studio-model.js?v=939d963-202610261500";
+import { el, mount } from "../dom.js?v=c18e1b4-202610261602";
+import { btn, toast } from "../ui.js?v=c18e1b4-202610261602";
+import { nodeRail, nodeIntro } from "./node-rail.js?v=c18e1b4-202610261602";
+import * as api from "../studio-remote.js?v=c18e1b4-202610261602";
+import * as model from "../studio-model.js?v=c18e1b4-202610261602";
 
 function wait(text) {
   return el("div.pack__wait", {}, el("span.pack__spinner", { "aria-hidden": "true" }), el("p", {}, text));

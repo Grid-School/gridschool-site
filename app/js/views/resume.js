@@ -11,37 +11,47 @@
  * confirms it. Every saved version has a name, the date and time it was made, and can be downloaded again.
  */
 
-import { el, mount } from "../dom.js?v=939d963-202610261500";
-import { btn, toast } from "../ui.js?v=939d963-202610261500";
-import { nodeRail } from "./node-rail.js?v=939d963-202610261500";
-import { nextUp } from "../graph/model.js?v=939d963-202610261500";
-import { isProgressReadOnly } from "../store.js?v=939d963-202610261500";
-import { upgradeHref } from "../prep.js?v=939d963-202610261500";
-import * as api from "../resume-remote.js?v=939d963-202610261500";
+import { el, mount } from "../dom.js?v=c18e1b4-202610261602";
+import { btn, toast } from "../ui.js?v=c18e1b4-202610261602";
+import { nodeRail } from "./node-rail.js?v=c18e1b4-202610261602";
+import { nextUp } from "../graph/model.js?v=c18e1b4-202610261602";
+import { isProgressReadOnly } from "../store.js?v=c18e1b4-202610261602";
+import { upgradeHref } from "../prep.js?v=c18e1b4-202610261602";
+import * as api from "../resume-remote.js?v=c18e1b4-202610261602";
+import { patient } from "../patient.js?v=c18e1b4-202610261602";
+import { doneIds } from "../steps.js?v=c18e1b4-202610261602";
+import { workPanel } from "./work.js?v=c18e1b4-202610261602";
+import { stepsFor, claimsOf, linesOf, hasOutput, allConfirmed as confirmedAll, changedSinceSave as changedSince, savedAndDownloaded } from "../resume-stages.js?v=c18e1b4-202610261602";
 
 const PDF_JS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs";
 const PDF_WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs";
 
-const STAGES = [
-  { id: "start", label: "Start" },
-  { id: "questions", label: "Questions" },
-  { id: "write", label: "Write" },
-  { id: "check", label: "Check" },
-  { id: "save", label: "Save" },
-];
-const FINISH = { id: "finish", label: "Finish" };
+
+/* The steps each model call goes through, shown while it runs; the server's own (work_progress.py) replace
+   these as soon as it reports, with the notes of what it found. Same ids and order as resume_api.py. */
+const WORK = {
+  import: [
+    { id: "got", label: "Got your resume" },
+    { id: "read", label: "Reading every job and line, word for word" },
+    { id: "check", label: "Checking every number and skill against your own words" },
+    { id: "ask", label: "Choosing the questions worth asking" },
+  ],
+  answer: [
+    { id: "read", label: "Reading your answer for facts: what you did, what changed, any numbers" },
+    { id: "merge", label: "Adding them to your lines, keeping only what you said" },
+    { id: "next", label: "Choosing the next question" },
+  ],
+  write: [
+    { id: "draft", label: "Writing your lines from your answers" },
+    { id: "check", label: "Checking each line: only your numbers, names and words" },
+    { id: "retry", label: "Rewriting any line that didn't pass" },
+    { id: "save", label: "Saving your lines" },
+  ],
+};
 
 const plural = (n, one, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
 const when = (iso) =>
   iso ? new Date(iso).toLocaleString(undefined, { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" }) : "";
-
-function claimsOf(rec) {
-  return (rec?.graph?.claims || []).filter((c) => c.status !== "rejected");
-}
-
-function linesOf(rec) {
-  return claimsOf(rec).filter((c) => c.line);
-}
 
 async function fileToPayload(file) {
   const name = file.name.toLowerCase();
@@ -145,15 +155,15 @@ export function renderResume(ctx, options = {}) {
   let lastSaveId = null;
   let reporting = false;
   let error = "";
+  let panel = null;
 
   const readOnly = () => isProgressReadOnly();
-  const stages = () => (embedded ? [...STAGES, FINISH] : STAGES);
+  const stages = () => stepsFor(embedded);
   const taskDone = (task) => current.state.student?.tasks?.[task.id]?.state === "done";
   const nodeDone = () => Boolean(node?.tasks?.length) && node.tasks.every(taskDone);
   const latest = () => saves[0] || null;
-  const downloaded = () => saves.some((s) => s.downloads > 0);
-  const allConfirmed = () => linesOf(rec).length > 0 && linesOf(rec).every((c) => c.status === "confirmed");
-  const changedSinceSave = () => Boolean(latest()) && rec?.preview && latest().text.trim() !== rec.preview.trim();
+  const allConfirmed = () => confirmedAll(rec);
+  const changedSinceSave = () => changedSince({ rec, saves });
 
   async function load() {
     if (!api.resumeReady()) {
@@ -176,24 +186,58 @@ export function renderResume(ctx, options = {}) {
     render();
   }
 
-  async function run(label, fn) {
+  /**
+   * One call to the engine. `work` (one of WORK) is for the calls that wait on the model: while they run,
+   * the card shows what's being done and what the model has found so far (work.js, server/work_progress.py).
+   */
+  async function run(label, fn, work = null) {
     if (busy) return;
     if (readOnly()) {
       toast("View only: this is the student's own resume.", "warn");
       return;
     }
     busy = label;
+    const runId = work ? `r${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}` : "";
+    // Only this call's run is shown: an older one for the same student is ignored.
+    const mine = async () => {
+      const p = (await api.loadProgress(slug)).progress;
+      return p?.run === runId ? p : null;
+    };
+    panel = work ? workPanel({ title: label, steps: work, poll: mine }) : null;
     render();
     try {
-      const out = await fn();
+      // A long model call can outlive the proxy's reply window: if the answer is lost, keep reading the
+      // record until it moves (patient.js) instead of telling the student it failed when it didn't.
+      const out = await patient(() => fn(runId), {
+        before: rec?.version,
+        load: () => api.loadResume(slug),
+        waiting: () => {
+          const still = "Still working. A long resume can take a minute. Don't close this.";
+          if (panel) panel.setTitle(still);
+          else { busy = still; render(); }
+        },
+      });
+      if (out?.graph && panel) {
+        panel.complete();
+        await new Promise((r) => setTimeout(r, 600));
+      }
       if (out?.graph) {
-        lastReport = out.report || null;
+        lastReport = out.recovered ? lastReport : out.report || null;
+        // A fresh read moves on to whatever comes next (the questions), even if they'd opened Start by hand.
+        if (work === WORK.import) stage = null;
         take(out);
       }
     } catch (e) {
-      if (e.status === 409 && e.payload?.graph) take(e.payload);
-      toast(e.message, "warn", { ms: 5000 });
+      if (e.status === 409 && e.payload?.graph) {
+        // The server already moved on (our read was stale, or the earlier call did land): take what's there.
+        take(e.payload);
+        toast("Already saved on our side. Carrying on from there.", "ok");
+      } else {
+        toast(e.message, "warn", { ms: 5000 });
+      }
     } finally {
+      panel?.stop();
+      panel = null;
       busy = "";
       render();
     }
@@ -206,24 +250,15 @@ export function renderResume(ctx, options = {}) {
     if (!started && !rec.next) return "start";
     if (linesOf(rec).length) {
       if (!allConfirmed()) return "check";
-      if (!downloaded() || changedSinceSave()) return "save";
+      if (!savedAndDownloaded({ rec, saves })) return "save";
       return embedded ? "finish" : "save";
     }
     if (rec.next) return "questions";
     return "write";
   }
 
-  function doneStages() {
-    const g = rec?.graph || {};
-    const done = [];
-    if ((g.roles || []).length || (g.projects || []).length || (g.queue || []).length) done.push("start");
-    if (((g.roles || []).length || (g.projects || []).length) && !rec.next) done.push("questions");
-    if (linesOf(rec).length) done.push("write");
-    if (allConfirmed()) done.push("check");
-    if (downloaded()) done.push("save");
-    if (nodeDone()) done.push("finish");
-    return done;
-  }
+  /* Each step's rule lives in resume-stages.js; this only takes the snapshot. */
+  const doneStages = () => doneIds(stages(), { rec, saves, nodeDone: nodeDone() });
 
   const go = (id) => {
     stage = id;
@@ -239,7 +274,7 @@ export function renderResume(ctx, options = {}) {
     const has = (rec.graph.roles || []).length > 0;
     const paste = el("textarea.rz__text", { rows: 10, placeholder: "Paste your whole resume here: every job, every line, as it is now." });
     const file = el("input", { type: "file", accept: ".pdf,.docx,.txt", class: "rz__file" });
-    const submit = (payload) => run("Reading your resume. About 15 seconds.", () => api.importResume(slug, rec.version, { ...payload, replace: has || undefined }));
+    const submit = (payload) => run("Reading your resume. Usually under a minute.", (r) => api.importResume(slug, rec.version, { ...payload, replace: has || undefined, run: r }), WORK.import);
     file.addEventListener("change", async () => {
       const f = file.files?.[0];
       if (!f) return;
@@ -276,7 +311,7 @@ export function renderResume(ctx, options = {}) {
       return stageCard("That's every question", "Next, we write each line of your resume from what you told us.", null, nextBtn("Write my lines", "write"));
     }
     const box = el("textarea.rz__text", { rows: 6, placeholder: "Type it the way you'd say it. A rough number is fine: say \"about\"." });
-    const send = () => (box.value.trim() ? run("Reading your answer.", () => api.answerQuestion(slug, rec.version, q.id, box.value)) : toast("Type an answer, or press Skip.", "warn"));
+    const send = () => (box.value.trim() ? run("Reading your answer.", (r) => api.answerQuestion(slug, rec.version, q.id, box.value, r), WORK.answer) : toast("Type an answer, or press Skip.", "warn"));
     box.addEventListener("keydown", (e) => {
       if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) send();
     });
@@ -339,7 +374,7 @@ export function renderResume(ctx, options = {}) {
       [
         written ? nextBtn("Check my lines", "check") : null,
         btn({ label: busy ? "Writing…" : written ? "Rewrite my lines" : `Write ${plural(n, "line")}`, variant: written ? "ghost" : "solid", disabled: Boolean(busy) || !n,
-          onclick: () => run("Writing your lines. About 20 seconds.", () => api.writeLines(slug, rec.version)) }),
+          onclick: () => run("Writing your lines. Usually under a minute.", (r) => api.writeLines(slug, rec.version, r), WORK.write) }),
       ]
     );
   }
@@ -461,7 +496,7 @@ export function renderResume(ctx, options = {}) {
           : null,
         saves.length ? hireNote() : null,
       ],
-      embedded && downloaded() && !changedSinceSave() ? nextBtn("Finish this step", "finish") : null
+      embedded && savedAndDownloaded({ rec, saves }) ? nextBtn("Finish this step", "finish") : null
     );
   }
 
@@ -478,7 +513,7 @@ export function renderResume(ctx, options = {}) {
     const next = nodeDone() ? nextUp(current.state.graph) : null;
     const checks = [
       ["Every line on your resume is one you kept", allConfirmed(), "check"],
-      ["You saved a version and downloaded it", downloaded() && !changedSinceSave(), "save"],
+      ["You saved a version and downloaded it", savedAndDownloaded({ rec, saves }), "save"],
     ];
     const ready = checks.every(([, ok]) => ok);
     const list = el("ul.rz__checks", {}, checks.map(([label, ok, id]) =>
@@ -555,11 +590,12 @@ export function renderResume(ctx, options = {}) {
     const main = el("section.rz__main", {},
       nodeRail({ nodes: stages(), done: doneStages(), here, onGo: go, label: "Resume steps" }),
       readOnly() ? el("p.rz__readonly", {}, "View only: this is the student's own resume. Changes are theirs to make.") : null,
-      el("div.rz__card", { "aria-busy": busy ? "true" : null }, busy ? el("div.pack__wait", {}, el("span.pack__spinner", { "aria-hidden": "true" }), el("p", {}, busy)) : body));
-    const preview = el("aside.rz__preview", { "aria-label": "Your resume so far" },
-      el("b.eyebrow", {}, "Your resume so far"),
-      rec.preview ? el("div.rz-doc", {}, previewHtml(rec.preview)) : el("p.rz__empty", {}, "Lines appear here as you keep them. Nothing goes on your resume until you say it's true."));
-    mount(root, el(`div.rz${embedded ? ".rz--embedded" : ""}`, {}, head, el("div.rz__grid", {}, main, preview)));
+      el("div.rz__card", { "aria-busy": busy ? "true" : null }, busy ? panel?.node ?? el("div.pack__wait", {}, el("span.pack__spinner", { "aria-hidden": "true" }), el("p", {}, busy)) : body));
+    // The resume shows beside the steps only once lines are written: before that there's nothing of theirs to show.
+    const preview = hasOutput(rec) && rec.preview
+      ? el("aside.rz__preview", { "aria-label": "Your resume so far" }, el("b.eyebrow", {}, "Your resume so far"), el("div.rz-doc", {}, previewHtml(rec.preview)))
+      : null;
+    mount(root, el(`div.rz${embedded ? ".rz--embedded" : ""}`, {}, head, el(`div.rz__grid${preview ? "" : ".rz__grid--solo"}`, {}, main, preview)));
   }
 
   render();

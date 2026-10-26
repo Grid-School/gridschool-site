@@ -1,30 +1,28 @@
 /**
- * A row of step nodes, one open at a time: the shape the campaign drawer and
- * Prepare share. Rings like the map's: white is where you are, green with a
- * check is done (and only ever means "you did it"), a node that just finished
- * pops once. Every node can be opened directly.
+ * A row of step nodes, one open at a time: the shape every builder shares (steps.js has the rules).
+ * Done is a solid green circle with a check; here is a white ring, never a fill; the line between two
+ * steps is green only when both are done. A node that just finished pops once. Every node opens directly.
  */
 
-import { el } from "../dom.js?v=939d963-202610261500";
+import { el } from "../dom.js?v=c18e1b4-202610261602";
+import { stepStates } from "../steps.js?v=c18e1b4-202610261602";
 
 export function nodeRail({ nodes, done = [], here, fresh = [], onGo, label = "Steps" }) {
   return el(
     "ol.cnodes",
     { "aria-label": label },
-    nodes.map((n, i) => {
-      const isDone = done.includes(n.id);
-      const isHere = here === n.id;
-      return el(
+    stepStates(nodes, { done, here }).map((s) =>
+      el(
         "li",
-        { class: [isDone ? "is-done" : "", isHere ? "is-here" : "", fresh.includes(n.id) ? "is-fresh" : ""].join(" ").trim() || null },
+        { class: [s.done ? "is-done" : "", s.here ? "is-here" : "", s.linked ? "is-linked" : "", fresh.includes(s.id) ? "is-fresh" : ""].filter(Boolean).join(" ") || null },
         el(
           "button.cnodes__node",
-          { type: "button", "aria-current": isHere ? "step" : null, "aria-label": `${n.label}${isDone ? ", done" : ""}`, onclick: () => onGo(n.id) },
-          el("span.cnodes__ring", {}, isDone ? "✓" : String(i + 1)),
-          el("span.cnodes__label", {}, n.label)
+          { type: "button", "aria-current": s.here ? "step" : null, "aria-label": `${s.label}${s.done ? ", done" : ""}`, onclick: () => onGo(s.id) },
+          el("span.cnodes__ring", { "aria-hidden": "true" }, s.done ? "✓" : String(s.n)),
+          el("span.cnodes__label", {}, s.label)
         )
-      );
-    })
+      )
+    )
   );
 }
 

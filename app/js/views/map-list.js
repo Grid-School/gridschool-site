@@ -13,14 +13,14 @@
  * own column on the floor: listed, never in the required count.
  */
 
-import { el } from "../dom.js?v=939d963-202610261500";
-import { panel, btn, copy, dot } from "../ui.js?v=939d963-202610261500";
-import { STATUS, isSide, isSpine, nextUp, stepNumber } from "../graph/model.js?v=939d963-202610261500";
-import { inSequence, standingOf, STANDING_LABEL, STANDING_TONE } from "../graph/standing.js?v=939d963-202610261500";
-import { reviewScores } from "./parts.js?v=939d963-202610261500";
-import { trackLabel } from "../copy.js?v=939d963-202610261500";
-import { fmtDay } from "../time.js?v=939d963-202610261500";
-import { dueBadge } from "./from-aden.js?v=939d963-202610261500";
+import { el } from "../dom.js?v=c18e1b4-202610261602";
+import { panel, btn, copy, dot } from "../ui.js?v=c18e1b4-202610261602";
+import { STATUS, isSide, isSpine, nextUp, stepNumber } from "../graph/model.js?v=c18e1b4-202610261602";
+import { inSequence, standingOf, STANDING_LABEL, STANDING_TONE } from "../graph/standing.js?v=c18e1b4-202610261602";
+import { reviewScores } from "./parts.js?v=c18e1b4-202610261602";
+import { trackLabel } from "../copy.js?v=c18e1b4-202610261602";
+import { fmtDay } from "../time.js?v=c18e1b4-202610261602";
+import { dueBadge } from "./from-aden.js?v=c18e1b4-202610261602";
 
 export function mapList({ state, onOpenNode }) {
   const { graph, student } = state;

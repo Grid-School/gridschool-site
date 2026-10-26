@@ -13,26 +13,30 @@
  * builder made; a coach's map is left alone), or "Something's off" sends the coach a note.
  */
 
-import { el, mount } from "../dom.js?v=939d963-202610261500";
-import { btn, toast } from "../ui.js?v=939d963-202610261500";
-import { nodeRail } from "./node-rail.js?v=939d963-202610261500";
-import { nextUp } from "../graph/model.js?v=939d963-202610261500";
-import { isProgressReadOnly } from "../store.js?v=939d963-202610261500";
-import * as A from "../answer-chunk.js?v=939d963-202610261500";
-import * as I from "../../../data/intake/intake.mjs?v=939d963-202610261500";
-import { control } from "./answer.js?v=939d963-202610261500";
-import { filePayload } from "./images.js?v=939d963-202610261500";
-import { intakeReady, loadIntake, saveChunk, rebuildMap, loadSeeds } from "../intake-remote.js?v=939d963-202610261500";
-import { imagesReady, loadImages, uploadImage, removeImage, imageUrl } from "../images-remote.js?v=939d963-202610261500";
+import { el, mount } from "../dom.js?v=c18e1b4-202610261602";
+import { btn, toast } from "../ui.js?v=c18e1b4-202610261602";
+import { nodeRail } from "./node-rail.js?v=c18e1b4-202610261602";
+import { doneIds } from "../steps.js?v=c18e1b4-202610261602";
+import { nextUp } from "../graph/model.js?v=c18e1b4-202610261602";
+import { isProgressReadOnly } from "../store.js?v=c18e1b4-202610261602";
+import * as A from "../answer-chunk.js?v=c18e1b4-202610261602";
+import * as I from "../../../data/intake/intake.mjs?v=c18e1b4-202610261602";
+import { control } from "./answer.js?v=c18e1b4-202610261602";
+import { filePayload } from "./images.js?v=c18e1b4-202610261602";
+import { intakeReady, loadIntake, saveChunk, rebuildMap, loadSeeds } from "../intake-remote.js?v=c18e1b4-202610261602";
+import { imagesReady, loadImages, uploadImage, removeImage, imageUrl } from "../images-remote.js?v=c18e1b4-202610261602";
 
-/* The stages, each a few questions from one chunk. Upload questions name the images kind they go to. */
+/* The stages, each a few questions from one chunk. Upload questions name the images kind they go to.
+   A question stage is done when every question it asks now is answered or skipped; Finish is done when
+   the student said "That's me" (steps.js draws them). */
+const answeredAll = (id) => (snap) => snap.stageDone(id);
 const STAGES = [
-  { id: "you", label: "You", chunk: "c0", ids: ["stage", "role", "level", "months", "apps", "stop"] },
-  { id: "into", label: "Into", chunk: "c7", ids: ["techInterests", "personalInterests"] },
-  { id: "taste", label: "Taste", chunk: "c7", ids: ["styleWords", "styleRefs", "styleShots"] },
-  { id: "voice", label: "Voice", chunk: "c7", ids: ["voiceSample"] },
-  { id: "linkedin", label: "LinkedIn", chunk: "c4", ids: ["linkedin", "photo", "banner", "headshot", "facePhotos", "inbound"] },
-  { id: "finish", label: "Finish" },
+  { id: "you", label: "You", chunk: "c0", ids: ["stage", "role", "level", "months", "apps", "stop"], done: answeredAll("you") },
+  { id: "into", label: "Into", chunk: "c7", ids: ["techInterests", "personalInterests"], done: answeredAll("into") },
+  { id: "taste", label: "Taste", chunk: "c7", ids: ["styleWords", "styleRefs", "styleShots"], done: answeredAll("taste") },
+  { id: "voice", label: "Voice", chunk: "c7", ids: ["voiceSample"], done: answeredAll("voice") },
+  { id: "linkedin", label: "LinkedIn", chunk: "c4", ids: ["linkedin", "photo", "banner", "headshot", "facePhotos", "inbound"], done: answeredAll("linkedin") },
+  { id: "finish", label: "Finish", done: (snap) => snap.nodeDone },
 ];
 const UPLOAD_KIND = { styleShots: "style", photo: "photo_current", banner: "banner_current", facePhotos: "face" };
 const TASKS = { you: "b.profile.you", linkedin: "b.profile.linkedin" };
@@ -215,11 +219,8 @@ export function renderProfile(ctx, options = {}) {
     return embedded ? "finish" : "linkedin";
   }
 
-  function doneStages() {
-    const done = STAGES.filter((st) => st.chunk && stageDone(st)).map((st) => st.id);
-    if (nodeDone()) done.push("finish");
-    return done;
-  }
+  const doneStages = () =>
+    catalog ? doneIds(STAGES, { stageDone: (id) => Boolean(stageDone(STAGES.find((s) => s.id === id))), nodeDone: nodeDone() }) : [];
 
   function stageCard(title, now, body, next) {
     return [el("header.rz__stagehead", {}, el("h2", {}, title), now ? el("p.rz__now", {}, now) : null), body, next ? el("div.rz__next", {}, next) : null];

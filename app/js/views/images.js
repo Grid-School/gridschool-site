@@ -8,11 +8,11 @@
  * Everything they upload is private to them.
  */
 
-import { el, mount } from "../dom.js?v=939d963-202610261500";
-import { btn, toast } from "../ui.js?v=939d963-202610261500";
-import { nodeRail, nodeIntro } from "./node-rail.js?v=939d963-202610261500";
-import * as api from "../images-remote.js?v=939d963-202610261500";
-import { STAGES, cropBox, needsShrink, shrinkTo, doneStages, firstOpen, sourceFor, allowanceLine } from "../image-crop.js?v=939d963-202610261500";
+import { el, mount } from "../dom.js?v=c18e1b4-202610261602";
+import { btn, toast } from "../ui.js?v=c18e1b4-202610261602";
+import { nodeRail, nodeIntro } from "./node-rail.js?v=c18e1b4-202610261602";
+import * as api from "../images-remote.js?v=c18e1b4-202610261602";
+import { STAGES, cropBox, needsShrink, shrinkTo, doneStages, firstOpen, sourceFor, allowanceLine } from "../image-crop.js?v=c18e1b4-202610261602";
 
 const ACCEPT = "image/jpeg,image/png,image/webp";
 const LINKEDIN = { headshot: { width: 800, height: 800 }, banner: { width: 1584, height: 396 } };

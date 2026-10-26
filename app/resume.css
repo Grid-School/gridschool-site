@@ -111,3 +111,6 @@
 .pf__answers li:hover { border-color: var(--cyan); }
 .view--profile .answer__opts, .view--profile .answer__input { margin-left: 0; }
 .view--profile .answer__input { width: 100%; box-sizing: border-box; }
+
+/* No output yet (resume-stages.hasOutput): the steps take the whole width, at a readable measure. */
+.rz__grid.rz__grid--solo { grid-template-columns: minmax(0, 1fr); max-width: 780px; }

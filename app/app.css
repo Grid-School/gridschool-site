@@ -1921,14 +1921,17 @@ pre.diagram--failed { border-color: var(--amber); }
 .pack__body ol.wiz__parts { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
 .cnodes li { position: relative; flex: 1 0 64px; display: flex; justify-content: center; }
 .cnodes li + li::before { content: ""; position: absolute; top: 14px; right: 50%; width: 100%; height: 1px; background: var(--hair); z-index: 0; }
-.cnodes li.is-done + li::before, .cnodes li.is-done::before { background: color-mix(in srgb, var(--ok) 55%, transparent); }
+/* steps.js: the line into a step is green only when both ends are done (.is-linked). */
+.cnodes li.is-linked::before { background: var(--ok); height: 2px; top: 13px; }
 .cnodes__node { position: relative; z-index: 1; display: grid; justify-items: center; gap: 6px; background: none; border: 0; padding: 0 2px; cursor: pointer; color: var(--ghost); font: inherit; }
 .cnodes__ring { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--locked); background: var(--bg, #02050a); font-family: var(--font-mono); font-size: 12px; color: var(--ghost); transition: transform .2s ease; }
 .cnodes__label { font-size: 11px; letter-spacing: .02em; white-space: nowrap; }
-.cnodes li.is-here .cnodes__ring { border-color: #fff; color: #02050a; background: #fff; }
-.cnodes li.is-here .cnodes__label { color: #fff; }
-.cnodes li.is-done .cnodes__ring { border-color: var(--ok); color: var(--ok); }
-.cnodes li.is-done.is-here .cnodes__ring { background: var(--ok); color: #02050a; }
+/* Done is always a solid green check. Here is a white ring (never a fill), on top of either state. */
+.cnodes li.is-done .cnodes__ring { border-color: var(--ok); background: var(--ok); color: #02050a; font-weight: 700; }
+.cnodes li.is-done .cnodes__label { color: var(--ok); }
+.cnodes li.is-here .cnodes__ring { border: 2px solid #fff; color: #fff; box-shadow: 0 0 0 4px color-mix(in srgb, #fff 18%, transparent); }
+.cnodes li.is-done.is-here .cnodes__ring { color: #02050a; }
+.cnodes li.is-here .cnodes__label { color: #fff; font-weight: 600; }
 .cnodes__node:hover .cnodes__ring { transform: scale(1.08); }
 .cnodes li.is-fresh .cnodes__ring { animation: cnode-pop .7s cubic-bezier(.2, 1.6, .4, 1) both, cnode-pulse 1.2s ease-out .1s; }
 @keyframes cnode-pop { 0% { transform: scale(.6); } 60% { transform: scale(1.25); } 100% { transform: scale(1); } }
@@ -2680,4 +2683,44 @@ pre.diagram--failed { border-color: var(--amber); }
   .answer__help, .answer__opts, .answer__range, .answer__input, .answer__later, .answer__err { margin-left: 0; }
   .answer__input { width: 100%; }
   .answer__range-part input { width: 100%; }
+}
+
+/* The waiting panel for a long AI call (js/views/work.js): a page being read, the steps, what was found. */
+.work { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 22px; align-items: start; padding: 6px 0; }
+.work__art { position: relative; padding-top: 2px; }
+.work__page { position: relative; display: grid; gap: 7px; width: 96px; padding: 14px 12px; border: 1px solid var(--line); border-radius: 6px; background:
+  linear-gradient(var(--bg2), var(--bg2)) padding-box; overflow: hidden; box-shadow: 0 0 0 1px color-mix(in srgb, var(--cyan) 8%, transparent), 0 14px 40px rgba(0, 0, 0, .35); }
+.work__line { display: block; height: 4px; width: var(--w); border-radius: 2px; background: var(--line);
+  animation: work-light 2.4s ease-in-out infinite; animation-delay: calc(var(--i) * .18s); }
+.work__gap { display: block; height: 3px; }
+.work__beam { position: absolute; left: 0; right: 0; top: -30%; height: 30%; pointer-events: none;
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--cyan) 22%, transparent) 70%, color-mix(in srgb, var(--cyan) 70%, transparent) 96%, transparent);
+  animation: work-beam 2.4s cubic-bezier(.45, 0, .55, 1) infinite; }
+@keyframes work-beam { 0% { transform: translateY(0); } 100% { transform: translateY(440%); } }
+@keyframes work-light { 0%, 100% { background: var(--line); } 35%, 55% { background: color-mix(in srgb, var(--cyan) 75%, var(--line)); } }
+.work.is-complete .work__beam { animation: none; opacity: 0; }
+.work.is-complete .work__line { animation: none; background: color-mix(in srgb, var(--ok) 70%, var(--line)); transition: background .3s ease; }
+
+.work__body { min-width: 0; }
+.work__top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.work__title { margin: 0; font-weight: 600; font-size: 16px; color: var(--text); }
+.work__clock { font-family: var(--font-mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.work__steps { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 10px; }
+.work__step { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 10px; align-items: start; color: var(--ghost, var(--muted)); font-size: 14px; line-height: 1.4; }
+.work__step small { display: block; color: var(--muted); font-size: 12.5px; margin-top: 2px; }
+.work__dot { display: grid; place-items: center; width: 16px; height: 16px; margin-top: 1px; border-radius: 50%; border: 1px solid var(--locked, var(--line)); font-size: 10px; line-height: 1; }
+.work__step.is-active { color: var(--text); }
+.work__step.is-active .work__dot { border: 2px solid var(--cyan); border-top-color: transparent; animation: packspin .9s linear infinite; }
+.work__step.is-done { color: var(--muted); }
+.work__step.is-done .work__dot { border-color: var(--ok); background: var(--ok); color: #02050a; font-weight: 700; }
+.work__notes { list-style: none; margin: 16px 0 0; padding: 12px 0 0; border-top: 1px solid var(--line); display: grid; gap: 6px; font-size: 13px; color: var(--muted); }
+.work__notes:empty { display: none; }
+.work__note { position: relative; padding-left: 14px; overflow-wrap: anywhere; animation: work-note .45s ease-out both; }
+.work__note::before { content: ""; position: absolute; left: 0; top: .6em; width: 6px; height: 6px; border-radius: 50%; background: var(--cyan); opacity: .7; }
+.work__note:last-child { color: var(--text); }
+@keyframes work-note { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (max-width: 560px) { .work { grid-template-columns: 1fr; } .work__page { width: 84px; } }
+@media (prefers-reduced-motion: reduce) {
+  .work__beam, .work__line, .work__note, .work__step.is-active .work__dot { animation: none; }
+  .work__beam { opacity: 0; }
 }

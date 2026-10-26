@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { DONE, claimTitle, shareLabel, giftSource } from "./gift-words.mjs?v=939d963-202610261500";
+import { DONE, claimTitle, shareLabel, giftSource } from "./gift-words.mjs?v=c18e1b4-202610261602";
 
 test("a gift bought after an ad keeps the ad in checkout's source", () => {
   assert.equal(giftSource("meta:P-TABLE-01"), "gift:meta:P-TABLE-01");
