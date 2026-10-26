@@ -3,8 +3,8 @@
  * answers with the current record, which the page simply takes and keeps going.
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=6536b3c-202610261714";
-import { persistToken } from "./session.js?v=6536b3c-202610261714";
+import { PERSIST, isPlaceholder } from "../../config.js?v=200c41d-202610261730";
+import { persistToken } from "./session.js?v=200c41d-202610261730";
 
 export function resumeReady() {
   return Boolean(persistToken() && PERSIST?.endpoint && !isPlaceholder(PERSIST.endpoint));
@@ -36,7 +36,9 @@ export const answerQuestion = (slug, version, questionId, answer, run) => call("
 export const skipQuestion = (slug, version, questionId) => call("POST", `${base(slug)}/answer`, { version, question_id: questionId, skip: true });
 export const writeLines = (slug, version, run) => call("POST", `${base(slug)}/write`, { version, run });
 /* What the target job is screened for (server/resume_needs.py): switch one off or on, or work them out. */
-export const setNeed = (slug, version, needId, state) => call("POST", `${base(slug)}/needs`, { version, need_id: needId, state });
+export const setNeed = (slug, version, needId, state, run) => call("POST", `${base(slug)}/needs`, { version, need_id: needId, state, run });
+/* The plan to earn a need went to their map (a suggestion, suggest-remote.js): remember it on the record. */
+export const needMapped = (slug, version, needId) => call("POST", `${base(slug)}/needs`, { version, need_id: needId, mapped: true });
 export const refreshNeeds = (slug, version) => call("POST", `${base(slug)}/needs`, { version, refresh: true });
 /* One record, many titles (resume_api._targets): add one (a title or a pasted posting), switch, or remove. */
 export const addTarget = (slug, version, text, run) => call("POST", `${base(slug)}/targets`, { version, add: text, run });

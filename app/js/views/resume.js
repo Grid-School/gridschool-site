@@ -11,21 +11,23 @@
  * confirms it. Every saved version has a name, the date and time it was made, and can be downloaded again.
  */
 
-import { el, mount } from "../dom.js?v=6536b3c-202610261714";
-import { btn, toast } from "../ui.js?v=6536b3c-202610261714";
-import { nodeRail } from "./node-rail.js?v=6536b3c-202610261714";
-import { nextUp } from "../graph/model.js?v=6536b3c-202610261714";
-import { isProgressReadOnly } from "../store.js?v=6536b3c-202610261714";
-import { upgradeHref } from "../prep.js?v=6536b3c-202610261714";
-import * as api from "../resume-remote.js?v=6536b3c-202610261714";
-import { patient } from "../patient.js?v=6536b3c-202610261714";
-import { doneIds } from "../steps.js?v=6536b3c-202610261714";
-import { workPanel } from "./work.js?v=6536b3c-202610261714";
-import { needsPanel, needFor } from "./needs.js?v=6536b3c-202610261714";
-import { titleRow } from "./titles.js?v=6536b3c-202610261714";
-import { talkButton, canTalk } from "./voice.js?v=6536b3c-202610261714";
-import { roundState, gained, RANGES, wantsNumber, addRange } from "../interview.js?v=6536b3c-202610261714";
-import { stepsFor, claimsOf, linesOf, hasOutput, allConfirmed as confirmedAll, changedSinceSave as changedSince, savedAndDownloaded } from "../resume-stages.js?v=6536b3c-202610261714";
+import { el, mount } from "../dom.js?v=200c41d-202610261730";
+import { btn, toast } from "../ui.js?v=200c41d-202610261730";
+import { nodeRail } from "./node-rail.js?v=200c41d-202610261730";
+import { nextUp } from "../graph/model.js?v=200c41d-202610261730";
+import { isProgressReadOnly } from "../store.js?v=200c41d-202610261730";
+import { upgradeHref } from "../prep.js?v=200c41d-202610261730";
+import * as api from "../resume-remote.js?v=200c41d-202610261730";
+import { patient } from "../patient.js?v=200c41d-202610261730";
+import { doneIds } from "../steps.js?v=200c41d-202610261730";
+import { workPanel } from "./work.js?v=200c41d-202610261730";
+import { needsPanel, needFor, planBlock } from "./needs.js?v=200c41d-202610261730";
+import { sendSuggestion } from "../suggest-remote.js?v=200c41d-202610261730";
+import { newOpId } from "../../../data/map-proposal.mjs?v=200c41d-202610261730";
+import { titleRow } from "./titles.js?v=200c41d-202610261730";
+import { talkButton, canTalk } from "./voice.js?v=200c41d-202610261730";
+import { roundState, gained, RANGES, wantsNumber, addRange } from "../interview.js?v=200c41d-202610261730";
+import { stepsFor, claimsOf, linesOf, hasOutput, allConfirmed as confirmedAll, changedSinceSave as changedSince, savedAndDownloaded } from "../resume-stages.js?v=200c41d-202610261730";
 
 const PDF_JS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs";
 const PDF_WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs";
@@ -34,6 +36,11 @@ const PDF_WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.wo
 /* The steps each model call goes through, shown while it runs; the server's own (work_progress.py) replace
    these as soon as it reports, with the notes of what it found. Same ids and order as resume_api.py. */
 const WORK = {
+  plan: [
+    { id: "read", label: "Looking at what you've done" },
+    { id: "plan", label: "Finding the smallest thing that would earn it" },
+    { id: "line", label: "Writing the line it earns, in advance" },
+  ],
   target: [
     { id: "read", label: "Reading the title or posting" },
     { id: "needs", label: "Working out what this job is screened for" },
@@ -166,6 +173,7 @@ export function renderResume(ctx, options = {}) {
   let error = "";
   let panel = null;
   let lastGain = null;
+  let lastPlan = null;
   let keepGoing = false;
 
   const readOnly = () => isProgressReadOnly();
@@ -236,6 +244,8 @@ export function renderResume(ctx, options = {}) {
         lastReport = out.recovered ? lastReport : out.report || null;
         // The payoff for answering: what that answer added, and anything the job checks that's now shown.
         lastGain = work === WORK.answer && !out.recovered ? gained(rec, out, out.report?.touched || []) : null;
+        // "Not yet" shows its plan where the answer's payoff would go; anything else clears it.
+        lastPlan = work === WORK.plan ? ((out.needs || []).find((n) => n.state === "later" && n.plan && !(rec.needs || []).some((o) => o.id === n.id && o.plan))?.id || lastPlan) : null;
         if (!out.round?.done) keepGoing = false;
         // A fresh read moves on to whatever comes next (the questions), even if they'd opened Start by hand.
         if (work === WORK.import) stage = null;
@@ -331,10 +341,48 @@ export function renderResume(ctx, options = {}) {
       current: needFor(q, rec.needs),
       onToggle: readOnly() ? null : (n, state) => run(state === "off" ? "Leaving that out." : "Adding it back.", () => api.setNeed(slug, rec.version, n.id, state)),
       onRefresh: readOnly() ? null : () => run("Working out what this job is screened for.", () => api.refreshNeeds(slug, rec.version)),
+      onMap: readOnly() ? null : putOnMap,
     });
   }
 
+  /* "I haven't done this yet": the smallest way to earn it, and the line it earns, written in advance. */
+  const notYet = (n) => run(`Working out how you'd earn: ${n.label}.`, (r) => api.setNeed(slug, rec.version, n.id, "later", r), WORK.plan);
+
+  /* The plan becomes a step on their map: a suggestion (suggest-remote.js), the same path as Edit my map. */
+  async function putOnMap(n) {
+    if (busy || !n.plan) return;
+    const nodes = current.state.graph?.nodes || [];
+    const after = (node && nodes.some((x) => x.id === node.id) ? node : nodes.find((x) => x.id === "b.resume") || nodes[nodes.length - 1])?.id;
+    if (!after) return toast("Your map isn't published yet, so there's nowhere to put it. The plan stays here.", "warn", { ms: 5000 });
+    busy = "Sending it to your map.";
+    render();
+    try {
+      await sendSuggestion(slug, {
+        base: current.state.mapVersion ?? null,
+        ops: [{ kind: "add", id: newOpId(), after, type: "step", title: n.plan.do.slice(0, 120),
+          note: `For ${rec.graph.targets?.[0]?.titles?.[0] || "the job I want"}: ${n.label}. When it's done, this line goes on my resume: “${n.plan.line}”`.slice(0, 600),
+          tasks: [n.plan.proof ? `Have this to show: ${n.plan.proof}`.slice(0, 120) : "Finish it, with something to show"] }],
+        note: `From my resume: a step to earn "${n.label}" (${n.plan.weeks ? `about ${n.plan.weeks} weeks` : "a few weeks"}).`,
+      });
+      take(await api.needMapped(slug, rec.version, n.id));
+      toast("Sent to your map. It shows there once it's merged in.", "ok", { ms: 5000 });
+    } catch (e) {
+      toast(e.message, "warn", { ms: 5000 });
+    } finally {
+      busy = "";
+      render();
+    }
+  }
+
   function gainBlock() {
+    if (lastPlan) {
+      const n = (rec.needs || []).find((x) => x.id === lastPlan) || null;
+      if (n?.plan) {
+        return el("div.rz__gain.rz__gain--plan", { "aria-live": "polite" },
+          el("b", {}, `Not yet: ${n.label}. That's fine, here's how to earn it.`),
+          planBlock(n, { busy: Boolean(busy), onMap: readOnly() ? null : putOnMap }));
+      }
+    }
     if (!lastGain || (!lastGain.lines.length && !lastGain.nowShown.length)) return reportLine();
     return el("div.rz__gain", { "aria-live": "polite" },
       el("b", {}, "From that answer"),
@@ -381,7 +429,9 @@ export function renderResume(ctx, options = {}) {
       ],
       [
         btn({ label: busy ? "Saving…" : "Save answer", variant: "solid", disabled: Boolean(busy), onclick: send }),
-        wantsNumber(q) ? btn({ label: "I don't know", variant: "quiet", disabled: Boolean(busy), onclick: () => skipIt("Skipping.") }) : null,
+        needFor(q, rec.needs)?.status === "missing" && !readOnly()
+          ? btn({ label: "I haven't done this yet", variant: "ghost", disabled: Boolean(busy), onclick: () => notYet(needFor(q, rec.needs)) })
+          : wantsNumber(q) ? btn({ label: "I don't know", variant: "quiet", disabled: Boolean(busy), onclick: () => skipIt("Skipping.") }) : null,
         btn({ label: "Skip", variant: "quiet", disabled: Boolean(busy), onclick: () => skipIt("Skipping.") }),
         claimsOf(rec).length ? btn({ label: "Stop here and write my lines", variant: "ghost", disabled: Boolean(busy), onclick: () => go("write") }) : null,
       ]

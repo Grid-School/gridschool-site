@@ -148,6 +148,17 @@
 .nd__item.is-shown .nd__label small { color: var(--ok); }
 .nd__item.is-weak .nd__dot { border: 2px solid var(--warn); }
 .nd__item.is-weak .nd__label small { color: var(--warn); }
+.nd__item.is-later .nd__dot { border-color: var(--cyan); color: var(--cyan); font-size: 10px; }
+.nd__item.is-later .nd__label small { color: var(--cyan); }
+.nd__dots i.is-later { border-color: var(--cyan); }
+.nd__plan { margin-top: 8px; padding: 10px 12px; border-left: 2px solid var(--cyan); background: color-mix(in srgb, var(--cyan) 5%, transparent); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; font-size: 13.5px; color: var(--text); display: grid; gap: 6px; }
+.nd__plan p { margin: 0; line-height: 1.45; }
+.nd__plan b { color: var(--muted); font-weight: 600; }
+.nd__weeks { color: var(--muted); }
+.nd__line q { font-style: italic; quotes: "“" "”"; }
+.nd__mapped { color: var(--ok); }
+.rz__gain--plan { border-left-color: var(--cyan); background: color-mix(in srgb, var(--cyan) 5%, transparent); }
+.rz__gain--plan .nd__plan { border: 0; padding: 0; background: none; margin-top: 8px; }
 .nd__item.is-off { opacity: .5; }
 .nd__item.is-off .nd__label { text-decoration: line-through; }
 .nd__toggle { background: none; border: 0; color: var(--muted); font: inherit; font-size: 12px; cursor: pointer; padding: 2px 0; white-space: nowrap; }
