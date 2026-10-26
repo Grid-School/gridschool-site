@@ -8,11 +8,11 @@
  * the map is rebuilt by the same rules that built it.
  */
 
-import { el } from "../dom.js?v=4f66e99-202610260033";
-import { btn } from "../ui.js?v=4f66e99-202610260033";
-import * as A from "../answer-chunk.js?v=4f66e99-202610260033";
-import { intakeReady, loadIntake, saveChunk, rebuildMap } from "../intake-remote.js?v=4f66e99-202610260033";
-import { registerLeaveGuard, clearLeaveGuard } from "../leave-guard.js?v=4f66e99-202610260033";
+import { el } from "../dom.js?v=939d963-202610261500";
+import { btn } from "../ui.js?v=939d963-202610261500";
+import * as A from "../answer-chunk.js?v=939d963-202610261500";
+import { intakeReady, loadIntake, saveChunk, rebuildMap } from "../intake-remote.js?v=939d963-202610261500";
+import { registerLeaveGuard, clearLeaveGuard } from "../leave-guard.js?v=939d963-202610261500";
 
 let catalogPromise = null;
 const seats = new Map(); // slug -> intake state from the server
@@ -37,7 +37,7 @@ async function loadSeat(slug) {
 }
 
 /** One question's control. `onPick` re-draws the form (a pick can change which questions apply). */
-function control(question, value, { onInput, onPick }) {
+export function control(question, value, { onInput, onPick }) {
   const raw = A.toInput(question, value);
   const id = `aq-${question.id}`;
   if (question.kind === "choice" || question.kind === "multi") {

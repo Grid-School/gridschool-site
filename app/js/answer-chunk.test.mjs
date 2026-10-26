@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import * as A from "./answer-chunk.js?v=4f66e99-202610260033";
+import * as A from "./answer-chunk.js?v=939d963-202610261500";
 
 const catalog = JSON.parse(readFileSync(new URL("../../data/intake/questions.json", import.meta.url)));
 const q = (id) => catalog.questions.find((item) => item.id === id);
@@ -48,7 +48,7 @@ test("the save body: this chunk's answers, the rest skipped, uploads always skip
   assert.deepEqual(A.payloadFor(catalog, "c7", state), {
     chunk: "c7",
     answers: { techInterests: "agents", voiceSample: "Hello there." },
-    skipped: ["personalInterests", "styleWords", "styleRefs"],
+    skipped: ["personalInterests", "styleWords", "styleRefs", "styleShots"],
     done: true,
   });
   const c4 = A.payloadFor(catalog, "c4", A.setAnswer(state, q("linkedin"), "https://linkedin.com/in/me"));

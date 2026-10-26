@@ -81,13 +81,28 @@
       "prompt": "Which is closest to you right now?",
       "kind": "choice",
       "options": [
-        { "value": "grad", "label": "A new CS grad" },
-        { "value": "self", "label": "Self-taught or from a bootcamp" },
-        { "value": "working", "label": "Working as an engineer" },
-        { "value": "laidoff", "label": "Between roles" }
+        {
+          "value": "grad",
+          "label": "A new CS grad"
+        },
+        {
+          "value": "self",
+          "label": "Self-taught or from a bootcamp"
+        },
+        {
+          "value": "working",
+          "label": "Working as an engineer"
+        },
+        {
+          "value": "laidoff",
+          "label": "Between roles"
+        }
       ],
       "prefill": "stage",
-      "affects": ["proof", "pipeline"]
+      "affects": [
+        "proof",
+        "pipeline"
+      ]
     },
     {
       "id": "role",
@@ -95,16 +110,40 @@
       "prompt": "What role do you want next?",
       "kind": "choice",
       "options": [
-        { "value": "fullstack", "label": "Full-stack" },
-        { "value": "backend", "label": "Backend" },
-        { "value": "ai", "label": "Applied AI" },
-        { "value": "fde", "label": "Forward-deployed or AI integration" },
-        { "value": "frontend", "label": "Frontend" },
-        { "value": "platform", "label": "Platform or DevOps" },
-        { "value": "unsure", "label": "Not sure yet" }
+        {
+          "value": "fullstack",
+          "label": "Full-stack"
+        },
+        {
+          "value": "backend",
+          "label": "Backend"
+        },
+        {
+          "value": "ai",
+          "label": "Applied AI"
+        },
+        {
+          "value": "fde",
+          "label": "Forward-deployed or AI integration"
+        },
+        {
+          "value": "frontend",
+          "label": "Frontend"
+        },
+        {
+          "value": "platform",
+          "label": "Platform or DevOps"
+        },
+        {
+          "value": "unsure",
+          "label": "Not sure yet"
+        }
       ],
       "prefill": "role",
-      "affects": ["pipeline", "presence"]
+      "affects": [
+        "pipeline",
+        "presence"
+      ]
     },
     {
       "id": "level",
@@ -112,13 +151,27 @@
       "prompt": "What level are you aiming for?",
       "kind": "choice",
       "options": [
-        { "value": "entry", "label": "Entry or junior" },
-        { "value": "mid", "label": "Mid" },
-        { "value": "senior", "label": "Senior" },
-        { "value": "staff", "label": "Staff or above" }
+        {
+          "value": "entry",
+          "label": "Entry or junior"
+        },
+        {
+          "value": "mid",
+          "label": "Mid"
+        },
+        {
+          "value": "senior",
+          "label": "Senior"
+        },
+        {
+          "value": "staff",
+          "label": "Staff or above"
+        }
       ],
       "prefill": "level",
-      "affects": ["pipeline"]
+      "affects": [
+        "pipeline"
+      ]
     },
     {
       "id": "months",
@@ -126,13 +179,31 @@
       "prompt": "How long have you been looking?",
       "kind": "choice",
       "options": [
-        { "value": "lt1", "label": "Under a month" },
-        { "value": "1to3", "label": "1 to 3 months" },
-        { "value": "3to6", "label": "3 to 6 months" },
-        { "value": "6to12", "label": "6 to 12 months" },
-        { "value": "gt12", "label": "Over a year" }
+        {
+          "value": "lt1",
+          "label": "Under a month"
+        },
+        {
+          "value": "1to3",
+          "label": "1 to 3 months"
+        },
+        {
+          "value": "3to6",
+          "label": "3 to 6 months"
+        },
+        {
+          "value": "6to12",
+          "label": "6 to 12 months"
+        },
+        {
+          "value": "gt12",
+          "label": "Over a year"
+        }
       ],
-      "affects": ["presence", "pipeline"]
+      "affects": [
+        "presence",
+        "pipeline"
+      ]
     },
     {
       "id": "apps",
@@ -140,13 +211,30 @@
       "prompt": "About how many applications have you sent in that time?",
       "kind": "choice",
       "options": [
-        { "value": "none", "label": "None yet" },
-        { "value": "1to20", "label": "1 to 20" },
-        { "value": "21to75", "label": "21 to 75" },
-        { "value": "76to200", "label": "76 to 200" },
-        { "value": "gt200", "label": "Over 200" }
+        {
+          "value": "none",
+          "label": "None yet"
+        },
+        {
+          "value": "1to20",
+          "label": "1 to 20"
+        },
+        {
+          "value": "21to75",
+          "label": "21 to 75"
+        },
+        {
+          "value": "76to200",
+          "label": "76 to 200"
+        },
+        {
+          "value": "gt200",
+          "label": "Over 200"
+        }
       ],
-      "affects": ["pipeline"]
+      "affects": [
+        "pipeline"
+      ]
     },
     {
       "id": "stop",
@@ -154,19 +242,40 @@
       "prompt": "When you apply, how far do you usually get?",
       "kind": "choice",
       "options": [
-        { "value": "replies", "label": "I rarely hear back" },
-        { "value": "screen", "label": "I get a recruiter call, then nothing" },
-        { "value": "technical", "label": "I make it to the technical round" },
-        { "value": "final", "label": "I reach the final round, then get a no" },
-        { "value": "offers", "label": "I get offers, just not the right ones" }
+        {
+          "value": "replies",
+          "label": "I rarely hear back"
+        },
+        {
+          "value": "screen",
+          "label": "I get a recruiter call, then nothing"
+        },
+        {
+          "value": "technical",
+          "label": "I make it to the technical round"
+        },
+        {
+          "value": "final",
+          "label": "I reach the final round, then get a no"
+        },
+        {
+          "value": "offers",
+          "label": "I get offers, just not the right ones"
+        }
       ],
       "askIf": [
         {
           "q": "apps",
-          "not": ["none"]
+          "not": [
+            "none"
+          ]
         }
       ],
-      "affects": ["interview", "pipeline", "presence"]
+      "affects": [
+        "interview",
+        "pipeline",
+        "presence"
+      ]
     },
     {
       "id": "pay",
@@ -174,10 +283,15 @@
       "prompt": "What base salary are you aiming for, and what's the least you'd accept?",
       "help": "In US dollars per year. A rough number is fine.",
       "kind": "range",
-      "labels": ["The least I'd accept", "What I'm aiming for"],
+      "labels": [
+        "The least I'd accept",
+        "What I'm aiming for"
+      ],
       "min": 0,
       "max": 2000000,
-      "affects": ["pipeline"]
+      "affects": [
+        "pipeline"
+      ]
     },
     {
       "id": "where",
@@ -185,12 +299,26 @@
       "prompt": "Which ways of working are open to you?",
       "kind": "multi",
       "options": [
-        { "value": "remote", "label": "Remote" },
-        { "value": "hybrid", "label": "Hybrid" },
-        { "value": "onsite", "label": "On site" },
-        { "value": "relocate", "label": "I'm open to relocating" }
+        {
+          "value": "remote",
+          "label": "Remote"
+        },
+        {
+          "value": "hybrid",
+          "label": "Hybrid"
+        },
+        {
+          "value": "onsite",
+          "label": "On site"
+        },
+        {
+          "value": "relocate",
+          "label": "I'm open to relocating"
+        }
       ],
-      "affects": ["pipeline"]
+      "affects": [
+        "pipeline"
+      ]
     },
     {
       "id": "city",
@@ -201,10 +329,15 @@
       "askIf": [
         {
           "q": "where",
-          "any": ["hybrid", "onsite"]
+          "any": [
+            "hybrid",
+            "onsite"
+          ]
         }
       ],
-      "affects": ["pipeline"]
+      "affects": [
+        "pipeline"
+      ]
     },
     {
       "id": "auth",
@@ -212,12 +345,26 @@
       "prompt": "Do you need visa sponsorship to work in the US?",
       "kind": "choice",
       "options": [
-        { "value": "no", "label": "No" },
-        { "value": "now", "label": "Yes, I need it now" },
-        { "value": "later", "label": "Not now, but I will later" },
-        { "value": "outside", "label": "I live outside the US" }
+        {
+          "value": "no",
+          "label": "No"
+        },
+        {
+          "value": "now",
+          "label": "Yes, I need it now"
+        },
+        {
+          "value": "later",
+          "label": "Not now, but I will later"
+        },
+        {
+          "value": "outside",
+          "label": "I live outside the US"
+        }
       ],
-      "affects": ["pipeline"]
+      "affects": [
+        "pipeline"
+      ]
     },
     {
       "id": "urgency",
@@ -225,11 +372,22 @@
       "prompt": "How soon do you need income?",
       "kind": "choice",
       "options": [
-        { "value": "now", "label": "Within a month" },
-        { "value": "soon", "label": "Within 1 to 3 months" },
-        { "value": "wait", "label": "I can wait for the right role" }
+        {
+          "value": "now",
+          "label": "Within a month"
+        },
+        {
+          "value": "soon",
+          "label": "Within 1 to 3 months"
+        },
+        {
+          "value": "wait",
+          "label": "I can wait for the right role"
+        }
       ],
-      "affects": ["pipeline"]
+      "affects": [
+        "pipeline"
+      ]
     },
     {
       "id": "bridge",
@@ -237,17 +395,31 @@
       "prompt": "Would contract or short-term work help in the meantime?",
       "kind": "choice",
       "options": [
-        { "value": "yes", "label": "Yes" },
-        { "value": "maybe", "label": "If it's the right work" },
-        { "value": "no", "label": "No" }
+        {
+          "value": "yes",
+          "label": "Yes"
+        },
+        {
+          "value": "maybe",
+          "label": "If it's the right work"
+        },
+        {
+          "value": "no",
+          "label": "No"
+        }
       ],
       "askIf": [
         {
           "q": "urgency",
-          "in": ["now", "soon"]
+          "in": [
+            "now",
+            "soon"
+          ]
         }
       ],
-      "affects": ["pipeline"]
+      "affects": [
+        "pipeline"
+      ]
     },
     {
       "id": "hours",
@@ -255,12 +427,27 @@
       "prompt": "How many hours a week can you give the search?",
       "kind": "choice",
       "options": [
-        { "value": "lt5", "label": "Under 5" },
-        { "value": "5to10", "label": "5 to 10" },
-        { "value": "10to20", "label": "10 to 20" },
-        { "value": "gt20", "label": "Over 20" }
+        {
+          "value": "lt5",
+          "label": "Under 5"
+        },
+        {
+          "value": "5to10",
+          "label": "5 to 10"
+        },
+        {
+          "value": "10to20",
+          "label": "10 to 20"
+        },
+        {
+          "value": "gt20",
+          "label": "Over 20"
+        }
       ],
-      "affects": ["pipeline", "proof"]
+      "affects": [
+        "pipeline",
+        "proof"
+      ]
     },
     {
       "id": "channels",
@@ -268,20 +455,43 @@
       "prompt": "Where have you been sending applications?",
       "kind": "multi",
       "options": [
-        { "value": "portal", "label": "Company job portals" },
-        { "value": "easy", "label": "LinkedIn Easy Apply" },
-        { "value": "referral", "label": "Referrals" },
-        { "value": "manager", "label": "Messages to hiring managers" },
-        { "value": "recruiter", "label": "Recruiters" },
-        { "value": "startup", "label": "Startup boards (Wellfound, YC, Hacker News)" }
+        {
+          "value": "portal",
+          "label": "Company job portals"
+        },
+        {
+          "value": "easy",
+          "label": "LinkedIn Easy Apply"
+        },
+        {
+          "value": "referral",
+          "label": "Referrals"
+        },
+        {
+          "value": "manager",
+          "label": "Messages to hiring managers"
+        },
+        {
+          "value": "recruiter",
+          "label": "Recruiters"
+        },
+        {
+          "value": "startup",
+          "label": "Startup boards (Wellfound, YC, Hacker News)"
+        }
       ],
       "askIf": [
         {
           "q": "apps",
-          "not": ["none"]
+          "not": [
+            "none"
+          ]
         }
       ],
-      "affects": ["pipeline", "network"]
+      "affects": [
+        "pipeline",
+        "network"
+      ]
     },
     {
       "id": "replies",
@@ -289,18 +499,35 @@
       "prompt": "About how many of those got a reply from an actual person?",
       "kind": "choice",
       "options": [
-        { "value": "0", "label": "None" },
-        { "value": "1to3", "label": "1 to 3" },
-        { "value": "4to10", "label": "4 to 10" },
-        { "value": "gt10", "label": "More than 10" }
+        {
+          "value": "0",
+          "label": "None"
+        },
+        {
+          "value": "1to3",
+          "label": "1 to 3"
+        },
+        {
+          "value": "4to10",
+          "label": "4 to 10"
+        },
+        {
+          "value": "gt10",
+          "label": "More than 10"
+        }
       ],
       "askIf": [
         {
           "q": "apps",
-          "not": ["none"]
+          "not": [
+            "none"
+          ]
         }
       ],
-      "affects": ["pipeline", "presence"]
+      "affects": [
+        "pipeline",
+        "presence"
+      ]
     },
     {
       "id": "tailor",
@@ -308,11 +535,22 @@
       "prompt": "Do you tailor your resume for each role?",
       "kind": "choice",
       "options": [
-        { "value": "always", "label": "Every time" },
-        { "value": "some", "label": "For the ones I really want" },
-        { "value": "never", "label": "I use one resume for everything" }
+        {
+          "value": "always",
+          "label": "Every time"
+        },
+        {
+          "value": "some",
+          "label": "For the ones I really want"
+        },
+        {
+          "value": "never",
+          "label": "I use one resume for everything"
+        }
       ],
-      "affects": ["presence"]
+      "affects": [
+        "presence"
+      ]
     },
     {
       "id": "fresh",
@@ -320,17 +558,30 @@
       "prompt": "How recently were the jobs you apply to usually posted?",
       "kind": "choice",
       "options": [
-        { "value": "days", "label": "Within the last few days" },
-        { "value": "weeks", "label": "One to three weeks ago" },
-        { "value": "any", "label": "I don't check" }
+        {
+          "value": "days",
+          "label": "Within the last few days"
+        },
+        {
+          "value": "weeks",
+          "label": "One to three weeks ago"
+        },
+        {
+          "value": "any",
+          "label": "I don't check"
+        }
       ],
       "askIf": [
         {
           "q": "apps",
-          "not": ["none"]
+          "not": [
+            "none"
+          ]
         }
       ],
-      "affects": ["pipeline"]
+      "affects": [
+        "pipeline"
+      ]
     },
     {
       "id": "feedback",
@@ -339,7 +590,10 @@
       "help": "If so, paste what they said as closely as you can.",
       "kind": "text",
       "max": 1500,
-      "affects": ["interview", "presence"]
+      "affects": [
+        "interview",
+        "presence"
+      ]
     },
     {
       "id": "shipped",
@@ -348,7 +602,9 @@
       "help": "One line each. Work projects, side projects and school projects all count.",
       "kind": "text",
       "max": 1500,
-      "affects": ["proof"]
+      "affects": [
+        "proof"
+      ]
     },
     {
       "id": "numbers",
@@ -357,7 +613,10 @@
       "help": "Only include numbers you could stand behind in an interview.",
       "kind": "text",
       "max": 1000,
-      "affects": ["proof", "presence"]
+      "affects": [
+        "proof",
+        "presence"
+      ]
     },
     {
       "id": "links",
@@ -365,7 +624,9 @@
       "prompt": "Share any links where someone can see your work, like GitHub, a live demo or a write-up.",
       "kind": "links",
       "max": 5,
-      "affects": ["proof"]
+      "affects": [
+        "proof"
+      ]
     },
     {
       "id": "aiWork",
@@ -373,12 +634,26 @@
       "prompt": "How do you use AI tools when you code?",
       "kind": "choice",
       "options": [
-        { "value": "daily", "label": "Daily, and I check what they write" },
-        { "value": "some", "label": "Sometimes" },
-        { "value": "rarely", "label": "Rarely or never" },
-        { "value": "build", "label": "I build AI features or agents" }
+        {
+          "value": "daily",
+          "label": "Daily, and I check what they write"
+        },
+        {
+          "value": "some",
+          "label": "Sometimes"
+        },
+        {
+          "value": "rarely",
+          "label": "Rarely or never"
+        },
+        {
+          "value": "build",
+          "label": "I build AI features or agents"
+        }
       ],
-      "affects": ["proof"]
+      "affects": [
+        "proof"
+      ]
     },
     {
       "id": "prod",
@@ -387,11 +662,23 @@
       "help": "For example, being on call, fixing it when it broke, or monitoring it.",
       "kind": "choice",
       "options": [
-        { "value": "yes", "label": "Yes" },
-        { "value": "some", "label": "A little" },
-        { "value": "no", "label": "Not yet" }
+        {
+          "value": "yes",
+          "label": "Yes"
+        },
+        {
+          "value": "some",
+          "label": "A little"
+        },
+        {
+          "value": "no",
+          "label": "Not yet"
+        }
       ],
-      "affects": ["proof", "interview"]
+      "affects": [
+        "proof",
+        "interview"
+      ]
     },
     {
       "id": "linkedin",
@@ -399,7 +686,9 @@
       "prompt": "What's the link to your LinkedIn profile?",
       "kind": "links",
       "max": 1,
-      "affects": ["presence"]
+      "affects": [
+        "presence"
+      ]
     },
     {
       "id": "profileShots",
@@ -407,27 +696,45 @@
       "prompt": "Add screenshots of your LinkedIn profile, or your LinkedIn data export.",
       "help": "The top section, About and Experience are enough. We read them for you, so you don't have to retype anything.",
       "kind": "upload",
-      "accept": ["image/png", "image/jpeg", "application/zip", "text/csv", "application/pdf"],
+      "accept": [
+        "image/png",
+        "image/jpeg",
+        "application/zip",
+        "text/csv",
+        "application/pdf"
+      ],
       "max": 6,
-      "affects": ["presence"]
+      "affects": [
+        "presence"
+      ]
     },
     {
       "id": "photo",
       "chunk": "c4",
       "prompt": "Add your current profile photo, if you have one.",
       "kind": "upload",
-      "accept": ["image/png", "image/jpeg"],
+      "accept": [
+        "image/png",
+        "image/jpeg"
+      ],
       "max": 1,
-      "affects": ["presence"]
+      "affects": [
+        "presence"
+      ]
     },
     {
       "id": "banner",
       "chunk": "c4",
       "prompt": "Add your current LinkedIn banner, if you have one.",
       "kind": "upload",
-      "accept": ["image/png", "image/jpeg"],
+      "accept": [
+        "image/png",
+        "image/jpeg"
+      ],
       "max": 1,
-      "affects": ["presence"]
+      "affects": [
+        "presence"
+      ]
     },
     {
       "id": "headshot",
@@ -436,10 +743,18 @@
       "help": "It will still look like you, with the same face, age and features. You'll see it before anyone else does, and you decide whether to use it.",
       "kind": "choice",
       "options": [
-        { "value": "yes", "label": "Yes, I'll add 1 to 3 photos" },
-        { "value": "no", "label": "No, keep my photo" }
+        {
+          "value": "yes",
+          "label": "Yes, I'll add 1 to 3 photos"
+        },
+        {
+          "value": "no",
+          "label": "No, keep my photo"
+        }
       ],
-      "affects": ["presence"]
+      "affects": [
+        "presence"
+      ]
     },
     {
       "id": "facePhotos",
@@ -447,15 +762,22 @@
       "prompt": "Add 1 to 3 clear photos of your face.",
       "help": "Face a window, hold your phone at eye level, and take off any sunglasses. We only use these to make your headshot.",
       "kind": "upload",
-      "accept": ["image/png", "image/jpeg"],
+      "accept": [
+        "image/png",
+        "image/jpeg"
+      ],
       "max": 3,
       "askIf": [
         {
           "q": "headshot",
-          "in": ["yes"]
+          "in": [
+            "yes"
+          ]
         }
       ],
-      "affects": ["presence"]
+      "affects": [
+        "presence"
+      ]
     },
     {
       "id": "inbound",
@@ -463,11 +785,22 @@
       "prompt": "How often do recruiters message you?",
       "kind": "choice",
       "options": [
-        { "value": "never", "label": "Almost never" },
-        { "value": "monthly", "label": "A few times a month" },
-        { "value": "weekly", "label": "Every week" }
+        {
+          "value": "never",
+          "label": "Almost never"
+        },
+        {
+          "value": "monthly",
+          "label": "A few times a month"
+        },
+        {
+          "value": "weekly",
+          "label": "Every week"
+        }
       ],
-      "affects": ["presence"]
+      "affects": [
+        "presence"
+      ]
     },
     {
       "id": "lastRounds",
@@ -478,10 +811,17 @@
       "askIf": [
         {
           "q": "stop",
-          "in": ["screen", "technical", "final", "offers"]
+          "in": [
+            "screen",
+            "technical",
+            "final",
+            "offers"
+          ]
         }
       ],
-      "affects": ["interview"]
+      "affects": [
+        "interview"
+      ]
     },
     {
       "id": "hardest",
@@ -489,20 +829,45 @@
       "prompt": "Which parts of interviews are hardest for you?",
       "kind": "multi",
       "options": [
-        { "value": "coding", "label": "Live coding" },
-        { "value": "design", "label": "System design" },
-        { "value": "behavioral", "label": "Behavioral" },
-        { "value": "takehome", "label": "Take-homes" },
-        { "value": "projects", "label": "Talking about my own work" },
-        { "value": "nerves", "label": "Managing nerves" }
+        {
+          "value": "coding",
+          "label": "Live coding"
+        },
+        {
+          "value": "design",
+          "label": "System design"
+        },
+        {
+          "value": "behavioral",
+          "label": "Behavioral"
+        },
+        {
+          "value": "takehome",
+          "label": "Take-homes"
+        },
+        {
+          "value": "projects",
+          "label": "Talking about my own work"
+        },
+        {
+          "value": "nerves",
+          "label": "Managing nerves"
+        }
       ],
       "askIf": [
         {
           "q": "stop",
-          "in": ["screen", "technical", "final", "offers"]
+          "in": [
+            "screen",
+            "technical",
+            "final",
+            "offers"
+          ]
         }
       ],
-      "affects": ["interview"]
+      "affects": [
+        "interview"
+      ]
     },
     {
       "id": "practice",
@@ -510,11 +875,22 @@
       "prompt": "How have you practiced so far?",
       "kind": "choice",
       "options": [
-        { "value": "none", "label": "I haven't" },
-        { "value": "alone", "label": "On my own" },
-        { "value": "people", "label": "Mock interviews with people" }
+        {
+          "value": "none",
+          "label": "I haven't"
+        },
+        {
+          "value": "alone",
+          "label": "On my own"
+        },
+        {
+          "value": "people",
+          "label": "Mock interviews with people"
+        }
       ],
-      "affects": ["interview"]
+      "affects": [
+        "interview"
+      ]
     },
     {
       "id": "story",
@@ -522,7 +898,10 @@
       "prompt": "In one or two lines, how do you answer \"tell me about yourself\"?",
       "kind": "text",
       "max": 800,
-      "affects": ["interview", "presence"]
+      "affects": [
+        "interview",
+        "presence"
+      ]
     },
     {
       "id": "wantCompanies",
@@ -530,7 +909,10 @@
       "prompt": "Are there companies you'd love to work at?",
       "kind": "text",
       "max": 800,
-      "affects": ["network", "pipeline"]
+      "affects": [
+        "network",
+        "pipeline"
+      ]
     },
     {
       "id": "avoid",
@@ -538,7 +920,9 @@
       "prompt": "Are there any companies or industries you won't work for?",
       "kind": "text",
       "max": 500,
-      "affects": ["pipeline"]
+      "affects": [
+        "pipeline"
+      ]
     },
     {
       "id": "size",
@@ -546,12 +930,26 @@
       "prompt": "What size of company suits you?",
       "kind": "multi",
       "options": [
-        { "value": "startup", "label": "An early-stage startup" },
-        { "value": "growth", "label": "A growing company" },
-        { "value": "big", "label": "A large company" },
-        { "value": "any", "label": "Any size" }
+        {
+          "value": "startup",
+          "label": "An early-stage startup"
+        },
+        {
+          "value": "growth",
+          "label": "A growing company"
+        },
+        {
+          "value": "big",
+          "label": "A large company"
+        },
+        {
+          "value": "any",
+          "label": "Any size"
+        }
       ],
-      "affects": ["pipeline"]
+      "affects": [
+        "pipeline"
+      ]
     },
     {
       "id": "domains",
@@ -560,7 +958,10 @@
       "help": "For example health, finance, logistics or games: whatever you've worked close to.",
       "kind": "text",
       "max": 300,
-      "affects": ["pipeline", "proof"]
+      "affects": [
+        "pipeline",
+        "proof"
+      ]
     },
     {
       "id": "techInterests",
@@ -569,7 +970,10 @@
       "help": "A few, separated by commas. For example agents, data pipelines, developer tools or game engines.",
       "kind": "text",
       "max": 600,
-      "affects": ["proof", "network"]
+      "affects": [
+        "proof",
+        "network"
+      ]
     },
     {
       "id": "personalInterests",
@@ -578,7 +982,10 @@
       "help": "A few, separated by commas. Hobbies, sports, causes, anything you'd happily talk about.",
       "kind": "text",
       "max": 600,
-      "affects": ["proof", "network"]
+      "affects": [
+        "proof",
+        "network"
+      ]
     },
     {
       "id": "styleWords",
@@ -587,7 +994,9 @@
       "help": "For example calm, bold, playful, minimal or technical. We use them for your banner and portfolio.",
       "kind": "text",
       "max": 120,
-      "affects": ["presence"]
+      "affects": [
+        "presence"
+      ]
     },
     {
       "id": "styleRefs",
@@ -596,7 +1005,25 @@
       "help": "Links or names both work, one per line.",
       "kind": "text",
       "max": 1200,
-      "affects": ["presence"]
+      "affects": [
+        "presence"
+      ]
+    },
+    {
+      "id": "styleShots",
+      "chunk": "c7",
+      "prompt": "Add screenshots of looks you like.",
+      "help": "Pinterest boards, sites, posters, app screens, anything. Up to 6. We use them for your banner and your portfolio.",
+      "kind": "upload",
+      "accept": [
+        "image/png",
+        "image/jpeg",
+        "image/webp"
+      ],
+      "max": 6,
+      "affects": [
+        "presence"
+      ]
     },
     {
       "id": "voiceSample",
@@ -605,7 +1032,10 @@
       "help": "A few sentences or more, in your normal voice. Drafts we write for you will sound like this.",
       "kind": "text",
       "max": 4000,
-      "affects": ["presence", "network"]
+      "affects": [
+        "presence",
+        "network"
+      ]
     }
   ]
 }

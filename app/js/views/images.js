@@ -8,11 +8,11 @@
  * Everything they upload is private to them.
  */
 
-import { el, mount } from "../dom.js?v=4f66e99-202610260033";
-import { btn, toast } from "../ui.js?v=4f66e99-202610260033";
-import { nodeRail, nodeIntro } from "./node-rail.js?v=4f66e99-202610260033";
-import * as api from "../images-remote.js?v=4f66e99-202610260033";
-import { STAGES, cropBox, needsShrink, shrinkTo, doneStages, firstOpen, sourceFor, allowanceLine } from "../image-crop.js?v=4f66e99-202610260033";
+import { el, mount } from "../dom.js?v=939d963-202610261500";
+import { btn, toast } from "../ui.js?v=939d963-202610261500";
+import { nodeRail, nodeIntro } from "./node-rail.js?v=939d963-202610261500";
+import * as api from "../images-remote.js?v=939d963-202610261500";
+import { STAGES, cropBox, needsShrink, shrinkTo, doneStages, firstOpen, sourceFor, allowanceLine } from "../image-crop.js?v=939d963-202610261500";
 
 const ACCEPT = "image/jpeg,image/png,image/webp";
 const LINKEDIN = { headshot: { width: 800, height: 800 }, banner: { width: 1584, height: 396 } };
@@ -36,7 +36,7 @@ function blobToBase64(blob) {
 }
 
 /** A picked file as base64, redrawn as a JPEG first when it is large or not a type the server takes. */
-async function filePayload(file) {
+export async function filePayload(file) {
   const url = URL.createObjectURL(file);
   try {
     const img = await loadImage(url);
