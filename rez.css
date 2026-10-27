@@ -103,6 +103,12 @@ a { color: inherit; }
   border: 1px solid var(--line-2); border-radius: 4px; padding: 3px 5px;
 }
 @media (max-width: 860px) { .nav__links { display: none; } }
+/* Sign in: the one way back in (signin/), at the right next to the page's own call to action, on every width. */
+.nav__end { display: inline-flex; align-items: center; gap: clamp(16px, 2.4vw, 26px); }
+.nav__signin { font-size: 13.5px; color: var(--soft); text-decoration: none; white-space: nowrap; transition: color var(--dur-fast); }
+.nav__signin:hover { color: var(--lumen); }
+.nav__signin[hidden] { display: none; }
+@media (max-width: 420px) { .nav__cta kbd { display: none; } .nav .brand span { letter-spacing: .16em; } }
 
 /* ---------- buttons ---------- */
 .btn {

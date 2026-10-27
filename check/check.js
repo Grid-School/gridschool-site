@@ -14,14 +14,14 @@
  * this browser so a refresh loses nothing; the resume text never does.
  */
 
-import { PERSIST, link } from "../config.js?v=7b95dc3-202610272038";
-import * as I from "../data/intake/intake.mjs?v=7b95dc3-202610272038";
-import { mountCheckMap } from "./check-map.js?v=7b95dc3-202610272038";
-import * as Account from "./account.js?v=7b95dc3-202610272038";
-import { enterSeat } from "../app/js/persist-auth.js?v=7b95dc3-202610272038";
-import { track, visitorId } from "./events.js?v=7b95dc3-202610272038";
-import * as Share from "./share.mjs?v=7b95dc3-202610272038";
-import { drawShareCard, cardBlob } from "./share-card.js?v=7b95dc3-202610272038";
+import { PERSIST, link } from "../config.js?v=c78f81e-202610272041";
+import * as I from "../data/intake/intake.mjs?v=c78f81e-202610272041";
+import { mountCheckMap } from "./check-map.js?v=c78f81e-202610272041";
+import * as Account from "./account.js?v=c78f81e-202610272041";
+import { enterSeat } from "../app/js/persist-auth.js?v=c78f81e-202610272041";
+import { track, visitorId } from "./events.js?v=c78f81e-202610272041";
+import * as Share from "./share.mjs?v=c78f81e-202610272041";
+import { drawShareCard, cardBlob } from "./share-card.js?v=c78f81e-202610272041";
 
 const KEY = "gridschool.check.v1";
 const SHARE_KEY = "gridschool.share.v1";
@@ -715,7 +715,7 @@ function saveForm() {
     done.classList.toggle("saved--unsent", !inAccount && sent === false);
     done.append(
       h("p", "", inAccount
-        ? `Saved to your account. Come back any time at gridschool.org/check and sign in with ${store.saved.email}.`
+        ? `Saved to your account. Come back any time at gridschool.org/signin and sign in with ${store.saved.email}.`
         : sent ? "We also emailed you a link. This one always brings you back to your map:" : "To come back later, keep this link. It always brings you back to your map:"),
       ...(inAccount ? [] : [h("a", "saved__link", store.saved.link, { href: store.saved.link })])
     );
@@ -1143,6 +1143,9 @@ function showAccount() {
   const slot = $("#nav-account");
   if (!slot) return;
   const signed = Account.session();
+  // Signed out: the one way back in to an existing map (signin/). Signed in: who, and Sign out.
+  const door = $("#nav-signin");
+  if (door) door.hidden = Boolean(signed);
   if (!signed) return slot.replaceChildren();
   const out = h("button", "textlink textlink--nav", "Sign out", { type: "button" });
   out.addEventListener("click", async () => {

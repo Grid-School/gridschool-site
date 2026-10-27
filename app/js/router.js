@@ -3,7 +3,7 @@
  * deployable as static files anywhere, with no server rewrite rules.
  */
 
-import { allowLeave, isLeaveDirty } from "./leave-guard.js?v=7b95dc3-202610272038";
+import { allowLeave, isLeaveDirty } from "./leave-guard.js?v=c78f81e-202610272041";
 
 /**
  * `aliases` keeps old links alive after a surface moves. Reviews folded into

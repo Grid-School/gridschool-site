@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign in. GridSchool</title>
+<meta name="description" content="Sign in to your GridSchool map with your email. We send a 6-digit code; no password.">
+<meta property="og:url" content="https://gridschool.org/signin/">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../rez.css?v=c78f81e-202610272041">
+<link rel="stylesheet" href="../check/check.css?v=c78f81e-202610272041">
+<style>
+  .signin { max-width: 520px; margin: clamp(24px, 8svh, 96px) auto 64px; }
+  .signin .card__title { font-size: clamp(26px, 3vw, 34px); overflow-wrap: anywhere; }
+  .signin .card__fine a { color: var(--soft); text-underline-offset: 3px; }
+  .signin .card__fine a:hover { color: var(--lumen); }
+  .signin .card__fine + .card__fine { margin-top: 8px; }
+  .signin__alt { margin-top: 22px !important; padding-top: 16px; border-top: 1px solid var(--line); }
+  .steps-wait { display: flex; align-items: center; gap: 12px; margin-top: 14px; color: var(--soft); font-size: 14.5px; }
+  @media (max-width: 480px) { .signin .save__row { grid-template-columns: 1fr; } .signin .save__row .btn { justify-content: center; text-align: center; } }
+</style>
+</head>
+<body class="rez-page">
+<header class="nav" id="nav">
+  <a class="brand" href="../" aria-label="GridSchool home">
+    <svg viewBox="0 0 36 36" aria-hidden="true">
+      <g transform="translate(18 18) rotate(45) translate(-12.5 -12.5)">
+        <g class="g-off"><rect x="5.4" y="5.4" width="4.2" height="4.2" rx="1.2"/><rect x="10.4" y="5.4" width="4.2" height="4.2" rx="1.2"/><rect x="15.4" y="5.4" width="4.2" height="4.2" rx="1.2"/><rect x="20.4" y="5.4" width="4.2" height="4.2" rx="1.2"/><rect x="5.4" y="10.4" width="4.2" height="4.2" rx="1.2"/><rect x="10.4" y="10.4" width="4.2" height="4.2" rx="1.2"/><rect x="5.4" y="15.4" width="4.2" height="4.2" rx="1.2"/><rect x="10.4" y="15.4" width="4.2" height="4.2" rx="1.2"/><rect x="15.4" y="15.4" width="4.2" height="4.2" rx="1.2"/></g>
+        <g class="g-on"><rect x="0.4" y="0.4" width="4.2" height="4.2" rx="1.2"/><rect x="5.4" y="0.4" width="4.2" height="4.2" rx="1.2"/><rect x="10.4" y="0.4" width="4.2" height="4.2" rx="1.2"/><rect x="15.4" y="0.4" width="4.2" height="4.2" rx="1.2"/><rect x="20.4" y="0.4" width="4.2" height="4.2" rx="1.2"/><rect x="0.4" y="5.4" width="4.2" height="4.2" rx="1.2"/><rect x="0.4" y="10.4" width="4.2" height="4.2" rx="1.2"/><rect x="15.4" y="10.4" width="4.2" height="4.2" rx="1.2"/><rect x="20.4" y="10.4" width="4.2" height="4.2" rx="1.2"/><rect x="0.4" y="15.4" width="4.2" height="4.2" rx="1.2"/><rect x="20.4" y="15.4" width="4.2" height="4.2" rx="1.2"/><rect x="0.4" y="20.4" width="4.2" height="4.2" rx="1.2"/><rect x="5.4" y="20.4" width="4.2" height="4.2" rx="1.2"/><rect x="10.4" y="20.4" width="4.2" height="4.2" rx="1.2"/><rect x="15.4" y="20.4" width="4.2" height="4.2" rx="1.2"/><rect x="20.4" y="20.4" width="4.2" height="4.2" rx="1.2"/></g>
+      </g>
+    </svg>
+    <span>GRID<b>SCHOOL</b></span>
+  </a>
+  <span class="nav-right"><span class="eyebrow">Sign in</span></span>
+</header>
+<main class="wrap signin">
+  <section class="card is-in" id="card" aria-live="polite">
+    <noscript><p class="card__lead">This page needs JavaScript to sign you in. Or write to support@gridschool.org and we'll get you in.</p></noscript>
+  </section>
+</main>
+<script type="module" src="signin.js?v=c78f81e-202610272041"></script>
+</body>
+</html>
