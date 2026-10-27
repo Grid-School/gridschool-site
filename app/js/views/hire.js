@@ -16,10 +16,10 @@
  * half-typed form. Aden sees it read-only from the desk.
  */
 
-import { el, mount } from "../dom.js?v=fc888f8-202610270442";
-import { panel, btn, field, toast, copy } from "../ui.js?v=fc888f8-202610270442";
-import { isoDate, fmtDay } from "../time.js?v=fc888f8-202610270442";
-import { STATUS } from "../graph/model.js?v=fc888f8-202610270442";
+import { el, mount } from "../dom.js?v=4658328-202610270459";
+import { panel, btn, field, toast, copy } from "../ui.js?v=4658328-202610270459";
+import { isoDate, fmtDay } from "../time.js?v=4658328-202610270459";
+import { STATUS } from "../graph/model.js?v=4658328-202610270459";
 import {
   STAGES,
   RELATIONS,
@@ -63,14 +63,14 @@ import {
   nextTouch,
   targetCandidates,
   MAX_ACTIVE_TARGETS,
-} from "../search.js?v=fc888f8-202610270442";
-import { storyCard, appRow } from "./search-parts.js?v=fc888f8-202610270442";
-import { TOOLS } from "../engine.js?v=fc888f8-202610270442";
-import { PERSIST } from "../../../config.js?v=fc888f8-202610270442";
-import { matchedRoles, radarReady, fetchPacks, winsState, shareWin, draftPositioning } from "../roles-remote.js?v=fc888f8-202610270442";
-import { createPackDrawer } from "./pack.js?v=fc888f8-202610270442";
-import { createCampaignDrawer } from "./campaign.js?v=fc888f8-202610270442";
-import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=fc888f8-202610270442";
+} from "../search.js?v=4658328-202610270459";
+import { storyCard, appRow } from "./search-parts.js?v=4658328-202610270459";
+import { TOOLS } from "../engine.js?v=4658328-202610270459";
+import { PERSIST } from "../../../config.js?v=4658328-202610270459";
+import { matchedRoles, radarReady, fetchPacks, winsState, shareWin, draftPositioning } from "../roles-remote.js?v=4658328-202610270459";
+import { createPackDrawer } from "./pack.js?v=4658328-202610270459";
+import { createCampaignDrawer } from "./campaign.js?v=4658328-202610270459";
+import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=4658328-202610270459";
 
 const RUN_FAMILIES = ["proof", "presence", "network", "interview"];
 /** How many moves the day leads with. More than this reads as a wall, not a plan. */
@@ -266,9 +266,9 @@ export function renderHire(ctx, initialTool, campaignId) {
           kind: "target",
           title: "Choose your five targets",
           sub: "Where hiring, size and fit overlap, stop applying and start a campaign: email with a Loom, LinkedIn, a call, and follow-ups.",
-          // Goes to the "any company" form and puts the cursor in it (it scrolled to a section that no longer exists,
-          // so it did nothing: the usage recording caught it, pressed four times).
-          actions: [btn({ label: "Choose", variant: "ghost", onclick: () => { document.querySelector(".tany")?.scrollIntoView({ behavior: "smooth", block: "start" }); document.getElementById("tg-company")?.focus({ preventScroll: true }); } })],
+          // The target form lives on the Targets tool, not Today: open that tool, then bring the form up with the
+          // cursor in it (on Today the form isn't on the page, so scrolling to it did nothing).
+          actions: [btn({ label: "Choose", variant: "ghost", onclick: openTargetForm })],
         })
       );
     }
@@ -949,6 +949,20 @@ export function renderHire(ctx, initialTool, campaignId) {
   };
 
   const node = el("div.view.view--hire.view--tool", {}, headBox, ...Object.values(sections), drawer.layer, camp.layer);
+
+  /** Open the Targets tool and put the cursor in its "any company" form, once the route has drawn it. */
+  function openTargetForm() {
+    if (focus !== "targets") current.navigate("do", "targets");
+    let tries = 0;
+    const land = () => {
+      const form = document.querySelector(".tany");
+      if (form && form.offsetParent) {
+        form.scrollIntoView({ behavior: "smooth", block: "start" });
+        document.getElementById("tg-company")?.focus({ preventScroll: true });
+      } else if (++tries < 30) requestAnimationFrame(land);
+    };
+    requestAnimationFrame(land);
+  }
 
   function redraw() {
     mount(profileActions, profileStep());

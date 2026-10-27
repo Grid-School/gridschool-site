@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { doneIds, stepStates, firstOpen } from "./steps.js?v=fc888f8-202610270442";
-import { stepsFor, hasOutput, nextAction } from "./resume-stages.js?v=fc888f8-202610270442";
+import { doneIds, stepStates, firstOpen } from "./steps.js?v=4658328-202610270459";
+import { stepsFor, hasOutput, nextAction } from "./resume-stages.js?v=4658328-202610270459";
 
 const S = [{ id: "a", label: "A" }, { id: "b", label: "B" }, { id: "c", label: "C" }];
 
