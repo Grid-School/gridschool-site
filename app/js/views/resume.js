@@ -11,23 +11,23 @@
  * confirms it. Every saved version has a name, the date and time it was made, and can be downloaded again.
  */
 
-import { el, mount } from "../dom.js?v=a3b9988-202610262033";
-import { btn, toast } from "../ui.js?v=a3b9988-202610262033";
-import { nodeRail } from "./node-rail.js?v=a3b9988-202610262033";
-import { nextUp } from "../graph/model.js?v=a3b9988-202610262033";
-import { isProgressReadOnly, refresh as refreshStore } from "../store.js?v=a3b9988-202610262033";
-import { upgradeHref } from "../prep.js?v=a3b9988-202610262033";
-import * as api from "../resume-remote.js?v=a3b9988-202610262033";
-import { patient } from "../patient.js?v=a3b9988-202610262033";
-import { doneIds } from "../steps.js?v=a3b9988-202610262033";
-import { workPanel } from "./work.js?v=a3b9988-202610262033";
-import { needsPanel, needFor, planBlock } from "./needs.js?v=a3b9988-202610262033";
-import { sendSuggestion } from "../suggest-remote.js?v=a3b9988-202610262033";
-import { newOpId } from "../../../data/map-proposal.mjs?v=a3b9988-202610262033";
-import { titleRow } from "./titles.js?v=a3b9988-202610262033";
-import { talkButton, canTalk } from "./voice.js?v=a3b9988-202610262033";
-import { roundState, gained, RANGES, wantsNumber, addRange } from "../interview.js?v=a3b9988-202610262033";
-import { stepsFor, claimsOf, linesOf, hasOutput, allConfirmed as confirmedAll, changedSinceSave as changedSince, savedAndDownloaded, readiness } from "../resume-stages.js?v=a3b9988-202610262033";
+import { el, mount } from "../dom.js?v=89ee485-202610270204";
+import { btn, toast } from "../ui.js?v=89ee485-202610270204";
+import { nodeRail } from "./node-rail.js?v=89ee485-202610270204";
+import { nextUp } from "../graph/model.js?v=89ee485-202610270204";
+import { isProgressReadOnly, refresh as refreshStore } from "../store.js?v=89ee485-202610270204";
+import { upgradeHref } from "../prep.js?v=89ee485-202610270204";
+import * as api from "../resume-remote.js?v=89ee485-202610270204";
+import { patient } from "../patient.js?v=89ee485-202610270204";
+import { doneIds } from "../steps.js?v=89ee485-202610270204";
+import { workPanel } from "./work.js?v=89ee485-202610270204";
+import { needsPanel, needFor, planBlock } from "./needs.js?v=89ee485-202610270204";
+import { sendSuggestion } from "../suggest-remote.js?v=89ee485-202610270204";
+import { newOpId } from "../../../data/map-proposal.mjs?v=89ee485-202610270204";
+import { titleRow } from "./titles.js?v=89ee485-202610270204";
+import { talkButton, canTalk } from "./voice.js?v=89ee485-202610270204";
+import { roundState, gained, RANGES, wantsNumber, addRange } from "../interview.js?v=89ee485-202610270204";
+import { stepsFor, claimsOf, linesOf, hasOutput, allConfirmed as confirmedAll, changedSinceSave as changedSince, savedAndDownloaded, nextAction } from "../resume-stages.js?v=89ee485-202610270204";
 
 const PDF_JS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs";
 const PDF_WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs";
@@ -270,17 +270,23 @@ export function renderResume(ctx, options = {}) {
   }
 
   /* Where to open: the furthest step they've reached, never back to questions they chose to stop. */
+  /* Where to open: the step the next action names (resume-stages.nextAction), so the page and the banner agree. */
   function autoStage() {
-    const g = rec?.graph || {};
-    const started = (g.roles || []).length || (g.projects || []).length;
-    if (!started && !rec.next) return "start";
-    if (linesOf(rec).length) {
-      if (!allConfirmed()) return "check";
-      if (!savedAndDownloaded({ rec, saves })) return "save";
-      return embedded ? "finish" : "save";
-    }
-    if (rec.next) return "questions";
-    return "write";
+    const next = nextAction({ rec, saves });
+    if (next.stage === "send") return embedded ? "finish" : "save";
+    return next.stage;
+  }
+
+  /* The one thing to do now, above everything else: a sentence in this title's numbers and one button. */
+  function nextBanner(here) {
+    const next = nextAction({ rec, saves });
+    const go = next.stage === "send"
+      ? () => current.navigate("map", "s.send")
+      : () => { stage = next.stage; render(); root.querySelector(".rz__card")?.scrollIntoView?.({ block: "start", behavior: "smooth" }); };
+    const onIt = here === next.stage || (next.stage === "send" && here === "finish");
+    return el(`section.rz__nextup.is-${next.tone}`, { "aria-label": "What to do next" },
+      el("div.rz__nextup-text", {}, el("b.rz__nextup-eyebrow", {}, next.tone === "ready" ? "Ready" : "Next"), el("h2", {}, next.head), el("p", {}, next.text)),
+      onIt && next.stage !== "send" ? null : btn({ label: `${next.label} →`, variant: "solid", onclick: go }));
   }
 
   /* Each step's rule lives in resume-stages.js; this only takes the snapshot. */
@@ -598,10 +604,17 @@ export function renderResume(ctx, options = {}) {
               btn({ label: busy ? "Saving…" : "Save this version", variant: "solid", disabled: Boolean(busy), onclick: doSave }))
           : null,
         saves.length
-          ? el("div.rz__saves", {}, el("h3", {}, "Your saved resumes"),
-              el("ol.rz__savelist", {}, saves.map((s, i) => saveRow(s, s.id === lastSaveId || (!fresh && i === 0)))))
+          ? (() => {
+              // The version that matters now stays open; older ones fold away (they're history, not the task).
+              const current_ = fresh ? null : saves[0];
+              const older = saves.filter((s) => s !== current_);
+              return el("div.rz__saves", {},
+                current_ ? el("ol.rz__savelist", {}, saveRow(current_, true)) : null,
+                older.length ? el("details.rz__older", {}, el("summary", {}, `Earlier versions (${older.length})`),
+                  el("ol.rz__savelist", {}, older.map((s) => saveRow(s, s.id === lastSaveId)))) : null);
+            })()
           : null,
-        saves.length ? hireNote() : null,
+        null, // the LinkedIn next step lives on Finish now, not under the save list
       ],
       embedded && savedAndDownloaded({ rec, saves }) ? nextBtn("Finish this step", "finish") : null
     );
@@ -688,12 +701,13 @@ export function renderResume(ctx, options = {}) {
     const meta = [p.roles ? plural(p.roles, "job") : "", p.claims ? plural(p.claims, "line") : "", p.confirmed ? `${p.confirmed} kept` : "", saves.length ? plural(saves.length, "saved version") : "", week]
       .filter(Boolean).join(" · ");
     const target = rec.graph.targets?.[0];
+    // Title, then the facts under it, left-aligned with it (the meta used to float right, aligned to nothing).
     const head = embedded
-      ? el("header.rz__head.rz__head--embedded", {}, el("p.rz__meta", {}, meta || "Nothing yet. Start below."))
+      ? null
       : el("header.rz__head", {},
-          el("div", {}, el("b.eyebrow", {}, "Resume"), el("h1.rz__title", {}, target?.titles?.[0] ? `Your resume for ${target.titles[0]}` : "Build your resume, one question at a time")),
-          el("p.rz__meta", {}, meta),
-          btn({ label: "← Map", variant: "quiet", onclick: () => current.navigate("map") }));
+          el("b.eyebrow", {}, "Resume"),
+          el("h1.rz__title", {}, target?.titles?.[0] ? `Your resume for ${target.titles[0]}` : "Build your resume, one question at a time"),
+          meta ? el("p.rz__meta", {}, meta) : null);
     // One record, many titles: the row switches the lens (titles.js); nothing is copied.
     const titles = titleRow({
       targets: rec.targets || [],
@@ -702,16 +716,10 @@ export function renderResume(ctx, options = {}) {
       onAdd: readOnly() ? null : (text) => { stage = null; run("Working out what this job is screened for.", (r) => api.addTarget(slug, rec.version, text, r), WORK.target); },
       onRemove: readOnly() ? null : (t) => { stage = null; run("Removing.", () => api.removeTarget(slug, rec.version, t.id)); },
     });
-    // Ready to send? Three facts (resume-stages.readiness), the same ones the Send node opens on.
-    const ready = readiness({ rec, saves });
-    const readyLine = rec.graph.targets?.length
-      ? el("p.rz__ready", { "data-verdict": ready.verdict },
-          ready.ready ? `${ready.verdict === "nearly" ? "Nearly ready to send" : "Ready to send"}${ready.note ? `: ${ready.note.charAt(0).toLowerCase()}${ready.note.slice(1)}` : "."}`
-            : `Not ready to send yet: ${ready.checks.filter((c) => !c.ok).map((c) => c.label.toLowerCase()).join(", ")}.`)
-      : null;
+    // Order on the page = order of attention: which job, what to do now, where you are in the steps, the work.
     const main = el("section.rz__main", {},
       titles,
-      readyLine,
+      busy ? null : nextBanner(here),
       nodeRail({ nodes: stages(), done: doneStages(), here, onGo: go, label: "Resume steps" }),
       readOnly() ? el("p.rz__readonly", {}, "View only: this is the student's own resume. Changes are theirs to make.") : null,
       el("div.rz__card", { "aria-busy": busy ? "true" : null }, busy ? panel?.node ?? el("div.pack__wait", {}, el("span.pack__spinner", { "aria-hidden": "true" }), el("p", {}, busy)) : body));
@@ -719,7 +727,7 @@ export function renderResume(ctx, options = {}) {
     const preview = hasOutput(rec) && rec.preview
       ? el("aside.rz__preview", { "aria-label": "Your resume so far" }, el("b.eyebrow", {}, "Your resume so far"), el("div.rz-doc", {}, previewHtml(rec.preview)))
       : null;
-    mount(root, el(`div.rz${embedded ? ".rz--embedded" : ""}`, {}, head, el(`div.rz__grid${preview ? "" : ".rz__grid--solo"}`, {}, main, preview)));
+    mount(root, el(`div.rz.rz--grid${embedded ? ".rz--embedded" : ""}`, {}, head, el(`div.rz__grid${preview ? "" : ".rz__grid--solo"}`, {}, main, preview)));
   }
 
   render();

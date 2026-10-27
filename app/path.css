@@ -1,0 +1,59 @@
+/* Where you're going (js/views/path.js): the first screen in the Grid style (memory: design-direction-the-grid).
+   Black ground, surfaces barely lifted, borders as lines of light at 20% cyan, a faint grid floor, glow spent on
+   one thing per screen. Two lights: cyan (you, here, true) and orange (a step first, a warning). */
+.view--path { padding: 24px 16px 64px; }
+.gd { --gd-bg: #000; --gd-card: #04070b; --gd-line: rgba(72, 214, 255, .22); --gd-hair: rgba(72, 214, 255, .12); --gd-cyan: #48d6ff; --gd-orange: #ff8a1f;
+      --gd-text: #dbe7f3; --gd-muted: #7f93a8; --gd-glow: 0 0 12px rgba(72, 214, 255, .55);
+      max-width: 820px; margin: 0 auto; color: var(--gd-text); container-type: inline-size; }
+.gd--embedded { max-width: none; }
+.gd__top { margin: 0 0 24px; }
+.gd__top h1 { margin: 10px 0 0; font-size: clamp(22px, 3vw, 30px); line-height: 1.15; color: #fff; text-wrap: balance; }
+.gd__eyebrow { display: block; font: 400 10.5px/1 "Michroma", var(--font-mono); letter-spacing: .22em; text-transform: uppercase; color: var(--gd-cyan); text-shadow: var(--gd-glow); }
+.gd .cnodes { margin: 0 0 24px; padding: 0; }
+.gd__card { position: relative; padding: 26px 28px 28px; background: var(--gd-card); border: 1px solid var(--gd-line); border-radius: 4px;
+  background-image: linear-gradient(rgba(72, 214, 255, .03) 1px, transparent 1px), linear-gradient(90deg, rgba(72, 214, 255, .03) 1px, transparent 1px); background-size: 40px 40px; }
+.gd__card::before { content: ""; position: absolute; left: -1px; top: 18px; bottom: 18px; width: 2px; background: var(--gd-cyan); box-shadow: var(--gd-glow), 0 0 2px #fff; }
+.gd__head h2 { margin: 0 0 6px; font-size: 21px; line-height: 1.25; color: #fff; }
+.gd__now { margin: 0 0 20px; color: var(--gd-muted); font-size: 15px; line-height: 1.5; max-width: 62ch; }
+.gd__q { margin: 0 0 16px; }
+.gd__qtext { margin: 0; font-size: clamp(18px, 2.2vw, 22px); line-height: 1.35; font-weight: 600; color: #fff; max-width: 60ch; text-wrap: balance; }
+.gd__why { margin: 8px 0 0; color: var(--gd-muted); font-size: 14px; }
+.gd__text { width: 100%; box-sizing: border-box; background: #000; color: var(--gd-text); border: 1px solid var(--gd-line); border-radius: 3px; padding: 12px 14px; font: inherit; font-size: 15.5px; line-height: 1.5; resize: vertical; min-height: 84px; }
+.gd__text:focus { outline: none; border-color: var(--gd-cyan); box-shadow: var(--gd-glow); }
+.gd__hint { margin: 10px 0 0; color: var(--gd-muted); font-size: 13px; }
+.gd__opts { display: grid; gap: 10px; }
+.gd__opt { text-align: left; background: #000; color: var(--gd-text); border: 1px solid var(--gd-line); border-radius: 3px; padding: 14px 16px; font: inherit; font-size: 15.5px; cursor: pointer; transition: border-color .15s ease, box-shadow .15s ease; }
+.gd__opt:hover, .gd__opt:focus-visible { border-color: var(--gd-cyan); box-shadow: var(--gd-glow); color: #fff; outline: none; }
+.gd__next { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--gd-hair); }
+.gd__answers { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.gd__answers li { display: grid; gap: 3px; padding: 10px 12px; border: 1px solid var(--gd-hair); border-radius: 3px; cursor: pointer; }
+.gd__answers li:hover { border-color: var(--gd-cyan); }
+.gd__answers b { font-size: 13px; color: var(--gd-muted); font-weight: 500; }
+.gd__answers span { font-size: 15px; color: #fff; }
+.gd__honest { margin: 0 0 22px; padding: 4px 0 4px 18px; border-left: 2px solid var(--gd-cyan); box-shadow: -2px 0 12px -4px var(--gd-cyan); font-size: 17px; line-height: 1.6; color: #eaf2fa; max-width: 60ch; }
+.gd__titles { list-style: none; margin: 0 0 22px; padding: 0; display: grid; gap: 10px; }
+.gd__title { padding: 14px 16px; border: 1px solid var(--gd-hair); border-radius: 3px; display: grid; gap: 4px; }
+.gd__title.is-now { border-color: var(--gd-line); }
+.gd__titlehead { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+.gd__titlehead b { font-size: 16px; color: #fff; }
+.gd__tag { font: 400 10px/1.4 "Michroma", var(--font-mono); letter-spacing: .16em; text-transform: uppercase; color: var(--gd-cyan); }
+.gd__title.is-stretch .gd__tag, .gd__title.is-later .gd__tag { color: var(--gd-orange); text-shadow: 0 0 10px rgba(255, 138, 31, .45); }
+.gd__title p { margin: 0; font-size: 14.5px; color: var(--gd-text); }
+.gd__title small { color: var(--gd-muted); font-size: 12.5px; font-family: var(--font-mono); }
+.gd__way { margin-top: 4px; }
+.gd__realistic { margin: 10px 0 12px; font-size: 15px; color: #fff; }
+.gd__path { list-style: none; margin: 0; padding: 0; }
+.gd__path li { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 14px; padding: 10px 0; border-top: 1px solid var(--gd-hair); font-size: 15px; }
+.gd__path i { font: 500 12px/1.7 var(--font-mono); color: var(--gd-cyan); font-style: normal; }
+.gd__path small { display: block; color: var(--gd-muted); font-size: 12.5px; margin-top: 2px; }
+.gd__pick { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.gd__pick button { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 12px; align-items: start; width: 100%; text-align: left; background: #000; color: var(--gd-text); border: 1px solid var(--gd-hair); border-radius: 3px; padding: 13px 14px; font: inherit; cursor: pointer; }
+.gd__pick li.is-on button { border-color: var(--gd-cyan); box-shadow: 0 0 0 1px rgba(72, 214, 255, .35), 0 0 22px rgba(72, 214, 255, .18); }
+.gd__pick b { display: block; font-size: 15.5px; color: #fff; }
+.gd__pick small { display: block; color: var(--gd-muted); font-size: 12.5px; margin-top: 2px; }
+.gd__box { width: 20px; height: 20px; border: 1px solid var(--gd-line); border-radius: 2px; display: grid; place-items: center; font-size: 12px; color: #000; margin-top: 1px; }
+.gd__pick li.is-on .gd__box { background: var(--gd-cyan); border-color: var(--gd-cyan); box-shadow: var(--gd-glow); }
+.gd__empty { color: var(--gd-muted); }
+.gd .work { padding: 2px 0; }
+@container (max-width: 520px) { .gd__card { padding: 20px 18px 22px; } .gd__path li { grid-template-columns: 60px minmax(0, 1fr); } }
+@media (prefers-reduced-motion: reduce) { .gd__opt, .gd__text { transition: none; } }

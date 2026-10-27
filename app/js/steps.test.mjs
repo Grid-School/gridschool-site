@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { doneIds, stepStates, firstOpen } from "./steps.js?v=a3b9988-202610262033";
-import { stepsFor, hasOutput } from "./resume-stages.js?v=a3b9988-202610262033";
+import { doneIds, stepStates, firstOpen } from "./steps.js?v=89ee485-202610270204";
+import { stepsFor, hasOutput, nextAction } from "./resume-stages.js?v=89ee485-202610270204";
 
 const S = [{ id: "a", label: "A" }, { id: "b", label: "B" }, { id: "c", label: "C" }];
 
@@ -39,9 +39,9 @@ test("read, with questions open: only Start", () => {
   assert.deepEqual(done({ rec: rec({ roles: [{ id: "r1" }], claims: [claim()] }, { next: { id: "q1" } }) }), ["start"]);
 });
 
-test("stopped early and wrote lines: Questions counts as finished", () => {
+test("lines written but this title still has questions: Questions is not done (per title, no borrowing)", () => {
   const r = rec({ roles: [{ id: "r1" }], claims: [claim({ line: "Did x." })] }, { next: { id: "q2" } });
-  assert.deepEqual(done({ rec: r }), ["start", "questions", "write"]);
+  assert.deepEqual(done({ rec: r }), ["start", "write"]);
 });
 
 test("every line kept: Check; saved but not downloaded is not Save", () => {
@@ -60,6 +60,23 @@ test("Finish only on the node, only when the student said so", () => {
   const r = rec({ roles: [{ id: "r1" }] });
   assert.ok(done({ rec: r, nodeDone: true }).includes("finish"));
   assert.ok(!done({ rec: r, nodeDone: true }, false).includes("finish"));
+});
+
+test("the next action: one thing, in the title's own numbers", () => {
+  const base = { roles: [{ id: "r1" }], claims: [claim({ line: "Did x.", status: "confirmed" })], targets: [{ titles: ["Implementation Specialist"] }], queue: [{ id: "q1", state: "open" }, { id: "q2", state: "open" }] };
+  const needs = Array.from({ length: 8 }, (_, i) => ({ id: `n${i}`, state: "on", status: i < 1 ? "shown" : "missing" }));
+  const weak = nextAction({ rec: rec(base, { next: { id: "q1" }, needs, preview: "Did x.", round: { size: 8, done: 0 } }), saves: [{ text: "Did x.", downloads: 1 }] });
+  assert.equal(weak.stage, "questions"); // saved and downloaded, but 1 of 8: the questions come first
+  assert.match(weak.head, /1 of 8 things an Implementation Specialist screen checks/);
+  assert.match(weak.text, /Answer 2 questions/);
+  const strong = nextAction({ rec: rec(base, { next: { id: "q1" }, needs: needs.map((n) => ({ ...n, status: "shown" })), preview: "Did x." }), saves: [{ text: "Did x.", downloads: 1 }] });
+  assert.equal(strong.stage, "send");
+  assert.match(strong.text, /More questions can raise that/);
+  assert.equal(nextAction({ rec: rec({}) }).stage, "start");
+  const unsaved = nextAction({ rec: rec(base, { needs: needs.map((n) => ({ ...n, status: "shown" })), preview: "Did x." }), saves: [] });
+  assert.equal(unsaved.stage, "save");
+  const unchecked = nextAction({ rec: rec({ ...base, claims: [claim({ line: "Did x." })] }, { next: { id: "q1" }, needs }), saves: [] });
+  assert.equal(unchecked.stage, "check"); // unchecked lines come before more questions
 });
 
 test("the preview waits until a line is on the resume (kept), not just written", () => {

@@ -5,9 +5,9 @@
  * and checkout.start (server/events.py).
  */
 
-import { PERSIST, link } from "../config.js?v=a3b9988-202610262033";
-import { track, visitorId } from "../check/events.js?v=a3b9988-202610262033";
-import { MONEY, PLANS, order, payUrl, readParams } from "./order.mjs?v=a3b9988-202610262033";
+import { PERSIST, link } from "../config.js?v=89ee485-202610270204";
+import { track, visitorId } from "../check/events.js?v=89ee485-202610270204";
+import { MONEY, PLANS, order, payUrl, readParams } from "./order.mjs?v=89ee485-202610270204";
 
 const $ = (id) => document.getElementById(id);
 const state = readParams(location.search);
