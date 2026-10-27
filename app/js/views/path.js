@@ -11,15 +11,15 @@
  * Everything can be reopened: change an answer, run the read again, pick different titles.
  */
 
-import { el, mount } from "../dom.js?v=4658328-202610270459";
-import { btn, toast } from "../ui.js?v=4658328-202610270459";
-import { isProgressReadOnly } from "../store.js?v=4658328-202610270459";
-import { nodeRail } from "./node-rail.js?v=4658328-202610270459";
-import { doneIds } from "../steps.js?v=4658328-202610270459";
-import { workPanel } from "./work.js?v=4658328-202610270459";
-import { patient } from "../patient.js?v=4658328-202610270459";
-import * as api from "../path-remote.js?v=4658328-202610270459";
-import { loadProgress } from "../resume-remote.js?v=4658328-202610270459";
+import { el, mount } from "../dom.js?v=7ed7f2f-202610270608";
+import { btn, toast } from "../ui.js?v=7ed7f2f-202610270608";
+import { isProgressReadOnly } from "../store.js?v=7ed7f2f-202610270608";
+import { nodeRail } from "./node-rail.js?v=7ed7f2f-202610270608";
+import { doneIds } from "../steps.js?v=7ed7f2f-202610270608";
+import { workPanel } from "./work.js?v=7ed7f2f-202610270608";
+import { patient } from "../patient.js?v=7ed7f2f-202610270608";
+import * as api from "../path-remote.js?v=7ed7f2f-202610270608";
+import { loadProgress } from "../resume-remote.js?v=7ed7f2f-202610270608";
 
 const STEPS = [
   { id: "answer", label: "Answer", done: (s) => s.enough },

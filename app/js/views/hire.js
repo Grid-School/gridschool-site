@@ -16,10 +16,10 @@
  * half-typed form. Aden sees it read-only from the desk.
  */
 
-import { el, mount } from "../dom.js?v=4658328-202610270459";
-import { panel, btn, field, toast, copy } from "../ui.js?v=4658328-202610270459";
-import { isoDate, fmtDay } from "../time.js?v=4658328-202610270459";
-import { STATUS } from "../graph/model.js?v=4658328-202610270459";
+import { el, mount } from "../dom.js?v=7ed7f2f-202610270608";
+import { panel, btn, field, toast, copy } from "../ui.js?v=7ed7f2f-202610270608";
+import { isoDate, fmtDay } from "../time.js?v=7ed7f2f-202610270608";
+import { STATUS } from "../graph/model.js?v=7ed7f2f-202610270608";
 import {
   STAGES,
   RELATIONS,
@@ -62,15 +62,16 @@ import {
   dueTouches,
   nextTouch,
   targetCandidates,
+  webLink,
   MAX_ACTIVE_TARGETS,
-} from "../search.js?v=4658328-202610270459";
-import { storyCard, appRow } from "./search-parts.js?v=4658328-202610270459";
-import { TOOLS } from "../engine.js?v=4658328-202610270459";
-import { PERSIST } from "../../../config.js?v=4658328-202610270459";
-import { matchedRoles, radarReady, fetchPacks, winsState, shareWin, draftPositioning } from "../roles-remote.js?v=4658328-202610270459";
-import { createPackDrawer } from "./pack.js?v=4658328-202610270459";
-import { createCampaignDrawer } from "./campaign.js?v=4658328-202610270459";
-import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=4658328-202610270459";
+} from "../search.js?v=7ed7f2f-202610270608";
+import { storyCard, appRow } from "./search-parts.js?v=7ed7f2f-202610270608";
+import { TOOLS } from "../engine.js?v=7ed7f2f-202610270608";
+import { PERSIST } from "../../../config.js?v=7ed7f2f-202610270608";
+import { matchedRoles, radarReady, fetchPacks, winsState, shareWin, draftPositioning } from "../roles-remote.js?v=7ed7f2f-202610270608";
+import { createPackDrawer } from "./pack.js?v=7ed7f2f-202610270608";
+import { createCampaignDrawer } from "./campaign.js?v=7ed7f2f-202610270608";
+import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=7ed7f2f-202610270608";
 
 const RUN_FAMILIES = ["proof", "presence", "network", "interview"];
 /** How many moves the day leads with. More than this reads as a wall, not a plan. */
@@ -128,6 +129,7 @@ export function renderHire(ctx, initialTool, campaignId) {
     readOnly,
     getPortfolio: portfolio,
     getTarget: (id) => targetsOf(student()).find((t) => t.id === id),
+    onBusy: () => redraw(), // a campaign started or finished writing: the target cards say so
     onPatch: (id, patch) => save((x) => ({ targets: patchTarget(seedTarget(x.targets, student(), id), id, patch) })),
     onTouch: (id, channel, entry) =>
       save((x) => ({ targets: touchTarget(seedTarget(x.targets, student(), id), id, channel), apps: addApp(x.apps, entry) }), { kind: "search.logged", payload: { kind: "warm", company: entry.company, from: `target:${channel}` } }),
@@ -138,6 +140,8 @@ export function renderHire(ctx, initialTool, campaignId) {
     if (!String(role.company ?? "").trim()) return toast("A target needs the company.", "warn");
     save((x) => ({ targets: addTarget(x.targets, { company: role.company, role: role.title, roleKey: role.key, link: role.apply_url || role.url, insider, why: reasons.join(", "), posting: role.description ?? "" }) }), { kind: "search.target", payload: { company: role.company } });
     const made = activeTargets(student()).find((t) => (role.key && t.roleKey === role.key) || t.company === role.company);
+    // Land on Targets under the drawer, so closing it shows the new target in the list, not some other screen.
+    if (focus !== "targets") current.navigate("do", "targets");
     if (made) camp.open(made.id);
   }
 
@@ -423,7 +427,10 @@ export function renderHire(ctx, initialTool, campaignId) {
   // Any company they choose: found on a site, a Discord, a friend's tip, or a place they simply want to work.
   const tCompany = field({ label: "Company", id: "tg-company", placeholder: "Acme AI" });
   const tRole = field({ label: "Role (or the team you want)", id: "tg-role", placeholder: "Forward Deployed Engineer" });
-  const tLink = field({ label: "Link", id: "tg-link", type: "url", placeholder: "Their posting or their site" });
+  // Plain text, not type="url": the browser refused "acme.com" with only its own tooltip, so the button seemed dead.
+  const tLink = field({ label: "Link", id: "tg-link", placeholder: "acme.com/careers, or their posting" });
+  tLink.input.inputMode = "url";
+  tLink.input.autocapitalize = "off";
   const tText = field({ label: "What you know (paste the posting, or a few lines on what they build)", id: "tg-text", textarea: true });
   tText.input.rows = 5;
   const targetForm = el(
@@ -433,7 +440,9 @@ export function renderHire(ctx, initialTool, campaignId) {
         event.preventDefault();
         const company = tCompany.input.value.trim();
         if (!company) return toast("Add the company.", "warn");
-        makeTarget({ role: { company, title: tRole.input.value.trim(), url: tLink.input.value.trim(), description: tText.input.value.trim() } });
+        const url = webLink(tLink.input.value);
+        if (url === null) return toast("That link doesn't look like a web address. Try something like acme.com/careers, or leave it empty.", "warn");
+        makeTarget({ role: { company, title: tRole.input.value.trim(), url, description: tText.input.value.trim() } });
         for (const f of [tCompany, tRole, tLink, tText]) f.input.value = "";
       },
     },
@@ -462,6 +471,7 @@ export function renderHire(ctx, initialTool, campaignId) {
         el("div.tcard__top", {}, el("b", {}, t.company), el("span.tcard__next", {}, nextTouch(t))),
         el("span.tcard__role", {}, [shortTitle(t.role), t.campaign?.size].filter(Boolean).join(" · ")),
         t.campaign?.problem ? el("span.tcard__problem", {}, t.campaign.problem) : t.why ? el("span.tcard__problem", {}, t.why) : null,
+        t.campaign ? null : el("span.tcard__camp", { class: camp.isWriting(t.id) ? "is-writing" : null }, camp.isWriting(t.id) ? "Campaign: writing…" : "Campaign: not written yet. Open to write it."),
         loomStatus(t) ? el("span.tcard__loom", { class: loomStatus(t).done ? "is-sent" : null }, `Loom: ${loomStatus(t).done ? "✓ " : ""}${loomStatus(t).label}`) : null,
         el(
           "div.tcard__dots",

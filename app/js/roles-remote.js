@@ -10,8 +10,8 @@
  * When the radar is off the match is simply empty and the page says so.
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=4658328-202610270459";
-import { persistToken } from "./session.js?v=4658328-202610270459";
+import { PERSIST, isPlaceholder } from "../../config.js?v=7ed7f2f-202610270608";
+import { persistToken } from "./session.js?v=7ed7f2f-202610270608";
 
 export function radarReady() {
   return Boolean(persistToken() && PERSIST?.endpoint && !isPlaceholder(PERSIST.endpoint));
@@ -76,6 +76,11 @@ export function shareWin(slug, { appId, includeCompany = false, dryRun = false }
 }
 
 /** A multi-channel campaign for one target (campaign_draft.py): radar roleKey, or a role {company, title, url, description}. */
+/** This month's campaign drafts for a seat: {limit, used, left}; limit -1 means unlimited (the desk). */
+export function campaignAllowance(slug) {
+  return call("GET", `/students/${encodeURIComponent(slug)}/campaign/allowance`);
+}
+
 export function draftCampaign(slug, { roleKey, role, insider = "", portfolio = "" }) {
   return call("POST", `/students/${encodeURIComponent(slug)}/campaign/draft`, { ...(roleKey ? { roleKey } : { role }), insider, portfolio });
 }

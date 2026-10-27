@@ -6,21 +6,38 @@
  * when the student's record says it's done, and the drawer moves on to the
  * next one. Every button says what pressing it does.
  *
- * The drafts come from campaign_draft.py the first time the drawer opens and
+ * The drafts come from campaign_draft.py when the student presses "Write my campaign", and
  * stay on the student's record. They send everything themselves: mail opens
  * in their own mail app, the call is their phone, LinkedIn is their click.
  */
 
-import { el, mount } from "../dom.js?v=4658328-202610270459";
-import { btn, copy, toast, field } from "../ui.js?v=4658328-202610270459";
-import { createModal } from "../modal.js?v=4658328-202610270459";
-import { DAY0, FOLLOWUP_DAYS, nextTouch, fillLinks, peopleLinks } from "../search.js?v=4658328-202610270459";
-import { draftCampaign } from "../roles-remote.js?v=4658328-202610270459";
-import { scriptWizard, recordNode, closeRehearsal } from "./loom-kit.js?v=4658328-202610270459";
-import { nodeRail, nodeIntro } from "./node-rail.js?v=4658328-202610270459";
-import { NODES, doneNodes, firstOpen, nextNode, prevNode, labelOf } from "../campaign-steps.js?v=4658328-202610270459";
+import { el, mount } from "../dom.js?v=7ed7f2f-202610270608";
+import { btn, copy, toast, field } from "../ui.js?v=7ed7f2f-202610270608";
+import { createModal } from "../modal.js?v=7ed7f2f-202610270608";
+import { DAY0, FOLLOWUP_DAYS, nextTouch, fillLinks, peopleLinks } from "../search.js?v=7ed7f2f-202610270608";
+import { draftCampaign, campaignAllowance } from "../roles-remote.js?v=7ed7f2f-202610270608";
+import { workPanel } from "./work.js?v=7ed7f2f-202610270608";
 
-export function createCampaignDrawer({ slug, getTarget, onPatch, onTouch, getPortfolio, readOnly = () => false }) {
+/** What the student gets, said before they spend a draft on it. */
+const WRITE_GETS = [
+  "The problem they're hiring for, in their words, and the proof from your record that fits it",
+  "An email, ideas for a 60-second Loom, and a LinkedIn note",
+  "What to say on a call: whoever answers, the hiring manager, a voicemail",
+  "Follow-ups for day 3, 7 and 14",
+];
+/** The waiting panel's steps (the call doesn't report progress, so only the first shows as active). */
+const WRITE_STEPS = [
+  { label: "Reading the posting and what they build" },
+  { label: "Naming the problem they need owned" },
+  { label: "Matching proof from your record" },
+  { label: "Writing the email, Loom ideas and LinkedIn note" },
+  { label: "Writing the call scripts and follow-ups" },
+];
+import { scriptWizard, recordNode, closeRehearsal } from "./loom-kit.js?v=7ed7f2f-202610270608";
+import { nodeRail, nodeIntro } from "./node-rail.js?v=7ed7f2f-202610270608";
+import { NODES, doneNodes, firstOpen, nextNode, prevNode, labelOf } from "../campaign-steps.js?v=7ed7f2f-202610270608";
+
+export function createCampaignDrawer({ slug, getTarget, onPatch, onTouch, getPortfolio, readOnly = () => false, onBusy = () => {} }) {
   const modal = createModal({ label: "Target campaign", size: "reading", onClose: () => closeRehearsal() || close() });
   function close() {
     closeRehearsal();
@@ -29,26 +46,68 @@ export function createCampaignDrawer({ slug, getTarget, onPatch, onTouch, getPor
   }
   modal.layer.classList.add("modal--fixed", "pack-modal", "camp-modal");
   let openId = null;
-  let drafting = false;
+  // Each target drafts on its own: one still writing never stops another from starting. A draft keeps
+  // going if the drawer closes and lands on the target when it's done.
+  const drafting = new Map(); // target id -> its waiting panel
+  let room = null; // this month's drafts {limit, used, left}, from the server
 
-  async function open(targetId) {
-    openId = targetId;
-    const target = getTarget(targetId);
-    const needsDraft = Boolean(target && !target.campaign && !readOnly() && !drafting);
-    if (needsDraft) drafting = true;
-    render();
-    if (needsDraft) {
-      try {
-        const result = await draftCampaign(slug, target.roleKey ? { roleKey: target.roleKey, insider: target.insider, portfolio: getPortfolio() } : { role: { company: target.company, title: target.role, url: target.link, description: target.posting || target.why }, insider: target.insider, portfolio: getPortfolio() });
-        onPatch(targetId, { campaign: result.campaign });
-        if (typeof result.left === "number" && result.left <= 3) toast(`${result.left} campaign drafts left today.`, "warn");
-      } catch (error) {
-        toast(`The campaign draft failed: ${error.message}`, "warn");
-      } finally {
-        drafting = false;
-        render();
-      }
+  async function refreshRoom() {
+    try {
+      room = await campaignAllowance(slug);
+    } catch {
+      room = null; // an older server: the start screen just doesn't show the count
     }
+    render();
+  }
+
+  function open(targetId) {
+    openId = targetId;
+    render();
+    const target = getTarget(targetId);
+    if (target && !target.campaign && !readOnly()) void refreshRoom();
+  }
+
+  /** Writing a campaign is a choice the student makes, never a side effect of saving a target. */
+  async function write(targetId) {
+    const target = getTarget(targetId);
+    if (!target || target.campaign || drafting.has(targetId) || readOnly()) return;
+    const panel = workPanel({ title: `Writing the ${target.company} campaign`, steps: WRITE_STEPS });
+    drafting.set(targetId, panel);
+    render();
+    onBusy();
+    try {
+      const result = await draftCampaign(slug, target.roleKey ? { roleKey: target.roleKey, insider: target.insider, portfolio: getPortfolio() } : { role: { company: target.company, title: target.role, url: target.link, description: target.posting || target.why }, insider: target.insider, portfolio: getPortfolio() });
+      panel.complete();
+      onPatch(targetId, { campaign: result.campaign });
+      if (typeof result.left === "number" && result.left >= 0) room = { limit: result.limit, used: (result.limit ?? 0) - result.left, left: result.left };
+      if (openId !== targetId) toast(`The ${target.company} campaign is ready. Open it from Targets.`);
+      else if (typeof result.left === "number" && result.left >= 0 && result.left <= 3) toast(`${result.left} campaign ${result.left === 1 ? "draft" : "drafts"} left this month.`, "warn");
+    } catch (error) {
+      toast(`The campaign draft failed: ${error.message}`, "warn");
+    } finally {
+      panel.stop();
+      drafting.delete(targetId);
+      render();
+      onBusy();
+    }
+  }
+
+  /** Before a campaign exists: what pressing the button makes, how long, and what it uses. */
+  function startScreen(target, ro) {
+    const busy = drafting.get(target.id);
+    if (busy) return el("div.camp__writing", {}, busy.node, el("p.muted", {}, "You can close this. It keeps writing and shows up on the target when it's done."));
+    if (ro) return el("p.muted", {}, "No campaign yet.");
+    const out = room && room.limit >= 0 && room.left <= 0;
+    return el(
+      "div.camp__start",
+      {},
+      el("p.camp__lead", {}, `A campaign is everything you'll send ${target.company}, written around the problem they're hiring someone to own:`),
+      el("ul.camp__gets", {}, WRITE_GETS.map((g) => el("li", {}, g))),
+      el("p.camp__cost", {}, "About a minute. ", room && room.limit >= 0 ? `Uses 1 of your ${room.limit} campaign drafts this month (${room.left} left).` : null),
+      out
+        ? el("p.camp__out", {}, `That's this month's ${room.limit} drafts. They open again on the 1st.`)
+        : btn({ label: "Write my campaign", variant: "solid", onclick: () => write(target.id) })
+    );
   }
 
   /** Which node each target is on, and which nodes were already done when this drawer last drew. */
@@ -101,7 +160,7 @@ export function createCampaignDrawer({ slug, getTarget, onPatch, onTouch, getPor
 
     let body;
     if (!c) {
-      body = el("div.pack__wait", {}, el("span.pack__spinner", { "aria-hidden": "true" }), el("p", {}, drafting ? "Writing the campaign around what this company needs owned. About a minute." : "No campaign yet."));
+      body = startScreen(target, ro);
     } else {
       body = nodeBody(place.node, { target, c, ro, links, sent, markSent, sentChip });
     }
@@ -292,7 +351,7 @@ export function createCampaignDrawer({ slug, getTarget, onPatch, onTouch, getPor
     );
   }
 
-  return { layer: modal.layer, open, refresh: () => !modal.layer.hidden && render(), destroy: modal.destroy };
+  return { layer: modal.layer, open, isWriting: (id) => drafting.has(id), refresh: () => !modal.layer.hidden && render(), destroy: modal.destroy };
 }
 
 function section(title, copyText, content) {

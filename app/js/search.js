@@ -13,7 +13,7 @@
  * calendar draws.
  */
 
-import { isoDate, weekStart, addDays, parseDate } from "./time.js?v=4658328-202610270459";
+import { isoDate, weekStart, addDays, parseDate } from "./time.js?v=7ed7f2f-202610270608";
 
 /** How far one application got. Each stage implies every stage before it. */
 export const STAGES = [
@@ -626,6 +626,23 @@ export function insideConnections(roles, rows) {
 }
 
 /** A posting title short enough for a sentence: the first role, commas inside parentheses kept. */
+/**
+ * A link as people type it, made into a web address: "acme.com/careers" gets https://, an empty box is "",
+ * and anything that can't be a web address (spaces, no dot in the host, another scheme) is null.
+ */
+export function webLink(raw) {
+  const text = String(raw ?? "").trim();
+  if (!text) return "";
+  const withScheme = /^https?:\/\//i.test(text) ? text : /^[a-z][a-z0-9+.-]*:/i.test(text) && !/^[^:/]+\.[^:/]+:\d/.test(text) ? null : `https://${text.replace(/^\/+/, "")}`;
+  if (!withScheme || /\s/.test(withScheme)) return null;
+  try {
+    const url = new URL(withScheme);
+    return url.hostname.includes(".") ? url.href : null;
+  } catch {
+    return null;
+  }
+}
+
 export function shortTitle(title) {
   const text = String(title ?? "").trim();
   let depth = 0;

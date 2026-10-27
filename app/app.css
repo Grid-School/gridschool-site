@@ -2724,3 +2724,14 @@ pre.diagram--failed { border-color: var(--amber); }
   .work__beam, .work__line, .work__note, .work__step.is-active .work__dot { animation: none; }
   .work__beam { opacity: 0; }
 }
+
+/* A campaign before it exists: what "Write my campaign" makes, how long, and what it uses. */
+.camp__start { display: grid; gap: 14px; max-width: 62ch; padding-block: 8px; }
+.camp__start > button, .camp__start > a { justify-self: start; }
+.camp__lead { margin: 0; }
+.camp__gets { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; color: var(--muted); }
+.camp__cost { margin: 0; font-size: 13.5px; color: var(--muted); }
+.camp__out { margin: 0; color: var(--warn); }
+.camp__writing { display: grid; gap: 10px; }
+.tcard__camp { font-size: 12.5px; color: var(--muted); }
+.tcard__camp.is-writing { color: var(--warn); }
