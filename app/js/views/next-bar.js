@@ -7,11 +7,11 @@
  * rest after it, and the coach opens with it.
  */
 
-import { el, mount } from "../dom.js?v=a8ec4dc-202610271940";
-import { btn } from "../ui.js?v=a8ec4dc-202610271940";
-import { moveRoute, movesAfterNext, isHere } from "../engine.js?v=a8ec4dc-202610271940";
-import { liveRoles, livePacks, onNextChange, currentMove } from "../next-live.js?v=a8ec4dc-202610271940";
-import { isoDate } from "../time.js?v=a8ec4dc-202610271940";
+import { el, mount } from "../dom.js?v=afd944f-202610271949";
+import { btn } from "../ui.js?v=afd944f-202610271949";
+import { moveRoute, movesAfterNext, isHere } from "../engine.js?v=afd944f-202610271949";
+import { liveRoles, livePacks, onNextChange, currentMove } from "../next-live.js?v=afd944f-202610271949";
+import { isoDate } from "../time.js?v=afd944f-202610271949";
 
 export { currentMove };
 
@@ -25,7 +25,7 @@ const GO = {
   insider: "Open Today",
   people: "Open People",
   applications: "Open Applications",
-  profile: "Open Profile",
+  profile: "Open Your LinkedIn",
   rest: "Open Today",
 };
 

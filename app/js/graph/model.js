@@ -16,10 +16,10 @@
  * never gate a node: a habit is kept, not finished.
  */
 
-import { taskIsComplete, isCountTask } from "../task-state.js?v=a8ec4dc-202610271940";
-import { typeOf, specOf } from "../../../data/node-types.mjs?v=a8ec4dc-202610271940";
-import { prepOf, prepHint, opensLater, shortDay, isFreeMap, PAID_HINT, COURSE_HINT } from "../prep.js?v=a8ec4dc-202610271940";
-import { FREE_MODULES, isCourseStep, moduleId } from "../../../data/video-access.mjs?v=a8ec4dc-202610271940";
+import { taskIsComplete, isCountTask } from "../task-state.js?v=afd944f-202610271949";
+import { typeOf, specOf } from "../../../data/node-types.mjs?v=afd944f-202610271949";
+import { prepOf, prepHint, opensLater, shortDay, isFreeMap, PAID_HINT, COURSE_HINT } from "../prep.js?v=afd944f-202610271949";
+import { FREE_MODULES, isCourseStep, moduleId } from "../../../data/video-access.mjs?v=afd944f-202610271949";
 
 export { typeOf, specOf };
 

@@ -16,10 +16,10 @@
  * half-typed form. Aden sees it read-only from the desk.
  */
 
-import { el, mount } from "../dom.js?v=a8ec4dc-202610271940";
-import { panel, btn, field, toast, copy } from "../ui.js?v=a8ec4dc-202610271940";
-import { isoDate, fmtDay } from "../time.js?v=a8ec4dc-202610271940";
-import { STATUS, stepNumber } from "../graph/model.js?v=a8ec4dc-202610271940";
+import { el, mount } from "../dom.js?v=afd944f-202610271949";
+import { panel, btn, field, toast, copy } from "../ui.js?v=afd944f-202610271949";
+import { isoDate, fmtDay } from "../time.js?v=afd944f-202610271949";
+import { STATUS } from "../graph/model.js?v=afd944f-202610271949";
 import {
   STAGES,
   RELATIONS,
@@ -33,7 +33,6 @@ import {
   active,
   searchOf,
   careerOf,
-  cleanResume,
   peopleOf,
   addPerson,
   movePerson,
@@ -64,27 +63,20 @@ import {
   targetCandidates,
   webLink,
   MAX_ACTIVE_TARGETS,
-} from "../search.js?v=a8ec4dc-202610271940";
-import { storyCard, appRow } from "./search-parts.js?v=a8ec4dc-202610271940";
-import { TOOLS, moveRoute } from "../engine.js?v=a8ec4dc-202610271940";
-import { currentMove, setLiveJobs } from "../next-live.js?v=a8ec4dc-202610271940";
-import { PERSIST } from "../../../config.js?v=a8ec4dc-202610271940";
-import { matchedRoles, radarReady, fetchPacks, winsState, shareWin, draftPositioning } from "../roles-remote.js?v=a8ec4dc-202610271940";
-import { createPackDrawer } from "./pack.js?v=a8ec4dc-202610271940";
-import { createCampaignDrawer } from "./campaign.js?v=a8ec4dc-202610271940";
-import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=a8ec4dc-202610271940";
+} from "../search.js?v=afd944f-202610271949";
+import { storyCard, appRow } from "./search-parts.js?v=afd944f-202610271949";
+import { TOOLS, moveRoute } from "../engine.js?v=afd944f-202610271949";
+import { currentMove, setLiveJobs } from "../next-live.js?v=afd944f-202610271949";
+import { PERSIST } from "../../../config.js?v=afd944f-202610271949";
+import { matchedRoles, radarReady, fetchPacks, winsState, shareWin } from "../roles-remote.js?v=afd944f-202610271949";
+import { createPackDrawer } from "./pack.js?v=afd944f-202610271949";
+import { createCampaignDrawer } from "./campaign.js?v=afd944f-202610271949";
+import { createPositioningCard } from "./positioning-card.js?v=afd944f-202610271949";
+import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=afd944f-202610271949";
 
 const RUN_FAMILIES = ["proof", "presence", "network", "interview"];
-/** How many moves the day leads with. More than this reads as a wall, not a plan. */
+/** Every Jobs screen (#/do/<id>); Profile is reached from the "Your LinkedIn" step, not a tab. */
 const TOOL_IDS = ["today", "targets", "people", "applications", "profile"];
-/** The map steps each tool works on (by module), listed on the tool's page. */
-const TOOL_STEPS = {
-  applications: ["application-engine", "title-cluster"],
-  targets: ["target-campaign", "company-prep"],
-  people: ["warm-path", "target-list", "network-sprint"],
-  profile: ["resume-engine", "profile-rewrite", "title-cluster", "profile-images"],
-  today: [],
-};
 const TOOL_WHY = {
   today: "Your next move first, the same one as the bar at the bottom. Then everything else for today: campaign sends, warm asks, fresh roles and your next build step.",
   targets: "Five companies where hiring, size and fit overlap, worked on every channel: an email with a Loom, a LinkedIn request, a call, and follow-ups on day 3, 7 and 14.",
@@ -808,14 +800,9 @@ export function renderHire(ctx, initialTool, campaignId) {
     el("div.row", {}, el("button.b.b--ghost", { type: "submit" }, "Log it"))
   );
 
-  /* ---------- resume ---------- */
+  /* ---------- headline and About: the same drafter the "Your LinkedIn" step shows (views/positioning-card.js) ---------- */
 
-  const rLink = field({ label: "Resume link", id: "s-resume-link", type: "url", placeholder: "Google Drive or Dropbox link to the PDF" });
-  const rText = field({ label: "Resume text", id: "s-resume-text", textarea: true, placeholder: "Paste the whole resume. Prepare reads it for every role." });
-  rText.input.rows = 8;
-  const rPortfolio = field({ label: "Portfolio link (optional)", id: "s-portfolio", type: "url", placeholder: "Your site or the project page that proves it" });
-  const rStamp = el("span.muted.sresume__stamp");
-  const rSave = btn({ label: "Save resume", variant: "ghost", onclick: () => { save(() => ({ resume: cleanResume({ text: rText.input.value, link: rLink.input.value }), portfolio: rPortfolio.input.value.trim().slice(0, 300) }), { kind: "search.resume", payload: {} }); toast("Resume saved."); } });
+  const posCard = createPositioningCard({ getCtx: () => current, onTitles: (titles) => void loadRadar(titles) });
 
   /* ---------- layout ---------- */
 
@@ -835,24 +822,28 @@ export function renderHire(ctx, initialTool, campaignId) {
   let focus = TOOL_IDS.includes(initialTool) ? initialTool : "today";
 
   /** The node's own header, like a step page: back to the map, what this is, why, and the steps it powers. */
+  /** The tabs every Jobs screen shares, so Targets, People and Applications are one click from anywhere in Jobs. */
+  const TABS = ["today", "targets", "people", "applications"];
+
   function nodeHead(doneToday) {
     const tool = TOOLS[focus];
-    const modules = TOOL_STEPS[focus] ?? [];
-    const steps = (current.state.graph?.nodes ?? []).filter((node) => modules.includes(String(node.moduleRef ?? "").split("@")[0]));
     return el(
       "header.tool__head",
       {},
-      el("div.row.tool__nav", {}, btn({ label: "← Map", variant: "quiet", onclick: () => current.navigate("map") }), el("span.tool__crumb", {}, "Jobs")),
+      el(
+        "div.tool__nav",
+        {},
+        btn({ label: "← Map", variant: "quiet", onclick: () => current.navigate("map") }),
+        el(
+          "nav.jobtabs",
+          { "aria-label": "Jobs" },
+          TABS.map((id) =>
+            el("a.jobtab", { href: `#/do/${id}`, "aria-current": id === focus ? "page" : null, "data-track": `Jobs tab: ${TOOLS[id].label}` }, TOOLS[id].label)
+          )
+        )
+      ),
       el("h1.tool__title", {}, tool.label),
       el("p.tool__why", {}, TOOL_WHY[focus]),
-      steps.length
-        ? el(
-            "div.tool__steps",
-            {},
-            el("span", {}, "Works on these map steps:"),
-            steps.map((node) => el("button.chip2.tool__step", { type: "button", class: node.status === STATUS.LIT ? "is-lit" : null, onclick: () => current.navigate("map", node.id) }, [stepNumber(node), node.title].filter(Boolean).join(" ")))
-          )
-        : null,
       focus === "today" && doneToday ? el("p.tool__count", {}, `${doneToday} sent today`) : null
     );
   }
@@ -888,97 +879,11 @@ export function renderHire(ctx, initialTool, campaignId) {
     mount(liveBox, live.length ? el("div.sapps", {}, live.map((a) => appRow(a, { actions: controls(a), now }))) : el("p.muted", {}, "No replies yet. They come from warm asks and early, specific applications."));
     mount(allBox, apps.length ? el("div.sapps", {}, apps.map((a) => appRow(a, { actions: controls(a), now }))) : el("p.muted", {}, "Everything you send shows up here."));
     mount(storyBox, storyCard(s));
-    const resume = searchOf(s).resume;
-    if (document.activeElement !== rLink.input) rLink.input.value = resume?.link ?? "";
-    if (document.activeElement !== rText.input) rText.input.value = resume?.text ?? "";
-    if (document.activeElement !== rPortfolio.input) rPortfolio.input.value = searchOf(s).portfolio ?? "";
-    rStamp.textContent = resume?.at ? `Saved ${new Date(resume.at).toLocaleDateString()}` : "";
     for (const form of [peopleForm, pasteForm, logForm]) form.querySelectorAll("input, select, textarea, button").forEach((n) => n.toggleAttribute("disabled", readOnly()));
-    rSave.disabled = readOnly();
     for (const [tool, section] of Object.entries(sections)) section.hidden = tool !== focus;
     document.title = `${TOOLS[focus].label} · ${s.name} · GridSchool`;
   }
 
-  /* ---------- positioning: headline, About and titles, drafted from their resume (positioning_api.py) ---------- */
-
-  let positioning = { busy: false, result: null, error: "" };
-  async function runPositioning() {
-    if (positioning.busy || readOnly()) return;
-    positioning = { busy: true, result: null, error: "" };
-    redraw();
-    try {
-      const result = await draftPositioning(ctx.state.slug);
-      positioning = { busy: false, result, error: "" };
-      toast(result.saved ? "Your headline and About are ready." : "Your draft is ready to compare.");
-      if (result.titles?.length) void loadRadar(result.titles);
-    } catch (error) {
-      positioning = { busy: false, result: null, error: error.message };
-    }
-    redraw();
-  }
-
-  const profileStep = () => {
-    const career = careerOf(student());
-    const result = positioning.result;
-    const mine = Boolean(student()?.career?.auto?.positioning) || Boolean(result?.saved);
-    const headline = result?.saved ? result.draft.headline : career.headline;
-    const about = result?.saved ? result.draft.about : career.about;
-    const status = positioning.busy
-      ? el("p.muted", {}, "Drafting from your resume. This takes up to a minute.")
-      : positioning.error
-        ? el("p.muted", {}, positioning.error)
-        : result
-          ? el("p.muted", {}, result.note)
-          : null;
-    const draftBtn = readOnly() || !radarReady()
-      ? null
-      : btn({
-          label: positioning.busy ? "Drafting…" : !headline ? "Draft my headline and About" : mine ? "Draft again" : "Draft my own to compare",
-          variant: headline ? "quiet" : "solid",
-          onclick: () => runPositioning(),
-        });
-    const compare =
-      result && !result.saved
-        ? el(
-            "div.sstory",
-            {},
-            el("b", {}, "Your draft"),
-            result.draft.headline ? el("p.sstory__headline", {}, result.draft.headline) : null,
-            el(
-              "div.row",
-              {},
-              result.draft.headline ? btn({ label: "Copy headline", variant: "ghost", onclick: () => copy(result.draft.headline, "Headline copied.") }) : null,
-              result.draft.about ? btn({ label: "Copy About", variant: "quiet", onclick: () => copy(result.draft.about, "About copied.") }) : null
-            )
-          )
-        : null;
-    const confirm = (result?.draft?.confirm ?? (mine ? career.confirm : [])).filter(Boolean);
-    const check = confirm.length ? el("div.sstory__part", {}, el("b", {}, "Answer these for yourself before you post"), el("ul", {}, confirm.map((q) => el("li", {}, q)))) : null;
-    if (!headline)
-      return el(
-        "div",
-        {},
-        el("p.muted", {}, "Draft your headline, your About and the titles to search under from the resume you built. Your coach can sharpen it with you on a call."),
-        el("div.row", {}, draftBtn),
-        status
-      );
-    return el(
-      "div",
-      {},
-      el(
-        "div.row",
-        {},
-        btn({ label: "Copy headline", variant: "ghost", onclick: () => copy(headline, "Headline copied.") }),
-        about ? btn({ label: "Copy About", variant: "ghost", onclick: () => copy(about, "About copied.") }) : null,
-        readOnly() || searchOf(student()).profileAt ? null : btn({ label: "It's live on LinkedIn", variant: "solid", onclick: () => save(() => ({ profileAt: new Date().toISOString() }), { kind: "search.profile", payload: {} }) }),
-        draftBtn
-      ),
-      status,
-      check,
-      compare
-    );
-  };
-  const profileActions = el("div");
 
   const sections = {
     today: el("section.tool__body", {}, adenOn, el("header.hire__runhead", {}, el("h2", {}, "In order"), runCount), runBox),
@@ -991,7 +896,7 @@ export function renderHire(ctx, initialTool, campaignId) {
       freshBox,
       el("div.hire__quiet", {}, el("details.hire__fold", { open: "" }, el("summary", {}, "Bring a posting from anywhere"), pasteForm), el("details.hire__fold", {}, el("summary", {}, "Live conversations"), liveBox), el("details.hire__fold", {}, el("summary", {}, "Log something you sent"), logForm), el("details.hire__fold", {}, el("summary", {}, "Everything you've sent"), allBox))
     ),
-    profile: el("section.tool__body", {}, panel({ eyebrow: "Your positioning", title: "Your story" }, storyBox, profileActions), panel({ eyebrow: "Keep it current", title: "Resume and portfolio" }, el("div.sresume", {}, rLink.node, rPortfolio.node, rText.node, el("div.row", {}, rSave, rStamp)))),
+    profile: el("section.tool__body", {}, panel({ eyebrow: "Your LinkedIn", title: "Headline and About" }, storyBox, posCard.node)),
   };
 
   const node = el("div.view.view--hire.view--tool", {}, headBox, ...Object.values(sections), drawer.layer, camp.layer);
@@ -1011,7 +916,7 @@ export function renderHire(ctx, initialTool, campaignId) {
   }
 
   function redraw() {
-    mount(profileActions, profileStep());
+    posCard.render();
     draw();
   }
 

@@ -24,7 +24,7 @@ export const LINKS = {
   // (ops/launch-copy.md §1). Until they're real, gift/'s buttons write to support@ instead.
   giftComplete: "https://buy.stripe.com/eVq8wP7DAa1Lapf4PNdEs05",
   // Complete as a gift at $97 a month, billed to the giver from today (no trial); the webhook stops it at 12.
-  giftCompleteMonthly: "REPLACE_ME_CHECKOUT_GIFT_COMPLETE_MONTHLY",
+  giftCompleteMonthly: "https://buy.stripe.com/5kQ14ncXUfm58h7dmjdEs08",
   giftResidency: "https://buy.stripe.com/28E7sLe1Yfm57d3dmjdEs06",
   giftResidencyMonthly: "https://buy.stripe.com/dRmbJ1aPMgq9gND3LJdEs07",
   // Stripe's customer portal login link: where anyone on a monthly plan cancels or changes their card.

@@ -9,10 +9,13 @@
  * itself when the work is done, from wherever it was done.
  */
 
-import { el, mount } from "../dom.js?v=a8ec4dc-202610271940";
-import { btn, toast } from "../ui.js?v=a8ec4dc-202610271940";
-import { careerOf, searchOf, activeTargets, MAX_ACTIVE_TARGETS } from "../search.js?v=a8ec4dc-202610271940";
-import { isProgressReadOnly } from "../store.js?v=a8ec4dc-202610271940";
+import { el, mount } from "../dom.js?v=afd944f-202610271949";
+import { btn, toast } from "../ui.js?v=afd944f-202610271949";
+import { careerOf, searchOf, activeTargets, MAX_ACTIVE_TARGETS } from "../search.js?v=afd944f-202610271949";
+import { isProgressReadOnly } from "../store.js?v=afd944f-202610271949";
+import { field } from "../ui.js?v=afd944f-202610271949";
+import { webLink } from "../search.js?v=afd944f-202610271949";
+import { createPositioningCard } from "./positioning-card.js?v=afd944f-202610271949";
 
 const taskDone = (state, task) => state.student?.tasks?.[task?.id]?.state === "done";
 
@@ -25,12 +28,12 @@ function follow(ctx, task, isDone) {
   });
 }
 
-function row({ n, title, text, done, optional = false, action = null }) {
+function row({ n, title, text, done, optional = false, action = null, body = null }) {
   return el(
     "li.stepcheck__row",
-    { class: done ? "is-done" : null },
+    { class: [done ? "is-done" : null, body ? "has-body" : null].filter(Boolean).join(" ") || null },
     el("span.stepcheck__mark", { "aria-hidden": "true" }, done ? "✓" : String(n)),
-    el("div.stepcheck__text", {}, el("b", {}, title, optional ? el("small", {}, " · optional") : null), text ? el("p", {}, text) : null),
+    el("div.stepcheck__text", {}, el("b", {}, title, optional ? el("small", {}, " · optional") : null), text ? el("p", {}, text) : null, body),
     action ? el("div.stepcheck__act", {}, action) : null
   );
 }
@@ -40,7 +43,11 @@ function shell(build) {
     let current = ctx;
     let node = options.node ?? null;
     const root = el("div.stepcheck");
-    const render = () => mount(root, build({ ctx: current, node }));
+    const mem = { ctx };  // what a step keeps between repaints (a drafter mid-draft, a field being typed in)
+    const render = () => {
+      mem.ctx = current;
+      mount(root, build({ ctx: current, node, mem }));
+    };
     render();
     return {
       node: root,
@@ -54,7 +61,30 @@ function shell(build) {
   };
 }
 
-export const renderLinkedinStep = shell(({ ctx, node }) => {
+function portfolioField(ctx, mem, saved, ro) {
+  if (!mem.portfolio) {
+    const f = field({ label: "Portfolio link", id: "ln-portfolio", placeholder: "yoursite.com or the project page" });
+    f.input.inputMode = "url";
+    const save = btn({
+      label: "Save link",
+      variant: "ghost",
+      onclick: () => {
+        const url = webLink(f.input.value);
+        if (url === null) return toast("That doesn't look like a web address. Try yoursite.com, or leave it empty.", "warn");
+        mem.ctx.store.updateSearch(() => ({ portfolio: url.slice(0, 300) }), { kind: "search.portfolio", payload: {} });
+        toast(url ? "Portfolio link saved." : "Portfolio link removed.");
+      },
+    });
+    mem.portfolio = { f, save, node: el("div.stepcheck__field", {}, f.node, save) };
+  }
+  const { f, save, node } = mem.portfolio;
+  if (document.activeElement !== f.input) f.input.value = saved ?? "";
+  f.input.disabled = ro;
+  save.disabled = ro;
+  return node;
+}
+
+export const renderLinkedinStep = shell(({ ctx, node, mem }) => {
   const s = ctx.state.student;
   const career = careerOf(s);
   const search = searchOf(s);
@@ -69,10 +99,14 @@ export const renderLinkedinStep = shell(({ ctx, node }) => {
     {},
     row({
       n: 1,
-      title: "Draft your headline and About",
-      text: drafted ? `Your headline: "${career.headline}"` : "Written from the resume you just built. About a minute, then make it sound like you.",
+      title: "Your headline and About",
       done: drafted,
-      action: btn({ label: drafted ? "Open Profile" : "Draft them", variant: drafted ? "ghost" : "solid", onclick: () => ctx.navigate("do", "profile") }),
+      // The drafter itself, here in the step (it used to live two screens away, in Jobs → Profile).
+      body: (() => {
+        mem.card ??= createPositioningCard({ getCtx: () => mem.ctx });
+        mem.card.render();
+        return mem.card.node;
+      })(),
     }),
     row({
       n: 2,
@@ -84,6 +118,14 @@ export const renderLinkedinStep = shell(({ ctx, node }) => {
     }),
     row({
       n: 3,
+      title: "Your portfolio link",
+      text: "The site or project page that proves it. Campaign emails link to it.",
+      done: Boolean(search.portfolio),
+      optional: true,
+      body: portfolioField(ctx, mem, search.portfolio, ro),
+    }),
+    row({
+      n: 4,
       title: "Put them on LinkedIn",
       text: live
         ? `Live since ${new Date(search.profileAt).toLocaleDateString()}.`

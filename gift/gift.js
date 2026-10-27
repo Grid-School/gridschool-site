@@ -10,9 +10,9 @@
  * Words for each outcome: gift-words.mjs.
  */
 
-import { PERSIST, link } from "../config.js?v=a8ec4dc-202610271940";
-import { track, visitorId } from "../check/events.js?v=a8ec4dc-202610271940";
-import { DONE, LEAD, claimTitle, shareLabel, giftSource, leadBody, leadProblem, scheduledWords } from "./gift-words.mjs?v=a8ec4dc-202610271940";
+import { PERSIST, link } from "../config.js?v=afd944f-202610271949";
+import { track, visitorId } from "../check/events.js?v=afd944f-202610271949";
+import { DONE, LEAD, claimTitle, shareLabel, giftSource, leadBody, leadProblem, scheduledWords } from "./gift-words.mjs?v=afd944f-202610271949";
 
 const params = new URLSearchParams(location.search);
 const $ = (id) => document.getElementById(id);

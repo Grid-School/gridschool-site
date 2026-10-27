@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { PLANS, dayWords, optionWords, order, readParams, payUrl, sendOnRange, summary } from "./order.mjs?v=a8ec4dc-202610271940";
+import { PLANS, dayWords, optionWords, order, readParams, payUrl, sendOnRange, summary } from "./order.mjs?v=afd944f-202610271949";
 
 test("a gift for a chosen day says so, and the day travels as a saved intent", () => {
   const today = new Date(2026, 9, 27);

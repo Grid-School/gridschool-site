@@ -2806,3 +2806,19 @@ pre.diagram--failed { border-color: var(--amber); }
 /* What a campaign is written from, missing (views/campaign.js, server/generator_inputs.py). */
 .camp__needs { display: grid; gap: 12px; padding: 14px 16px; border-left: 2px solid var(--warn); background: rgba(255, 179, 43, .05); }
 .camp__needs p { margin: 0; }
+
+/* Jobs tabs (views/hire.js): Today, Targets, People, Applications on every Jobs screen. */
+.tool__nav { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; }
+.jobtabs { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid rgba(84, 220, 255, .16); }
+.jobtab { padding: 9px 14px 10px; color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 500; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.jobtab:hover { color: #fff; }
+.jobtab[aria-current="page"] { color: #fff; border-bottom-color: var(--cyan); }
+.jobtab:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+/* The headline drafter (views/positioning-card.js). */
+.poscard { display: grid; gap: 12px; margin-top: 10px; }
+.poscard__headline { margin: 0; color: #fff; font-size: 16px; font-weight: 600; }
+.poscard__about { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.55; white-space: pre-line; max-height: 9.5em; overflow: auto; }
+.poscard__error { margin: 0; color: var(--warn); font-size: 14px; }
+.stepcheck__row.has-body { align-items: start; }
+.stepcheck__field { display: flex; flex-wrap: wrap; gap: 8px; align-items: end; margin-top: 10px; }
+.stepcheck__field .field { flex: 1 1 240px; margin: 0; }

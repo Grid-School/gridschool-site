@@ -10,43 +10,43 @@
  * aliases so links already in the wild still land somewhere true.
  */
 
-import { el, mount, download } from "./dom.js?v=a8ec4dc-202610271940";
-import * as store from "./store.js?v=a8ec4dc-202610271940";
-import { resolveSlug, slugFromUrl, currentSession, signOut, setPersistToken, inviteFromUrl, persistToken } from "./session.js?v=a8ec4dc-202610271940";
-import { tryStoredKey } from "./gate.js?v=a8ec4dc-202610271940";
-import { peekInvite } from "./persist-auth.js?v=a8ec4dc-202610271940";
-import { createRouter } from "./router.js?v=a8ec4dc-202610271940";
-import { createChrome } from "./chrome.js?v=a8ec4dc-202610271940";
-import { activeDoor } from "./rail.js?v=a8ec4dc-202610271940";
-import { toast } from "./ui.js?v=a8ec4dc-202610271940";
-import { isTestSeat } from "./test-seats.js?v=a8ec4dc-202610271940";
-import { renderLogin } from "./views/login.js?v=a8ec4dc-202610271940";
-import { renderToday } from "./views/today.js?v=a8ec4dc-202610271940";
-import { renderMap } from "./views/map.js?v=a8ec4dc-202610271940";
-import { renderStep, isStepArgs, moduleIdFromArgs } from "./views/step.js?v=a8ec4dc-202610271940";
-import { renderTasks } from "./views/tasks.js?v=a8ec4dc-202610271940";
-import { renderCalendar } from "./views/calendar.js?v=a8ec4dc-202610271940";
-import { renderLibrary } from "./views/library.js?v=a8ec4dc-202610271940";
-import { renderPosts } from "./views/posts.js?v=a8ec4dc-202610271940";
-import { renderHire } from "./views/hire.js?v=a8ec4dc-202610271940";
-import { renderResume } from "./views/resume.js?v=a8ec4dc-202610271940";
-import { renderProfile } from "./views/profile.js?v=a8ec4dc-202610271940";
-import { renderSend } from "./views/send.js?v=a8ec4dc-202610271940";
-import { renderPath } from "./views/path.js?v=a8ec4dc-202610271940";
-import { renderImages } from "./views/images.js?v=a8ec4dc-202610271940";
-import { renderStudio } from "./views/studio.js?v=a8ec4dc-202610271940";
-import { toggleDevUnlock, setDevUnlock } from "./dev-mode.js?v=a8ec4dc-202610271940";
-import { togglePreviewMedia, setPreviewMedia, isPreviewMedia } from "./preview-mode.js?v=a8ec4dc-202610271940";
-import { isInstructorDevice } from "./instructor-mode.js?v=a8ec4dc-202610271940";
-import { startReminders } from "./reminders.js?v=a8ec4dc-202610271940";
-import { watchReviewArrivals } from "./review-arrivals.js?v=a8ec4dc-202610271940";
-import { enterView, leaveView } from "./transitions.js?v=a8ec4dc-202610271940";
-import { gateRoutes } from "./features.js?v=a8ec4dc-202610271940";
-import * as measure from "./measure.js?v=a8ec4dc-202610271940";
-import { startTelemetry } from "./telemetry.js?v=a8ec4dc-202610271940";
-import { createNextBar } from "./views/next-bar.js?v=a8ec4dc-202610271940";
-import { useSeat } from "./next-live.js?v=a8ec4dc-202610271940";
-import { PERSIST, isPlaceholder } from "../../config.js?v=a8ec4dc-202610271940";
+import { el, mount, download } from "./dom.js?v=afd944f-202610271949";
+import * as store from "./store.js?v=afd944f-202610271949";
+import { resolveSlug, slugFromUrl, currentSession, signOut, setPersistToken, inviteFromUrl, persistToken } from "./session.js?v=afd944f-202610271949";
+import { tryStoredKey } from "./gate.js?v=afd944f-202610271949";
+import { peekInvite } from "./persist-auth.js?v=afd944f-202610271949";
+import { createRouter } from "./router.js?v=afd944f-202610271949";
+import { createChrome } from "./chrome.js?v=afd944f-202610271949";
+import { activeDoor } from "./rail.js?v=afd944f-202610271949";
+import { toast } from "./ui.js?v=afd944f-202610271949";
+import { isTestSeat } from "./test-seats.js?v=afd944f-202610271949";
+import { renderLogin } from "./views/login.js?v=afd944f-202610271949";
+import { renderToday } from "./views/today.js?v=afd944f-202610271949";
+import { renderMap } from "./views/map.js?v=afd944f-202610271949";
+import { renderStep, isStepArgs, moduleIdFromArgs } from "./views/step.js?v=afd944f-202610271949";
+import { renderTasks } from "./views/tasks.js?v=afd944f-202610271949";
+import { renderCalendar } from "./views/calendar.js?v=afd944f-202610271949";
+import { renderLibrary } from "./views/library.js?v=afd944f-202610271949";
+import { renderPosts } from "./views/posts.js?v=afd944f-202610271949";
+import { renderHire } from "./views/hire.js?v=afd944f-202610271949";
+import { renderResume } from "./views/resume.js?v=afd944f-202610271949";
+import { renderProfile } from "./views/profile.js?v=afd944f-202610271949";
+import { renderSend } from "./views/send.js?v=afd944f-202610271949";
+import { renderPath } from "./views/path.js?v=afd944f-202610271949";
+import { renderImages } from "./views/images.js?v=afd944f-202610271949";
+import { renderStudio } from "./views/studio.js?v=afd944f-202610271949";
+import { toggleDevUnlock, setDevUnlock } from "./dev-mode.js?v=afd944f-202610271949";
+import { togglePreviewMedia, setPreviewMedia, isPreviewMedia } from "./preview-mode.js?v=afd944f-202610271949";
+import { isInstructorDevice } from "./instructor-mode.js?v=afd944f-202610271949";
+import { startReminders } from "./reminders.js?v=afd944f-202610271949";
+import { watchReviewArrivals } from "./review-arrivals.js?v=afd944f-202610271949";
+import { enterView, leaveView } from "./transitions.js?v=afd944f-202610271949";
+import { gateRoutes } from "./features.js?v=afd944f-202610271949";
+import * as measure from "./measure.js?v=afd944f-202610271949";
+import { startTelemetry } from "./telemetry.js?v=afd944f-202610271949";
+import { createNextBar } from "./views/next-bar.js?v=afd944f-202610271949";
+import { useSeat } from "./next-live.js?v=afd944f-202610271949";
+import { PERSIST, isPlaceholder } from "../../config.js?v=afd944f-202610271949";
 
 /* Coach (today) and Posts are gated in features.js: switched off, they are
    not routes at all, so their links land on the Map. */
@@ -163,6 +163,11 @@ function renderRoute() {
       history.replaceState(null, "", `#/map/${step.id}`);
       route = { name: "map", args: [step.id] };
     }
+  }
+  // Headline, About, photos and the portfolio link live in the "Your LinkedIn" step now: Jobs → Profile opens it.
+  if (route.name === "do" && route.args[0] === "profile" && store.state().graph?.byId?.has("b.linkedin")) {
+    history.replaceState(null, "", "#/map/b.linkedin");
+    route = { name: "map", args: ["b.linkedin"] };
   }
   const view = VIEWS[route.name];
   const ctx = context();
