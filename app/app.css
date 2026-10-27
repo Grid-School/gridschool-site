@@ -2786,3 +2786,19 @@ pre.diagram--failed { border-color: var(--amber); }
 .rz-mark { fill: var(--muted); }
 .rz-node--marker.is-open .rz-mark { fill: var(--cyan); }
 .rz-node--marker.is-lit .rz-mark { fill: var(--ok); }
+
+/* Flow rebuild step 3: the step page template. A one-line crumb, the title, a two-line reason, then the work;
+   the footer sticks to the bottom of the page with one way on. */
+.step__crumb { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0 0 6px; font: 400 10.5px/1.4 "Michroma", var(--font-mono, monospace); letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+.step__crumb > .b--quiet { margin-left: -9px; font-family: inherit; font-size: inherit; letter-spacing: inherit; text-transform: inherit; color: var(--cyan); }
+.step__crumb-sep { color: var(--ghost, #3a4650); }
+.step__crumb-here { color: var(--ink-soft, #b8c6cf); }
+.step__head { margin-bottom: var(--sp-5); }
+.step__head .step__title { margin-top: 2px; font-size: clamp(24px, 2.6vw, 30px); }
+.step__head .step__lead { font-size: 16.5px; line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.step__bar { position: static; padding: 18px 0 14px; margin-top: var(--sp-6); border-top: 1px solid var(--hair-soft); }
+.step__bar.is-ready { position: sticky; bottom: 0; border-top: 0; background: linear-gradient(to top, #000 70%, rgba(0, 0, 0, 0)); }
+.step__bar-hint { max-width: none; font-size: 13.5px; }
+.view--step > .step, .view--step > .step--module { padding-bottom: 32px; }
+.step__preview { margin-top: var(--sp-5); }
+.step__preview-list { margin: 10px 0 0; padding-left: 20px; display: grid; gap: 8px; color: var(--ink-soft, #b8c6cf); font-size: 15px; }

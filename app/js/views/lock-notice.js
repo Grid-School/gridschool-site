@@ -3,9 +3,9 @@
  * Care without condescension: name what unlocks it, offer the next open step.
  */
 
-import { el } from "../dom.js?v=f2598aa-202610271919";
-import { btn } from "../ui.js?v=f2598aa-202610271919";
-import { STATUS, blockedBy, nextUp } from "../graph/model.js?v=f2598aa-202610271919";
+import { el } from "../dom.js?v=2c47259-202610271924";
+import { btn } from "../ui.js?v=2c47259-202610271924";
+import { STATUS, blockedBy, nextUp } from "../graph/model.js?v=2c47259-202610271924";
 
 /** Short human reason + actions. Used on the map HUD and as a step-page gate. */
 export function lockNotice({ graph, node, onGo, onDismiss }) {
@@ -45,12 +45,13 @@ export function lockNotice({ graph, node, onGo, onDismiss }) {
       {},
       `“${node.title}” opens once the steps before it are done. ${list}`
     ),
-    actions({ graph, onGo, onDismiss, goLabel: null })
+    actions({ graph, onGo, onDismiss, goLabel: null, toward: blockers.find((item) => item.status === STATUS.OPEN) })
   );
 }
 
-function actions({ graph, onGo, onDismiss, goLabel }) {
-  const next = nextUp(graph);
+/** One way on: the step that's blocking this one when it's open, else the map's next step. */
+function actions({ graph, onGo, onDismiss, goLabel, toward = null }) {
+  const next = toward ?? nextUp(graph);
   return el(
     "div.lock-note__acts",
     {},

@@ -7,12 +7,12 @@
  * estimate, so a student learns the meter before anyone pastes an API key.
  */
 
-import { COACH, PERSIST, isPlaceholder } from "../../../config.js?v=f2598aa-202610271919";
-import { loadCoachPrompt } from "../api.js?v=f2598aa-202610271919";
-import { persistToken } from "../session.js?v=f2598aa-202610271919";
-import { packContext, recentTurns } from "./pack.js?v=f2598aa-202610271919";
-import { estimateTokens, costUsd, monthKey, wouldExceed } from "./credits.js?v=f2598aa-202610271919";
-import { lowerFirst } from "../copy.js?v=f2598aa-202610271919";
+import { COACH, PERSIST, isPlaceholder } from "../../../config.js?v=2c47259-202610271924";
+import { loadCoachPrompt } from "../api.js?v=2c47259-202610271924";
+import { persistToken } from "../session.js?v=2c47259-202610271924";
+import { packContext, recentTurns } from "./pack.js?v=2c47259-202610271924";
+import { estimateTokens, costUsd, monthKey, wouldExceed } from "./credits.js?v=2c47259-202610271924";
+import { lowerFirst } from "../copy.js?v=2c47259-202610271924";
 
 const corpusCache = { text: null, promise: null };
 

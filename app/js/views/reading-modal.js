@@ -6,11 +6,11 @@
  * as a page for sharing; this is how a student reads it.
  */
 
-import { el, mount } from "../dom.js?v=f2598aa-202610271919";
-import { btn } from "../ui.js?v=f2598aa-202610271919";
-import { createModal } from "../modal.js?v=f2598aa-202610271919";
-import { renderMarkdown, splitTitle } from "../markdown.js?v=f2598aa-202610271919";
-import { hydrateMermaid } from "../mermaid.js?v=f2598aa-202610271919";
+import { el, mount } from "../dom.js?v=2c47259-202610271924";
+import { btn } from "../ui.js?v=2c47259-202610271924";
+import { createModal } from "../modal.js?v=2c47259-202610271924";
+import { renderMarkdown, splitTitle } from "../markdown.js?v=2c47259-202610271924";
+import { hydrateMermaid } from "../mermaid.js?v=2c47259-202610271924";
 
 const MODULE_ID = /^[a-z0-9][a-z0-9/-]*[a-z0-9]$/;
 

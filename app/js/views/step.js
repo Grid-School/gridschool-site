@@ -8,40 +8,39 @@
  * reading as a shareable page).
  */
 
-import { el, mount } from "../dom.js?v=f2598aa-202610271919";
-import { btn, placeholder, toast, field } from "../ui.js?v=f2598aa-202610271919";
-import { STATUS, blockedBy, isSpine, nextUp, stepNumber, stepCount, specOf } from "../graph/model.js?v=f2598aa-202610271919";
-import { taskRow, reviewScores } from "./parts.js?v=f2598aa-202610271919";
-import { statusLabel, trackLabel, ccvvLabel, stepRule } from "../copy.js?v=f2598aa-202610271919";
-import { videoCard, resolveMedia, filmSummary } from "./video.js?v=f2598aa-202610271919";
-import { handoffDisclosure } from "./handoff.js?v=f2598aa-202610271919";
-import { withSavedState, isCountTask } from "../task-state.js?v=f2598aa-202610271919";
-import { renderMarkdown, splitTitle } from "../markdown.js?v=f2598aa-202610271919";
-import { hydrateMermaid, mermaidSource } from "../mermaid.js?v=f2598aa-202610271919";
-import { provesBlock } from "./proves.js?v=f2598aa-202610271919";
-import { modeLine } from "./mode.js?v=f2598aa-202610271919";
-import { artifactLine } from "./artifact.js?v=f2598aa-202610271919";
-import { refsBlock } from "./refs.js?v=f2598aa-202610271919";
-import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=f2598aa-202610271919";
-import { electiveBlock } from "./elective.js?v=f2598aa-202610271919";
-import { fromAdenCard } from "./from-aden.js?v=f2598aa-202610271919";
-import { helpBlock } from "./step-help.js?v=f2598aa-202610271919";
-import { signoffNotice, submitLabel, linkHint } from "./signoff.js?v=f2598aa-202610271919";
-import { stepSpine, isStepComplete, canAdvance, readyToSave, readFlag } from "./step-progress.js?v=f2598aa-202610271919";
-import { createReadingModal } from "./reading-modal.js?v=f2598aa-202610271919";
-import { bindDraft, clearDraft } from "../drafts.js?v=f2598aa-202610271919";
-import { registerLeaveGuard, clearLeaveGuard, isLeaveDirty } from "../leave-guard.js?v=f2598aa-202610271919";
-import { isPreviewMedia } from "../preview-mode.js?v=f2598aa-202610271919";
-import { isViewEnabled } from "../features.js?v=f2598aa-202610271919";
-import { siteOverridesDoc, dropSiteOverridesCache } from "../../../js/site-overrides.js?v=f2598aa-202610271919";
-import { isCompleteMap, isFreeMap, stageTime, upgradeHref, PAID_ASK, PAID_TASKS, PAID_VIDEO, DFY_LINE, FILM_COMING, COURSE_LINE, COURSE_ASK, COURSE_TASKS } from "../prep.js?v=f2598aa-202610271919";
-import { sampleBlock } from "./sample.js?v=f2598aa-202610271919";
-import { answerBlock } from "./answer.js?v=f2598aa-202610271919";
-import { renderResume } from "./resume.js?v=f2598aa-202610271919";
-import { renderProfile } from "./profile.js?v=f2598aa-202610271919";
-import { renderSend } from "./send.js?v=f2598aa-202610271919";
-import { renderPath } from "./path.js?v=f2598aa-202610271919";
-import { renderLinkedinStep, renderTargetsStep } from "./step-checklist.js?v=f2598aa-202610271919";
+import { el, mount } from "../dom.js?v=2c47259-202610271924";
+import { btn, placeholder, toast, field } from "../ui.js?v=2c47259-202610271924";
+import { STATUS, blockedBy, isSpine, nextUp, stepNumber, stepCount, specOf } from "../graph/model.js?v=2c47259-202610271924";
+import { taskRow, reviewScores } from "./parts.js?v=2c47259-202610271924";
+import { statusLabel, trackLabel, ccvvLabel } from "../copy.js?v=2c47259-202610271924";
+import { videoCard, resolveMedia, filmSummary } from "./video.js?v=2c47259-202610271924";
+import { handoffDisclosure } from "./handoff.js?v=2c47259-202610271924";
+import { withSavedState, isCountTask } from "../task-state.js?v=2c47259-202610271924";
+import { renderMarkdown, splitTitle } from "../markdown.js?v=2c47259-202610271924";
+import { hydrateMermaid, mermaidSource } from "../mermaid.js?v=2c47259-202610271924";
+import { provesBlock } from "./proves.js?v=2c47259-202610271924";
+import { modeLine } from "./mode.js?v=2c47259-202610271924";
+import { artifactLine } from "./artifact.js?v=2c47259-202610271924";
+import { refsBlock } from "./refs.js?v=2c47259-202610271924";
+import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=2c47259-202610271924";
+import { electiveBlock } from "./elective.js?v=2c47259-202610271924";
+import { fromAdenCard } from "./from-aden.js?v=2c47259-202610271924";
+import { helpBlock } from "./step-help.js?v=2c47259-202610271924";
+import { signoffNotice, submitLabel, linkHint } from "./signoff.js?v=2c47259-202610271924";
+import { stepSpine, canAdvance, readyToSave, readFlag } from "./step-progress.js?v=2c47259-202610271924";
+import { createReadingModal } from "./reading-modal.js?v=2c47259-202610271924";
+import { bindDraft, clearDraft } from "../drafts.js?v=2c47259-202610271924";
+import { registerLeaveGuard, clearLeaveGuard, isLeaveDirty } from "../leave-guard.js?v=2c47259-202610271924";
+import { isPreviewMedia } from "../preview-mode.js?v=2c47259-202610271924";
+import { siteOverridesDoc, dropSiteOverridesCache } from "../../../js/site-overrides.js?v=2c47259-202610271924";
+import { isCompleteMap, isFreeMap, stageTime, upgradeHref, PAID_ASK, PAID_TASKS, PAID_VIDEO, DFY_LINE, FILM_COMING, COURSE_LINE, COURSE_ASK, COURSE_TASKS } from "../prep.js?v=2c47259-202610271924";
+import { sampleBlock } from "./sample.js?v=2c47259-202610271924";
+import { answerBlock } from "./answer.js?v=2c47259-202610271924";
+import { renderResume } from "./resume.js?v=2c47259-202610271924";
+import { renderProfile } from "./profile.js?v=2c47259-202610271924";
+import { renderSend } from "./send.js?v=2c47259-202610271924";
+import { renderPath } from "./path.js?v=2c47259-202610271924";
+import { renderLinkedinStep, renderTargetsStep } from "./step-checklist.js?v=2c47259-202610271924";
 
 const TOOLS = { profile: renderProfile, send: renderSend, path: renderPath, linkedin: renderLinkedinStep, targets: renderTargetsStep };
 
@@ -59,7 +58,7 @@ function builderBlock(ctx, node) {
   }
   return el("section.step__tool", {}, tool.node);
 }
-import { videoAccess, isFilmed } from "../../../data/video-access.mjs?v=f2598aa-202610271919";
+import { videoAccess, isFilmed } from "../../../data/video-access.mjs?v=2c47259-202610271924";
 
 const FALLBACK_VIDEO = {
   title: "Lesson",
@@ -327,6 +326,17 @@ export function renderStep(ctx, nodeId, moduleId = null) {
     hydrateMermaid(root);
   }
 
+  /** Where you are, in one line: "Map / Step 3 of 6 · Current". The only way back and the only count. */
+  function crumb(node, graph) {
+    return el(
+      "nav.step__crumb",
+      { "aria-label": "Where you are" },
+      btn({ label: "Map", variant: "quiet", onclick: () => current.navigate("map") }),
+      el("span.step__crumb-sep", { "aria-hidden": "true" }, "/"),
+      el("span.step__crumb-here", {}, stepEyebrow(node, graph))
+    );
+  }
+
   function stepEyebrow(node, graph) {
     if (node.id === "or.start") return "Week 1 · Orientation";
     // One count, the same as the rail and the list (graph/model.js stepCount): this step's place on the line.
@@ -396,22 +406,25 @@ export function renderStep(ctx, nodeId, moduleId = null) {
         el(
           "header.step__head",
           {},
-          el(
-            "div.step__nav",
-            {},
-            btn({ label: "← Map", variant: "quiet", onclick: () => current.navigate("map") })
-          ),
-          el("b.eyebrow", {}, statusLabel(node.status)),
+          crumb(node, graph),
           el("h1.step__title", {}, node.title),
-          el("p.step__lead", {}, "Complete the required earlier steps to open this step. You may read the preview now."),
+          node.why ? el("p.step__lead", {}, node.why) : null,
           artifactLine(node)
         ),
         lockNotice({
           graph,
           node,
           onGo: (id) => current.navigate("map", id),
-          onDismiss: () => current.navigate("map"),
         }),
+        // What you'll do here, so a locked step is a preview and not a wall.
+        !node.lesson?.length && node.tasks?.length && node.kind !== "future"
+          ? el(
+              "section.step__preview",
+              {},
+              el("b.eyebrow", {}, "What you'll do here"),
+              el("ol.step__preview-list", {}, node.tasks.map((task) => el("li", {}, task.title)))
+            )
+          : null,
         node.kind !== "future" && node.lesson?.length
           ? el(
               "section.step__lesson",
@@ -470,13 +483,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
       el(
         "header.step__head",
         {},
-        el(
-          "div.step__nav",
-          {},
-          btn({ label: "← Map", variant: "quiet", onclick: () => current.navigate("map") }),
-          welcome || !stepRule(node) ? null : el("span.step__rule", {}, stepRule(node))
-        ),
-        el("b.eyebrow", {}, stepEyebrow(node, graph)),
+        crumb(node, graph),
         el("h1.step__title", {}, node.title),
         node.why ? el("p.step__lead", {}, node.why) : null,
         welcome ? null : modeLine(node),
@@ -600,54 +607,32 @@ export function renderStep(ctx, nodeId, moduleId = null) {
     });
   }
 
-  /** Sticky exit + continue. Next enables only when this step is actually done. */
+  /**
+   * The step's footer, stuck to the bottom of the page: back to the map, and once the step is done, one button
+   * on to the next step ("Done · Next: Your LinkedIn"). Until then it says what finishes the step instead of
+   * showing a button that can't be pressed.
+   */
   function stepBar({ node, graph, student, locked = false }) {
-    const complete = !locked && isStepComplete(node, student);
-    const ready = !locked && canAdvance(node, student);
+    if (locked) return null;
+    const ready = canAdvance(node, student);
     const next = nextUp(graph);
     const advance = ready && next && next.id !== node.id ? next : null;
-    const nextLabel = advance
-      ? `Next · ${advance.title}`
-      : complete
-        ? "See the board"
-        : node.awaitingSignoff
-          ? "Continue"
-          : "Next";
-
+    const left = node.completion === "tasks" ? "Finish the work above to go on." : "Turn this in to go on.";
     return el(
       "footer.step__bar",
-      {},
-      btn({
-        label: "Back to the map",
-        variant: "quiet",
-        onclick: () => current.navigate("map"),
-      }),
-      isViewEnabled("today")
-        ? btn({
-            label: "Ask the Coach",
-            variant: "quiet",
-            title: "Talk the next move through",
-            onclick: () => current.navigate("coach"),
-          })
-        : null,
+      // Stuck to the bottom only once there's somewhere to go; until then it sits after the work, out of its way.
+      { class: ready ? "is-ready" : null },
+      btn({ label: "← Map", variant: "quiet", onclick: () => current.navigate("map") }),
       el(
         "div.step__bar-next",
         {},
-        btn({
-          label: nextLabel,
-          variant: "solid",
-          disabled: locked || !ready,
-          title: ready
-            ? undefined
-            : node.completion === "tasks"
-              ? "Opens when the tasks are done"
-              : "Opens when this step is finished",
-          onclick: () => {
-            if (!ready) return;
-            if (advance) current.navigate("map", advance.id);
-            else current.navigate("map");
-          },
-        })
+        ready
+          ? btn({
+              label: advance ? `Done · Next: ${advance.title} →` : "Done · Back to the map",
+              variant: "solid",
+              onclick: () => (advance ? current.navigate("map", advance.id) : current.navigate("map")),
+            })
+          : el("span.step__bar-hint", {}, node.awaitingSignoff ? "Waiting for your coach's sign-off." : left)
       )
     );
   }
@@ -928,7 +913,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
       );
 
       async function save(entry) {
-        const { fetchSiteOverrides, saveSiteOverrides } = await import("../persist-admin.js?v=f2598aa-202610271919");
+        const { fetchSiteOverrides, saveSiteOverrides } = await import("../persist-admin.js?v=2c47259-202610271924");
         const current = await fetchSiteOverrides().catch(() => ({ doc: {} }));
         const doc = current.doc ?? {};
         const nodes = { ...(doc.copy?.nodes ?? {}) };
