@@ -16,10 +16,10 @@
  * half-typed form. Aden sees it read-only from the desk.
  */
 
-import { el, mount } from "../dom.js?v=759fedf-202610271938";
-import { panel, btn, field, toast, copy } from "../ui.js?v=759fedf-202610271938";
-import { isoDate, fmtDay } from "../time.js?v=759fedf-202610271938";
-import { STATUS, stepNumber } from "../graph/model.js?v=759fedf-202610271938";
+import { el, mount } from "../dom.js?v=a8ec4dc-202610271940";
+import { panel, btn, field, toast, copy } from "../ui.js?v=a8ec4dc-202610271940";
+import { isoDate, fmtDay } from "../time.js?v=a8ec4dc-202610271940";
+import { STATUS, stepNumber } from "../graph/model.js?v=a8ec4dc-202610271940";
 import {
   STAGES,
   RELATIONS,
@@ -64,15 +64,15 @@ import {
   targetCandidates,
   webLink,
   MAX_ACTIVE_TARGETS,
-} from "../search.js?v=759fedf-202610271938";
-import { storyCard, appRow } from "./search-parts.js?v=759fedf-202610271938";
-import { TOOLS, moveRoute } from "../engine.js?v=759fedf-202610271938";
-import { currentMove, setLiveJobs } from "../next-live.js?v=759fedf-202610271938";
-import { PERSIST } from "../../../config.js?v=759fedf-202610271938";
-import { matchedRoles, radarReady, fetchPacks, winsState, shareWin, draftPositioning } from "../roles-remote.js?v=759fedf-202610271938";
-import { createPackDrawer } from "./pack.js?v=759fedf-202610271938";
-import { createCampaignDrawer } from "./campaign.js?v=759fedf-202610271938";
-import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=759fedf-202610271938";
+} from "../search.js?v=a8ec4dc-202610271940";
+import { storyCard, appRow } from "./search-parts.js?v=a8ec4dc-202610271940";
+import { TOOLS, moveRoute } from "../engine.js?v=a8ec4dc-202610271940";
+import { currentMove, setLiveJobs } from "../next-live.js?v=a8ec4dc-202610271940";
+import { PERSIST } from "../../../config.js?v=a8ec4dc-202610271940";
+import { matchedRoles, radarReady, fetchPacks, winsState, shareWin, draftPositioning } from "../roles-remote.js?v=a8ec4dc-202610271940";
+import { createPackDrawer } from "./pack.js?v=a8ec4dc-202610271940";
+import { createCampaignDrawer } from "./campaign.js?v=a8ec4dc-202610271940";
+import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=a8ec4dc-202610271940";
 
 const RUN_FAMILIES = ["proof", "presence", "network", "interview"];
 /** How many moves the day leads with. More than this reads as a wall, not a plan. */

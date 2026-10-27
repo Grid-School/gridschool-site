@@ -11,12 +11,12 @@
  * in their own mail app, the call is their phone, LinkedIn is their click.
  */
 
-import { el, mount } from "../dom.js?v=759fedf-202610271938";
-import { btn, copy, toast, field } from "../ui.js?v=759fedf-202610271938";
-import { createModal } from "../modal.js?v=759fedf-202610271938";
-import { DAY0, FOLLOWUP_DAYS, nextTouch, fillLinks, peopleLinks } from "../search.js?v=759fedf-202610271938";
-import { draftCampaign, campaignAllowance } from "../roles-remote.js?v=759fedf-202610271938";
-import { workPanel } from "./work.js?v=759fedf-202610271938";
+import { el, mount } from "../dom.js?v=a8ec4dc-202610271940";
+import { btn, copy, toast, field } from "../ui.js?v=a8ec4dc-202610271940";
+import { createModal } from "../modal.js?v=a8ec4dc-202610271940";
+import { DAY0, FOLLOWUP_DAYS, nextTouch, fillLinks, peopleLinks } from "../search.js?v=a8ec4dc-202610271940";
+import { draftCampaign, campaignAllowance } from "../roles-remote.js?v=a8ec4dc-202610271940";
+import { workPanel } from "./work.js?v=a8ec4dc-202610271940";
 
 /** What the student gets, said before they spend a draft on it. */
 const WRITE_GETS = [
@@ -33,9 +33,9 @@ const WRITE_STEPS = [
   { label: "Writing the email, Loom ideas and LinkedIn note" },
   { label: "Writing the call scripts and follow-ups" },
 ];
-import { scriptWizard, recordNode, closeRehearsal } from "./loom-kit.js?v=759fedf-202610271938";
-import { nodeRail, nodeIntro } from "./node-rail.js?v=759fedf-202610271938";
-import { NODES, doneNodes, firstOpen, nextNode, prevNode, labelOf } from "../campaign-steps.js?v=759fedf-202610271938";
+import { scriptWizard, recordNode, closeRehearsal } from "./loom-kit.js?v=a8ec4dc-202610271940";
+import { nodeRail, nodeIntro } from "./node-rail.js?v=a8ec4dc-202610271940";
+import { NODES, doneNodes, firstOpen, nextNode, prevNode, labelOf } from "../campaign-steps.js?v=a8ec4dc-202610271940";
 
 export function createCampaignDrawer({ slug, getTarget, onPatch, onTouch, getPortfolio, readOnly = () => false, onBusy = () => {}, onGoStep = null }) {
   const modal = createModal({ label: "Target campaign", size: "reading", onClose: () => closeRehearsal() || close() });

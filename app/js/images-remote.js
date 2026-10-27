@@ -3,8 +3,8 @@
  * student's token and shown from object URLs, never from a public address.
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=759fedf-202610271938";
-import { persistToken } from "./session.js?v=759fedf-202610271938";
+import { PERSIST, isPlaceholder } from "../../config.js?v=a8ec4dc-202610271940";
+import { persistToken } from "./session.js?v=a8ec4dc-202610271940";
 
 export function imagesReady() {
   return Boolean(persistToken() && PERSIST?.endpoint && !isPlaceholder(PERSIST.endpoint));

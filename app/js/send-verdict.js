@@ -11,7 +11,7 @@
  *      checklist needs the posting mentions.
  */
 
-import { ageLabel, sentBefore } from "./search.js?v=759fedf-202610271938";
+import { ageLabel, sentBefore } from "./search.js?v=a8ec4dc-202610271940";
 
 export const OLD_DAYS = 21;
 export const FRESH_DAYS = 3;
