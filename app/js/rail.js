@@ -17,12 +17,12 @@
  * rail without a mode.
  */
 
-import { el, mount } from "./dom.js?v=c78ea40-202610270657";
-import { gmark } from "../../js/brand.js?v=c78ea40-202610270657";
-import { icon } from "./icons.js?v=c78ea40-202610270657";
-import { returnedUnread } from "./tasks.js?v=c78ea40-202610270657";
-import { progress } from "./graph/model.js?v=c78ea40-202610270657";
-import { enabledViews, isViewEnabled } from "./features.js?v=c78ea40-202610270657";
+import { el, mount } from "./dom.js?v=22c446e-202610271853";
+import { gmark } from "../../js/brand.js?v=22c446e-202610271853";
+import { icon } from "./icons.js?v=22c446e-202610271853";
+import { returnedUnread } from "./tasks.js?v=22c446e-202610271853";
+import { stepCount } from "./graph/model.js?v=22c446e-202610271853";
+import { enabledViews, isViewEnabled } from "./features.js?v=22c446e-202610271853";
 
 export const DOORS = [
   { id: "map", label: "Map", icon: "map", hint: "Your path, the tools you use every day, and what to do next" },
@@ -34,7 +34,7 @@ export const DOORS = [
 export const TOOLS = [
   { id: "resume", route: "resume", label: "Resume", icon: "resume", hint: "Build, tailor and download your resume" },
   { id: "do", route: "do", label: "Jobs", icon: "search", hint: "Roles, people and follow-ups for today" },
-  { id: "studio/projects", route: "studio/projects", label: "Projects", icon: "projects", hint: "Practice project ideas written for you" },
+  { id: "studio/projects", route: "studio/projects", label: "Projects", icon: "projects", hint: "Proof project ideas written for you" },
   { id: "studio/posts", route: "studio/posts", label: "Drafts", icon: "drafts", hint: "Post ideas and drafts in your voice" },
   { id: "images", route: "images", label: "Photos", icon: "photos", hint: "Your headshot and banner, sized for LinkedIn" },
   { id: "posts", route: "posts", label: "Posts", icon: "posts", hint: "Posts worth a comment today" },
@@ -118,12 +118,12 @@ export function createRail({ onNavigate, onProfile, flags = enabledViews() }) {
 
   /** The Map carries the lit count. Returned reviews ride along in the title. */
   function setSignals(state) {
-    const prog = progress(state.graph);
+    const step = stepCount(state.graph);
     const unread = returnedUnread(state.student).length;
-    count.hidden = false;
-    count.textContent = `${prog.spine.lit}/${prog.spine.total}`;
+    count.hidden = !step.total;
+    count.textContent = `${step.at}/${step.total}`;
     const reviews = unread ? ` · ${unread} review${unread === 1 ? "" : "s"} came back` : "";
-    links.get("map").title = `Required ${prog.spine.lit} of ${prog.spine.total}${reviews}`;
+    links.get("map").title = `Step ${step.at} of ${step.total}${reviews}`;
     profile.classList.toggle("has-news", unread > 0);
   }
 

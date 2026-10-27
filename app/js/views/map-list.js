@@ -13,14 +13,13 @@
  * own column on the floor: listed, never in the required count.
  */
 
-import { el } from "../dom.js?v=c78ea40-202610270657";
-import { panel, btn, copy, dot } from "../ui.js?v=c78ea40-202610270657";
-import { STATUS, isSide, isSpine, nextUp, stepNumber } from "../graph/model.js?v=c78ea40-202610270657";
-import { inSequence, standingOf, STANDING_LABEL, STANDING_TONE } from "../graph/standing.js?v=c78ea40-202610270657";
-import { reviewScores } from "./parts.js?v=c78ea40-202610270657";
-import { trackLabel } from "../copy.js?v=c78ea40-202610270657";
-import { fmtDay } from "../time.js?v=c78ea40-202610270657";
-import { dueBadge } from "./from-aden.js?v=c78ea40-202610270657";
+import { el } from "../dom.js?v=22c446e-202610271853";
+import { panel, btn, copy, dot } from "../ui.js?v=22c446e-202610271853";
+import { STATUS, isSide, nextUp, stepNumber, stepCount, specOf } from "../graph/model.js?v=22c446e-202610271853";
+import { inSequence, standingOf, STANDING_LABEL, STANDING_TONE } from "../graph/standing.js?v=22c446e-202610271853";
+import { reviewScores } from "./parts.js?v=22c446e-202610271853";
+import { fmtDay } from "../time.js?v=22c446e-202610271853";
+import { dueBadge } from "./from-aden.js?v=22c446e-202610271853";
 
 export function mapList({ state, onOpenNode }) {
   const { graph, student } = state;
@@ -30,9 +29,8 @@ export function mapList({ state, onOpenNode }) {
   const side = all.filter(isSide);
   const nextId = nextUp(graph)?.id ?? null;
   const lit = all.filter((node) => node.status === STATUS.LIT);
-  // On a free map, steps in the paid plan don't count toward what's required of them yet.
-  const spine = ordered.filter((node) => node.kind !== "future" && isSpine(node) && !node.paidOnly);
-  const spineLit = spine.filter((node) => node.status === STATUS.LIT);
+  // The same count as the rail and every step page (graph/model.js stepCount).
+  const step = stepCount(graph);
   const reviewsByNode = groupReviews(student.reviews ?? []);
   const loose = (student.reviews ?? []).filter((review) => !review.nodeId);
 
@@ -41,9 +39,9 @@ export function mapList({ state, onOpenNode }) {
     {},
     panel(
       {
-        eyebrow: `Required ${spineLit.length} of ${spine.length} · ${lit.length} links on the board`,
-        title: "Every step, and the link behind it",
-        note: "If a link here is dead, the node is a lie. That is the only rule this list has.",
+        eyebrow: step.total ? `Step ${step.at} of ${step.total} · ${step.done} done` : "Your steps",
+        title: "Every step, in order",
+        note: "What each step needs before it's done. Coach calls and your weekly habit sit between the steps.",
         actions: lit.length
           ? btn({
               label: "Copy all links",
@@ -79,11 +77,10 @@ export function mapList({ state, onOpenNode }) {
  * should see one path.
  */
 function sequenceRows(graph, ordered, reviewsByNode, nextId, onOpenNode) {
-  const familyLabel = new Map((graph.families ?? []).map((family) => [family.id, family.label]));
-  return ordered.map((node) => row(node, reviewsByNode.get(node.id) ?? [], onOpenNode, nextId, familyLabel.get(node.family)));
+  return ordered.map((node) => row(node, reviewsByNode.get(node.id) ?? [], onOpenNode, nextId));
 }
 
-function row(node, reviews, onOpenNode, nextId, family) {
+function row(node, reviews, onOpenNode, nextId) {
   const latest = reviews[0];
   const standing = standingOf(node, nextId);
   const paidPlan = node.paidOnly && node.status !== STATUS.LIT;
@@ -100,7 +97,7 @@ function row(node, reviews, onOpenNode, nextId, family) {
       dot(standing),
       el("span.mlrow__n", {}, stepNumber(node)),
       el("span.mlrow__title", {}, node.title),
-      family && el("span.mlrow__fam", {}, `${family} · ${trackLabel(node.track)}`)
+      node.marker ? el("span.mlrow__fam", {}, specOf(node).tag ?? "") : null
     ),
     el(
       "div.mlrow__proof",

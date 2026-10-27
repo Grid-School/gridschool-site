@@ -11,24 +11,24 @@
  * confirms it. Every saved version has a name, the date and time it was made, and can be downloaded again.
  */
 
-import { el, mount } from "../dom.js?v=c78ea40-202610270657";
-import { btn, toast } from "../ui.js?v=c78ea40-202610270657";
-import { nodeRail } from "./node-rail.js?v=c78ea40-202610270657";
-import { nextUp } from "../graph/model.js?v=c78ea40-202610270657";
-import { isProgressReadOnly, refresh as refreshStore } from "../store.js?v=c78ea40-202610270657";
-import { upgradeHref } from "../prep.js?v=c78ea40-202610270657";
-import * as api from "../resume-remote.js?v=c78ea40-202610270657";
-import { patient } from "../patient.js?v=c78ea40-202610270657";
-import { doneIds } from "../steps.js?v=c78ea40-202610270657";
-import { workPanel } from "./work.js?v=c78ea40-202610270657";
-import { needsPanel, needFor, planBlock } from "./needs.js?v=c78ea40-202610270657";
-import { sendSuggestion } from "../suggest-remote.js?v=c78ea40-202610270657";
-import { newOpId } from "../../../data/map-proposal.mjs?v=c78ea40-202610270657";
-import { titleRow } from "./titles.js?v=c78ea40-202610270657";
-import { talkButton, canTalk } from "./voice.js?v=c78ea40-202610270657";
-import { roundState, gained, RANGES, wantsNumber, addRange } from "../interview.js?v=c78ea40-202610270657";
-import { setStepDetail } from "../next-live.js?v=c78ea40-202610270657";
-import { stepsFor, claimsOf, linesOf, hasOutput, allConfirmed as confirmedAll, changedSinceSave as changedSince, savedAndDownloaded, nextAction } from "../resume-stages.js?v=c78ea40-202610270657";
+import { el, mount } from "../dom.js?v=22c446e-202610271853";
+import { btn, toast } from "../ui.js?v=22c446e-202610271853";
+import { nodeRail } from "./node-rail.js?v=22c446e-202610271853";
+import { nextUp } from "../graph/model.js?v=22c446e-202610271853";
+import { isProgressReadOnly, refresh as refreshStore } from "../store.js?v=22c446e-202610271853";
+import { upgradeHref } from "../prep.js?v=22c446e-202610271853";
+import * as api from "../resume-remote.js?v=22c446e-202610271853";
+import { patient } from "../patient.js?v=22c446e-202610271853";
+import { doneIds } from "../steps.js?v=22c446e-202610271853";
+import { workPanel } from "./work.js?v=22c446e-202610271853";
+import { needsPanel, needFor, planBlock } from "./needs.js?v=22c446e-202610271853";
+import { sendSuggestion } from "../suggest-remote.js?v=22c446e-202610271853";
+import { newOpId } from "../../../data/map-proposal.mjs?v=22c446e-202610271853";
+import { titleRow } from "./titles.js?v=22c446e-202610271853";
+import { talkButton, canTalk } from "./voice.js?v=22c446e-202610271853";
+import { roundState, gained, RANGES, wantsNumber, addRange } from "../interview.js?v=22c446e-202610271853";
+import { setStepDetail } from "../next-live.js?v=22c446e-202610271853";
+import { stepsFor, claimsOf, linesOf, hasOutput, allConfirmed as confirmedAll, changedSinceSave as changedSince, savedAndDownloaded, nextAction } from "../resume-stages.js?v=22c446e-202610271853";
 
 const PDF_JS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs";
 const PDF_WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs";
@@ -697,7 +697,9 @@ export function renderResume(ctx, options = {}) {
     const here = valid.includes(stage) ? stage : autoStage();
     const body = { start: startBody, questions: questionsBody, write: writeBody, check: checkBody, save: saveBody, finish: finishBody }[here]();
     const p = rec.progress || {};
-    const week = rec.week?.import ? `${rec.week.import.used} of ${rec.week.import.limit} resumes this week` : "";
+    // A limit is said only where it bites: three or fewer resumes left this week.
+    const importsLeft = rec.week?.import ? Math.max(0, rec.week.import.limit - rec.week.import.used) : null;
+    const week = importsLeft !== null && importsLeft <= 3 ? `${importsLeft} new resume${importsLeft === 1 ? "" : "s"} left this week` : "";
     const meta = [p.roles ? plural(p.roles, "job") : "", p.claims ? plural(p.claims, "line") : "", p.confirmed ? `${p.confirmed} kept` : "", saves.length ? plural(saves.length, "saved version") : "", week]
       .filter(Boolean).join(" · ");
     const target = rec.graph.targets?.[0];

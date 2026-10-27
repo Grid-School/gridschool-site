@@ -12,7 +12,7 @@ import {
   completionFor,
   weekLine,
   seedHints,
-} from "./studio-model.js?v=c78ea40-202610270657";
+} from "./studio-model.js?v=22c446e-202610271853";
 
 test("the tool comes from the route, projects by default", () => {
   assert.equal(toolOf("posts"), "posts");
@@ -68,7 +68,8 @@ test("checking a task: a url field takes the post's link, no fields need nothing
 });
 
 test("week line and seed hints", () => {
-  assert.equal(weekLine({ draft: { used: 5, limit: 80 } }, "draft", "drafts"), "75 drafts left this week");
+  assert.equal(weekLine({ draft: { used: 5, limit: 80 } }, "draft", "drafts"), "", "plenty left: not said");
+  assert.equal(weekLine({ draft: { used: 77, limit: 80 } }, "draft", "drafts"), "3 drafts left this week");
   assert.equal(weekLine({ draft: { used: 0, limit: 0 } }, "draft", "drafts"), "");
   assert.equal(weekLine(undefined, "draft", "drafts"), "");
   assert.deepEqual(seedHints({ complete: { target: true, interests: false, proof: false } }), ["what you're interested in", "a few confirmed lines on your resume"]);

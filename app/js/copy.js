@@ -6,7 +6,7 @@
  * or a review. The student sees that in ordinary words, not as a lighting rule.
  */
 
-import { STATUS } from "./graph/model.js?v=c78ea40-202610270657";
+import { STATUS } from "./graph/model.js?v=22c446e-202610271853";
 
 export const RULE = "Each step tells you whether to finish its tasks, save a link, or wait for review.";
 /** @deprecated use RULE, kept so old imports do not break mid-edit */
@@ -14,7 +14,7 @@ export const LAW = RULE;
 
 export function stepRule(node) {
   if (!node || node.kind === "future") return "";
-  if (node.type === "builder") return "Work through it below. It checks itself, and you finish when you say it's right.";
+  if (node.type === "builder") return "";
   if (node.completion === "tasks") return "Finish every task to complete this step.";
   if (node.signoff) return "This step is complete after the reviewer accepts your work.";
   return "Save the required link to complete this step.";
@@ -43,4 +43,10 @@ const CCVV_LABEL = {
 
 export function ccvvLabel(id) {
   return CCVV_LABEL[id] ?? id;
+}
+
+/** "You have the file" reads "Done when you have the file" mid-sentence. */
+export function lowerFirst(text) {
+  const s = String(text ?? "");
+  return /^[A-Z][a-z]/.test(s) ? s.charAt(0).toLowerCase() + s.slice(1) : s;
 }

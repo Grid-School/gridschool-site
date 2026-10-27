@@ -16,17 +16,59 @@
  * never gate a node: a habit is kept, not finished.
  */
 
-import { taskIsComplete, isCountTask } from "../task-state.js?v=c78ea40-202610270657";
-import { typeOf, specOf } from "../../../data/node-types.mjs?v=c78ea40-202610270657";
-import { prepOf, prepHint, opensLater, shortDay, isFreeMap, PAID_HINT, COURSE_HINT } from "../prep.js?v=c78ea40-202610270657";
-import { FREE_MODULES, isCourseStep, moduleId } from "../../../data/video-access.mjs?v=c78ea40-202610270657";
+import { taskIsComplete, isCountTask } from "../task-state.js?v=22c446e-202610271853";
+import { typeOf, specOf } from "../../../data/node-types.mjs?v=22c446e-202610271853";
+import { prepOf, prepHint, opensLater, shortDay, isFreeMap, PAID_HINT, COURSE_HINT } from "../prep.js?v=22c446e-202610271853";
+import { FREE_MODULES, isCourseStep, moduleId } from "../../../data/video-access.mjs?v=22c446e-202610271853";
 
 export { typeOf, specOf };
 
 /** A node's type allows it to be "do this next" (habits and references never are). */
 export const canBeNext = (node) => specOf(node).canBeNext !== false;
-/** A node of this type counts toward "X of Y steps done". */
-const counts = (node) => specOf(node).completes !== "never";
+/** A node of this type counts toward "X of Y steps done". Markers (coach calls, habits) never do. */
+const counts = (node) => specOf(node).completes !== "never" && !node.marker;
+
+/**
+ * On a student's own map, coach calls, the weekly habit and readings are markers on the line: shown with
+ * their tag ("With your coach", "Every week"), never numbered, never counted as a step.
+ */
+const MARKER_TYPES = new Set(["meeting", "habit", "reference"]);
+export const isMarker = (node) => Boolean(node?.marker);
+
+/** A student's own map uses node types; the course map (data/curriculum.json) doesn't. */
+const isStudentMap = (nodes) => nodes.some((node) => node.type && node.type !== "step");
+
+/**
+ * Step numbers follow the path: a stable topological order of `requires`, ties broken by the stored `n`.
+ * A map whose stored numbers already follow the path keeps them; one where a step was added later with
+ * the next free number (01, 02, 04, 03, 06, 05 on the floor) reads 01 to 06 again. Markers go after the
+ * steps, in stored order, so they never take a step's number.
+ */
+function numberByPath(nodes, edges) {
+  const steps = nodes.filter((node) => !isSide(node) && !MARKER_TYPES.has(typeOf(node)));
+  const markers = nodes.filter((node) => !isSide(node) && MARKER_TYPES.has(typeOf(node)));
+  const inSteps = new Set(steps.map((node) => node.id));
+  const before = new Map(steps.map((node) => [node.id, new Set()]));
+  for (const edge of edges) if (inSteps.has(edge.from) && inSteps.has(edge.to) && edge.from !== edge.to) before.get(edge.to).add(edge.from);
+  const byN = (a, b) => (a.n ?? 0) - (b.n ?? 0);
+  const placed = new Set();
+  const order = [];
+  const left = [...steps].sort(byN);
+  while (left.length) {
+    // The lowest-numbered step whose prerequisites are all placed; a cycle falls back to stored order.
+    const at = left.findIndex((node) => [...before.get(node.id)].every((id) => placed.has(id)));
+    const [node] = left.splice(at === -1 ? 0 : at, 1);
+    placed.add(node.id);
+    order.push(node);
+  }
+  order.forEach((node, i) => {
+    node.n = i + 1;
+  });
+  [...markers].sort(byN).forEach((node, i) => {
+    node.marker = true;
+    node.n = order.length + i + 1;
+  });
+}
 
 export const STATUS = {
   LIT: "lit",
@@ -70,7 +112,7 @@ export function isSide(node) {
  * is untouched: it still orders the walk.
  */
 export function stepNumber(node) {
-  if (!node) return "";
+  if (!node || node.marker) return "";
   if (node.sideNumber) return node.sideNumber;
   return String(node.n ?? "").padStart(2, "0");
 }
@@ -104,6 +146,7 @@ export function buildGraph(curriculum, student, { unlockAll = false, now = new D
       }
     }
   }
+  if (isStudentMap(nodes)) numberByPath(nodes, edges);
 
   // `node.evidence` is the curriculum's description of what lights this node.
   // `node.proof` is the record the student attached. Keeping them apart matters:
@@ -394,6 +437,23 @@ export function progress(graph) {
     depth,
     side: tally(sideNodes),
   };
+}
+
+/**
+ * The one count a student reads, everywhere ("Step 3 of 6"): the numbered steps on the line, where you are
+ * on it (the step you're on, else the first not done), and how many are done. The rail, the step header
+ * and the list all say this, so they can't disagree.
+ */
+export function stepCount(graph) {
+  const steps = graph.nodes
+    .filter((node) => node.kind !== "future" && !isSide(node) && isSpine(node) && counts(node) && !node.paidOnly)
+    .sort((a, b) => a.n - b.n);
+  const done = steps.filter((node) => node.status === STATUS.LIT).length;
+  const here = nextUp(graph);
+  const rank = here ? steps.findIndex((node) => node.id === here.id) : -1;
+  const firstOpen = steps.findIndex((node) => node.status !== STATUS.LIT);
+  const at = rank >= 0 ? rank + 1 : firstOpen >= 0 ? firstOpen + 1 : steps.length;
+  return { at, total: steps.length, done };
 }
 
 export function nodesByPhase(graph) {

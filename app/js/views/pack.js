@@ -1,5 +1,5 @@
 /**
- * Prepare: one role, ready to send. Opens over the Hire page, so the run stays
+ * Prepare: one role, ready to send. Opens over the Jobs page, so the run stays
  * where it was. Asks the server (role_pack.py) the first time and keeps the
  * result on the student's own record, so opening it again is instant and Aden
  * sees exactly what they sent.
@@ -12,12 +12,12 @@
  * with the prepared role (entry.steps), so it reopens where they left off.
  */
 
-import { el, mount } from "../dom.js?v=c78ea40-202610270657";
-import { btn, copy, toast } from "../ui.js?v=c78ea40-202610270657";
-import { createModal } from "../modal.js?v=c78ea40-202610270657";
-import { peopleLinks, ageLabel } from "../search.js?v=c78ea40-202610270657";
-import { prepareRole } from "../roles-remote.js?v=c78ea40-202610270657";
-import { nodeRail, nodeIntro } from "./node-rail.js?v=c78ea40-202610270657";
+import { el, mount } from "../dom.js?v=22c446e-202610271853";
+import { btn, copy, toast } from "../ui.js?v=22c446e-202610271853";
+import { createModal } from "../modal.js?v=22c446e-202610271853";
+import { peopleLinks, ageLabel } from "../search.js?v=22c446e-202610271853";
+import { prepareRole } from "../roles-remote.js?v=22c446e-202610271853";
+import { nodeRail, nodeIntro } from "./node-rail.js?v=22c446e-202610271853";
 
 export const PACK_NODES = [
   { id: "fit", label: "Fit" },
@@ -77,7 +77,7 @@ export function createPackDrawer({ slug, getPack, savePack, onApplied, onTarget 
       return;
     }
     if (readOnly()) {
-      mount(body, el("p.muted", {}, "Not prepared yet. The student prepares a role from their Hire page."));
+      mount(body, el("p.muted", {}, "Not prepared yet. The student prepares a role from Jobs."));
       return;
     }
     mount(body, el("div.pack__wait", {}, el("span.pack__spinner", { "aria-hidden": "true" }), el("p", {}, "Reading the posting against your record. About thirty seconds.")));
@@ -135,7 +135,7 @@ export function createPackDrawer({ slug, getPack, savePack, onApplied, onTarget 
         doneLine("apply"),
         flow.steps.apply
           ? null
-          : action("I applied", "Logs the application on your Hire page, marks this step done and opens Reach out.", () => {
+          : action("I applied", "Logs the application in Jobs, marks this step done and opens Reach out.", () => {
               onApplied({ key: flow.target.key, title: role.title, company: role.company, url: role.url });
               finish("apply");
             }),

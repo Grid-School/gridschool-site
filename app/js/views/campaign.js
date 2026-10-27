@@ -1,5 +1,5 @@
 /**
- * A target campaign, over the Hire page, as a row of nodes with one open at a
+ * A target campaign, over the Jobs page, as a row of nodes with one open at a
  * time (campaign-steps.js): research the company and the person, write the
  * Loom script one question per screen, record it, then the email, LinkedIn,
  * call and the day 3, 7 and 14 follow-ups. A node turns green with a check
@@ -11,12 +11,12 @@
  * in their own mail app, the call is their phone, LinkedIn is their click.
  */
 
-import { el, mount } from "../dom.js?v=c78ea40-202610270657";
-import { btn, copy, toast, field } from "../ui.js?v=c78ea40-202610270657";
-import { createModal } from "../modal.js?v=c78ea40-202610270657";
-import { DAY0, FOLLOWUP_DAYS, nextTouch, fillLinks, peopleLinks } from "../search.js?v=c78ea40-202610270657";
-import { draftCampaign, campaignAllowance } from "../roles-remote.js?v=c78ea40-202610270657";
-import { workPanel } from "./work.js?v=c78ea40-202610270657";
+import { el, mount } from "../dom.js?v=22c446e-202610271853";
+import { btn, copy, toast, field } from "../ui.js?v=22c446e-202610271853";
+import { createModal } from "../modal.js?v=22c446e-202610271853";
+import { DAY0, FOLLOWUP_DAYS, nextTouch, fillLinks, peopleLinks } from "../search.js?v=22c446e-202610271853";
+import { draftCampaign, campaignAllowance } from "../roles-remote.js?v=22c446e-202610271853";
+import { workPanel } from "./work.js?v=22c446e-202610271853";
 
 /** What the student gets, said before they spend a draft on it. */
 const WRITE_GETS = [
@@ -33,9 +33,9 @@ const WRITE_STEPS = [
   { label: "Writing the email, Loom ideas and LinkedIn note" },
   { label: "Writing the call scripts and follow-ups" },
 ];
-import { scriptWizard, recordNode, closeRehearsal } from "./loom-kit.js?v=c78ea40-202610270657";
-import { nodeRail, nodeIntro } from "./node-rail.js?v=c78ea40-202610270657";
-import { NODES, doneNodes, firstOpen, nextNode, prevNode, labelOf } from "../campaign-steps.js?v=c78ea40-202610270657";
+import { scriptWizard, recordNode, closeRehearsal } from "./loom-kit.js?v=22c446e-202610271853";
+import { nodeRail, nodeIntro } from "./node-rail.js?v=22c446e-202610271853";
+import { NODES, doneNodes, firstOpen, nextNode, prevNode, labelOf } from "../campaign-steps.js?v=22c446e-202610271853";
 
 export function createCampaignDrawer({ slug, getTarget, onPatch, onTouch, getPortfolio, readOnly = () => false, onBusy = () => {} }) {
   const modal = createModal({ label: "Target campaign", size: "reading", onClose: () => closeRehearsal() || close() });
@@ -305,7 +305,7 @@ export function createCampaignDrawer({ slug, getTarget, onPatch, onTouch, getPor
         !target.loomUrl ? el("p.pack__warn", {}, "Your Loom link isn't saved yet, so the email still shows [Loom link]. Finish the Record step first.") : null,
         section("Email", `${c.email.subject}\n\n${body}`, el("div", {}, el("p.camp__subject", {}, c.email.subject), el("p.pack__text", {}, body))),
         el("div.lkit__act", {}, btn({ label: "Open in my mail app", variant: "ghost", href: mailto }), markSent("email", "Email + Loom"), sentChip("email")),
-        sent("email") ? null : el("p.lkit__does", {}, "I sent it logs the email on your Hire page and starts the follow-up clock."),
+        sent("email") ? null : el("p.lkit__does", {}, "I sent it logs the email in Jobs and starts the follow-up clock."),
         morePeople({ target, ro, links, markSent, sentChip })
       );
     }
@@ -319,7 +319,7 @@ export function createCampaignDrawer({ slug, getTarget, onPatch, onTouch, getPor
         intro("Send a LinkedIn request", "A connection request with a short note to the same person. Copy the note, open their profile, choose Connect, then Add a note, and paste it."),
         section("Note", c.linkedin, el("p.pack__text", {}, c.linkedin)),
         el("div.lkit__act", {}, profile ? btn({ label: target.contact?.linkedin ? "Open their profile ↗" : "Find them ↗", variant: "ghost", href: profile, target: "_blank" }) : null, markSent("linkedin", "LinkedIn request"), sentChip("linkedin")),
-        sent("linkedin") ? null : el("p.lkit__does", {}, "I sent it logs the request on your Hire page.")
+        sent("linkedin") ? null : el("p.lkit__does", {}, "I sent it logs the request in Jobs.")
       );
     }
 
@@ -334,7 +334,7 @@ export function createCampaignDrawer({ slug, getTarget, onPatch, onTouch, getPor
           el("div.camp__call", {}, el("div", {}, el("b", {}, "Whoever answers"), el("p", {}, c.call.gatekeeper)), el("div", {}, el("b", {}, "The hiring manager"), el("p", {}, c.call.manager)), el("div", {}, el("b", {}, "Voicemail"), el("p", {}, c.call.voicemail)))
         ),
         el("div.lkit__act", {}, target.contact?.phone ? btn({ label: `Call ${target.contact.phone}`, variant: "ghost", href: `tel:${target.contact.phone.replace(/[^\d+]/g, "")}` }) : null, markSent("call", "Call"), sentChip("call")),
-        sent("call") ? null : el("p.lkit__does", {}, "I made the call logs it on your Hire page, whether you reached someone or left a voicemail.")
+        sent("call") ? null : el("p.lkit__does", {}, "I made the call logs it in Jobs, whether you reached someone or left a voicemail.")
       );
     }
 
@@ -342,7 +342,7 @@ export function createCampaignDrawer({ slug, getTarget, onPatch, onTouch, getPor
     return el(
       "div",
       {},
-      intro("Follow up on day 3, 7 and 14", "Many replies come after a follow-up. Each one adds one new thing on the same thread. Your Hire page tells you when each is due."),
+      intro("Follow up on day 3, 7 and 14", "Many replies come after a follow-up. Each one adds one new thing on the same thread. The bar at the bottom tells you when each is due."),
       c.followups.map((f) => {
         const key = `d${FOLLOWUP_DAYS.includes(f.day) ? f.day : FOLLOWUP_DAYS[Math.min(2, c.followups.indexOf(f))]}`;
         const text = fillLinks(f.text, links);

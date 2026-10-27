@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { buildGraph, nextUp, progress, visibleGraph, isSide, isSpine, trackOf, stepNumber, STATUS, TRACK } from "./model.js?v=c78ea40-202610270657";
-import { buildQueue } from "../tasks.js?v=c78ea40-202610270657";
+import { buildGraph, nextUp, progress, stepCount, visibleGraph, isSide, isSpine, trackOf, stepNumber, STATUS, TRACK } from "./model.js?v=22c446e-202610271853";
+import { buildQueue } from "../tasks.js?v=22c446e-202610271853";
 
 const families = [
   { id: "ccvv", track: "spine" },
@@ -443,5 +443,44 @@ test("habits are never next and never counted; a step due soon goes first", () =
   assert.equal(g.byId.get("habit").status, "open");
   assert.equal(nextUp(g, new Date(2026, 9, 14)).id, "c.b");
   assert.equal(nextUp(g, new Date(2026, 9, 1)).id, "c.a");
-  assert.equal(progress(g).total, 8);
+  assert.equal(progress(g).total, 7, "the coach call is a marker, not a step");
+});
+
+/** The starter map as live seats have it: steps added later took the next free number. */
+function liveStarter() {
+  const node = (id, n, requires, type = "builder") => ({ id, n, title: id, family: "p", requires, type, kind: "core", completion: "tasks", tasks: [{ id: `${id}.t`, title: "do it" }] });
+  return {
+    families: [{ id: "p", track: "spine", lane: 0 }],
+    phases: [],
+    nodes: [
+      node("b.profile", 1, []),
+      node("p.path", 6, ["b.profile"]),
+      node("b.resume", 2, ["p.path"]),
+      node("m.kickoff", 3, ["b.profile"], "meeting"),
+      node("h.call", 4, [], "habit"),
+      node("s.send", 5, ["b.resume"]),
+    ],
+  };
+}
+
+test("step numbers follow the path; coach calls and habits are unnumbered markers", () => {
+  const g = buildGraph(liveStarter(), {});
+  const shown = ["b.profile", "p.path", "b.resume", "s.send", "m.kickoff", "h.call"].map((id) => stepNumber(g.byId.get(id)));
+  assert.deepEqual(shown, ["01", "02", "03", "04", "", ""]);
+  assert.equal(g.byId.get("m.kickoff").marker, true);
+  assert.equal(g.byId.get("b.resume").marker, undefined);
+  // A map whose numbers already follow the path keeps them.
+  const kept = buildGraph(typedMap(), {});
+  assert.deepEqual(["live", "c.a", "c.b", "after"].map((id) => kept.byId.get(id).n), [1, 2, 3, 4]);
+  // The course map (no node types) is never renumbered.
+  const course = buildGraph({ families: [], phases: [], nodes: [{ id: "a", n: 7, title: "a", requires: [] }, { id: "b", n: 3, title: "b", requires: ["a"] }] }, {});
+  assert.deepEqual([course.byId.get("a").n, course.byId.get("b").n], [7, 3]);
+});
+
+test("stepCount: one count for the rail, the step page and the list", () => {
+  assert.deepEqual(stepCount(buildGraph(liveStarter(), {})), { at: 1, total: 4, done: 0 });
+  const g = buildGraph(liveStarter(), { tasks: { "b.profile.t": { state: "done" }, "p.path.t": { state: "done" } } });
+  assert.deepEqual(stepCount(g), { at: 3, total: 4, done: 2 });
+  const all = buildGraph(liveStarter(), { tasks: Object.fromEntries(["b.profile", "p.path", "b.resume", "s.send", "m.kickoff"].map((id) => [`${id}.t`, { state: "done" }])) });
+  assert.deepEqual(stepCount(all), { at: 4, total: 4, done: 4 });
 });

@@ -16,10 +16,10 @@
  * half-typed form. Aden sees it read-only from the desk.
  */
 
-import { el, mount } from "../dom.js?v=c78ea40-202610270657";
-import { panel, btn, field, toast, copy } from "../ui.js?v=c78ea40-202610270657";
-import { isoDate, fmtDay } from "../time.js?v=c78ea40-202610270657";
-import { STATUS } from "../graph/model.js?v=c78ea40-202610270657";
+import { el, mount } from "../dom.js?v=22c446e-202610271853";
+import { panel, btn, field, toast, copy } from "../ui.js?v=22c446e-202610271853";
+import { isoDate, fmtDay } from "../time.js?v=22c446e-202610271853";
+import { STATUS, stepNumber } from "../graph/model.js?v=22c446e-202610271853";
 import {
   STAGES,
   RELATIONS,
@@ -64,15 +64,15 @@ import {
   targetCandidates,
   webLink,
   MAX_ACTIVE_TARGETS,
-} from "../search.js?v=c78ea40-202610270657";
-import { storyCard, appRow } from "./search-parts.js?v=c78ea40-202610270657";
-import { TOOLS, moveRoute } from "../engine.js?v=c78ea40-202610270657";
-import { currentMove, setLiveJobs } from "../next-live.js?v=c78ea40-202610270657";
-import { PERSIST } from "../../../config.js?v=c78ea40-202610270657";
-import { matchedRoles, radarReady, fetchPacks, winsState, shareWin, draftPositioning } from "../roles-remote.js?v=c78ea40-202610270657";
-import { createPackDrawer } from "./pack.js?v=c78ea40-202610270657";
-import { createCampaignDrawer } from "./campaign.js?v=c78ea40-202610270657";
-import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=c78ea40-202610270657";
+} from "../search.js?v=22c446e-202610271853";
+import { storyCard, appRow } from "./search-parts.js?v=22c446e-202610271853";
+import { TOOLS, moveRoute } from "../engine.js?v=22c446e-202610271853";
+import { currentMove, setLiveJobs } from "../next-live.js?v=22c446e-202610271853";
+import { PERSIST } from "../../../config.js?v=22c446e-202610271853";
+import { matchedRoles, radarReady, fetchPacks, winsState, shareWin, draftPositioning } from "../roles-remote.js?v=22c446e-202610271853";
+import { createPackDrawer } from "./pack.js?v=22c446e-202610271853";
+import { createCampaignDrawer } from "./campaign.js?v=22c446e-202610271853";
+import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=22c446e-202610271853";
 
 const RUN_FAMILIES = ["proof", "presence", "network", "interview"];
 /** How many moves the day leads with. More than this reads as a wall, not a plan. */
@@ -841,7 +841,7 @@ export function renderHire(ctx, initialTool, campaignId) {
     return el(
       "header.tool__head",
       {},
-      el("div.row.tool__nav", {}, btn({ label: "← Map", variant: "quiet", onclick: () => current.navigate("map") }), el("span.tool__crumb", {}, "Every day · in parallel")),
+      el("div.row.tool__nav", {}, btn({ label: "← Map", variant: "quiet", onclick: () => current.navigate("map") }), el("span.tool__crumb", {}, "Jobs")),
       el("h1.tool__title", {}, tool.label),
       el("p.tool__why", {}, TOOL_WHY[focus]),
       steps.length
@@ -849,7 +849,7 @@ export function renderHire(ctx, initialTool, campaignId) {
             "div.tool__steps",
             {},
             el("span", {}, "Works on these map steps:"),
-            steps.map((node) => el("button.chip2.tool__step", { type: "button", class: node.status === STATUS.LIT ? "is-lit" : null, onclick: () => current.navigate("map", node.id) }, `${String(node.n).padStart(2, "0")} ${node.title}`))
+            steps.map((node) => el("button.chip2.tool__step", { type: "button", class: node.status === STATUS.LIT ? "is-lit" : null, onclick: () => current.navigate("map", node.id) }, [stepNumber(node), node.title].filter(Boolean).join(" ")))
           )
         : null,
       focus === "today" && doneToday ? el("p.tool__count", {}, `${doneToday} sent today`) : null

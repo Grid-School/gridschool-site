@@ -4,14 +4,14 @@
  * already answers where you are. This page does not teach those jobs again.
  */
 
-import { el } from "../dom.js?v=c78ea40-202610270657";
-import { panel, btn, empty } from "../ui.js?v=c78ea40-202610270657";
-import { eventsForWeek, weekRange, fmtShort, programPhase, relativeDay, displayZone } from "../time.js?v=c78ea40-202610270657";
-import { zoneLabel } from "../call-slot.js?v=c78ea40-202610270657";
-import { PERSIST, isPlaceholder } from "../../../config.js?v=c78ea40-202610270657";
-import { eventRow } from "./parts.js?v=c78ea40-202610270657";
-import { requestSystemReminders } from "../reminders.js?v=c78ea40-202610270657";
-import { toast } from "../ui.js?v=c78ea40-202610270657";
+import { el } from "../dom.js?v=22c446e-202610271853";
+import { panel, btn, empty } from "../ui.js?v=22c446e-202610271853";
+import { eventsForWeek, weekRange, fmtShort, programPhase, relativeDay, displayZone } from "../time.js?v=22c446e-202610271853";
+import { zoneLabel } from "../call-slot.js?v=22c446e-202610271853";
+import { PERSIST, isPlaceholder } from "../../../config.js?v=22c446e-202610271853";
+import { eventRow } from "./parts.js?v=22c446e-202610271853";
+import { requestSystemReminders } from "../reminders.js?v=22c446e-202610271853";
+import { toast } from "../ui.js?v=22c446e-202610271853";
 
 export function renderCalendar(ctx, weekArg) {
   const { state, navigate } = ctx;
@@ -89,9 +89,9 @@ function feedLinks(path) {
 
 /** One click, once. After that the line just states where things stand. */
 function systemReminderControl() {
-  if (typeof Notification === "undefined") return "Your browser does not do system notifications.";
+  if (typeof Notification === "undefined") return "";
   if (Notification.permission === "granted") return "System notifications are on.";
-  if (Notification.permission === "denied") return "System notifications are blocked in your browser settings.";
+  if (Notification.permission === "denied") return "";
   return btn({
     label: "Also notify me when this tab is in the background",
     variant: "quiet",

@@ -7,11 +7,12 @@
  * estimate, so a student learns the meter before anyone pastes an API key.
  */
 
-import { COACH, PERSIST, isPlaceholder } from "../../../config.js?v=c78ea40-202610270657";
-import { loadCoachPrompt } from "../api.js?v=c78ea40-202610270657";
-import { persistToken } from "../session.js?v=c78ea40-202610270657";
-import { packContext, recentTurns } from "./pack.js?v=c78ea40-202610270657";
-import { estimateTokens, costUsd, monthKey, wouldExceed } from "./credits.js?v=c78ea40-202610270657";
+import { COACH, PERSIST, isPlaceholder } from "../../../config.js?v=22c446e-202610271853";
+import { loadCoachPrompt } from "../api.js?v=22c446e-202610271853";
+import { persistToken } from "../session.js?v=22c446e-202610271853";
+import { packContext, recentTurns } from "./pack.js?v=22c446e-202610271853";
+import { estimateTokens, costUsd, monthKey, wouldExceed } from "./credits.js?v=22c446e-202610271853";
+import { lowerFirst } from "../copy.js?v=22c446e-202610271853";
 
 const corpusCache = { text: null, promise: null };
 
@@ -61,7 +62,7 @@ function localReply(pack, userText) {
   const closer = asked
     ? "List the checks you ran in order, starting with the most recent file, page, or command you opened."
     : next.task
-      ? `Done when ${next.task.done_when ?? "a stranger can open a URL"}. What is the first thing you will check?`
+      ? `Done when ${lowerFirst(next.task.done_when ?? "a stranger can open a URL")}. What is the first thing you will check?`
       : "Open the step on the Board, save the required URL, or describe the most recent action you tried.";
 
   return `${opener} ${closer}`;

@@ -1,18 +1,18 @@
 /**
  * The studio (server/studio_api.py), opened from a step on the map: no tab of its own.
  *
- *   #/studio/projects[/<taskId>]  five practice projects written for them; the one they pick becomes a step
+ *   #/studio/projects[/<taskId>]  five proof projects written for them; the one they pick becomes a step
  *   #/studio/posts[/<taskId>]     their voice doc, five post ideas from their week, drafts in their voice
  *
  * Done-for-you: we generate, they pick, edit and ship. When a step's task opened the studio, finishing
  * the work here (picking, posting) checks that task too.
  */
 
-import { el, mount } from "../dom.js?v=c78ea40-202610270657";
-import { btn, toast } from "../ui.js?v=c78ea40-202610270657";
-import { nodeRail, nodeIntro } from "./node-rail.js?v=c78ea40-202610270657";
-import * as api from "../studio-remote.js?v=c78ea40-202610270657";
-import * as model from "../studio-model.js?v=c78ea40-202610270657";
+import { el, mount } from "../dom.js?v=22c446e-202610271853";
+import { btn, toast } from "../ui.js?v=22c446e-202610271853";
+import { nodeRail, nodeIntro } from "./node-rail.js?v=22c446e-202610271853";
+import * as api from "../studio-remote.js?v=22c446e-202610271853";
+import * as model from "../studio-model.js?v=22c446e-202610271853";
 
 function wait(text) {
   return el("div.pack__wait", {}, el("span.pack__spinner", { "aria-hidden": "true" }), el("p", {}, text));
@@ -88,7 +88,7 @@ export function renderStudio(ctx, toolArg, taskArg) {
     const titles = rec.seeds?.titles ?? [];
     return [
       nodeIntro(
-        (s.projects?.ideas ?? []).length ? "Want a different five?" : "Five practice projects, written for you",
+        (s.projects?.ideas ?? []).length ? "Want a different five?" : "Five proof projects, written for you",
         titles.length
           ? `Each one is aimed at ${titles.slice(0, 2).join(" or ")}, ships in days, and proves something your resume can't prove yet.`
           : "Each one ships in days and proves something your resume can't prove yet."
@@ -203,7 +203,7 @@ export function renderStudio(ctx, toolArg, taskArg) {
     const angle = el("textarea.rz__text", { rows: 3, placeholder: "What the post says, in a sentence or two" });
     return [
       nodeIntro(ideas.length ? "Post ideas from your week" : "Five post ideas from your week",
-        "Built from the steps you finished, your practice project and what you're into. Pick one and the drafter writes it in your voice."),
+        "Built from the steps you finished, your proof project and what you're into. Pick one and the drafter writes it in your voice."),
       model.hasVoice(rec.studio) ? null : el("p.rz__why", {}, "Tip: build your voice doc first, so drafts sound like you."),
       ideas.length ? el("ul.rz__lines", {}, ideas.map(postIdeaCard)) : null,
       el("div.rz__row", {},
@@ -295,7 +295,7 @@ export function renderStudio(ctx, toolArg, taskArg) {
     const body = posts ? { voice: voiceBody, ideas: postIdeasBody, drafts: draftsBody }[at]() : { ideas: projectIdeasBody, pick: projectPickBody }[at]();
     const launched = model.launchingTask(state.graph, taskId);
     const head = el("header.rz__head", {},
-      el("div", {}, el("b.eyebrow", {}, posts ? "Posts" : "Practice project"),
+      el("div", {}, el("b.eyebrow", {}, posts ? "Drafts" : "Proof project"),
         el("h1.rz__title", {}, posts ? "Posts in your voice, from your week" : "A practice project aimed at the job you want")),
       launched ? el("p.rz__meta", {}, `From your step: ${launched.node.title}`) : null,
       btn({ label: "← Map", variant: "quiet", onclick: () => ctx.navigate("map", ...(launched ? [launched.node.id] : [])) }));

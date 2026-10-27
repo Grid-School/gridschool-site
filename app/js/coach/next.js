@@ -4,8 +4,9 @@
  * only the sentence we put at the top of the page.
  */
 
-import { buildQueue, actionable, waitingOn, returnedUnread } from "../tasks.js?v=c78ea40-202610270657";
-import { nextUp } from "../graph/model.js?v=c78ea40-202610270657";
+import { buildQueue, actionable, waitingOn, returnedUnread } from "../tasks.js?v=22c446e-202610271853";
+import { nextUp } from "../graph/model.js?v=22c446e-202610271853";
+import { lowerFirst } from "../copy.js?v=22c446e-202610271853";
 
 export function nextAction(state) {
   const { graph, student, curriculum, week } = state;
@@ -31,7 +32,7 @@ export function nextAction(state) {
     return {
       kind: "task",
       title: task.title,
-      why: task.done_when ? `Done when ${task.done_when}` : node?.evidence ?? student.next,
+      why: task.done_when ? `Done when ${lowerFirst(task.done_when)}` : node?.evidence ?? student.next,
       node,
       task,
     };

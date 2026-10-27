@@ -97,12 +97,12 @@ export function completionFor(task, { url = "" } = {}) {
   return answers;
 }
 
-/** "3 of 12 left this week" style line for one action, or "" when the server sent nothing. */
+/** "3 left this week" for one action, only when three or fewer are left (a limit is said where it bites), else "". */
 export function weekLine(week, action, noun) {
   const row = week?.[action];
   if (!row || typeof row.limit !== "number" || row.limit <= 0) return "";
   const left = Math.max(0, row.limit - (row.used ?? 0));
-  return `${left} ${noun} left this week`;
+  return left <= 3 ? `${left} ${noun} left this week` : "";
 }
 
 /** What would sharpen the ideas, from the seeds summary the server sends. */

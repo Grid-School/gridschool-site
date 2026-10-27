@@ -18,13 +18,13 @@
  * view glides to it. Nothing idles. Reduced motion jumps.
  */
 
-import { el, clear } from "../../dom.js?v=c78ea40-202610270657";
-import { traceSet, stepNumber } from "../model.js?v=c78ea40-202610270657";
-import { STANDING, standingOf, inSequence } from "../standing.js?v=c78ea40-202610270657";
-import { typeOf, specOf } from "../model.js?v=c78ea40-202610270657";
-import { isTypedMap } from "../../engine.js?v=c78ea40-202610270657";
-import { isCompleteMap, isFreeMap } from "../../prep.js?v=c78ea40-202610270657";
-import { WIN_LABEL } from "../route.js?v=c78ea40-202610270657";
+import { el, clear } from "../../dom.js?v=22c446e-202610271853";
+import { traceSet, stepNumber } from "../model.js?v=22c446e-202610271853";
+import { STANDING, standingOf, inSequence } from "../standing.js?v=22c446e-202610271853";
+import { typeOf, specOf } from "../model.js?v=22c446e-202610271853";
+import { isTypedMap } from "../../engine.js?v=22c446e-202610271853";
+import { isCompleteMap, isFreeMap } from "../../prep.js?v=22c446e-202610271853";
+import { WIN_LABEL } from "../route.js?v=22c446e-202610271853";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 /** "2026-10-16" → "Due Oct 16". */
@@ -42,7 +42,7 @@ import {
   runCurrent,
   rezIn,
   prefersReducedMotion,
-} from "../../../../js/rez/road.js?v=c78ea40-202610270657";
+} from "../../../../js/rez/road.js?v=22c446e-202610271853";
 
 /*
  * One grid under everything, in the board's own units (as on the landing):
@@ -506,7 +506,11 @@ export async function createRezScene(container) {
       if (node.paidOnly || (freeMap && node.stages?.length)) svgEl("circle", { class: "rz-ring2", r: NODE_R + 5 }, body);
       if (node.landmark === "goal") svgEl("circle", { class: "rz-ring2 rz-goal", r: NODE_R + 6 }, body);
       svgEl("circle", { class: "rz-ring", r: NODE_R }, body);
-      svgEl("text", { class: "rz-num" }, body).textContent = stepNumber(node);
+      // A marker (a coach call, the weekly habit) has no step number: a dot on a dashed ring instead.
+      if (node.marker) {
+        g.classList.add("rz-node--marker");
+        svgEl("circle", { class: "rz-mark", r: 4 }, body);
+      } else svgEl("text", { class: "rz-num" }, body).textContent = stepNumber(node);
       if (node.paidOnly && !node.landmark) {
         // The "we do this" mark: a C for coach on the ring.
         const badge = svgEl("g", { class: "rz-dfy", transform: `translate(${NODE_R * 0.95} ${-NODE_R * 0.95})` }, body);

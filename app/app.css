@@ -2758,3 +2758,31 @@ pre.diagram--failed { border-color: var(--amber); }
 /* The coach's steer on the Coach page (views/today.js), above the conversation. */
 .coach-steer { flex: none; margin: 0; padding: 14px 24px; border-bottom: 1px solid rgba(84, 220, 255, .16); color: var(--cyan); font-size: 14px; line-height: 1.5; text-align: left; }
 .coach-steer b { color: #fff; font-weight: 600; }
+
+/* The light builder steps (views/step-checklist.js): Your LinkedIn, Pick five targets. One level of surface. */
+.stepcheck { display: grid; gap: 18px; max-width: 760px; }
+.stepcheck__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; background: rgba(84, 220, 255, .14); border: 1px solid rgba(84, 220, 255, .14); }
+.stepcheck__row { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 16px 18px; background: #000; }
+.stepcheck__mark { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid rgba(84, 220, 255, .4); color: var(--muted); font: 500 12px/25px var(--font-mono, monospace); text-align: center; }
+.stepcheck__row.is-done .stepcheck__mark { border-color: var(--ok); color: var(--ok); }
+.stepcheck__text { min-width: 0; display: grid; gap: 4px; }
+.stepcheck__text b { color: #fff; font-weight: 600; font-size: 15px; }
+.stepcheck__text small { color: var(--muted); font-weight: 400; }
+.stepcheck__text p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.5; overflow-wrap: anywhere; }
+.stepcheck__targets { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; background: rgba(84, 220, 255, .1); }
+.stepcheck__targets li { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; padding: 12px 18px; background: #000; font-size: 14px; }
+.stepcheck__targets li b { color: #fff; }
+.stepcheck__targets li span { color: var(--muted); }
+.stepcheck__camp { margin-left: auto; font-size: 12.5px; }
+.stepcheck__camp.is-on { color: var(--ok) !important; }
+.stepcheck__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.stepcheck__foot p { margin: 0; color: var(--muted); font-size: 14px; max-width: 52ch; }
+@media (max-width: 640px) {
+  .stepcheck__row { grid-template-columns: 30px minmax(0, 1fr); }
+  .stepcheck__act { grid-column: 2; }
+}
+/* A marker on the line (graph/model.js numberByPath): a coach call or the weekly habit. Not a step, so no number. */
+.rz-node--marker .rz-ring { stroke-dasharray: 2 3; }
+.rz-mark { fill: var(--muted); }
+.rz-node--marker.is-open .rz-mark { fill: var(--cyan); }
+.rz-node--marker.is-lit .rz-mark { fill: var(--ok); }
