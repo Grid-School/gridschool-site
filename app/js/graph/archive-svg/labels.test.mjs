@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { spreadLabels, LABEL_GAP } from "./labels.js?v=c78f81e-202610272041";
+import { spreadLabels, LABEL_GAP } from "./labels.js?v=33b0498-202610272054";
 
 test("labels that already clear each other keep their positions", () => {
   const out = spreadLabels([{ label: "b", y: 100 }, { label: "a", y: 0 }]);

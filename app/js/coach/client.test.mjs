@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { coachUrl } from "./client.js?v=c78f81e-202610272041";
+import { coachUrl } from "./client.js?v=33b0498-202610272054";
 
 const coach = { hosted: true, endpoint: "persist" };
 const persist = { endpoint: "https://lab.example/" };

@@ -21,12 +21,12 @@
  * that never happened.
  */
 
-import { PERSIST, link } from "../config.js?v=c78f81e-202610272041";
-import * as Account from "../check/account.js?v=c78f81e-202610272041";
-import { enterSeat } from "../app/js/persist-auth.js?v=c78f81e-202610272041";
-import { startingOn, nextSteps, WAIT_LINE } from "./welcome-copy.js?v=c78f81e-202610272041";
-import { track } from "../check/events.js?v=c78f81e-202610272041";
-import { routeFor, fromStripe, sitePath } from "../signin/route.mjs?v=c78f81e-202610272041";
+import { PERSIST, link } from "../config.js?v=33b0498-202610272054";
+import * as Account from "../check/account.js?v=33b0498-202610272054";
+import { enterSeat } from "../app/js/persist-auth.js?v=33b0498-202610272054";
+import { startingOn, nextSteps, WAIT_LINE } from "./welcome-copy.js?v=33b0498-202610272054";
+import { track } from "../check/events.js?v=33b0498-202610272054";
+import { routeFor, fromStripe, sitePath } from "../signin/route.mjs?v=33b0498-202610272054";
 
 // Localhost never talks to production: ?api= when given, else the page's own origin.
 const API = (() => {

@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { validReviewReturn } from "./review.js?v=c78f81e-202610272041";
+import { validReviewReturn } from "./review.js?v=33b0498-202610272054";
 
 test("verdict alone is not a return", () => {
   assert.equal(validReviewReturn({ verdict: "ok" }), false);

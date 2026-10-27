@@ -2452,6 +2452,24 @@ pre.diagram--failed { border-color: var(--amber); }
 .sample__more p b { color: var(--text); font-weight: 500; }
 .sample__more .b { grid-column: 1 / -1; justify-self: start; }
 
+/* Start here (views/start.js): the welcome film, the community door, and "I'm in". */
+.start { margin-top: var(--sp-5); display: grid; gap: var(--sp-4); max-width: calc(var(--measure) + 48px); }
+.start .eyebrow { color: var(--cyan); }
+.start__film { display: grid; gap: var(--sp-2); }
+.start__video { width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: var(--radius); background: var(--bg2); }
+.start__community {
+  padding: var(--sp-4); border-radius: var(--radius);
+  border: 1px solid color-mix(in srgb, var(--cyan) 35%, var(--line));
+  background: linear-gradient(180deg, var(--tint-cyan), transparent 70%);
+}
+.start__community p { margin: var(--sp-2) 0 0; color: var(--ink-soft); font-size: 15px; line-height: 1.55; }
+.start__rooms { margin: var(--sp-2) 0 0; padding-left: 20px; display: grid; gap: 4px; color: var(--muted); font-size: 14px; line-height: 1.5; }
+.start__door { margin-top: var(--sp-3); }
+.start__door .start__wait { margin: 0; font: 400 12.5px var(--font-mono); color: var(--muted); }
+.start__finish { margin-top: var(--sp-4); display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2) var(--sp-3); max-width: calc(var(--measure) + 48px); }
+.start__finish p { margin: 0; color: var(--ink-soft); font-size: 15px; }
+.start__finish .start__in { color: var(--cyan); }
+
 /* ---------- free map: "See the full plan" (views/map.js) ---------- */
 .planswitch {
   display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px 5px 6px; border-radius: 999px;

@@ -13,8 +13,8 @@
  * `startReminders` is the clock.
  */
 
-import { eventsForWeek, weekNumber } from "./time.js?v=c78f81e-202610272041";
-import { toast } from "./ui.js?v=c78f81e-202610272041";
+import { eventsForWeek, weekNumber } from "./time.js?v=33b0498-202610272054";
+import { toast } from "./ui.js?v=33b0498-202610272054";
 
 export const LEADS_MIN = [60, 15];
 const MEETING_KINDS = new Set(["cohort", "oneone"]);
