@@ -1,7 +1,0 @@
-<!doctype html><meta charset="utf-8"><title>Local test sign-in</title>
-<script>
-/* LOCAL ONLY, never committed: signs this browser into the local test seat "aden" and opens Where you're going. */
-localStorage.setItem("gridschool.session.v2", JSON.stringify({ slug: "aden", role: "student", at: Date.now(), persistToken: "XPIh4TnyMt5kQW8mFXtMyxBOrm8tQV4B" }));
-localStorage.setItem("gridschool.persist.token", "XPIh4TnyMt5kQW8mFXtMyxBOrm8tQV4B");
-location.replace("/app/?api=http://127.0.0.1:8795#/map/p.path");
-</script>

@@ -1,8 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { normalizeApp, outcomeAsks, answerAsk, noReply, pickVersion, sentBefore } from "./search.js?v=89ee485-202610270204";
-import { verdict, pickWeek } from "./send-verdict.js?v=89ee485-202610270204";
-import { readiness } from "./resume-stages.js?v=89ee485-202610270204";
+import { normalizeApp, outcomeAsks, answerAsk, noReply, pickVersion, sentBefore } from "./search.js?v=89ee485-202610270208";
+import { verdict, pickWeek } from "./send-verdict.js?v=89ee485-202610270208";
+import { readiness } from "./resume-stages.js?v=89ee485-202610270208";
 
 const NOW = new Date("2026-10-26T12:00:00Z");
 

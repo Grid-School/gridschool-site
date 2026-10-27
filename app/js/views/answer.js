@@ -8,11 +8,11 @@
  * the map is rebuilt by the same rules that built it.
  */
 
-import { el } from "../dom.js?v=89ee485-202610270204";
-import { btn } from "../ui.js?v=89ee485-202610270204";
-import * as A from "../answer-chunk.js?v=89ee485-202610270204";
-import { intakeReady, loadIntake, saveChunk, rebuildMap } from "../intake-remote.js?v=89ee485-202610270204";
-import { registerLeaveGuard, clearLeaveGuard } from "../leave-guard.js?v=89ee485-202610270204";
+import { el } from "../dom.js?v=89ee485-202610270208";
+import { btn } from "../ui.js?v=89ee485-202610270208";
+import * as A from "../answer-chunk.js?v=89ee485-202610270208";
+import { intakeReady, loadIntake, saveChunk, rebuildMap } from "../intake-remote.js?v=89ee485-202610270208";
+import { registerLeaveGuard, clearLeaveGuard } from "../leave-guard.js?v=89ee485-202610270208";
 
 let catalogPromise = null;
 const seats = new Map(); // slug -> intake state from the server

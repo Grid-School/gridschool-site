@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { addKeyword, parseKeywords } from "./search.js?v=89ee485-202610270204";
+import { addKeyword, parseKeywords } from "./search.js?v=89ee485-202610270208";
 
 test("interests are normalized before reaching the shared queue", () => {
   assert.deepEqual(
