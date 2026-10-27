@@ -16,10 +16,10 @@
  * half-typed form. Aden sees it read-only from the desk.
  */
 
-import { el, mount } from "../dom.js?v=0d1e53b-202610270239";
-import { panel, btn, field, toast, copy } from "../ui.js?v=0d1e53b-202610270239";
-import { isoDate, fmtDay } from "../time.js?v=0d1e53b-202610270239";
-import { STATUS } from "../graph/model.js?v=0d1e53b-202610270239";
+import { el, mount } from "../dom.js?v=fc888f8-202610270442";
+import { panel, btn, field, toast, copy } from "../ui.js?v=fc888f8-202610270442";
+import { isoDate, fmtDay } from "../time.js?v=fc888f8-202610270442";
+import { STATUS } from "../graph/model.js?v=fc888f8-202610270442";
 import {
   STAGES,
   RELATIONS,
@@ -63,14 +63,14 @@ import {
   nextTouch,
   targetCandidates,
   MAX_ACTIVE_TARGETS,
-} from "../search.js?v=0d1e53b-202610270239";
-import { storyCard, appRow } from "./search-parts.js?v=0d1e53b-202610270239";
-import { TOOLS } from "../engine.js?v=0d1e53b-202610270239";
-import { PERSIST } from "../../../config.js?v=0d1e53b-202610270239";
-import { matchedRoles, radarReady, fetchPacks, winsState, shareWin, draftPositioning } from "../roles-remote.js?v=0d1e53b-202610270239";
-import { createPackDrawer } from "./pack.js?v=0d1e53b-202610270239";
-import { createCampaignDrawer } from "./campaign.js?v=0d1e53b-202610270239";
-import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=0d1e53b-202610270239";
+} from "../search.js?v=fc888f8-202610270442";
+import { storyCard, appRow } from "./search-parts.js?v=fc888f8-202610270442";
+import { TOOLS } from "../engine.js?v=fc888f8-202610270442";
+import { PERSIST } from "../../../config.js?v=fc888f8-202610270442";
+import { matchedRoles, radarReady, fetchPacks, winsState, shareWin, draftPositioning } from "../roles-remote.js?v=fc888f8-202610270442";
+import { createPackDrawer } from "./pack.js?v=fc888f8-202610270442";
+import { createCampaignDrawer } from "./campaign.js?v=fc888f8-202610270442";
+import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=fc888f8-202610270442";
 
 const RUN_FAMILIES = ["proof", "presence", "network", "interview"];
 /** How many moves the day leads with. More than this reads as a wall, not a plan. */
@@ -266,7 +266,9 @@ export function renderHire(ctx, initialTool, campaignId) {
           kind: "target",
           title: "Choose your five targets",
           sub: "Where hiring, size and fit overlap, stop applying and start a campaign: email with a Loom, LinkedIn, a call, and follow-ups.",
-          actions: [btn({ label: "Choose", variant: "ghost", onclick: () => document.querySelector(".hire__targets")?.scrollIntoView({ behavior: "smooth" }) })],
+          // Goes to the "any company" form and puts the cursor in it (it scrolled to a section that no longer exists,
+          // so it did nothing: the usage recording caught it, pressed four times).
+          actions: [btn({ label: "Choose", variant: "ghost", onclick: () => { document.querySelector(".tany")?.scrollIntoView({ behavior: "smooth", block: "start" }); document.getElementById("tg-company")?.focus({ preventScroll: true }); } })],
         })
       );
     }

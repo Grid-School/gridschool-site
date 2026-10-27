@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { STANDING, STANDING_LABEL, STANDING_TONE, LEGEND, legendKeyOf, standingOf, inSequence } from "./standing.js?v=0d1e53b-202610270239";
+import { STANDING, STANDING_LABEL, STANDING_TONE, LEGEND, legendKeyOf, standingOf, inSequence } from "./standing.js?v=fc888f8-202610270442";
 
 test("standing reads the board, and the sign-off states win over plain status", () => {
   assert.equal(standingOf({ id: "a", status: "open" }, "a"), STANDING.NEXT);

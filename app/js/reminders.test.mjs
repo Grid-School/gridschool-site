@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { upcomingMeetings, dueReminders, reminderText, LEADS_MIN } from "./reminders.js?v=0d1e53b-202610270239";
+import { upcomingMeetings, dueReminders, reminderText, LEADS_MIN } from "./reminders.js?v=fc888f8-202610270442";
 
 // A Monday. weekday 1 = Monday in the cohort rules (Sunday-indexed).
 const cohort = {

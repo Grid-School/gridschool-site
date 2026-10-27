@@ -10,12 +10,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&family=Michroma&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../landing.css?v=0d1e53b-202610270239">
-<link rel="stylesheet" href="app.css?v=0d1e53b-202610270239">
-<link rel="stylesheet" href="resume.css?v=0d1e53b-202610270239">
-<link rel="stylesheet" href="path.css?v=0d1e53b-202610270239">
-<link rel="stylesheet" href="images.css?v=0d1e53b-202610270239">
-<link rel="stylesheet" href="studio.css?v=0d1e53b-202610270239">
+<link rel="stylesheet" href="../landing.css?v=fc888f8-202610270442">
+<link rel="stylesheet" href="app.css?v=fc888f8-202610270442">
+<link rel="stylesheet" href="resume.css?v=fc888f8-202610270442">
+<link rel="stylesheet" href="path.css?v=fc888f8-202610270442">
+<link rel="stylesheet" href="images.css?v=fc888f8-202610270442">
+<link rel="stylesheet" href="studio.css?v=fc888f8-202610270442">
 <style>
   .boot { min-height: 100vh; display: grid; place-items: center; padding: 40px 24px; text-align: center; }
   .boot__inner { width: min(360px, 100%); }
@@ -74,7 +74,7 @@
   // before showing an error. `fresh` marks that one retry, then leaves the URL.
   const url = new URL(location.href);
   try {
-    await import("./js/boot.js?v=0d1e53b-202610270239");
+    await import("./js/boot.js?v=fc888f8-202610270442");
     if (url.searchParams.has("fresh")) {
       url.searchParams.delete("fresh");
       history.replaceState(history.state, "", url);

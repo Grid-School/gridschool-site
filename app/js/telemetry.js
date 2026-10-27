@@ -11,7 +11,7 @@
  * Batched every few seconds; the last batch goes with the page as it closes. Measuring never breaks the page.
  */
 
-import { visitorId } from "../../check/events.js?v=0d1e53b-202610270239";
+import { visitorId } from "../../check/events.js?v=fc888f8-202610270442";
 
 const SESSION_KEY = "gridschool.session.tab.v1";
 const FLUSH_MS = 5000;
@@ -58,8 +58,8 @@ export function nameOf(node) {
   return `${tag || "node"}:${clip(label, 70) || "unnamed"}`;
 }
 
-function push(kind, target, props = {}) {
-  queue.push({ kind, target, route, t: Date.now(), props });
+function push(kind, target, props = {}, at = route) {
+  queue.push({ kind, target, route: at, t: Date.now(), props });
   if (queue.length >= 40) flush();
 }
 
@@ -85,7 +85,7 @@ function endBurst() {
   const b = burst;
   burst = null;
   clearTimeout(b.timer);
-  push("click", b.target, { n: b.n, ...(b.dead ? { dead: true } : {}) });
+  push("click", b.target, { n: b.n, ...(b.dead ? { dead: true } : {}) }, b.route); // the screen it was clicked on, not the one it led to
 }
 
 function onClick(event) {
@@ -104,7 +104,7 @@ function onClick(event) {
   const tag = node.tagName.toLowerCase();
   const opensElsewhere = tag === "a" && (node.target === "_blank" || /^(mailto|tel):/.test(node.getAttribute("href") || ""));
   const entry = ["input", "textarea", "select", "label"].includes(tag) || node.isContentEditable;
-  burst = { target, n: 1, last: now, dead: false, timer: setTimeout(endBurst, BURST_MS) };
+  burst = { target, n: 1, last: now, dead: false, route, timer: setTimeout(endBurst, BURST_MS) };
   if (!opensElsewhere && !entry && !node.disabled) {
     const before = mutations;
     const where = location.hash;
