@@ -16,10 +16,10 @@
  * never gate a node: a habit is kept, not finished.
  */
 
-import { taskIsComplete, isCountTask } from "../task-state.js?v=6ba739d-202610272145";
-import { typeOf, specOf } from "../../../data/node-types.mjs?v=6ba739d-202610272145";
-import { prepOf, prepHint, opensLater, shortDay, isFreeMap, PAID_HINT, COURSE_HINT } from "../prep.js?v=6ba739d-202610272145";
-import { FREE_MODULES, isCourseStep, moduleId } from "../../../data/video-access.mjs?v=6ba739d-202610272145";
+import { taskIsComplete, isCountTask } from "../task-state.js?v=2f611ec-202610272301";
+import { typeOf, specOf } from "../../../data/node-types.mjs?v=2f611ec-202610272301";
+import { prepOf, prepHint, opensLater, shortDay, isFreeMap, PAID_HINT, COURSE_HINT } from "../prep.js?v=2f611ec-202610272301";
+import { FREE_MODULES, isCourseStep, moduleId } from "../../../data/video-access.mjs?v=2f611ec-202610272301";
 
 export { typeOf, specOf };
 
@@ -34,6 +34,9 @@ const counts = (node) => specOf(node).completes !== "never" && !node.marker;
  */
 const MARKER_TYPES = new Set(["meeting", "habit", "reference"]);
 export const isMarker = (node) => Boolean(node?.marker);
+
+/** The first step on every new map (server/start_step.py). */
+const START_ID = "s.start";
 
 /** A student's own map uses node types; the course map (data/curriculum.json) doesn't. */
 const isStudentMap = (nodes) => nodes.some((node) => node.type && node.type !== "step");
@@ -168,6 +171,12 @@ export function buildGraph(curriculum, student, { unlockAll = false, now = new D
     if (typeOf(node) === "campaign" && node.campaign && sent.get(node.campaign)) {
       completionEvidence[node.id] = { url: `gridschool:campaign/${node.campaign}`, internal: true };
     }
+  }
+  // Start here (s.start, server/start_step.py) orients a new seat. A seat that has already finished another
+  // step is past orientation: Start here counts as done, so an existing student isn't sent back to step 1
+  // when it lands at the front of their map (2026-10-27). Nothing requires it, so nothing else changes.
+  if (byId.has(START_ID) && !completionEvidence[START_ID] && nodes.some((node) => node.id !== START_ID && completionEvidence[node.id])) {
+    completionEvidence[START_ID] = { url: `gridschool:tasks/${START_ID}`, internal: true, existing: true };
   }
   const reviews = student?.reviews ?? [];
   for (const node of nodes) {

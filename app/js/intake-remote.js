@@ -3,8 +3,8 @@
  * rebuild itself from the answers (server/onboarding_api.py). The seat's own token, like resume-remote.js.
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=6ba739d-202610272145";
-import { persistToken } from "./session.js?v=6ba739d-202610272145";
+import { PERSIST, isPlaceholder } from "../../config.js?v=2f611ec-202610272301";
+import { persistToken } from "./session.js?v=2f611ec-202610272301";
 
 export function intakeReady() {
   return Boolean(persistToken() && PERSIST?.endpoint && !isPlaceholder(PERSIST.endpoint));

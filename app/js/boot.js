@@ -10,43 +10,43 @@
  * aliases so links already in the wild still land somewhere true.
  */
 
-import { el, mount, download } from "./dom.js?v=6ba739d-202610272145";
-import * as store from "./store.js?v=6ba739d-202610272145";
-import { resolveSlug, slugFromUrl, currentSession, signOut, setPersistToken, inviteFromUrl, persistToken } from "./session.js?v=6ba739d-202610272145";
-import { tryStoredKey } from "./gate.js?v=6ba739d-202610272145";
-import { peekInvite } from "./persist-auth.js?v=6ba739d-202610272145";
-import { createRouter } from "./router.js?v=6ba739d-202610272145";
-import { createChrome } from "./chrome.js?v=6ba739d-202610272145";
-import { activeDoor } from "./rail.js?v=6ba739d-202610272145";
-import { toast } from "./ui.js?v=6ba739d-202610272145";
-import { isTestSeat } from "./test-seats.js?v=6ba739d-202610272145";
-import { renderLogin } from "./views/login.js?v=6ba739d-202610272145";
-import { renderToday } from "./views/today.js?v=6ba739d-202610272145";
-import { renderMap } from "./views/map.js?v=6ba739d-202610272145";
-import { renderStep, isStepArgs, moduleIdFromArgs } from "./views/step.js?v=6ba739d-202610272145";
-import { renderTasks } from "./views/tasks.js?v=6ba739d-202610272145";
-import { renderCalendar } from "./views/calendar.js?v=6ba739d-202610272145";
-import { renderLibrary } from "./views/library.js?v=6ba739d-202610272145";
-import { renderPosts } from "./views/posts.js?v=6ba739d-202610272145";
-import { renderHire } from "./views/hire.js?v=6ba739d-202610272145";
-import { renderResume } from "./views/resume.js?v=6ba739d-202610272145";
-import { renderProfile } from "./views/profile.js?v=6ba739d-202610272145";
-import { renderSend } from "./views/send.js?v=6ba739d-202610272145";
-import { renderPath } from "./views/path.js?v=6ba739d-202610272145";
-import { renderImages } from "./views/images.js?v=6ba739d-202610272145";
-import { renderStudio } from "./views/studio.js?v=6ba739d-202610272145";
-import { toggleDevUnlock, setDevUnlock } from "./dev-mode.js?v=6ba739d-202610272145";
-import { togglePreviewMedia, setPreviewMedia, isPreviewMedia } from "./preview-mode.js?v=6ba739d-202610272145";
-import { isInstructorDevice } from "./instructor-mode.js?v=6ba739d-202610272145";
-import { startReminders } from "./reminders.js?v=6ba739d-202610272145";
-import { watchReviewArrivals } from "./review-arrivals.js?v=6ba739d-202610272145";
-import { enterView, leaveView } from "./transitions.js?v=6ba739d-202610272145";
-import { gateRoutes } from "./features.js?v=6ba739d-202610272145";
-import * as measure from "./measure.js?v=6ba739d-202610272145";
-import { startTelemetry } from "./telemetry.js?v=6ba739d-202610272145";
-import { createNextBar } from "./views/next-bar.js?v=6ba739d-202610272145";
-import { useSeat } from "./next-live.js?v=6ba739d-202610272145";
-import { PERSIST, isPlaceholder } from "../../config.js?v=6ba739d-202610272145";
+import { el, mount, download } from "./dom.js?v=2f611ec-202610272301";
+import * as store from "./store.js?v=2f611ec-202610272301";
+import { resolveSlug, slugFromUrl, currentSession, signOut, setPersistToken, inviteFromUrl, persistToken } from "./session.js?v=2f611ec-202610272301";
+import { tryStoredKey } from "./gate.js?v=2f611ec-202610272301";
+import { peekInvite } from "./persist-auth.js?v=2f611ec-202610272301";
+import { createRouter } from "./router.js?v=2f611ec-202610272301";
+import { createChrome } from "./chrome.js?v=2f611ec-202610272301";
+import { activeDoor } from "./rail.js?v=2f611ec-202610272301";
+import { toast } from "./ui.js?v=2f611ec-202610272301";
+import { isTestSeat } from "./test-seats.js?v=2f611ec-202610272301";
+import { renderLogin } from "./views/login.js?v=2f611ec-202610272301";
+import { renderToday } from "./views/today.js?v=2f611ec-202610272301";
+import { renderMap } from "./views/map.js?v=2f611ec-202610272301";
+import { renderStep, isStepArgs, moduleIdFromArgs } from "./views/step.js?v=2f611ec-202610272301";
+import { renderTasks } from "./views/tasks.js?v=2f611ec-202610272301";
+import { renderCalendar } from "./views/calendar.js?v=2f611ec-202610272301";
+import { renderLibrary } from "./views/library.js?v=2f611ec-202610272301";
+import { renderPosts } from "./views/posts.js?v=2f611ec-202610272301";
+import { renderHire } from "./views/hire.js?v=2f611ec-202610272301";
+import { renderResume } from "./views/resume.js?v=2f611ec-202610272301";
+import { renderProfile } from "./views/profile.js?v=2f611ec-202610272301";
+import { renderSend } from "./views/send.js?v=2f611ec-202610272301";
+import { renderPath } from "./views/path.js?v=2f611ec-202610272301";
+import { renderImages } from "./views/images.js?v=2f611ec-202610272301";
+import { renderStudio } from "./views/studio.js?v=2f611ec-202610272301";
+import { toggleDevUnlock, setDevUnlock } from "./dev-mode.js?v=2f611ec-202610272301";
+import { togglePreviewMedia, setPreviewMedia, isPreviewMedia } from "./preview-mode.js?v=2f611ec-202610272301";
+import { isInstructorDevice } from "./instructor-mode.js?v=2f611ec-202610272301";
+import { startReminders } from "./reminders.js?v=2f611ec-202610272301";
+import { watchReviewArrivals } from "./review-arrivals.js?v=2f611ec-202610272301";
+import { enterView, leaveView } from "./transitions.js?v=2f611ec-202610272301";
+import { gateRoutes } from "./features.js?v=2f611ec-202610272301";
+import * as measure from "./measure.js?v=2f611ec-202610272301";
+import { startTelemetry } from "./telemetry.js?v=2f611ec-202610272301";
+import { createNextBar } from "./views/next-bar.js?v=2f611ec-202610272301";
+import { useSeat } from "./next-live.js?v=2f611ec-202610272301";
+import { PERSIST, isPlaceholder } from "../../config.js?v=2f611ec-202610272301";
 
 /* Coach (today) and Posts are gated in features.js: switched off, they are
    not routes at all, so their links land on the Map. */
@@ -195,6 +195,8 @@ function renderRoute() {
     }
     if (chrome.outlet.firstChild !== instance.node) {
       mount(chrome.outlet, instance.node);
+      // A step you come back to opens at its top, not wherever you last scrolled.
+      instance.node.scrollTop = 0;
       // The camera has already gone to the node (map.js); the page arrives over it.
       enterView(instance.node);
     }

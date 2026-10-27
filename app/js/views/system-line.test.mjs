@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { systemLine } from "./system-line.js?v=6ba739d-202610272145";
+import { systemLine } from "./system-line.js?v=2f611ec-202610272301";
 
 test("systemLine labels portfolio as Repo required", () => {
   assert.equal(

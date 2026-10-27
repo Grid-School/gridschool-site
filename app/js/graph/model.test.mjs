@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { buildGraph, nextUp, progress, stepCount, visibleGraph, isSide, isSpine, trackOf, stepNumber, STATUS, TRACK } from "./model.js?v=6ba739d-202610272145";
-import { buildQueue } from "../tasks.js?v=6ba739d-202610272145";
+import { buildGraph, nextUp, progress, stepCount, visibleGraph, isSide, isSpine, trackOf, stepNumber, STATUS, TRACK } from "./model.js?v=2f611ec-202610272301";
+import { buildQueue } from "../tasks.js?v=2f611ec-202610272301";
 
 const families = [
   { id: "ccvv", track: "spine" },
@@ -475,6 +475,17 @@ test("step numbers follow the path; coach calls and habits are unnumbered marker
   // The course map (no node types) is never renumbered.
   const course = buildGraph({ families: [], phases: [], nodes: [{ id: "a", n: 7, title: "a", requires: [] }, { id: "b", n: 3, title: "b", requires: ["a"] }] }, {});
   assert.deepEqual([course.byId.get("a").n, course.byId.get("b").n], [7, 3]);
+});
+
+test("Start here counts as done for a seat that already finished another step, never for a new one", () => {
+  const map = liveStarter();
+  map.nodes.unshift({ id: "s.start", n: 0, title: "Start here", family: "p", requires: [], type: "step", kind: "core", completion: "tasks", tasks: [{ id: "s.start.how", title: "How it works" }] });
+  const fresh = buildGraph(map, {});
+  assert.equal(fresh.byId.get("s.start").status, "open", "a new seat starts here");
+  assert.equal(nextUp(fresh).id, "s.start");
+  const existing = buildGraph({ ...map, nodes: map.nodes.map((n) => ({ ...n })) }, { tasks: { "b.resume.t": { state: "done" } } });
+  assert.equal(existing.byId.get("s.start").status, "lit", "an existing seat isn't sent back to step 1");
+  assert.notEqual(nextUp(existing).id, "s.start");
 });
 
 test("stepCount: one count for the rail, the step page and the list", () => {

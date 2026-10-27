@@ -13,18 +13,18 @@
  * builder made; a coach's map is left alone), or "Something's off" sends the coach a note.
  */
 
-import { el, mount } from "../dom.js?v=6ba739d-202610272145";
-import { btn, toast } from "../ui.js?v=6ba739d-202610272145";
-import { nodeRail } from "./node-rail.js?v=6ba739d-202610272145";
-import { doneIds } from "../steps.js?v=6ba739d-202610272145";
-import { nextUp } from "../graph/model.js?v=6ba739d-202610272145";
-import { isProgressReadOnly } from "../store.js?v=6ba739d-202610272145";
-import * as A from "../answer-chunk.js?v=6ba739d-202610272145";
-import * as I from "../../../data/intake/intake.mjs?v=6ba739d-202610272145";
-import { control } from "./answer.js?v=6ba739d-202610272145";
-import { filePayload } from "./images.js?v=6ba739d-202610272145";
-import { intakeReady, loadIntake, saveChunk, rebuildMap, loadSeeds } from "../intake-remote.js?v=6ba739d-202610272145";
-import { imagesReady, loadImages, uploadImage, removeImage, imageUrl } from "../images-remote.js?v=6ba739d-202610272145";
+import { el, mount } from "../dom.js?v=2f611ec-202610272301";
+import { btn, toast } from "../ui.js?v=2f611ec-202610272301";
+import { nodeRail } from "./node-rail.js?v=2f611ec-202610272301";
+import { doneIds } from "../steps.js?v=2f611ec-202610272301";
+import { nextUp } from "../graph/model.js?v=2f611ec-202610272301";
+import { isProgressReadOnly } from "../store.js?v=2f611ec-202610272301";
+import * as A from "../answer-chunk.js?v=2f611ec-202610272301";
+import * as I from "../../../data/intake/intake.mjs?v=2f611ec-202610272301";
+import { control } from "./answer.js?v=2f611ec-202610272301";
+import { filePayload } from "./images.js?v=2f611ec-202610272301";
+import { intakeReady, loadIntake, saveChunk, rebuildMap, loadSeeds } from "../intake-remote.js?v=2f611ec-202610272301";
+import { imagesReady, loadImages, uploadImage, removeImage, imageUrl } from "../images-remote.js?v=2f611ec-202610272301";
 
 /* The stages, each a few questions from one chunk. Upload questions name the images kind they go to.
    A question stage is done when every question it asks now is answered or skipped; Finish is done when
@@ -147,15 +147,27 @@ export function renderProfile(ctx, options = {}) {
   async function answer(st, q, raw) {
     const next = A.setAnswer(state, q, raw);
     if (!I.isAnswered(next, q.id)) return toast("Type an answer, or press Skip.", "warn");
+    const before = state;
+    const typed = draft;
     state = next;
     draft = "";
-    await persist(st.chunk);
+    // A save the server refused stays on this question with what was typed: moving on would show an answer
+    // as saved that isn't, and the step could never finish.
+    if (!(await persist(st.chunk))) {
+      state = before;
+      draft = typed || raw;
+      render();
+    }
   }
 
   async function skip(st, q) {
+    const before = state;
     state = I.skip(state, q.id);
     draft = "";
-    await persist(st.chunk, "Skipping.");
+    if (!(await persist(st.chunk, "Skipping."))) {
+      state = before;
+      render();
+    }
   }
 
   async function upload(st, q, file) {
@@ -287,8 +299,11 @@ export function renderProfile(ctx, options = {}) {
   /* ---------- finish ---------- */
   function finishBody() {
     const next = nodeDone() ? nextUp(current.state.graph) : null;
+    // "Go there" opens the first part the card is actually missing, not the start of the questions.
+    const c = seeds?.complete ?? {};
+    const missingPart = !c.target ? "you" : !c.interests ? "into" : !c.taste ? "taste" : !c.voice ? "voice" : "you";
     const checks = [
-      ["Your target, what you're into, your taste and your voice", youDone(), "you"],
+      ["Your target, what you're into, your taste and your voice", youDone(), missingPart],
       ["Your LinkedIn as it is today", linkedinDone(), "linkedin"],
     ];
     const ready = checks.every(([, ok]) => ok);

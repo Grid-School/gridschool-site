@@ -1,8 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { communityHref, inviteReady, forgetInvite, roomLines, imInChanges, isStartDone, ON_ITS_WAY } from "./start.js?v=6ba739d-202610272145";
-import { buildGraph, nextUp, stepCount, stepNumber } from "../graph/model.js?v=6ba739d-202610272145";
-import { nextMove } from "../engine.js?v=6ba739d-202610272145";
+import { communityHref, inviteReady, forgetInvite, roomLines, imInChanges, isStartDone, ON_ITS_WAY } from "./start.js?v=2f611ec-202610272301";
+import { buildGraph, nextUp, stepCount, stepNumber } from "../graph/model.js?v=2f611ec-202610272301";
+import { nextMove } from "../engine.js?v=2f611ec-202610272301";
 
 // The shape server/start_step.py makes (start_step_test.py keeps the server side honest).
 const START = {

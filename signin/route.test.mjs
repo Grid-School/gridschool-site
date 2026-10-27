@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { routeFor, fromStripe, sitePath } from "./route.mjs?v=6ba739d-202610272145";
+import { routeFor, fromStripe, sitePath } from "./route.mjs?v=2f611ec-202610272301";
 
 const me = (seat, checks = []) => ({ email: "sam@example.com", name: "", checks, seat });
 const check = { id: "ck_aaaaaaaaaaaaaaaaaaaa", top: [], createdAt: "2026-10-27T00:00:00Z" };
