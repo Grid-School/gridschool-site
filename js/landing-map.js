@@ -10,7 +10,7 @@
  * the map: kept steps slide, new ones arrive lit, dropped ones fade.
  */
 
-import { draftMap, stepTitle, checkOf, checkSummary, CHECK, FAMILIES, PHASES } from "./map-draft.js?v=89ee485-202610270208";
+import { draftMap, stepTitle, checkOf, checkSummary, CHECK, FAMILIES, PHASES } from "./map-draft.js?v=0d1e53b-202610270239";
 import {
   svgEl,
   drawGrid,
@@ -22,7 +22,7 @@ import {
   arrivalFractions,
   rezIn,
   prefersReducedMotion,
-} from "./rez/road.js?v=89ee485-202610270208";
+} from "./rez/road.js?v=0d1e53b-202610270239";
 
 /*
  * Everything sits on one grid. CELL is half a lane: lanes are every second

@@ -4,7 +4,7 @@
  * HTML so the brand still reads with JavaScript off.
  */
 
-import { gmark } from "./brand.js?v=89ee485-202610270208";
+import { gmark } from "./brand.js?v=0d1e53b-202610270239";
 
 for (const brand of document.querySelectorAll(".nav__brand")) {
   if (!brand.querySelector("svg")) brand.prepend(gmark());

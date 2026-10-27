@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { zonedToInstant, partsIn, normalizeSlot, nextOccurrences, slotSummary, joinIsLive, whenIn } from "./call-slot.js?v=89ee485-202610270208";
+import { zonedToInstant, partsIn, normalizeSlot, nextOccurrences, slotSummary, joinIsLive, whenIn } from "./call-slot.js?v=0d1e53b-202610270239";
 
 test("a wall-clock time in one zone is the same instant everywhere", () => {
   const at = zonedToInstant("2026-10-10", "10:00", "America/Denver");

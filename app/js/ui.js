@@ -3,7 +3,7 @@
  * object visually and a change to a panel changes it everywhere.
  */
 
-import { el } from "./dom.js?v=89ee485-202610270208";
+import { el } from "./dom.js?v=0d1e53b-202610270239";
 
 export function panel({ eyebrow, title, note, actions, tone } = {}, ...children) {
   return el(
@@ -110,6 +110,8 @@ export function copy(text, message = "Copied.") {
 export function toast(message, tone = "ok", { ms = 2600 } = {}) {
   const node = el("div.toast", { class: `toast--${tone}`, role: "status" }, message);
   document.body.append(node);
+  // A warning shown is a fact worth knowing (telemetry.js): which one, where.
+  try { window.dispatchEvent(new CustomEvent("gs:toast", { detail: { message: String(message), tone } })); } catch { /* never mind */ }
   requestAnimationFrame(() => node.classList.add("is-in"));
   setTimeout(() => {
     node.classList.remove("is-in");

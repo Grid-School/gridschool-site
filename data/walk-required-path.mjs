@@ -8,7 +8,7 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { buildGraph, STATUS, isSpine, nextUp, ancestorsOf } from "../app/js/graph/model.js?v=89ee485-202610270208";
+import { buildGraph, STATUS, isSpine, nextUp, ancestorsOf } from "../app/js/graph/model.js?v=0d1e53b-202610270239";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const cur = JSON.parse(readFileSync(join(here, "curriculum.json"), "utf8"));

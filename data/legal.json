@@ -1,5 +1,5 @@
 {
-  "version": "2026-10-25",
+  "version": "2026-10-26",
   "note": "Written from how the program actually runs. Every claim here has to match the offer lock in companies/gridschool-phase0; if the offer changes, this file changes in the same commit.",
   "documents": {
     "terms": {
@@ -179,7 +179,8 @@
         {
           "heading": "Cookies and measurement",
           "body": [
-            "The site sets no cookies and uses no third-party analytics. The free check counts its own steps (opened, started, finished, saved, signed in) under a random id kept in your browser, along with where you came from (for example, the video), so we can see which parts work and which don't. It keeps no IP address and nothing you type. The app uses your browser's local storage to remember which board you are on and any changes you have not exported yet. Clearing site data clears it."
+            "The site sets no cookies and uses no third-party analytics. The free check counts its own steps (opened, started, finished, saved, signed in) under a random id kept in your browser, along with where you came from (for example, the video), so we can see which parts work and which don't. It keeps no IP address and nothing you type. The app uses your browser's local storage to remember which board you are on and any changes you have not exported yet. Clearing site data clears it.",
+            "When you're signed in to the app, it records how you use it, so I can see where it's confusing and fix it: which screens you open and for how long, which buttons and controls you use, the warnings and errors you run into, and when you leave. It never records what you type, only which box or button you used. This is tied to your account, kept for 180 days, and seen only by me; it isn't shared with or sent to any third party."
           ],
           "whenAdTracking": [
             "Advertising measurement is active: an ad platform pixel records that you visited and whether you applied, so I can tell which ads bring people who are actually a fit. It does not receive your application answers or your board.",

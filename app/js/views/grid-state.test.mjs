@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { VIEW, stateFromArg, argFor, hashFor, reduce, createGridState } from "./grid-state.js?v=89ee485-202610270208";
+import { VIEW, stateFromArg, argFor, hashFor, reduce, createGridState } from "./grid-state.js?v=0d1e53b-202610270239";
 
 test("#/map is the floor; #/map/list is the list", () => {
   assert.equal(stateFromArg(null).view, VIEW.MAP);

@@ -2,8 +2,8 @@
  * Admin persist calls. Desk only. Student boards never import this.
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=89ee485-202610270208";
-import { persistToken } from "./session.js?v=89ee485-202610270208";
+import { PERSIST, isPlaceholder } from "../../config.js?v=0d1e53b-202610270239";
+import { persistToken } from "./session.js?v=0d1e53b-202610270239";
 
 function endpoint() {
   return String(PERSIST.endpoint || "").replace(/\/$/, "");
@@ -37,6 +37,10 @@ async function request(method, path, body) {
   }
   return payload;
 }
+
+/* How the app is used (server/activity_api.py): everyone's summary, and one student's sessions. */
+export const loadUsage = (days = 30) => request("GET", `/activity/summary?days=${encodeURIComponent(days)}`);
+export const loadStudentActivity = (slug, days = 30) => request("GET", `/students/${encodeURIComponent(slug)}/activity?days=${encodeURIComponent(days)}`);
 
 export async function listPersistSlugs() {
   if (!persistAdminReady()) return [];
