@@ -3,10 +3,10 @@
  * only the four other modes render. Data lives in ../modes.js.
  */
 
-import { el } from "../dom.js?v=7ed7f2f-202610270608";
-import { modeOf } from "../modes.js?v=7ed7f2f-202610270608";
+import { el } from "../dom.js?v=c78ea40-202610270657";
+import { modeOf } from "../modes.js?v=c78ea40-202610270657";
 
-export { MODES, modeOf } from "../modes.js?v=7ed7f2f-202610270608";
+export { MODES, modeOf } from "../modes.js?v=c78ea40-202610270657";
 
 /** A one-line notice under the lead, only when the mode is not Open. */
 export function modeLine(node) {

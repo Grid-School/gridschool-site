@@ -10,8 +10,8 @@
  * The parsing and formatting are pure and tested; the DOM builders sit on top.
  */
 
-import { el } from "../dom.js?v=7ed7f2f-202610270608";
-import { isHttpUrl, isValidDate } from "../modules.js?v=7ed7f2f-202610270608";
+import { el } from "../dom.js?v=c78ea40-202610270657";
+import { isHttpUrl, isValidDate } from "../modules.js?v=c78ea40-202610270657";
 
 /** Up to this many links show as buttons; more show as a numbered list. */
 const LINK_BUTTONS = 4;

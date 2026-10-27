@@ -2735,3 +2735,26 @@ pre.diagram--failed { border-color: var(--amber); }
 .camp__writing { display: grid; gap: 10px; }
 .tcard__camp { font-size: 12.5px; color: var(--muted); }
 .tcard__camp.is-writing { color: var(--warn); }
+
+/* The Next bar (views/next-bar.js): the one next move under every screen, in the shell's flow so it never
+   covers an input. Cyan is "you": the dot and the one button. */
+.gonext { flex: none; display: flex; align-items: center; gap: 14px; padding: 12px 24px calc(12px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid rgba(84, 220, 255, .28); background: linear-gradient(90deg, rgba(84, 220, 255, .07), rgba(0, 0, 0, .92) 55%), #000; position: relative; z-index: 5; }
+.gonext__dot { width: 10px; height: 10px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 12px var(--cyan); flex: none; }
+.gonext__text { display: grid; gap: 2px; min-width: 0; flex: 1 1 auto; }
+.gonext__label { font: 400 9.5px/1.2 "Michroma", var(--font-mono, monospace); letter-spacing: .2em; text-transform: uppercase; color: var(--cyan); }
+.gonext__title { color: #fff; font-weight: 600; font-size: 15px; line-height: 1.35; }
+.gonext__why { color: var(--muted); font-size: 13px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gonext__acts { display: flex; gap: 8px; align-items: center; flex: none; flex-wrap: wrap; justify-content: flex-end; }
+.gonext.is-here { border-top-color: rgba(84, 220, 255, .16); background: #000; }
+.gonext.is-here .gonext__dot { box-shadow: none; }
+@media (max-width: 720px) {
+  .gonext { flex-wrap: wrap; padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px)); gap: 8px 12px; }
+  .gonext__text { flex-basis: calc(100% - 26px); }
+  .gonext__why { display: none; }
+  .gonext__acts { flex: 1 1 100%; }
+  .gonext__acts .b { flex: 1 1 auto; justify-content: center; }
+}
+/* The coach's steer on the Coach page (views/today.js), above the conversation. */
+.coach-steer { flex: none; margin: 0; padding: 14px 24px; border-bottom: 1px solid rgba(84, 220, 255, .16); color: var(--cyan); font-size: 14px; line-height: 1.5; text-align: left; }
+.coach-steer b { color: #fff; font-weight: 600; }

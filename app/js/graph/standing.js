@@ -5,7 +5,7 @@
  * status plus two things only a whole board knows: which open node is the one
  * to do next, and whether a sign-off node is waiting on a verdict or was sent
  * back. The floor, the list, the HUD legend and the hover line all read this,
- * so "You are here" on the map is the same node the list marks "Do this next".
+ * so "You are here" on the map is the same node the list marks "You are here".
  *
  * Eight standings exist because eight things can be true of a node. A reader
  * sees four: Next (the beacon), Open (a stump), Done (green), Ahead (a flat
@@ -39,7 +39,7 @@ export function standingOf(node, nextId) {
 
 /** The words a student reads beside a node. */
 export const STANDING_LABEL = {
-  [STANDING.NEXT]: "Do this next",
+  [STANDING.NEXT]: "You are here",
   [STANDING.OPEN]: "You can do this now",
   [STANDING.FIX]: "Changes came back",
   [STANDING.REVIEW]: "In review",

@@ -5,7 +5,7 @@
  * public, and that is all a syllabus needs: number, track, title, why.
  */
 
-import { trackOf, TRACK } from "../app/js/graph/model.js?v=7ed7f2f-202610270608";
+import { trackOf, TRACK } from "../app/js/graph/model.js?v=c78ea40-202610270657";
 
 const DATA = "../data/";
 

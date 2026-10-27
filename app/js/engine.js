@@ -13,7 +13,8 @@
  * Pure: the map (graph/rez) draws these; the tools live in views/hire.js.
  */
 
-import { nextUp } from "./graph/model.js?v=7ed7f2f-202610270608";
+import { nextUp } from "./graph/model.js?v=c78ea40-202610270657";
+import { returnedUnread } from "./tasks.js?v=c78ea40-202610270657";
 import {
   searchOf,
   careerOf,
@@ -27,7 +28,7 @@ import {
   networkOf,
   insideConnections,
   shortTitle,
-} from "./search.js?v=7ed7f2f-202610270608";
+} from "./search.js?v=c78ea40-202610270657";
 
 export const TOOLS = {
   today: { label: "Today", hint: "Every move for today, in order" },
@@ -88,30 +89,75 @@ export function isTypedMap(graph) {
   return Boolean(graph?.groups?.size) || (graph?.nodes ?? []).some((node) => node.type && node.type !== "step");
 }
 
-export function nextMove({ student, graph, now = new Date(), roles = [], packs = {} }) {
+/**
+ * The one next move, shown in the one Next bar on every screen (views/next-bar.js), first in Today, and
+ * as the coach's opening line. Nothing else decides "what now". The order:
+ *
+ *   1. Something with a clock: your coach's notes came back, a conversation is booked, a follow-up is due.
+ *   2. The step you're on, on the map. `detail(stepId)` is what that step's own page knows about its next
+ *      action ("Answer 7 questions…"), when it has said; otherwise the step's title.
+ *   3. The daily routine, once no step is open: someone inside, a campaign to send, the profile, a warm
+ *      ask, a prepared application, today's applications.
+ *   4. Rest.
+ */
+export function nextMove({ student, graph, now = new Date(), roles = [], packs = {}, detail = () => null }) {
   const s = searchOf(student);
   const career = careerOf(student);
   const typed = isTypedMap(graph);
   const make = (kind, title, why, fed = null) => ({ tool: kind === "insider" || kind === "follow" ? "today" : kind, kind, title, why, lane: LANE[kind], fed });
 
+  // 1. A clock.
+  const review = returnedUnread(student)[0];
+  if (review) return { kind: "review", title: `Your coach's notes on ${review.title} came back`, why: review.verdict ?? "Read them before you go on.", review, stepId: review.nodeId ?? null, lane: null, fed: null };
   const conversation = active(s.apps).find((a) => a.stage === "screen" || a.stage === "interview");
   if (conversation) return make("today", `Prepare for your ${conversation.company} ${conversation.stage}`, "A conversation is booked. Nothing else matters as much today.");
+  const touches = dueTouches(student?.search?.targets ?? [], now);
+  const followTouch = touches.find((t) => t.kind === "follow");
+  if (followTouch) return { ...make("targets", `${followTouch.target.company}: ${followTouch.label}`, "A follow-up is due on a company you chose."), targetId: followTouch.target.id };
+  const due = followUps(s.apps, now)[0];
+  if (due) return make("follow", `Follow up with ${due.company}`, "Most replies come after a follow-up, not the first message.");
+
+  // 2. The step you're on.
+  const step = nextUp(graph, now);
+  if (step) {
+    const said = detail(step.id);
+    return { stepId: step.id, stepTitle: step.title, title: said?.title || step.title, why: said?.why || step.why || "The next step on your map.", lane: step.family, fed: null, kind: "step" };
+  }
+
+  // 3. The daily routine.
   const ready = readyItems({ student, roles, packs });
   const insider = ready.find((r) => r.kind === "insider");
   if (insider) return make("insider", `Ask ${insider.person.name} at ${insider.role.company}`, `You know someone inside a company that's hiring for ${shortTitle(insider.role.title)}.`, "insider");
-  const touch = dueTouches(student?.search?.targets ?? [], now)[0];
-  if (touch) return { ...make("targets", `${touch.target.company}: ${touch.label}`, touch.kind === "day0" ? "The campaign is written. Today it goes out." : "A follow-up is due on a company you chose.", touch.target.campaign && !touch.target.touches?.email ? "campaign" : null), targetId: touch.target.id };
+  const touch = touches.find((t) => t.kind === "day0");
+  if (touch) return { ...make("targets", `${touch.target.company}: ${touch.label}`, touch.target.campaign ? "The campaign is written. Today it goes out." : "Write the campaign, then send it today.", touch.target.campaign && !touch.target.touches?.email ? "campaign" : null), targetId: touch.target.id };
   if (!typed && career.headline && !s.profileAt) return make("profile", "Put your new headline and About on LinkedIn", "Recruiters search all day. Until this is live, they can't find you.");
   const ask = toAsk(peopleOf(student))[0];
   if (ask) return make("people", `Ask ${ask.name}${ask.company ? ` at ${ask.company}` : ""}`, "Asking someone you know beats an application almost every time.");
-  const due = followUps(s.apps, now)[0];
-  if (due) return make("follow", `Follow up with ${due.company}`, "Most replies come after a follow-up, not the first message.");
   const prepared = ready.find((r) => r.kind === "prepared");
   if (!typed && prepared && thisWeek(s.apps, now).apply < career.targets.apply) return make("applications", `Apply: ${prepared.label.replace(/^Prepared: /, "")}`, "Prepared for you: read it, send it, log it.", "prepared");
   if (!typed && thisWeek(s.apps, now).apply < career.targets.apply) return make("applications", "Prepare and send today's applications", "Fresh roles that fit get read. Early and specific beats many.");
-  const step = nextUp(graph, now);
-  if (step) return { stepId: step.id, title: step.title, why: step.why ?? "The next step on your map.", lane: step.family, fed: null, kind: "step" };
+
+  // 4. Rest.
   return { tool: "today", kind: "rest", title: "You're clear for today", why: "Rest is part of a long search.", lane: null, fed: null };
+}
+
+/**
+ * Where a move is done, as a route: [name, ...args]. The Next bar's button goes here, and the bar knows
+ * you're already there when the current route matches.
+ */
+export function moveRoute(move) {
+  if (move.kind === "review") return move.stepId ? ["map", move.stepId] : ["today"];
+  if (move.stepId) return ["map", move.stepId];
+  if (move.targetId) return ["do", "targets", move.targetId];
+  if (move.kind === "rest") return ["do", "today"];
+  return ["do", move.tool ?? "today"];
+}
+
+/** Is the current route the move's place? (#/do/targets/t1 is inside #/do/targets.) */
+export function isHere(route, target) {
+  if (!route || route.name !== target[0]) return false;
+  const args = route.args ?? [];
+  return target.slice(1).every((part, i) => args[i] === part);
 }
 
 /** How many more moves are waiting today after the next one (for "+N more today"). */

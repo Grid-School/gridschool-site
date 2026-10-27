@@ -8,20 +8,18 @@
  * position; a task marked done elsewhere must not throw you back to the top.
  */
 
-import { el, mount } from "../dom.js?v=7ed7f2f-202610270608";
-import { btn, toast } from "../ui.js?v=7ed7f2f-202610270608";
-import { COACH } from "../../../config.js?v=7ed7f2f-202610270608";
-import { nextAction } from "../coach/next.js?v=7ed7f2f-202610270608";
-import { nextUp } from "../graph/model.js?v=7ed7f2f-202610270608";
-import { credits, formatUsd, attachmentBudget } from "../coach/credits.js?v=7ed7f2f-202610270608";
-import { rememberIntent } from "../coach/memory.js?v=7ed7f2f-202610270608";
-import { sendTurn, coachIsLive, lastMonth } from "../coach/client.js?v=7ed7f2f-202610270608";
-import { systemLine } from "./system-line.js?v=7ed7f2f-202610270608";
+import { el, mount } from "../dom.js?v=c78ea40-202610270657";
+import { btn, toast } from "../ui.js?v=c78ea40-202610270657";
+import { COACH } from "../../../config.js?v=c78ea40-202610270657";
+import { currentMove } from "../next-live.js?v=c78ea40-202610270657";
+import { nextUp } from "../graph/model.js?v=c78ea40-202610270657";
+import { credits, formatUsd, attachmentBudget } from "../coach/credits.js?v=c78ea40-202610270657";
+import { rememberIntent } from "../coach/memory.js?v=c78ea40-202610270657";
+import { sendTurn, coachIsLive, lastMonth } from "../coach/client.js?v=c78ea40-202610270657";
 
 const TEXT_FILES = /\.(txt|md|markdown|json|diff|patch|py|js|mjs|ts|tsx|jsx|css|html|rs|go|java|rb|sh|yml|yaml|toml|csv)$/i;
 
 export function renderToday(ctx) {
-  const nextbar = el("div.nextbar");
   const thread = el("div.thread", { "aria-live": "polite" });
   const creditsEl = el("span.composer__credits");
   const attachList = el("div.composer__files");
@@ -64,45 +62,20 @@ export function renderToday(ctx) {
     fileInput
   );
 
-  const root = el("div.view.view--today", {}, nextbar, thread, composer);
+  // The steer the coach set on the desk (student.focus), shown only while it names the step you're on.
+  const steer = el("p.coach-steer", { hidden: true });
+  const root = el("div.view.view--today", {}, steer, thread, composer);
 
-  function paintNext() {
-    const next = nextAction(current.state);
-    const { store, navigate } = current;
+  function paintSteer() {
     const focus = current.state.student.focus;
     const up = nextUp(current.state.graph);
-    // Focus only when it still points at the same next step; otherwise it fights Today.
-    const showFocus =
-      Boolean(focus) &&
-      Boolean(up) &&
+    const names = Boolean(focus) && Boolean(up) &&
       (focus.toLowerCase().includes(up.title.toLowerCase().slice(0, 12)) ||
         (focus.toLowerCase().includes("board") && up.id === "or.start") ||
         (focus.toLowerCase().includes("boot") && up.id === "pf.runs") ||
         (focus.toLowerCase().includes("it runs") && up.id === "pf.runs"));
-    mount(
-      nextbar,
-      el("b.eyebrow", {}, next.kind === "review" ? "Read this first" : "Do this next"),
-      systemLine(up) && el("p.nextbar__system", {}, systemLine(up)),
-      el("h1.nextbar__title", {}, next.title),
-      el("p.nextbar__why", {}, next.why),
-      showFocus && el("p.nextbar__focus", {}, focus),
-      el(
-        "div.nextbar__acts",
-        {},
-        next.kind === "review"
-          ? [
-              btn({ label: "Got it", variant: "solid", onclick: () => store.markReviewRead(next.review.id) }),
-              next.review.link && btn({ label: "The work ↗", variant: "quiet", href: next.review.link, target: "_blank" }),
-            ]
-          : next.node
-            ? btn({
-                label: "Go to this step",
-                variant: "solid",
-                onclick: () => navigate("map", next.node.id),
-              })
-            : btn({ label: "Open the map", variant: "solid", onclick: () => navigate("map") })
-      )
-    );
+    steer.hidden = !names;
+    if (names) mount(steer, el("b", {}, "From your coach: "), focus);
   }
 
   function paintCredits() {
@@ -138,12 +111,13 @@ export function renderToday(ctx) {
     );
   }
 
+  /** The coach opens on the one next move, the same words as the Next bar under the page. */
   function greeting() {
-    const next = nextAction(current.state);
+    const move = currentMove(current.state);
     const line =
-      next.kind === "review"
-        ? `${next.title}. ${next.why} Mark it read when you have it, then we stay on the work.`
-        : `Do this next: ${next.title}. ${next.why} Tell me where you are on it.`;
+      move.kind === "review"
+        ? `${move.title}. ${move.why} Mark them read when you have them, then we stay on the work.`
+        : `Your next move: ${move.title}. ${move.why} Tell me where you are on it.`;
     return { role: "assistant", text: line, at: "seed", seed: true };
   }
 
@@ -256,7 +230,7 @@ export function renderToday(ctx) {
     paintFiles();
   });
 
-  paintNext();
+  paintSteer();
   paintCredits();
   paintThread();
   paintFiles();
@@ -265,7 +239,7 @@ export function renderToday(ctx) {
     node: root,
     update(nextCtx) {
       current = nextCtx;
-      paintNext();
+      paintSteer();
       paintCredits();
       paintThread();
     },

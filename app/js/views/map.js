@@ -16,26 +16,25 @@
  * went with it, because on the floor position is derived from sequence.
  */
 
-import { el, mount } from "../dom.js?v=7ed7f2f-202610270608";
-import { btn, toast } from "../ui.js?v=7ed7f2f-202610270608";
-import { createScene3d } from "../graph/scene3d/index.js?v=7ed7f2f-202610270608";
-import { createRezScene } from "../graph/rez/index.js?v=7ed7f2f-202610270608";
-import { STATUS, nextUp, progress, visibleGraph, stepNumber } from "../graph/model.js?v=7ed7f2f-202610270608";
-import { STANDING, STANDING_LABEL, standingOf } from "../graph/standing.js?v=7ed7f2f-202610270608";
-import { icon } from "../icons.js?v=7ed7f2f-202610270608";
-import { trackLabel } from "../copy.js?v=7ed7f2f-202610270608";
-import { mapList } from "./map-list.js?v=7ed7f2f-202610270608";
-import { dueLabel } from "./from-aden.js?v=7ed7f2f-202610270608";
-import { createGridState, hashFor, RESERVED_ARGS, VIEW } from "./grid-state.js?v=7ed7f2f-202610270608";
-import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=7ed7f2f-202610270608";
-import { isProgressReadOnly } from "../store.js?v=7ed7f2f-202610270608";
-import { doneForYou, nextMove, movesAfterNext, isTypedMap } from "../engine.js?v=7ed7f2f-202610270608";
-import { matchedRoles, fetchPacks, radarReady } from "../roles-remote.js?v=7ed7f2f-202610270608";
-import { careerOf } from "../search.js?v=7ed7f2f-202610270608";
-import { isoDate } from "../time.js?v=7ed7f2f-202610270608";
-import { routeGraph, isLandmark } from "../graph/route.js?v=7ed7f2f-202610270608";
-import { isFreeMap, upgradeHref } from "../prep.js?v=7ed7f2f-202610270608";
-import { createSuggest } from "./suggest.js?v=7ed7f2f-202610270608";
+import { el, mount } from "../dom.js?v=c78ea40-202610270657";
+import { btn, toast } from "../ui.js?v=c78ea40-202610270657";
+import { createScene3d } from "../graph/scene3d/index.js?v=c78ea40-202610270657";
+import { createRezScene } from "../graph/rez/index.js?v=c78ea40-202610270657";
+import { STATUS, nextUp, progress, visibleGraph, stepNumber } from "../graph/model.js?v=c78ea40-202610270657";
+import { STANDING, STANDING_LABEL, standingOf } from "../graph/standing.js?v=c78ea40-202610270657";
+import { icon } from "../icons.js?v=c78ea40-202610270657";
+import { trackLabel } from "../copy.js?v=c78ea40-202610270657";
+import { mapList } from "./map-list.js?v=c78ea40-202610270657";
+import { dueLabel } from "./from-aden.js?v=c78ea40-202610270657";
+import { createGridState, hashFor, RESERVED_ARGS, VIEW } from "./grid-state.js?v=c78ea40-202610270657";
+import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=c78ea40-202610270657";
+import { isProgressReadOnly } from "../store.js?v=c78ea40-202610270657";
+import { setLiveJobs } from "../next-live.js?v=c78ea40-202610270657";
+import { matchedRoles, fetchPacks, radarReady } from "../roles-remote.js?v=c78ea40-202610270657";
+import { careerOf } from "../search.js?v=c78ea40-202610270657";
+import { routeGraph, isLandmark } from "../graph/route.js?v=c78ea40-202610270657";
+import { isFreeMap, upgradeHref } from "../prep.js?v=c78ea40-202610270657";
+import { createSuggest } from "./suggest.js?v=c78ea40-202610270657";
 
 /** Top clears the bar, right the control stack, bottom the next-step card. */
 const INSETS = { top: 64, right: 72, bottom: 96, left: 40 };
@@ -64,18 +63,12 @@ export function renderMap(ctx, initialArg) {
   const hudTop = el("div.hud.hud--top");
   const hudSide = el("div.hud.hud--side");
   const status = el("div.hud.hud--status", { role: "status" });
-  const nextCard = el("div.nextbar", { role: "region", "aria-label": "Do this next" });
   const adenLine = el("div.adenline", { hidden: true });
   const lockFloat = el("div.lock-float", { hidden: true });
   const invite = el("div.style-invite", { hidden: true, role: "dialog", "aria-label": "A new way to see your map" });
   const world = el("div.world3d-host", { role: "application", "aria-label": "Your path" });
-  const canvas = el("div.view.view--map", {}, world, hudTop, adenLine, hudSide, status, nextCard, invite);
+  const canvas = el("div.view.view--map", {}, world, hudTop, adenLine, hudSide, status, invite);
   const list = el("div.view.view--maplist", { hidden: true });
-  // The control stack rides just above the next-step card, however tall it wraps.
-  const nextbarSize = typeof ResizeObserver === "function"
-    ? new ResizeObserver(() => canvas.style.setProperty("--nextbar-h", `${nextCard.hidden ? 0 : nextCard.offsetHeight}px`))
-    : null;
-  nextbarSize?.observe(nextCard);
   const root = el("div.mapview", {}, canvas, list, lockFloat);
 
   let current = ctx;
@@ -150,63 +143,18 @@ export function renderMap(ctx, initialArg) {
     ]);
     live.roles = roles;
     live.packs = packs;
+    setLiveJobs({ roles, packs });
     live.loaded = true;
     if (!isList()) drawFloor(shown(), paintOptions());
-    renderNext();
-  }
-
-  const move = () => nextMove({ student: current.state.student, graph: current.state.graph, roles: live.roles, packs: live.packs });
-
-  /** What a ready thing is, in the words an app would use. */
-  const TAG = { insider: "Found for you", campaign: "Drafted for you", prepared: "Prepared for you" };
-  const LANE_OF = { insider: "network", campaign: "pipeline", prepared: "pipeline" };
-  const titleOf = (item) =>
-    item.kind === "insider" ? `Ask ${item.person.name} at ${item.role.company}` : item.kind === "campaign" ? `Send the ${item.target.company} campaign` : `Apply to ${item.label.replace(/^Prepared: /, "")}`;
-
-  /** The next move (white) and up to two more things made for them, as nodes beside "you are here". */
-  function readyNodes() {
-    const next = move();
-    const column = doneForYou({ student: current.state.student, roles: live.roles, packs: live.packs });
-    const items = [];
-    let skipFed = Boolean(next.fed);
-    if (!next.stepId && next.lane) {
-      const tag = next.fed ? TAG[next.fed] : /^Prepare for your/.test(next.title) ? "Booked" : null;
-      items.push({ title: next.title, tag, tool: next.tool, lane: next.lane, isNext: true });
-    }
-    for (const item of column.ready) {
-      if (items.length >= 3) break;
-      if (skipFed && item.kind === next.fed) {
-        skipFed = false;
-        continue;
-      }
-      items.push({ title: titleOf(item), tag: TAG[item.kind], tool: item.tool, lane: LANE_OF[item.kind], isNext: false });
-    }
-    return { items };
-  }
-
-  /**
-   * The map node that holds the next move, on a typed map: the step itself, or
-   * the campaign node whose touch is due. Null when the move isn't a node
-   * (a booked conversation, someone inside), which then shows as one pin.
-   */
-  function nextNodeId(next) {
-    if (next.stepId) return next.stepId;
-    if (next.targetId) return current.state.graph.nodes.find((node) => node.campaign === next.targetId)?.id ?? null;
-    return null;
   }
 
   function paintOptions(extra = {}) {
     const graph = current.state.graph;
-    if (!hasBand()) return { nextId: nextUp(graph)?.id ?? null, ...extra };
-    if (isTypedMap(graph)) {
-      // One road: every move is a node, so nothing floats beside it. The white
-      // ring sits on the node the bottom bar names.
-      const next = move();
-      const onNode = nextNodeId(next);
-      const pin = onNode ? [] : [{ title: next.title, tag: next.fed ? TAG[next.fed] : null, tool: next.tool, lane: next.lane, isNext: true }];
-      return { nextId: onNode ?? nextUp(graph)?.id ?? null, ready: { items: pin }, onTool: (tool) => current.navigate("do", tool), ...extra };
-    }
-    return { nextId: nextUp(graph)?.id ?? null, ready: readyNodes(), onTool: (tool) => current.navigate("do", tool), ...extra };
+    // "You are here" is where you are on the line. What to do right now is the Next bar's job
+    // (views/next-bar.js), under every screen, so nothing floats beside the node any more.
+    const nextId = nextUp(graph)?.id ?? null;
+    if (!hasBand()) return { nextId, ...extra };
+    return { nextId, ready: { items: [] }, onTool: (tool) => current.navigate("do", tool), ...extra };
   }
 
   /** Aden's current work for them, as a plain sentence under the top bar. */
@@ -214,31 +162,6 @@ export function renderMap(ctx, initialArg) {
     const item = (careerOf(current.state.student).working ?? []).find((w) => !w.done && w.text);
     adenLine.hidden = !hasBand() || isList() || !item || suggest.isOn();
     if (item) mount(adenLine, el("span.adenline__dot", { "aria-hidden": "true" }), el("span", {}, `Your coach is working on: ${item.text}`));
-  }
-
-  /** The bottom bar: the one next move, docked, so it never covers the map. Agrees with the white ring. */
-  function renderNext() {
-    if (!hasBand() || isList() || suggest.isOn()) {
-      nextCard.hidden = true;
-      return;
-    }
-    const next = move();
-    // "+N more today" only after they've done something today: the first look is one move, not a list.
-    const today = isoDate(new Date());
-    const doneToday = (current.state.student?.search?.apps ?? []).some((a) => a.date === today) || String(current.state.student?.search?.profileAt ?? "").startsWith(today);
-    const more = doneToday ? movesAfterNext({ student: current.state.student, roles: live.roles, packs: live.packs }) : 0;
-    nextCard.hidden = false;
-    mount(
-      nextCard,
-      el("span.nextbar__dot", { "aria-hidden": "true" }),
-      el("div.nextbar__text", {}, el("b.nextbar__title", {}, next.title), el("span.nextbar__why", {}, next.why)),
-      more ? btn({ label: `+${more} more today`, variant: "quiet", onclick: () => current.navigate("do", "today") }) : null,
-      btn({
-        label: next.stepId ? "Open the step" : next.targetId ? "Open the campaign" : "Open",
-        variant: "solid",
-        onclick: () => (next.stepId ? current.navigate("map", next.stepId) : next.targetId ? current.navigate("do", "targets", next.targetId) : current.navigate("do", next.tool)),
-      })
-    );
   }
 
   function draw() {
@@ -525,7 +448,6 @@ export function renderMap(ctx, initialArg) {
     mount(hudSide, ...controls);
 
     setStatus(null);
-    renderNext();
     renderAden();
     suggest.render();
     suggest.renderCard();
@@ -612,7 +534,6 @@ export function renderMap(ctx, initialArg) {
     },
     destroy() {
       window.removeEventListener("resize", onResize);
-      nextbarSize?.disconnect();
       suggest.detach();
       floor?.destroy();
     },

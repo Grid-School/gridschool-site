@@ -16,10 +16,10 @@
  * half-typed form. Aden sees it read-only from the desk.
  */
 
-import { el, mount } from "../dom.js?v=7ed7f2f-202610270608";
-import { panel, btn, field, toast, copy } from "../ui.js?v=7ed7f2f-202610270608";
-import { isoDate, fmtDay } from "../time.js?v=7ed7f2f-202610270608";
-import { STATUS } from "../graph/model.js?v=7ed7f2f-202610270608";
+import { el, mount } from "../dom.js?v=c78ea40-202610270657";
+import { panel, btn, field, toast, copy } from "../ui.js?v=c78ea40-202610270657";
+import { isoDate, fmtDay } from "../time.js?v=c78ea40-202610270657";
+import { STATUS } from "../graph/model.js?v=c78ea40-202610270657";
 import {
   STAGES,
   RELATIONS,
@@ -64,14 +64,15 @@ import {
   targetCandidates,
   webLink,
   MAX_ACTIVE_TARGETS,
-} from "../search.js?v=7ed7f2f-202610270608";
-import { storyCard, appRow } from "./search-parts.js?v=7ed7f2f-202610270608";
-import { TOOLS } from "../engine.js?v=7ed7f2f-202610270608";
-import { PERSIST } from "../../../config.js?v=7ed7f2f-202610270608";
-import { matchedRoles, radarReady, fetchPacks, winsState, shareWin, draftPositioning } from "../roles-remote.js?v=7ed7f2f-202610270608";
-import { createPackDrawer } from "./pack.js?v=7ed7f2f-202610270608";
-import { createCampaignDrawer } from "./campaign.js?v=7ed7f2f-202610270608";
-import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=7ed7f2f-202610270608";
+} from "../search.js?v=c78ea40-202610270657";
+import { storyCard, appRow } from "./search-parts.js?v=c78ea40-202610270657";
+import { TOOLS, moveRoute } from "../engine.js?v=c78ea40-202610270657";
+import { currentMove, setLiveJobs } from "../next-live.js?v=c78ea40-202610270657";
+import { PERSIST } from "../../../config.js?v=c78ea40-202610270657";
+import { matchedRoles, radarReady, fetchPacks, winsState, shareWin, draftPositioning } from "../roles-remote.js?v=c78ea40-202610270657";
+import { createPackDrawer } from "./pack.js?v=c78ea40-202610270657";
+import { createCampaignDrawer } from "./campaign.js?v=c78ea40-202610270657";
+import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=c78ea40-202610270657";
 
 const RUN_FAMILIES = ["proof", "presence", "network", "interview"];
 /** How many moves the day leads with. More than this reads as a wall, not a plan. */
@@ -85,7 +86,7 @@ const TOOL_STEPS = {
   today: [],
 };
 const TOOL_WHY = {
-  today: "Every move for today, in the order that gets interviews: a booked conversation, someone you know inside, today's target touches, warm asks, follow-ups, fresh roles, then your next build step.",
+  today: "Your next move first, the same one as the bar at the bottom. Then everything else for today: campaign sends, warm asks, fresh roles and your next build step.",
   targets: "Five companies where hiring, size and fit overlap, worked on every channel: an email with a Loom, a LinkedIn request, a call, and follow-ups on day 3, 7 and 14.",
   people: "Referrals turn into interviews far more often than applications. Former colleagues first, then people you've met, then people in the seat.",
   applications: "Fresh roles that match your titles, strongest fits first. Prepare reads each one against your record; any posting you find can be prepared too.",
@@ -175,6 +176,7 @@ export function renderHire(ctx, initialTool, campaignId) {
     fetchPacks(ctx.state.slug)
       .then((packs) => {
         serverPacks = packs;
+        setLiveJobs({ packs });
         draw();
       })
       .catch(() => {});
@@ -185,10 +187,21 @@ export function renderHire(ctx, initialTool, campaignId) {
     } catch (error) {
       radar = { roles: [], off: false, loading: false, error: error.message };
     }
+    setLiveJobs({ roles: radar.roles ?? [] });
     draw();
   }
 
   /* ---------- the run ---------- */
+
+  /** Is this Today row the same thing as the engine's next move? */
+  function sameMove(move, item) {
+    if (move.kind === "step") return item.stepId === move.stepId;
+    if (move.targetId) return item.targetId === move.targetId;
+    if (move.kind === "follow") return item.kind === "follow" && move.title === `Follow up with ${item.company}`;
+    if (move.kind === "today") return item.kind === "prep" && Boolean(item.company) && move.title.includes(item.company);
+    const kinds = { insider: "inside", people: "warm", profile: "profile", applications: "apply" };
+    return kinds[move.kind] ? item.kind === kinds[move.kind] : false;
+  }
 
   /** A move: what to do, why, the buttons, and the lane of the grid it belongs to. */
   function runItem(move) {
@@ -219,6 +232,7 @@ export function renderHire(ctx, initialTool, campaignId) {
       items.push(
         runItem({
           kind: "prep",
+          company: app.company,
           title: `Prepare for your ${app.company} ${app.stage === "screen" ? "screen" : "interview"}`,
           sub: "The questions this loop asks, your two-minute story, and one thing about their product to bring up.",
           actions: [
@@ -257,7 +271,8 @@ export function renderHire(ctx, initialTool, campaignId) {
       items.push(
         runItem({
           kind: "target",
-          title: touch.kind === "day0" ? `${t.company}: ${touch.label}` : `${t.company}: ${touch.label}`,
+          targetId: t.id,
+          title: `${t.company}: ${touch.label}`,
           sub: touch.kind === "day0" ? "Day 0 of your campaign. The drafts are written around what they need owned; record the Loom in your words." : "One new thing on the same thread. The drafts are ready.",
           actions: [btn({ label: "Open campaign", variant: "solid", onclick: () => camp.open(t.id) })],
         })
@@ -339,6 +354,7 @@ export function renderHire(ctx, initialTool, campaignId) {
       items.push(
         runItem({
           kind: "follow",
+          company: app.company,
           title: `Follow up: ${app.company}`,
           sub: `${app.role || "Application"} · sent ${app.date}, no reply yet`,
           actions: [
@@ -392,6 +408,25 @@ export function renderHire(ctx, initialTool, campaignId) {
           title: step.title,
           sub: "Your map's next build step. Proof is what makes the messages land.",
           actions: [btn({ label: "Open step", variant: "ghost", onclick: () => current.navigate("map", step.id) })],
+        })
+      );
+    }
+
+    // The Next bar's move is always the first row, so Today and the bar never disagree (views/next-bar.js).
+    const move = currentMove(current.state, now);
+    const at = items.findIndex((item) => sameMove(move, item));
+    if (at >= 0) {
+      const [first] = items.splice(at, 1);
+      items.unshift(move.kind === "step" ? { ...first, title: move.title, sub: move.why } : first);
+    } else if (move.kind !== "rest") {
+      items.unshift(
+        runItem({
+          kind: move.stepId ? "build" : "next",
+          stepId: move.stepId,
+          lane: move.lane,
+          title: move.title,
+          sub: move.why,
+          actions: [btn({ label: move.kind === "review" ? "Read the notes" : "Open", variant: "solid", onclick: () => current.navigate(...moveRoute(move)) })],
         })
       );
     }

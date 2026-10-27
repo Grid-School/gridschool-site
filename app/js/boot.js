@@ -10,41 +10,43 @@
  * aliases so links already in the wild still land somewhere true.
  */
 
-import { el, mount, download } from "./dom.js?v=7ed7f2f-202610270608";
-import * as store from "./store.js?v=7ed7f2f-202610270608";
-import { resolveSlug, slugFromUrl, currentSession, signOut, setPersistToken, inviteFromUrl, persistToken } from "./session.js?v=7ed7f2f-202610270608";
-import { tryStoredKey } from "./gate.js?v=7ed7f2f-202610270608";
-import { peekInvite } from "./persist-auth.js?v=7ed7f2f-202610270608";
-import { createRouter } from "./router.js?v=7ed7f2f-202610270608";
-import { createChrome } from "./chrome.js?v=7ed7f2f-202610270608";
-import { activeDoor } from "./rail.js?v=7ed7f2f-202610270608";
-import { toast } from "./ui.js?v=7ed7f2f-202610270608";
-import { isTestSeat } from "./test-seats.js?v=7ed7f2f-202610270608";
-import { renderLogin } from "./views/login.js?v=7ed7f2f-202610270608";
-import { renderToday } from "./views/today.js?v=7ed7f2f-202610270608";
-import { renderMap } from "./views/map.js?v=7ed7f2f-202610270608";
-import { renderStep, isStepArgs, moduleIdFromArgs } from "./views/step.js?v=7ed7f2f-202610270608";
-import { renderTasks } from "./views/tasks.js?v=7ed7f2f-202610270608";
-import { renderCalendar } from "./views/calendar.js?v=7ed7f2f-202610270608";
-import { renderLibrary } from "./views/library.js?v=7ed7f2f-202610270608";
-import { renderPosts } from "./views/posts.js?v=7ed7f2f-202610270608";
-import { renderHire } from "./views/hire.js?v=7ed7f2f-202610270608";
-import { renderResume } from "./views/resume.js?v=7ed7f2f-202610270608";
-import { renderProfile } from "./views/profile.js?v=7ed7f2f-202610270608";
-import { renderSend } from "./views/send.js?v=7ed7f2f-202610270608";
-import { renderPath } from "./views/path.js?v=7ed7f2f-202610270608";
-import { renderImages } from "./views/images.js?v=7ed7f2f-202610270608";
-import { renderStudio } from "./views/studio.js?v=7ed7f2f-202610270608";
-import { toggleDevUnlock, setDevUnlock } from "./dev-mode.js?v=7ed7f2f-202610270608";
-import { togglePreviewMedia, setPreviewMedia, isPreviewMedia } from "./preview-mode.js?v=7ed7f2f-202610270608";
-import { isInstructorDevice } from "./instructor-mode.js?v=7ed7f2f-202610270608";
-import { startReminders } from "./reminders.js?v=7ed7f2f-202610270608";
-import { watchReviewArrivals } from "./review-arrivals.js?v=7ed7f2f-202610270608";
-import { enterView, leaveView } from "./transitions.js?v=7ed7f2f-202610270608";
-import { gateRoutes } from "./features.js?v=7ed7f2f-202610270608";
-import * as measure from "./measure.js?v=7ed7f2f-202610270608";
-import { startTelemetry } from "./telemetry.js?v=7ed7f2f-202610270608";
-import { PERSIST, isPlaceholder } from "../../config.js?v=7ed7f2f-202610270608";
+import { el, mount, download } from "./dom.js?v=c78ea40-202610270657";
+import * as store from "./store.js?v=c78ea40-202610270657";
+import { resolveSlug, slugFromUrl, currentSession, signOut, setPersistToken, inviteFromUrl, persistToken } from "./session.js?v=c78ea40-202610270657";
+import { tryStoredKey } from "./gate.js?v=c78ea40-202610270657";
+import { peekInvite } from "./persist-auth.js?v=c78ea40-202610270657";
+import { createRouter } from "./router.js?v=c78ea40-202610270657";
+import { createChrome } from "./chrome.js?v=c78ea40-202610270657";
+import { activeDoor } from "./rail.js?v=c78ea40-202610270657";
+import { toast } from "./ui.js?v=c78ea40-202610270657";
+import { isTestSeat } from "./test-seats.js?v=c78ea40-202610270657";
+import { renderLogin } from "./views/login.js?v=c78ea40-202610270657";
+import { renderToday } from "./views/today.js?v=c78ea40-202610270657";
+import { renderMap } from "./views/map.js?v=c78ea40-202610270657";
+import { renderStep, isStepArgs, moduleIdFromArgs } from "./views/step.js?v=c78ea40-202610270657";
+import { renderTasks } from "./views/tasks.js?v=c78ea40-202610270657";
+import { renderCalendar } from "./views/calendar.js?v=c78ea40-202610270657";
+import { renderLibrary } from "./views/library.js?v=c78ea40-202610270657";
+import { renderPosts } from "./views/posts.js?v=c78ea40-202610270657";
+import { renderHire } from "./views/hire.js?v=c78ea40-202610270657";
+import { renderResume } from "./views/resume.js?v=c78ea40-202610270657";
+import { renderProfile } from "./views/profile.js?v=c78ea40-202610270657";
+import { renderSend } from "./views/send.js?v=c78ea40-202610270657";
+import { renderPath } from "./views/path.js?v=c78ea40-202610270657";
+import { renderImages } from "./views/images.js?v=c78ea40-202610270657";
+import { renderStudio } from "./views/studio.js?v=c78ea40-202610270657";
+import { toggleDevUnlock, setDevUnlock } from "./dev-mode.js?v=c78ea40-202610270657";
+import { togglePreviewMedia, setPreviewMedia, isPreviewMedia } from "./preview-mode.js?v=c78ea40-202610270657";
+import { isInstructorDevice } from "./instructor-mode.js?v=c78ea40-202610270657";
+import { startReminders } from "./reminders.js?v=c78ea40-202610270657";
+import { watchReviewArrivals } from "./review-arrivals.js?v=c78ea40-202610270657";
+import { enterView, leaveView } from "./transitions.js?v=c78ea40-202610270657";
+import { gateRoutes } from "./features.js?v=c78ea40-202610270657";
+import * as measure from "./measure.js?v=c78ea40-202610270657";
+import { startTelemetry } from "./telemetry.js?v=c78ea40-202610270657";
+import { createNextBar } from "./views/next-bar.js?v=c78ea40-202610270657";
+import { useSeat } from "./next-live.js?v=c78ea40-202610270657";
+import { PERSIST, isPlaceholder } from "../../config.js?v=c78ea40-202610270657";
 
 /* Coach (today) and Posts are gated in features.js: switched off, they are
    not routes at all, so their links land on the Map. */
@@ -81,6 +83,7 @@ const ALIASES = {
 const app = document.getElementById("app");
 const instances = new Map();
 let chrome = null;
+let nextBar = null;
 let route = { name: "map", args: [] };
 let role = "student";
 
@@ -128,6 +131,7 @@ function syncChrome() {
   chrome.setBanner(state);
   chrome.setCall(state);
   chrome.setSignals(state);
+  nextBar?.render();
   const identityKey = [
     state.slug,
     state.student.name,
@@ -392,6 +396,16 @@ async function start() {
   });
 
   mount(app, chrome.root);
+
+  // The one next move, under every screen (views/next-bar.js).
+  useSeat(slug);
+  nextBar = createNextBar({
+    getState: () => store.state(),
+    getRoute: () => route,
+    navigate: (name, ...args) => router.go(name, ...args),
+    onReviewRead: (id) => store.markReviewRead(id),
+  });
+  chrome.shellMain.append(nextBar.root);
 
   router = createRouter({
     routes: VIEWS,

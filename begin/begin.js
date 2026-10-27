@@ -15,11 +15,11 @@
  * step 4 opens the board they already had, with everything they did on it.
  */
 
-import { PERSIST, link } from "../config.js?v=7ed7f2f-202610270608";
-import * as Account from "../check/account.js?v=7ed7f2f-202610270608";
-import { enterSeat } from "../app/js/persist-auth.js?v=7ed7f2f-202610270608";
-import { startingOn, nextSteps, WAIT_LINE } from "./welcome-copy.js?v=7ed7f2f-202610270608";
-import { track } from "../check/events.js?v=7ed7f2f-202610270608";
+import { PERSIST, link } from "../config.js?v=c78ea40-202610270657";
+import * as Account from "../check/account.js?v=c78ea40-202610270657";
+import { enterSeat } from "../app/js/persist-auth.js?v=c78ea40-202610270657";
+import { startingOn, nextSteps, WAIT_LINE } from "./welcome-copy.js?v=c78ea40-202610270657";
+import { track } from "../check/events.js?v=c78ea40-202610270657";
 
 // Localhost never talks to production: ?api= when given, else the page's own origin.
 const API = (() => {

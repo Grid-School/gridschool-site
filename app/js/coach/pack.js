@@ -9,13 +9,14 @@
  * concatenate user text into the system prompt.
  */
 
-import { COACH } from "../../../config.js?v=7ed7f2f-202610270608";
-import { nextAction } from "./next.js?v=7ed7f2f-202610270608";
-import { retrieve, formatSnippets } from "./memory.js?v=7ed7f2f-202610270608";
-import { credits, formatUsd } from "./credits.js?v=7ed7f2f-202610270608";
-import { modeOf } from "../modes.js?v=7ed7f2f-202610270608";
-import { artifactOf } from "../artifacts.js?v=7ed7f2f-202610270608";
-import { stepNumber } from "../graph/model.js?v=7ed7f2f-202610270608";
+import { COACH } from "../../../config.js?v=c78ea40-202610270657";
+import { nextAction } from "./next.js?v=c78ea40-202610270657";
+import { currentMove } from "../next-live.js?v=c78ea40-202610270657";
+import { retrieve, formatSnippets } from "./memory.js?v=c78ea40-202610270657";
+import { credits, formatUsd } from "./credits.js?v=c78ea40-202610270657";
+import { modeOf } from "../modes.js?v=c78ea40-202610270657";
+import { artifactOf } from "../artifacts.js?v=c78ea40-202610270657";
+import { stepNumber } from "../graph/model.js?v=c78ea40-202610270657";
 
 const FENCE = "-----";
 
@@ -41,6 +42,7 @@ export function nodeLines(node) {
 
 export function packContext({ state, prompt, corpus, userText, files = [] }) {
   const next = nextAction(state);
+  const move = currentMove(state);
   const { student, cohort, week } = state;
   const budget = credits(student);
   const snippets = retrieve(student.memory, userText);
@@ -49,10 +51,11 @@ export function packContext({ state, prompt, corpus, userText, files = [] }) {
      on their own (server/coach_api.py builds the rest of its prompt); the practice reply uses all of it. */
   const boardLines = [
     `Student: ${student.name}. Cohort ${cohort.name}, week ${Math.min(week, cohort.weeks)}.`,
-    `Next action (${next.kind}): ${next.title}`,
-    next.why ? `Why: ${next.why}` : null,
+    // The one next move: the same words the student sees in the Next bar under every screen.
+    `Next move (shown to the student): ${move.title}`,
+    move.why ? `Why: ${move.why}` : null,
+    next.task && next.task.title !== move.title ? `Open task on their current step: ${next.task.title}` : null,
     ...nodeLines(next.node),
-    next.task ? `Top task: ${next.task.title}` : null,
     student.focus ? `This week's focus: ${student.focus}` : null,
     student.next ? `This week's next: ${student.next}` : null,
     "",
