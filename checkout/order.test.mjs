@@ -1,7 +1,50 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { PLANS, dayWords, optionWords, order, readParams, payUrl, sendOnRange, summary } from "./order.mjs?v=afd944f-202610271949";
+import { DAY_NOT_SAVED, PLANS, dayWords, optionWords, order, payHref, readParams, payUrl, saveIntent, savedDay, sendOnRange, summary } from "./order.mjs?v=9e8fcb7-202610272025";
+
+const quiet = { setTimeout: () => 1, clearTimeout: () => {} };
+
+test("saving the day: the server's answer, or the friendly words when the network fails or times out", async () => {
+  let seen;
+  const ok = async (url, init) => ((seen = { url, init }), { ok: true, json: async () => ({ id: "gi_x", send_on: "2026-11-01" }) });
+  assert.deepEqual(await saveIntent(ok, "https://lab", { sendOn: "2026-11-01", visitor: "v_12345678" }, { timers: quiet }), { id: "gi_x", send_on: "2026-11-01" });
+  assert.equal(seen.url, "https://lab/gift/intent");
+  assert.deepEqual(JSON.parse(seen.init.body), { send_on: "2026-11-01", visitor: "v_12345678" });
+  assert.ok(seen.init.signal, "a timeout signal, from AbortController");
+  const offline = async () => {
+    throw new TypeError("Failed to fetch");
+  };
+  await assert.rejects(saveIntent(offline, "https://lab", { sendOn: "2026-11-01" }, { timers: quiet }), { message: DAY_NOT_SAVED });
+  // The timer fires: the request is aborted and the same words show.
+  const timers = { setTimeout: (fn) => (fn(), 1), clearTimeout: () => {} };
+  const hangs = (url, init) => new Promise((_, reject) => (init.signal.aborted ? reject(new Error("AbortError")) : init.signal.addEventListener("abort", () => reject(new Error("AbortError")))));
+  await assert.rejects(saveIntent(hangs, "https://lab", { sendOn: "2026-11-01" }, { timers }), { message: DAY_NOT_SAVED });
+  const refused = async () => ({ ok: false, json: async () => ({ error: "Choose a day from today to a year from now, or leave it empty to send it right away." }) });
+  await assert.rejects(saveIntent(refused, "https://lab", { sendOn: "2020-01-01" }, { timers: quiet }), /Choose a day from today/);
+});
+
+test("while a gift waits on a chosen day the pay link goes nowhere by itself", () => {
+  assert.equal(payHref("https://buy.stripe.com/x", { gift: true, sendOn: "2026-11-01" }), "#");
+  assert.equal(payHref("https://buy.stripe.com/x", { gift: true, sendOn: "" }), "https://buy.stripe.com/x");
+  assert.equal(payHref("https://buy.stripe.com/x", { gift: false, sendOn: "2026-11-01" }), "https://buy.stripe.com/x");
+});
+
+test("checkout.js keeps Enter in the date box from reloading the page, and uses no AbortSignal.timeout", () => {
+  const source = readFileSync(new URL("./checkout.js", import.meta.url), "utf8");
+  assert.match(source, /\$\("choices"\)\.addEventListener\("submit", \(event\) => event\.preventDefault\(\)\)/);
+  assert.doesNotMatch(source, /AbortSignal\.timeout/);
+  assert.match(source, /payHref\(url/);
+});
+
+test("a chosen day the server didn't keep stops the checkout instead of sending the gift at once", () => {
+  assert.deepEqual(savedDay(true, { id: "gi_x", send_on: "2026-10-28" }, "2026-10-28"), { id: "gi_x", send_on: "2026-10-28" });
+  assert.deepEqual(savedDay(true, { id: "gi_x", send_on: "" }, ""), { id: "gi_x", send_on: "" });
+  // The old server answered 200 with an empty day for a day it thought had passed.
+  assert.throws(() => savedDay(true, { id: "gi_x", send_on: "" }, "2026-10-28"), { message: DAY_NOT_SAVED });
+  assert.throws(() => savedDay(false, { error: "Choose a day from today to a year from now, or leave it empty to send it right away." }, "2026-09-01"), /Choose a day from today/);
+  assert.throws(() => savedDay(false, null, "2026-10-28"), { message: DAY_NOT_SAVED });
+});
 
 test("a gift for a chosen day says so, and the day travels as a saved intent", () => {
   const today = new Date(2026, 9, 27);

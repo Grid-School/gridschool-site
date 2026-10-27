@@ -12,7 +12,7 @@ import {
   completionFor,
   weekLine,
   seedHints,
-} from "./studio-model.js?v=afd944f-202610271949";
+} from "./studio-model.js?v=9e8fcb7-202610272025";
 
 test("the tool comes from the route, projects by default", () => {
   assert.equal(toolOf("posts"), "posts");

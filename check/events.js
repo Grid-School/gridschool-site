@@ -7,6 +7,7 @@
 
 const KEY = "gridschool.visitor.v1";
 const FBC_KEY = "gridschool.fbc.v1";
+const FBC_DAYS = 90;
 let memoryId = "";
 let memoryFbc = "";
 const sent = new Set();
@@ -17,9 +18,12 @@ const sent = new Set();
  * finished check or a purchase came from (server/meta_capi.py). Nothing else about the visit goes to Meta.
  */
 export function fbcFrom(search, stored = "", now = Date.now()) {
+  // A click older than 90 days is no use to Meta, and the privacy page says it isn't kept longer: dropped.
+  const seen = Number((/^fb\.1\.(\d{10,14})\./.exec(stored || "") || [])[1] || 0);
+  const kept = seen && now - seen <= FBC_DAYS * 86_400_000 ? stored : "";
   const id = new URLSearchParams(search || "").get("fbclid") || "";
-  if (!/^[A-Za-z0-9_-]{8,500}$/.test(id)) return stored;
-  return stored.endsWith(`.${id}`) ? stored : `fb.1.${now}.${id}`;
+  if (!/^[A-Za-z0-9_-]{8,500}$/.test(id)) return kept;
+  return kept.endsWith(`.${id}`) ? kept : `fb.1.${now}.${id}`;
 }
 
 function adClick() {
@@ -28,6 +32,7 @@ function adClick() {
     const stored = localStorage.getItem(FBC_KEY) || "";
     const fbc = fbcFrom(location.search, stored);
     if (fbc && fbc !== stored) localStorage.setItem(FBC_KEY, fbc);
+    else if (!fbc && stored) localStorage.removeItem(FBC_KEY);
     return fbc;
   } catch {
     memoryFbc = fbcFrom(location.search, memoryFbc);

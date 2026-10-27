@@ -13,13 +13,13 @@
  * own column on the floor: listed, never in the required count.
  */
 
-import { el } from "../dom.js?v=afd944f-202610271949";
-import { panel, btn, copy, dot } from "../ui.js?v=afd944f-202610271949";
-import { STATUS, isSide, nextUp, stepNumber, stepCount, specOf } from "../graph/model.js?v=afd944f-202610271949";
-import { inSequence, standingOf, STANDING_LABEL, STANDING_TONE } from "../graph/standing.js?v=afd944f-202610271949";
-import { reviewScores } from "./parts.js?v=afd944f-202610271949";
-import { fmtDay } from "../time.js?v=afd944f-202610271949";
-import { dueBadge } from "./from-aden.js?v=afd944f-202610271949";
+import { el } from "../dom.js?v=9e8fcb7-202610272025";
+import { panel, btn, copy, dot } from "../ui.js?v=9e8fcb7-202610272025";
+import { STATUS, isSide, nextUp, stepNumber, stepCount, specOf } from "../graph/model.js?v=9e8fcb7-202610272025";
+import { inSequence, standingOf, STANDING_LABEL, STANDING_TONE } from "../graph/standing.js?v=9e8fcb7-202610272025";
+import { reviewScores } from "./parts.js?v=9e8fcb7-202610272025";
+import { fmtDay } from "../time.js?v=9e8fcb7-202610272025";
+import { dueBadge } from "./from-aden.js?v=9e8fcb7-202610272025";
 
 export function mapList({ state, onOpenNode }) {
   const { graph, student } = state;

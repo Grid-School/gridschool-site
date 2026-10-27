@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { nameOf } from "./telemetry.js?v=afd944f-202610271949";
+import { nameOf } from "./telemetry.js?v=9e8fcb7-202610272025";
 
 /* A tiny stand-in for DOM nodes: enough to check that a control is named by what we wrote, never by what was typed. */
 function node(tag, { attrs = {}, text = "", parent = null, id = "", value = "" } = {}) {

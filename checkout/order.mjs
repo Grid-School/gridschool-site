@@ -186,3 +186,47 @@ export function payUrl(link, { ck = "", visitor = "", email = "", intent = "" } 
   if (email && /^\S+@\S+\.\S+$/.test(email)) url.searchParams.set("prefilled_email", email);
   return url.toString();
 }
+
+export const DAY_NOT_SAVED = "We couldn't save the day. Try again, or leave it empty to send it right away.";
+
+/**
+ * What POST /gift/intent answered, or an Error with words to show. The day must come back as it was chosen:
+ * a day the server didn't keep would send the gift at once, which is not what the giver picked.
+ */
+export function savedDay(ok, data, asked) {
+  const body = data && typeof data === "object" ? data : {};
+  if (!ok || !body.id) throw new Error(body.error || DAY_NOT_SAVED);
+  if (asked && body.send_on !== asked) throw new Error(DAY_NOT_SAVED);
+  return body;
+}
+
+/**
+ * POST /gift/intent with a timeout, answering like savedDay. A network failure or the timeout says DAY_NOT_SAVED,
+ * never the browser's own "Failed to fetch". AbortController and a timer, not AbortSignal.timeout (older Safari).
+ */
+export async function saveIntent(fetchImpl, endpoint, { sendOn, visitor }, { timeout = 8000, timers = globalThis } = {}) {
+  const controller = typeof AbortController === "function" ? new AbortController() : null;
+  const timer = controller ? timers.setTimeout(() => controller.abort(), timeout) : null;
+  try {
+    let res;
+    try {
+      res = await fetchImpl(`${endpoint}/gift/intent`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ send_on: sendOn, visitor }),
+        ...(controller ? { signal: controller.signal } : {}),
+      });
+    } catch {
+      throw new Error(DAY_NOT_SAVED);
+    }
+    const data = await res.json().catch(() => ({}));
+    return savedDay(res.ok, data, sendOn);
+  } finally {
+    if (timer !== null) timers.clearTimeout(timer);
+  }
+}
+
+/** The pay button's href: "#" while a gift waits on a chosen day, so nothing (a middle-click, a copied link) skips saving it. */
+export function payHref(url, { gift = false, sendOn = "" } = {}) {
+  return gift && sendOn ? "#" : url;
+}

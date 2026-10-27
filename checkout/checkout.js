@@ -6,9 +6,9 @@
  * funnel counts checkout.view and checkout.start (server/events.py).
  */
 
-import { PERSIST, link } from "../config.js?v=afd944f-202610271949";
-import { track, visitorId } from "../check/events.js?v=afd944f-202610271949";
-import { MONEY, PLANS, RESIDENCY_TALK, optionWords, order, payUrl, readParams, sendOnRange, summary } from "./order.mjs?v=afd944f-202610271949";
+import { PERSIST, link } from "../config.js?v=9e8fcb7-202610272025";
+import { track, visitorId } from "../check/events.js?v=9e8fcb7-202610272025";
+import { DAY_NOT_SAVED, MONEY, PLANS, RESIDENCY_TALK, optionWords, order, payHref, payUrl, readParams, saveIntent, sendOnRange, summary } from "./order.mjs?v=9e8fcb7-202610272025";
 
 const $ = (id) => document.getElementById(id);
 const state = readParams(location.search);
@@ -119,7 +119,7 @@ function render() {
   pay.hidden = !url;
   $("closed").hidden = Boolean(url);
   if (url) {
-    pay.href = url;
+    pay.href = payHref(url, { gift: o.gift, sendOn: state.sendOn });
     pay.firstChild.textContent = `${words.button} `;
   } else {
     $("closed-mail").href = `mailto:support@gridschool.org?subject=${encodeURIComponent(`${o.name}${o.gift ? " (gift)" : ""}, ${o.billing === "monthly" ? "monthly" : "paid once"}`)}`;
@@ -142,17 +142,13 @@ $("send-on").addEventListener("input", (event) => {
 });
 
 /** Save the chosen day first (Stripe's fields can't hold a date); the intent's id goes to Stripe instead of the visitor's. */
-async function saveDay() {
-  const res = await fetch(`${PERSIST.endpoint}/gift/intent`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ send_on: state.sendOn, visitor: visitorId() }),
-    signal: AbortSignal.timeout(8000),
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok || !data.id) throw new Error(data.error || "We couldn't save the day. Try again, or leave it empty to send it right away.");
-  return data;
+function saveDay() {
+  return saveIntent((url, init) => fetch(url, init), PERSIST.endpoint, { sendOn: state.sendOn, visitor: visitorId() });
 }
+
+// The choices are a form only for its fieldsets: Enter in the date box must not reload the page as a plain GET
+// (which would drop the gift and the day).
+$("choices").addEventListener("submit", (event) => event.preventDefault());
 
 $("pay").addEventListener("click", async (event) => {
   const o = order(state);
@@ -178,7 +174,7 @@ $("pay").addEventListener("click", async (event) => {
     }
     location.href = payUrl(link(o.linkKey), { intent: saved.id, visitor: visitorId() });
   } catch (problem) {
-    error.textContent = problem.message || "We couldn't save the day. Try again, or leave it empty to send it right away.";
+    error.textContent = problem.message || DAY_NOT_SAVED;
     error.hidden = false;
   }
 });
