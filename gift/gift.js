@@ -10,9 +10,9 @@
  * Words for each outcome: gift-words.mjs.
  */
 
-import { PERSIST, link } from "../config.js?v=c78f81e-202610272038";
-import { track, visitorId } from "../check/events.js?v=c78f81e-202610272038";
-import { DONE, LEAD, claimTitle, shareLabel, giftSource, leadBody, leadProblem, scheduledWords } from "./gift-words.mjs?v=c78f81e-202610272038";
+import { PERSIST, link } from "../config.js?v=7b95dc3-202610272038";
+import { track, visitorId } from "../check/events.js?v=7b95dc3-202610272038";
+import { DONE, LEAD, claimTitle, shareLabel, giftSource, leadBody, leadProblem, scheduledWords } from "./gift-words.mjs?v=7b95dc3-202610272038";
 
 const params = new URLSearchParams(location.search);
 const $ = (id) => document.getElementById(id);
@@ -63,7 +63,7 @@ async function claim(token) {
     $("accept").closest("p").hidden = true;
     return;
   }
-  if (gift.status === "claimed") return done("already", { href: "../signin/", label: "Sign in to my map" });
+  if (gift.status === "claimed") return done("already", { href: "../begin/", label: "Sign in to my map" });
   if (["declined", "refunded", "cancelled"].includes(gift.status)) return done("closed", { href: "../check/?from=gift", label: "Take the free check" });
   $("claim-title").textContent = claimTitle(gift);
   $("share-label").textContent = shareLabel(gift);
@@ -75,7 +75,7 @@ async function claim(token) {
       const out = await post("accept", { token, share: $("share").checked });
       if (out.signin) return void (location.href = out.signin);
       if (out.plan === "residency") return done("residency", link("kickoffCall") ? { href: link("kickoffCall") } : {});
-      done("already", { href: "../signin/", label: "Sign in to my map" });
+      done("already", { href: "../begin/", label: "Sign in to my map" });
     } catch (error) {
       $("claim-error").textContent = error.message;
       busy(false);

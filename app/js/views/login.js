@@ -2,15 +2,15 @@
  * Invite set-password and return login. Demo never lands here.
  */
 
-import { el, mount } from "../dom.js?v=c78f81e-202610272038";
-import { gmark, wordmark } from "../../../js/brand.js?v=c78f81e-202610272038";
+import { el, mount } from "../dom.js?v=7b95dc3-202610272038";
+import { gmark, wordmark } from "../../../js/brand.js?v=7b95dc3-202610272038";
 import {
   enterSeat,
   loginWithPassword,
   peekInvite,
   redeemInvite,
   requestLoginLink,
-} from "../persist-auth.js?v=c78f81e-202610272038";
+} from "../persist-auth.js?v=7b95dc3-202610272038";
 
 const FIELD =
   "width:100%;font:inherit;font-size:15px;color:var(--text);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:11px 13px;";
@@ -56,19 +56,18 @@ function shell(title, lead, ...children) {
 }
 
 /**
- * The free map and GridSchool Complete have no passwords: everyone signs in with an
- * emailed code on signin/, which opens whatever map the email has. Offered first so
- * nobody is asked for a password we told them they would never need. Residency
- * keeps the password form below it.
+ * GridSchool Complete has no passwords: buyers sign in with an emailed code on
+ * begin/. Offered first so nobody who joined through the free check is asked
+ * for a password we told them they would never need. Residency keeps the form.
  */
 function codeDoor() {
   const api = new URLSearchParams(location.search).get("api");
-  const href = `../signin/${api ? `?api=${encodeURIComponent(api)}` : ""}`;
+  const href = `../begin/${api ? `?api=${encodeURIComponent(api)}` : ""}`;
   return el(
     "a.picker__row",
     { href, style: "display:block;margin:22px 0 6px;text-decoration:none" },
-    el("b", {}, "Sign in with a code"),
-    el("span", {}, "We email you a 6-digit code. No password. For the free map and GridSchool Complete.")
+    el("b", {}, "Joined through the free check? Sign in with a code"),
+    el("span", {}, "We email you a 6-digit code. No password.")
   );
 }
 
@@ -235,7 +234,7 @@ function renderReturn(app, presetEmail, notice = "") {
           err.hidden = true;
           const value = email.value.trim();
           if (!value) {
-            err.textContent = "Enter your email first.";
+            err.textContent = "Enter the email on your seat first.";
             err.hidden = false;
             email.focus();
             return;

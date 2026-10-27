@@ -6,8 +6,8 @@
  * puts the plan on their map.
  */
 
-import { el } from "../dom.js?v=c78f81e-202610272038";
-import { btn } from "../ui.js?v=c78f81e-202610272038";
+import { el } from "../dom.js?v=7b95dc3-202610272038";
+import { btn } from "../ui.js?v=7b95dc3-202610272038";
 
 const STATUS = {
   shown: { text: "On your resume", cls: "is-shown" },

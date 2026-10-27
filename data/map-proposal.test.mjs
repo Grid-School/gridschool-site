@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { validateMap } from "./map-rules.mjs?v=c78f81e-202610272038";
-import { applyOps, checkOps, opsShapeErrors, opShapeErrors, describeOp, withoutOp, newOpId, renumber, newNodeId } from "./map-proposal.mjs?v=c78f81e-202610272038";
+import { validateMap } from "./map-rules.mjs?v=7b95dc3-202610272038";
+import { applyOps, checkOps, opsShapeErrors, opShapeErrors, describeOp, withoutOp, newOpId, renumber, newNodeId } from "./map-proposal.mjs?v=7b95dc3-202610272038";
 
 const map = () => ({
   version: "1",

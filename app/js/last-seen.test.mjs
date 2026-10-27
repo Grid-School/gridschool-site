@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { seenLabel, quietSignal } from "./last-seen.js?v=c78f81e-202610272038";
+import { seenLabel, quietSignal } from "./last-seen.js?v=7b95dc3-202610272038";
 
 const now = new Date(2026, 9, 8, 15, 0);
 const at = (y, m, d, h = 9) => new Date(y, m, d, h).toISOString();

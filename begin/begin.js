@@ -13,20 +13,13 @@
  * Someone who had a free map pays from it (Have us do this): the payment turns that same seat
  * into the paid one (billing_api.py), so step 2 waits for its plan to read 'complete' and
  * step 4 opens the board they already had, with everything they did on it.
- *
- * Only for a payment: someone who reaches this page with no payment on its way (checkout/ marked
- * none in this browser, Stripe didn't send them, no welcome-email link) goes to signin/, which opens
- * whatever map the email has. The same goes for anyone whose account turns out to be free or
- * Residency once signed in (route.mjs decides for both pages), so nobody waits here for a payment
- * that never happened.
  */
 
-import { PERSIST, link } from "../config.js?v=c78f81e-202610272038";
-import * as Account from "../check/account.js?v=c78f81e-202610272038";
-import { enterSeat } from "../app/js/persist-auth.js?v=c78f81e-202610272038";
-import { startingOn, nextSteps, WAIT_LINE } from "./welcome-copy.js?v=c78f81e-202610272038";
-import { track } from "../check/events.js?v=c78f81e-202610272038";
-import { routeFor, fromStripe, sitePath } from "../signin/route.mjs?v=c78f81e-202610272038";
+import { PERSIST, link } from "../config.js?v=7b95dc3-202610272038";
+import * as Account from "../check/account.js?v=7b95dc3-202610272038";
+import { enterSeat } from "../app/js/persist-auth.js?v=7b95dc3-202610272038";
+import { startingOn, nextSteps, WAIT_LINE } from "./welcome-copy.js?v=7b95dc3-202610272038";
+import { track } from "../check/events.js?v=7b95dc3-202610272038";
 
 // Localhost never talks to production: ?api= when given, else the page's own origin.
 const API = (() => {
@@ -36,10 +29,9 @@ const API = (() => {
   return PERSIST.endpoint;
 })();
 const card = document.getElementById("card");
+// The event log (server/events.py ONBOARDING): someone who paid reached this page.
+track(API, "begin.view", { source: new URLSearchParams(location.search).get("from") || "" });
 const WAIT_MS = 90_000;
-// A payment on its way: checkout/ marked it in this browser, or Stripe's page just sent them here.
-const PAYING = Account.paying() || fromStripe(document.referrer);
-const toSignin = () => location.replace(sitePath("../signin/", location, API));
 
 /** Our words for a failure, never the browser's ("Failed to fetch"). */
 function say(problem) {
@@ -76,7 +68,7 @@ function signInView(message = "") {
     if (!/^\S+@\S+\.\S+$/.test(value)) return (error.textContent = "That email doesn't look right.");
     go.disabled = true;
     try {
-      const { sent } = await Account.sendCode(API, value, "begin");
+      const { sent } = await Account.sendCode(API, value);
       if (!sent) throw new Error("We couldn't send a code just now. Reply to your receipt email and we'll get you in.");
       codeView(value);
     } catch (problem) {
@@ -122,31 +114,17 @@ function codeView(email) {
 async function waitForSeat() {
   const started = Date.now();
   show(h("p", "eyebrow", "Almost there"), h("h1", "card__title", "Setting up your map…"), h("div", "steps-wait", null, {}, [h("div", "dots", null, { "aria-hidden": "true" }), h("span", "", WAIT_LINE)]));
-  let me = null;
   while (Date.now() - started < WAIT_MS) {
-    me = await Account.me(API);
+    const me = await Account.me(API);
     if (!me) return signInView("Your sign-in expired. Sign in again.");
-    const next = routeFor(me, { paying: PAYING });
-    if (next === "paid") {
-      Account.donePaying();
-      return welcomeView(me);
-    }
-    // Not a payment after all (a free map, a Residency board, or nothing yet): signin/ opens the right one.
-    if (next !== "wait") return toSignin();
+    if (me.seat?.plan === "complete") return welcomeView(me);
     await new Promise((resolve) => setTimeout(resolve, 3000));
   }
   show(
     h("p", "eyebrow", "Still working on it"),
-    h("h1", "card__title", "Your map is taking longer than usual."),
-    h("p", "card__lead", "If your payment went through, reply to your receipt email and a person will have you in within the hour. Nothing is lost."),
-    h("div", "card__row", null, {}, [
-      button("Check again", waitForSeat, false),
-      // Left Stripe without paying: the free map (or the free check) is still theirs.
-      button(me?.seat?.plan === "free" ? "Open my free map instead" : "I didn't finish paying", () => {
-        Account.donePaying();
-        toSignin();
-      }, false),
-    ])
+    h("h1", "card__title", "Your payment went through; your map is taking longer than usual."),
+    h("p", "card__lead", "Reply to your receipt email and a person will have you in within the hour. Nothing is lost."),
+    h("div", "card__row", null, {}, [button("Check again", waitForSeat, false)])
   );
 }
 
@@ -200,10 +178,6 @@ function welcomeView(me) {
 
 async function boot() {
   const params = new URLSearchParams(location.search);
-  // Signed out with no payment on its way and no welcome-email link: this isn't a welcome, it's a sign-in.
-  if (params.get("demo") !== "1" && !params.get("signin") && !PAYING && !Account.session()) return toSignin();
-  // The event log (server/events.py ONBOARDING): someone who paid reached this page.
-  track(API, "begin.view", { source: params.get("from") || "" });
   // Walkthroughs (from demo/checkout/): the real welcome, with the demo name and the check's top finding.
   if (params.get("demo") === "1") {
     const top = (params.get("top") || "").replace(/[^a-z]/g, "").slice(0, 20);
