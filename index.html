@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="rez.css?v=9e8fcb7-202610272025">
+<link rel="stylesheet" href="rez.css?v=c78f81e-202610272038">
 <script>/* First view of a session gets the arrival; a repeat starts drawn (js/landing-map.js). */
 try { if (!sessionStorage.getItem("gridschool.arrived") && !matchMedia("(prefers-reduced-motion: reduce)").matches) document.documentElement.classList.add("first-view"); } catch (e) {}</script>
 </head>
@@ -42,7 +42,8 @@ try { if (!sessionStorage.getItem("gridschool.arrived") && !matchMedia("(prefers
     <a href="#plans">Plans</a>
     <a href="#faq">Questions</a>
   </nav>
-  <a class="nav__cta" href="apply/" data-book>Book a call <kbd>B</kbd></a>
+  <span class="nav__end"><a class="nav__signin" href="signin/">Sign in</a>
+  <a class="nav__cta" href="apply/" data-book>Book a call <kbd>B</kbd></a></span>
 </header>
 
 <main id="top">
@@ -340,9 +341,9 @@ try { if (!sessionStorage.getItem("gridschool.arrived") && !matchMedia("(prefers
 </main>
 
 <footer>
-  <div class="wrap">GridSchool Residency · <a href="mailto:support@gridschool.org">support@gridschool.org</a> · © 2026 GRID SCHOOL LLC · Boise, Idaho · <a href="privacy/">Privacy</a> · <a href="terms/">Terms</a><br>A company's yes is theirs. Your evidence won't be.</div>
+  <div class="wrap">GridSchool Residency · <a href="mailto:support@gridschool.org">support@gridschool.org</a> · © 2026 GRID SCHOOL LLC · Boise, Idaho · <a href="signin/">Sign in</a> · <a href="privacy/">Privacy</a> · <a href="terms/">Terms</a><br>A company's yes is theirs. Your evidence won't be.</div>
 </footer>
 
-<script type="module" src="landing.js?v=9e8fcb7-202610272025"></script>
+<script type="module" src="landing.js?v=c78f81e-202610272038"></script>
 </body>
 </html>

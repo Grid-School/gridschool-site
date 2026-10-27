@@ -2822,3 +2822,63 @@ pre.diagram--failed { border-color: var(--amber); }
 .stepcheck__row.has-body { align-items: start; }
 .stepcheck__field { display: flex; flex-wrap: wrap; gap: 8px; align-items: end; margin-top: 10px; }
 .stepcheck__field .field { flex: 1 1 240px; margin: 0; }
+
+/* Flow rebuild step 6: the campaign is a full page (views/campaign.js). Steps down the left with their day, the
+   work on the right, one footer, the rare actions in a ⋯ menu. On a phone the steps become a strip that scrolls. */
+.camp-modal .modal__scrim { background: #000; }
+.camp-modal .modal__panel {
+  position: fixed; inset: 0; width: 100%; max-width: none; height: 100%; max-height: none; margin: 0;
+  border: 0; border-radius: 0; background: #000; box-shadow: none; display: flex; flex-direction: column;
+  padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.camp-modal .modal__body { flex: 1 1 auto; min-height: 0; overflow: hidden; padding: 0; display: flex; max-height: none; }
+.cws { flex: 1 1 auto; min-height: 0; width: 100%; display: flex; flex-direction: column; }
+.cws__head { flex: none; display: flex; align-items: center; gap: 16px; padding: 14px 28px; border-bottom: 1px solid rgba(84, 220, 255, .16); }
+.cws__head > .b--quiet { flex: none; }
+.cws__title { flex: 1 1 auto; min-width: 0; }
+.cws__title h1 { margin: 0; font-size: 22px; line-height: 1.25; color: #fff; font-weight: 500; }
+.cws__title p { margin: 2px 0 0; color: var(--muted); font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cws__menu { position: relative; flex: none; }
+.cws__menu > summary { list-style: none; cursor: pointer; width: 40px; height: 36px; display: grid; place-items: center; border: 1px solid rgba(84, 220, 255, .24); border-radius: 6px; color: #fff; font-size: 18px; letter-spacing: 1px; }
+.cws__menu > summary::-webkit-details-marker { display: none; }
+.cws__menu > summary:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+.cws__items { position: absolute; right: 0; top: calc(100% + 6px); z-index: 5; min-width: 200px; display: grid; padding: 6px; background: #05080b; border: 1px solid rgba(84, 220, 255, .24); border-radius: 8px; box-shadow: 0 12px 32px rgba(0, 0, 0, .6); }
+.cws__item { display: block; text-align: left; padding: 10px 12px; border-radius: 5px; background: none; border: 0; color: #e8f1f5; font: inherit; font-size: 14px; text-decoration: none; cursor: pointer; }
+.cws__item:hover, .cws__item:focus-visible { background: rgba(84, 220, 255, .08); outline: none; }
+.cws__grid { flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: 250px minmax(0, 1fr); }
+.cws__grid.is-solo { grid-template-columns: minmax(0, 1fr); }
+.cws__steps { display: flex; flex-direction: column; padding: 14px 0; border-right: 1px solid rgba(84, 220, 255, .14); overflow-y: auto; }
+.cws__step { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 11px 18px; background: none; border: 0; border-left: 2px solid transparent; color: var(--muted); font: inherit; font-size: 14.5px; text-align: left; cursor: pointer; }
+.cws__step:hover { color: #fff; }
+.cws__step:focus-visible { outline: 2px solid var(--cyan); outline-offset: -2px; }
+.cws__step.is-here { color: #fff; font-weight: 600; border-left-color: var(--cyan); background: rgba(84, 220, 255, .06); }
+.cws__mark { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid rgba(84, 220, 255, .35); display: grid; place-items: center; font-size: 11px; line-height: 1; }
+.cws__step.is-done .cws__mark { background: var(--ok); border-color: var(--ok); color: #00160a; }
+.cws__step.is-fresh .cws__mark { animation: cws-pop .6s ease-out; }
+@keyframes cws-pop { 0% { transform: scale(.6); } 60% { transform: scale(1.25); } 100% { transform: scale(1); } }
+.cws__day { font: 400 11px/1 var(--font-mono, monospace); color: var(--faint, #56656f); white-space: nowrap; }
+.cws__main { min-width: 0; overflow-y: auto; padding: 26px 40px 0; display: flex; flex-direction: column; }
+.cws__main > .cnode { max-width: 760px; width: 100%; flex: 1 0 auto; }
+.cws__main > .cnav { max-width: 760px; width: 100%; position: sticky; bottom: 0; margin-top: 24px; padding: 14px 0 16px; background: linear-gradient(to top, #000 72%, rgba(0, 0, 0, 0)); border-top: 0; }
+@media (prefers-reduced-motion: reduce) { .cws__step.is-fresh .cws__mark { animation: none; } }
+@media (max-width: 760px) {
+  .cws__head { padding: 10px 14px; gap: 10px; }
+  .cws__title h1 { font-size: 18px; }
+  .cws__grid { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); }
+  .cws__steps { flex-direction: row; gap: 2px; padding: 6px 10px; border-right: 0; border-bottom: 1px solid rgba(84, 220, 255, .14); overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
+  .cws__steps::-webkit-scrollbar { display: none; }
+  .cws__step { grid-template-columns: auto auto; padding: 8px 10px; border-left: 0; border-bottom: 2px solid transparent; white-space: nowrap; font-size: 13.5px; }
+  .cws__step.is-here { border-bottom-color: var(--cyan); background: none; }
+  .cws__day { display: none; }
+  .cws__main { padding: 16px 16px 0; }
+}
+/* The Record step's checklist (views/loom-kit.js). */
+.lkit__box { display: inline-grid; place-items: center; width: 18px; height: 18px; margin-right: 10px; border-radius: 4px; border: 1.5px solid rgba(84, 220, 255, .4); font-size: 11px; vertical-align: -3px; }
+.lkit__step.is-done .lkit__box { background: var(--ok); border-color: var(--ok); color: #00160a; }
+.camp__loom { align-items: flex-end; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+/* The reading modal centres itself with a half-width shift; the full-page campaign must not. */
+.camp-modal .modal__panel, .camp-modal.is-open .modal__panel { left: 0; transform: none; inset: 0; }
+/* landing.css gives every summary padding and a "+" marker; the ⋯ menu wants neither. */
+.cws__menu > summary { padding: 0; font-weight: 400; line-height: 1; }
+.cws__menu > summary::before, .cws__menu[open] > summary::before { content: none; }

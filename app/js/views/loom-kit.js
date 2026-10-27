@@ -13,10 +13,10 @@
  * pointing at real work is the costly signal; a generated one would spend it.
  */
 
-import { el } from "../dom.js?v=9e8fcb7-202610272025";
-import { btn } from "../ui.js?v=9e8fcb7-202610272025";
-import { BEATS, composeBeats, tidyAnswers, scriptSeconds, blanksLeft, voiceFlags } from "../loom-script.js?v=9e8fcb7-202610272025";
-import { SLIDES, partDone, scriptDone } from "../campaign-steps.js?v=9e8fcb7-202610272025";
+import { el } from "../dom.js?v=c78f81e-202610272038";
+import { btn } from "../ui.js?v=c78f81e-202610272038";
+import { BEATS, composeBeats, tidyAnswers, scriptSeconds, blanksLeft, voiceFlags } from "../loom-script.js?v=c78f81e-202610272038";
+import { SLIDES, partDone, scriptDone } from "../campaign-steps.js?v=c78f81e-202610272038";
 
 /** Seconds a Loom should land in. */
 export const PACE = { min: 45, low: 60, high: 90, max: 105 };
@@ -249,7 +249,9 @@ export function recordNode({ target, campaign, readOnly, loomField, onSaveLink, 
   const answers = answersFor(target, readOnly);
   const showing = answers.show?.trim();
   const firstOne = !target.loomUrl && !target.loomTakes;
-  const step = (n, title, what, ...body) => el("section.lkit__step", {}, el("h3.lkit__stephead", {}, el("span.lkit__n", {}, String(n)), title), what ? el("p.lkit__what", {}, what) : null, ...body);
+  // A checklist inside the step, not numbered circles inside a numbered step: each box ticks from the record.
+  const step = (done, title, what, ...body) =>
+    el("section.lkit__step", { class: done ? "is-done" : null }, el("h3.lkit__stephead", {}, el("span.lkit__box", { "aria-hidden": "true" }, done ? "✓" : ""), title, done ? el("span.sr-only", {}, " (done)") : null), what ? el("p.lkit__what", {}, what) : null, ...body);
 
   return el(
     "div.lkit",
@@ -260,21 +262,21 @@ export function recordNode({ target, campaign, readOnly, loomField, onSaveLink, 
       "About 70 seconds of you, talking to one person about their company and showing one thing you built. It doesn't need to be polished, and a small stumble is normal."
     ),
     step(
-      1,
+      own || Boolean(target.loomUrl),
       "Read your script once",
       own ? null : "You haven't written your own script yet, so this is the rough draft from the research. The Script step turns it into your words.",
       el("div.lkit__script", {}, scriptList(beats)),
       readOnly ? null : el("div.lkit__act", {}, btn({ label: "Edit in the Script step", variant: "quiet", onclick: onEditScript }))
     ),
     step(
-      2,
+      Boolean(target.loomTakes) || Boolean(target.loomUrl),
       "Practise it",
       "Opens a practice room on this page: your camera, your script in large type near the top of the screen, and a timer. Practice takes stay on this page and are deleted when you close the room. Nothing is uploaded and nobody sees them.",
       target.loomTakes ? el("p.pack__hint", {}, takesLine(target.loomTakes)) : null,
       readOnly ? null : el("div.lkit__act", {}, btn({ label: "Open the practice room", variant: "ghost", onclick: () => openRehearsal({ company: target.company, beats, onTake }) }))
     ),
     step(
-      3,
+      Boolean(target.loomUrl),
       "Record the real one on Loom",
       "Loom opens in a new tab. Sign in to your own Loom account (the free plan is enough), choose screen and camera, and record. When you stop, Loom gives you a share link. Copy it.",
       el(
@@ -288,7 +290,7 @@ export function recordNode({ target, campaign, readOnly, loomField, onSaveLink, 
       el("div.lkit__act", {}, btn({ label: "Open Loom ↗", variant: "ghost", href: "https://www.loom.com/", target: "_blank" }))
     ),
     step(
-      4,
+      Boolean(target.loomUrl),
       "Paste your Loom link",
       "Paste the share link Loom gave you. Saving it finishes this step and puts the link into your email, which is the next step.",
       el("div.row.camp__loom", {}, loomField.node, readOnly ? null : btn({ label: "Save the link", variant: "solid", onclick: onSaveLink }))

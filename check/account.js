@@ -7,8 +7,8 @@
  * The session token lives in this browser only; losing it just means signing in again.
  */
 
-import { AUTH, isPlaceholder } from "../config.js?v=9e8fcb7-202610272025";
-import { visitorId } from "./events.js?v=9e8fcb7-202610272025";
+import { AUTH, isPlaceholder } from "../config.js?v=c78f81e-202610272038";
+import { visitorId } from "./events.js?v=c78f81e-202610272038";
 
 const KEY = "gridschool.account.v1";
 const GSI = "https://accounts.google.com/gsi/client";
@@ -49,8 +49,11 @@ async function call(api, path, body, token) {
   return data;
 }
 
-/** Sends a code and a link. Resolves to {sent}: false when the email couldn't go out. */
-export const sendCode = (api, email) => call(api, "/account/start", { email });
+/**
+ * Sends a code and a link. Resolves to {sent}: false when the email couldn't go out.
+ * `page` is where the email's link opens (server accounts.LINK_PAGES): "check" (default), "signin" or "begin".
+ */
+export const sendCode = (api, email, page) => call(api, "/account/start", { email, ...(page ? { page } : {}) });
 
 async function signedIn(promise) {
   const { token, email } = await promise;
@@ -64,6 +67,38 @@ const who = (from = "") => ({ visitor: visitorId(), from });
 export const verifyCode = (api, email, code, from) => signedIn(call(api, "/account/verify", { email, code, ...who(from) }));
 export const verifyLink = (api, link, from) => signedIn(call(api, "/account/verify", { link, ...who(from) }));
 export const google = (api, credential, from) => signedIn(call(api, "/account/google", { credential, ...who(from) }));
+
+/**
+ * A Complete payment on its way: checkout/ marks the moment someone leaves for Stripe, so begin/ and
+ * signin/ wait for the payment to land instead of opening the free map. Kept a few hours only.
+ */
+const PAYING = "gridschool.paying.v1";
+export const PAYING_MS = 3 * 60 * 60 * 1000;
+
+export function markPaying(now = Date.now()) {
+  try {
+    localStorage.setItem(PAYING, String(now));
+  } catch {
+    /* private window: begin/ still waits when it can tell Stripe sent them */
+  }
+}
+
+export function paying(now = Date.now()) {
+  try {
+    const at = Number(localStorage.getItem(PAYING) || 0);
+    return at > 0 && now - at < PAYING_MS;
+  } catch {
+    return false;
+  }
+}
+
+export function donePaying() {
+  try {
+    localStorage.removeItem(PAYING);
+  } catch {
+    /* nothing to clear */
+  }
+}
 
 export async function me(api) {
   const current = session();

@@ -11,12 +11,15 @@
  * in their own mail app, the call is their phone, LinkedIn is their click.
  */
 
-import { el, mount } from "../dom.js?v=9e8fcb7-202610272025";
-import { btn, copy, toast, field } from "../ui.js?v=9e8fcb7-202610272025";
-import { createModal } from "../modal.js?v=9e8fcb7-202610272025";
-import { DAY0, FOLLOWUP_DAYS, nextTouch, fillLinks, peopleLinks } from "../search.js?v=9e8fcb7-202610272025";
-import { draftCampaign, campaignAllowance } from "../roles-remote.js?v=9e8fcb7-202610272025";
-import { workPanel } from "./work.js?v=9e8fcb7-202610272025";
+import { el, mount } from "../dom.js?v=c78f81e-202610272038";
+import { btn, copy, toast, field } from "../ui.js?v=c78f81e-202610272038";
+import { createModal } from "../modal.js?v=c78f81e-202610272038";
+import { DAY0, FOLLOWUP_DAYS, nextTouch, fillLinks, peopleLinks } from "../search.js?v=c78f81e-202610272038";
+import { draftCampaign, campaignAllowance } from "../roles-remote.js?v=c78f81e-202610272038";
+import { workPanel } from "./work.js?v=c78f81e-202610272038";
+
+/** When each step happens, beside it in the step list. */
+const WHEN = { who: "Prep", script: "Prep", record: "Prep", email: "Day 0", linkedin: "Day 0", call: "Day 0", follow: "Day 3 · 7 · 14" };
 
 /** What the student gets, said before they spend a draft on it. */
 const WRITE_GETS = [
@@ -33,9 +36,9 @@ const WRITE_STEPS = [
   { label: "Writing the email, Loom ideas and LinkedIn note" },
   { label: "Writing the call scripts and follow-ups" },
 ];
-import { scriptWizard, recordNode, closeRehearsal } from "./loom-kit.js?v=9e8fcb7-202610272025";
-import { nodeRail, nodeIntro } from "./node-rail.js?v=9e8fcb7-202610272025";
-import { NODES, doneNodes, firstOpen, nextNode, prevNode, labelOf } from "../campaign-steps.js?v=9e8fcb7-202610272025";
+import { scriptWizard, recordNode, closeRehearsal } from "./loom-kit.js?v=c78f81e-202610272038";
+import { nodeIntro } from "./node-rail.js?v=c78f81e-202610272038";
+import { NODES, doneNodes, firstOpen, nextNode, prevNode, labelOf } from "../campaign-steps.js?v=c78f81e-202610272038";
 
 export function createCampaignDrawer({ slug, getTarget, onPatch, onTouch, getPortfolio, readOnly = () => false, onBusy = () => {}, onGoStep = null }) {
   const modal = createModal({ label: "Target campaign", size: "reading", onClose: () => closeRehearsal() || close() });
@@ -133,6 +136,7 @@ export function createCampaignDrawer({ slug, getTarget, onPatch, onTouch, getPor
     const place = at.get(openId);
     if (place) place.node = id;
     render();
+    modal.panel.querySelector(".cws__main")?.scrollTo?.({ top: 0, behavior: "smooth" });
     modal.panel.querySelector(".modal__body")?.scrollTo?.({ top: 0, behavior: "smooth" });
   }
 
@@ -163,23 +167,51 @@ export function createCampaignDrawer({ slug, getTarget, onPatch, onTouch, getPor
       if (next && place.node !== "follow") setTimeout(() => openId === target.id && at.get(target.id)?.node === place.node && goTo(next), 1200);
     }
 
+    // The rare actions (the posting, they replied, close the target) sit in one ⋯ menu, out of the way of the work.
+    const actions = [
+      target.link ? el("a.cws__item", { href: target.link, target: "_blank", rel: "noopener" }, "The posting ↗") : null,
+      ro || target.state !== "active"
+        ? null
+        : [
+            el("button.cws__item", { type: "button", onclick: () => { onPatch(target.id, { state: "replied" }); toast("Moved to Replied. Book the call and prepare for it from Today."); } }, "They replied"),
+            el("button.cws__item", { type: "button", onclick: () => confirm(`Close ${target.company}? It leaves your active five.`) && onPatch(target.id, { state: "closed" }) }, "Close this target"),
+          ],
+    ].flat().filter(Boolean);
     const head = el(
-      "header.pack__head",
+      "header.cws__head",
       {},
-      el("b.eyebrow", {}, "Target"),
-      el("h1.pack__title", {}, target.company),
-      el("p.pack__where", {}, [target.role, c?.size, nextTouch(target)].filter(Boolean).join(" · "))
+      btn({ label: "← Targets", variant: "quiet", onclick: close }),
+      el("div.cws__title", {}, el("h1", {}, target.company), el("p", {}, [target.role, c?.size, nextTouch(target)].filter(Boolean).join(" · "))),
+      actions.length
+        ? el("details.cws__menu", {}, el("summary", { "aria-label": "More actions", title: "More actions" }, "⋯"), el("div.cws__items", {}, actions))
+        : null
     );
 
-    const rail = nodeRail({ nodes: NODES, done, here: place.node, fresh, onGo: goTo, label: "Campaign steps" });
+    // The steps down the left, each with the day it goes out; a check when the record says it's done.
+    const steps = c
+      ? el(
+          "nav.cws__steps",
+          { "aria-label": "Campaign steps" },
+          NODES.map((n) =>
+            el(
+              "button.cws__step",
+              {
+                type: "button",
+                class: [done.includes(n.id) ? "is-done" : null, n.id === place.node ? "is-here" : null, fresh.includes(n.id) ? "is-fresh" : null].filter(Boolean).join(" ") || null,
+                "aria-current": n.id === place.node ? "step" : null,
+                onclick: () => goTo(n.id),
+              },
+              el("span.cws__mark", { "aria-hidden": "true" }, done.includes(n.id) ? "✓" : ""),
+              el("span.cws__label", {}, n.label),
+              el("span.cws__day", {}, WHEN[n.id] ?? "")
+            )
+          )
+        )
+      : null;
 
-    let body;
-    if (!c) {
-      body = startScreen(target, ro);
-    } else {
-      body = nodeBody(place.node, { target, c, ro, links, sent, markSent, sentChip });
-    }
+    const body = c ? nodeBody(place.node, { target, c, ro, links, sent, markSent, sentChip }) : startScreen(target, ro);
 
+    // The one footer: back a step, and on to the next one.
     const prev = prevNode(place.node);
     const next = nextNode(place.node);
     const nav = c
@@ -192,22 +224,12 @@ export function createCampaignDrawer({ slug, getTarget, onPatch, onTouch, getPor
         )
       : null;
 
-    const foot = el(
-      "footer.pack__foot",
-      {},
-      target.link ? btn({ label: "The posting ↗", variant: "ghost", href: target.link, target: "_blank" }) : null,
-      ro || target.state !== "active"
-        ? null
-        : [
-            btn({ label: "They replied", variant: "solid", onclick: () => { onPatch(target.id, { state: "replied" }); toast("Moved to Replied. Book the call and prepare for it from your run."); } }),
-            btn({ label: "Close target", variant: "quiet", onclick: () => confirm(`Close ${target.company}? It leaves your active five.`) && onPatch(target.id, { state: "closed" }) }),
-          ],
-      btn({ label: "Close", variant: "quiet", onclick: close })
-    );
-    const content = el("div.pack", {}, head, c ? rail : null, el("div.pack__body", {}, el("div.cnode", { "data-node": place.node }, body), nav), foot);
+    const content = el("div.cws", {}, head, el("div.cws__grid", { class: c ? null : "is-solo" }, steps, el("div.cws__main", {}, el("div.cnode", { "data-node": place.node }, body), nav)));
     // Already showing: swap the content in place so a Sent halfway down doesn't jump to the top.
     if (!modal.layer.hidden && !modal.layer.classList.contains("is-closing")) mount(modal.panel.querySelector(".modal__body"), content);
     else modal.setOpen(true, { content });
+    // On a phone the steps are a strip that scrolls sideways: keep the one you're on in view.
+    modal.panel.querySelector(".cws__step.is-here")?.scrollIntoView?.({ block: "nearest", inline: "nearest" });
   }
 
   /**

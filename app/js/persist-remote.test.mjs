@@ -8,9 +8,9 @@ import {
   startPolling,
   stopPolling,
   fetchSnapshot,
-} from "./persist-remote.js?v=9e8fcb7-202610272025";
-import { replace, readDoc, clear, patchStudent, hasPending } from "./persist.js?v=9e8fcb7-202610272025";
-import { setPersistToken } from "./session.js?v=9e8fcb7-202610272025";
+} from "./persist-remote.js?v=c78f81e-202610272038";
+import { replace, readDoc, clear, patchStudent, hasPending } from "./persist.js?v=c78f81e-202610272038";
+import { setPersistToken } from "./session.js?v=c78f81e-202610272038";
 
 function installMemoryStorage() {
   const map = new Map();

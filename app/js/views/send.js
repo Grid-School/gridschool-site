@@ -12,14 +12,14 @@
  * Nothing here needs history. The record starts with the first send through this node.
  */
 
-import { el, mount } from "../dom.js?v=9e8fcb7-202610272025";
-import { btn, toast } from "../ui.js?v=9e8fcb7-202610272025";
-import { isProgressReadOnly } from "../store.js?v=9e8fcb7-202610272025";
-import { addApp, answerAsk, outcomeAsks, noReply, pickVersion, sentBefore, thisWeek, networkOf, insideConnections, careerOf, searchOf, ageLabel } from "../search.js?v=9e8fcb7-202610272025";
-import { verdict, pickWeek } from "../send-verdict.js?v=9e8fcb7-202610272025";
-import { readiness } from "../resume-stages.js?v=9e8fcb7-202610272025";
-import { matchedRoles, radarReady } from "../roles-remote.js?v=9e8fcb7-202610272025";
-import * as api from "../resume-remote.js?v=9e8fcb7-202610272025";
+import { el, mount } from "../dom.js?v=c78f81e-202610272038";
+import { btn, toast } from "../ui.js?v=c78f81e-202610272038";
+import { isProgressReadOnly } from "../store.js?v=c78f81e-202610272038";
+import { addApp, answerAsk, outcomeAsks, noReply, pickVersion, sentBefore, thisWeek, networkOf, insideConnections, careerOf, searchOf, ageLabel } from "../search.js?v=c78f81e-202610272038";
+import { verdict, pickWeek } from "../send-verdict.js?v=c78f81e-202610272038";
+import { readiness } from "../resume-stages.js?v=c78f81e-202610272038";
+import { matchedRoles, radarReady } from "../roles-remote.js?v=c78f81e-202610272038";
+import * as api from "../resume-remote.js?v=c78f81e-202610272038";
 
 const WEEK_TARGET = 5;
 const LABEL = { apply: "Apply", reach: "Write first", skip: "Skip" };

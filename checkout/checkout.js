@@ -6,9 +6,10 @@
  * funnel counts checkout.view and checkout.start (server/events.py).
  */
 
-import { PERSIST, link } from "../config.js?v=9e8fcb7-202610272025";
-import { track, visitorId } from "../check/events.js?v=9e8fcb7-202610272025";
-import { DAY_NOT_SAVED, MONEY, PLANS, RESIDENCY_TALK, optionWords, order, payHref, payUrl, readParams, saveIntent, sendOnRange, summary } from "./order.mjs?v=9e8fcb7-202610272025";
+import { PERSIST, link } from "../config.js?v=c78f81e-202610272038";
+import { markPaying } from "../check/account.js?v=c78f81e-202610272038";
+import { track, visitorId } from "../check/events.js?v=c78f81e-202610272038";
+import { DAY_NOT_SAVED, MONEY, PLANS, RESIDENCY_TALK, optionWords, order, payHref, payUrl, readParams, saveIntent, sendOnRange, summary } from "./order.mjs?v=c78f81e-202610272038";
 
 const $ = (id) => document.getElementById(id);
 const state = readParams(location.search);
@@ -177,6 +178,12 @@ $("pay").addEventListener("click", async (event) => {
     error.textContent = problem.message || DAY_NOT_SAVED;
     error.hidden = false;
   }
+});
+
+// Off to pay for Complete for themselves: begin/ and signin/ wait for this payment instead of opening the free map.
+$("pay").addEventListener("click", () => {
+  const o = order(state);
+  if (!o.gift && o.plan === "complete") markPaying();
 });
 
 render();
