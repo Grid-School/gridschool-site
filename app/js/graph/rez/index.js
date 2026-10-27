@@ -18,13 +18,13 @@
  * view glides to it. Nothing idles. Reduced motion jumps.
  */
 
-import { el, clear } from "../../dom.js?v=33b0498-202610272054";
-import { traceSet, stepNumber } from "../model.js?v=33b0498-202610272054";
-import { STANDING, standingOf, inSequence } from "../standing.js?v=33b0498-202610272054";
-import { typeOf, specOf } from "../model.js?v=33b0498-202610272054";
-import { isTypedMap } from "../../engine.js?v=33b0498-202610272054";
-import { isCompleteMap, isFreeMap } from "../../prep.js?v=33b0498-202610272054";
-import { WIN_LABEL } from "../route.js?v=33b0498-202610272054";
+import { el, clear } from "../../dom.js?v=6ba739d-202610272145";
+import { traceSet, stepNumber } from "../model.js?v=6ba739d-202610272145";
+import { STANDING, standingOf, inSequence } from "../standing.js?v=6ba739d-202610272145";
+import { typeOf, specOf } from "../model.js?v=6ba739d-202610272145";
+import { isTypedMap } from "../../engine.js?v=6ba739d-202610272145";
+import { isCompleteMap, isFreeMap } from "../../prep.js?v=6ba739d-202610272145";
+import { WIN_LABEL } from "../route.js?v=6ba739d-202610272145";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 /** "2026-10-16" → "Due Oct 16". */
@@ -42,7 +42,7 @@ import {
   runCurrent,
   rezIn,
   prefersReducedMotion,
-} from "../../../../js/rez/road.js?v=33b0498-202610272054";
+} from "../../../../js/rez/road.js?v=6ba739d-202610272145";
 
 /*
  * One grid under everything, in the board's own units (as on the landing):
@@ -818,6 +818,27 @@ export async function createRezScene(container) {
       }
     },
     frame(node, { glide = false } = {}) {
+      // A map that fits the screen at full size or bigger is shown whole, as large as fits (up to 1.6x), so a
+      // short map fills a laptop instead of a third of it. A longer map stays at 1x, standing where you are.
+      const w = host.clientWidth;
+      const h = host.clientHeight;
+      if (state.plan && w >= 700 && h) {
+        const fitZoom = Math.min((w - 120) / state.plan.width, (h - 200) / state.plan.height);
+        if (fitZoom >= 1) {
+          const zoom = Math.min(1.6, fitZoom);
+          const tx = (w - state.plan.width * zoom) / 2;
+          const ty = Math.max(90, (h - state.plan.height * zoom) / 2);
+          if (glide) glideTo({ zoom, tx, ty });
+          else {
+            state.zoom = zoom;
+            state.tx = tx;
+            state.ty = ty;
+            clampPan();
+            applyView();
+          }
+          return;
+        }
+      }
       scrollToPoint(state.plan?.at.get(node.id), { glide });
     },
     approach(node) {

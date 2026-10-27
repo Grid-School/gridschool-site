@@ -16,10 +16,10 @@
  * half-typed form. Aden sees it read-only from the desk.
  */
 
-import { el, mount } from "../dom.js?v=33b0498-202610272054";
-import { panel, btn, field, toast, copy } from "../ui.js?v=33b0498-202610272054";
-import { isoDate, fmtDay } from "../time.js?v=33b0498-202610272054";
-import { STATUS } from "../graph/model.js?v=33b0498-202610272054";
+import { el, mount } from "../dom.js?v=6ba739d-202610272145";
+import { panel, btn, field, toast, copy } from "../ui.js?v=6ba739d-202610272145";
+import { isoDate, fmtDay } from "../time.js?v=6ba739d-202610272145";
+import { STATUS } from "../graph/model.js?v=6ba739d-202610272145";
 import {
   STAGES,
   RELATIONS,
@@ -63,16 +63,16 @@ import {
   targetCandidates,
   webLink,
   MAX_ACTIVE_TARGETS,
-} from "../search.js?v=33b0498-202610272054";
-import { storyCard, appRow } from "./search-parts.js?v=33b0498-202610272054";
-import { TOOLS, moveRoute } from "../engine.js?v=33b0498-202610272054";
-import { currentMove, setLiveJobs } from "../next-live.js?v=33b0498-202610272054";
-import { PERSIST } from "../../../config.js?v=33b0498-202610272054";
-import { matchedRoles, radarReady, fetchPacks, winsState, shareWin } from "../roles-remote.js?v=33b0498-202610272054";
-import { createPackDrawer } from "./pack.js?v=33b0498-202610272054";
-import { createCampaignDrawer } from "./campaign.js?v=33b0498-202610272054";
-import { createPositioningCard } from "./positioning-card.js?v=33b0498-202610272054";
-import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=33b0498-202610272054";
+} from "../search.js?v=6ba739d-202610272145";
+import { storyCard, appRow } from "./search-parts.js?v=6ba739d-202610272145";
+import { TOOLS, moveRoute } from "../engine.js?v=6ba739d-202610272145";
+import { currentMove, setLiveJobs } from "../next-live.js?v=6ba739d-202610272145";
+import { PERSIST } from "../../../config.js?v=6ba739d-202610272145";
+import { matchedRoles, radarReady, fetchPacks, winsState, shareWin } from "../roles-remote.js?v=6ba739d-202610272145";
+import { createPackDrawer } from "./pack.js?v=6ba739d-202610272145";
+import { createCampaignDrawer } from "./campaign.js?v=6ba739d-202610272145";
+import { createPositioningCard } from "./positioning-card.js?v=6ba739d-202610272145";
+import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=6ba739d-202610272145";
 
 const RUN_FAMILIES = ["proof", "presence", "network", "interview"];
 /** Every Jobs screen (#/do/<id>); Profile is reached from the "Your LinkedIn" step, not a tab. */

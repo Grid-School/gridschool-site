@@ -9,7 +9,7 @@
  * on this device, so the bar can say it before the step's page has been opened this visit.
  */
 
-import { nextMove } from "./engine.js?v=33b0498-202610272054";
+import { nextMove } from "./engine.js?v=6ba739d-202610272145";
 
 const live = { roles: [], packs: {}, detail: new Map(), slug: "" };
 

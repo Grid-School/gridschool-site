@@ -2900,3 +2900,23 @@ pre.diagram--failed { border-color: var(--amber); }
 /* landing.css gives every summary padding and a "+" marker; the ⋯ menu wants neither. */
 .cws__menu > summary { padding: 0; font-weight: 400; line-height: 1; }
 .cws__menu > summary::before, .cws__menu[open] > summary::before { content: none; }
+
+/* Flow rebuild step 7: the visual pass. Map labels you can read, orange only for a warning, sections that read as
+   sections, and file pickers that look like the rest of the app. */
+.rz-title { font-size: 13.5px; fill: #c9d6dd; }
+.rz-num { font-size: 11.5px; }
+.rz-meta { font-size: 10.5px; }
+/* "Day 0: Email + Loom" is the next touch, not a warning. */
+.tcard__next { color: var(--cyan); }
+/* landing.css gives every summary a "+ " before it; these folds already show their own +/− after. */
+.hire__fold > summary::before { content: none; }
+.hire__fold > summary { padding: 16px 18px; font-weight: 500; text-align: left; }
+/* File pickers: the browser's grey button and "No file chosen" were the only unstyled controls left. */
+.view input[type="file"] { max-width: 100%; color: var(--muted); font: inherit; font-size: 13.5px; }
+.view input[type="file"]::file-selector-button {
+  font: inherit; font-size: 13.5px; font-weight: 600; padding: 9px 14px; margin-right: 12px;
+  border-radius: 6px; border: 1px solid rgba(84, 220, 255, .4); background: #05080b; color: #fff; cursor: pointer;
+}
+.view input[type="file"]::file-selector-button:hover { border-color: var(--cyan); }
+.im__drop { min-width: 0; overflow: hidden; }
+.im__more .im__grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }

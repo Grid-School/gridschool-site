@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { nextMove, moveRoute, isHere, doneForYou, movesAfterNext, READY_SHOWN } from "./engine.js?v=33b0498-202610272054";
+import { nextMove, moveRoute, isHere, doneForYou, movesAfterNext, READY_SHOWN } from "./engine.js?v=6ba739d-202610272145";
 
 const now = new Date(2026, 9, 9, 10);
 const graph = { nodes: [{ id: "p.rewrite", status: "open", n: 1, family: "presence", title: "Headline", why: "w" }], byId: new Map() };

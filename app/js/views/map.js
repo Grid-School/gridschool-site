@@ -16,25 +16,25 @@
  * went with it, because on the floor position is derived from sequence.
  */
 
-import { el, mount } from "../dom.js?v=33b0498-202610272054";
-import { btn, toast } from "../ui.js?v=33b0498-202610272054";
-import { createScene3d } from "../graph/scene3d/index.js?v=33b0498-202610272054";
-import { createRezScene } from "../graph/rez/index.js?v=33b0498-202610272054";
-import { STATUS, nextUp, progress, visibleGraph, stepNumber } from "../graph/model.js?v=33b0498-202610272054";
-import { STANDING, STANDING_LABEL, standingOf } from "../graph/standing.js?v=33b0498-202610272054";
-import { icon } from "../icons.js?v=33b0498-202610272054";
-import { trackLabel } from "../copy.js?v=33b0498-202610272054";
-import { mapList } from "./map-list.js?v=33b0498-202610272054";
-import { dueLabel } from "./from-aden.js?v=33b0498-202610272054";
-import { createGridState, hashFor, RESERVED_ARGS, VIEW } from "./grid-state.js?v=33b0498-202610272054";
-import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=33b0498-202610272054";
-import { isProgressReadOnly } from "../store.js?v=33b0498-202610272054";
-import { setLiveJobs } from "../next-live.js?v=33b0498-202610272054";
-import { matchedRoles, fetchPacks, radarReady } from "../roles-remote.js?v=33b0498-202610272054";
-import { careerOf } from "../search.js?v=33b0498-202610272054";
-import { routeGraph, isLandmark } from "../graph/route.js?v=33b0498-202610272054";
-import { isFreeMap, upgradeHref } from "../prep.js?v=33b0498-202610272054";
-import { createSuggest } from "./suggest.js?v=33b0498-202610272054";
+import { el, mount } from "../dom.js?v=6ba739d-202610272145";
+import { btn, toast } from "../ui.js?v=6ba739d-202610272145";
+import { createScene3d } from "../graph/scene3d/index.js?v=6ba739d-202610272145";
+import { createRezScene } from "../graph/rez/index.js?v=6ba739d-202610272145";
+import { STATUS, nextUp, progress, visibleGraph, stepNumber } from "../graph/model.js?v=6ba739d-202610272145";
+import { STANDING, STANDING_LABEL, standingOf } from "../graph/standing.js?v=6ba739d-202610272145";
+import { icon } from "../icons.js?v=6ba739d-202610272145";
+import { trackLabel } from "../copy.js?v=6ba739d-202610272145";
+import { mapList } from "./map-list.js?v=6ba739d-202610272145";
+import { dueLabel } from "./from-aden.js?v=6ba739d-202610272145";
+import { createGridState, hashFor, RESERVED_ARGS, VIEW } from "./grid-state.js?v=6ba739d-202610272145";
+import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=6ba739d-202610272145";
+import { isProgressReadOnly } from "../store.js?v=6ba739d-202610272145";
+import { setLiveJobs } from "../next-live.js?v=6ba739d-202610272145";
+import { matchedRoles, fetchPacks, radarReady } from "../roles-remote.js?v=6ba739d-202610272145";
+import { careerOf } from "../search.js?v=6ba739d-202610272145";
+import { routeGraph, isLandmark } from "../graph/route.js?v=6ba739d-202610272145";
+import { isFreeMap, upgradeHref } from "../prep.js?v=6ba739d-202610272145";
+import { createSuggest } from "./suggest.js?v=6ba739d-202610272145";
 
 /** Top clears the bar, right the control stack, bottom the next-step card. */
 const INSETS = { top: 64, right: 72, bottom: 96, left: 40 };
@@ -83,8 +83,10 @@ export function renderMap(ctx, initialArg) {
   const style = () => MAP_STYLE.ROUTE;
 
   /** The single writer: every transition redraws and rewrites the hash. */
+  // A phone opens on the list: one column, every step in order, nothing off the edge. The canvas is one tap away.
+  const phone = typeof window !== "undefined" && window.innerWidth < 700;
   const ui = createGridState({
-    arg: initialArg,
+    arg: initialArg ?? (phone ? "list" : null),
     onChange: () => {
       syncHash();
       draw();

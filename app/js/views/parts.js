@@ -10,14 +10,14 @@
  * day or week, because "3 comments a day" is never finished, only kept.
  */
 
-import { el } from "../dom.js?v=33b0498-202610272054";
-import { btn, toast } from "../ui.js?v=33b0498-202610272054";
-import { KIND_LABEL, TASK_STATE, formatEstimate } from "../tasks.js?v=33b0498-202610272054";
-import { taskIsComplete, isCountTask, countOf } from "../task-state.js?v=33b0498-202610272054";
-import { fmtDay, fmtTime, relativeDay } from "../time.js?v=33b0498-202610272054";
-import { joinIsLive } from "../call-slot.js?v=33b0498-202610272054";
-import { isPrivateLinkKey, link } from "../../../config.js?v=33b0498-202610272054";
-export { statusLabel } from "../copy.js?v=33b0498-202610272054";
+import { el } from "../dom.js?v=6ba739d-202610272145";
+import { btn, toast } from "../ui.js?v=6ba739d-202610272145";
+import { KIND_LABEL, TASK_STATE, formatEstimate } from "../tasks.js?v=6ba739d-202610272145";
+import { taskIsComplete, isCountTask, countOf } from "../task-state.js?v=6ba739d-202610272145";
+import { fmtDay, fmtTime, relativeDay } from "../time.js?v=6ba739d-202610272145";
+import { joinIsLive } from "../call-slot.js?v=6ba739d-202610272145";
+import { isPrivateLinkKey, link } from "../../../config.js?v=6ba739d-202610272145";
+export { statusLabel } from "../copy.js?v=6ba739d-202610272145";
 
 export const stateIdOf = (task) => task.weekKey ?? task.id;
 
