@@ -13,8 +13,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../rez.css?v=2c47259-202610271924">
-<link rel="stylesheet" href="../js/sales.css?v=2c47259-202610271924">
+<link rel="stylesheet" href="../rez.css?v=759fedf-202610271938">
+<link rel="stylesheet" href="../js/sales.css?v=759fedf-202610271938">
 </head>
 <body class="rez-page" data-from="gift">
 
@@ -38,7 +38,7 @@
     <p class="lede" id="claim-what">A plan for your job search, built around you: your own map of what's most likely in the way of interviews, the full course with a film for every step, and a working engineer (me) reviewing it. It's yours to accept or not, and nothing starts until you do.</p>
     <label class="gift-share">
       <input type="checkbox" id="share">
-      <span><b id="share-label">Send them a short weekly progress note.</b> Steps you finished, notes and applications sent, replies, what's next. Never what we talk about, never your drafts. You can stop it any time.</span>
+      <span><b id="share-label">Send them a short weekly progress note.</b> Steps you finished, notes and applications sent, replies, what's next, and one short note the day you finish your first step. Never what we talk about, never your drafts. You can stop it any time.</span>
     </label>
     <p class="sales-cta">
       <button class="btn btn--solid" type="button" id="accept">Accept and open my map <span class="arr" aria-hidden="true">→</span></button>
@@ -82,7 +82,7 @@
       <article>
         <b class="sales-steps__when">1 · You</b>
         <h3>Choose a plan and pay.</h3>
-        <p>At checkout you add their first name and email. Nothing is made for them yet, and nothing renews on your card.</p>
+        <p>At checkout you add their first name and email. Nothing is made for them yet. Pay monthly or once; a monthly plan stops after 12 payments, and you can cancel it any time.</p>
       </article>
       <article>
         <b class="sales-steps__when">2 · Them</b>
@@ -103,8 +103,8 @@
 <section class="sec" id="plans">
   <div class="wrap">
     <p class="eyebrow">Plans to give</p>
-    <h2>Paid up front. Nothing renews on your card.</h2>
-    <p class="lede">Both plans include everything in the free check and the full course. Prices are in US dollars and include any sales tax or VAT. Checkout shows them in your own currency.</p>
+    <h2>Billed to you. They're never charged.</h2>
+    <p class="lede">Both plans include everything in the free check and the full course. There's no free trial on a gift. Prices are in US dollars and include any sales tax or VAT. Checkout shows them in your own currency.</p>
     <div class="plans">
       <article class="plan plan--complete">
         <div class="plan__bar eyebrow"><span>GridSchool Complete</span><span class="tag">they run it</span></div>
@@ -116,8 +116,9 @@
           <li>12 months</li>
         </ul>
         <div class="plan__foot">
-          <p class="plan__price"><b>$997</b><span>Refunded in full if they don't accept.</span></p>
-          <a class="btn btn--solid" href="../checkout/?plan=complete&amp;gift=1&amp;from=gift">Give Complete, $997 <span class="arr" aria-hidden="true">→</span></a>
+          <p class="plan__price"><b>$97 a month</b><span>Billed to you, at most 12 payments, then it stops. Cancel any time. Refunded in full if they don't accept.</span></p>
+          <a class="btn btn--solid" href="../checkout/?plan=complete&amp;billing=monthly&amp;gift=1&amp;from=gift">Give Complete, $97 a month <span class="arr" aria-hidden="true">→</span></a>
+          <a class="plan__alt" href="../checkout/?plan=complete&amp;billing=once&amp;gift=1&amp;from=gift">Or pay once and save: $997 instead of $1,164</a>
         </div>
       </article>
       <article class="plan plan--residency">
@@ -141,6 +142,29 @@
 
 <hr class="rule">
 
+<!-- "Email me this" (server/gift_leads_api.py): the link now, two short notes this week, then nothing. -->
+<section class="sec sec--tight" id="later">
+  <div class="wrap">
+    <p class="eyebrow">Not today?</p>
+    <h2>We'll email you this page.</h2>
+    <p class="lede">One email with the link now, and two short notes this week. Then nothing, unless you write back. Every one has an unsubscribe link.</p>
+    <form class="gift-lead" id="lead" novalidate>
+      <input type="email" id="lead-email" name="email" placeholder="Your email" autocomplete="email" aria-label="Your email" required>
+      <input class="trap" type="text" id="lead-company" name="company" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <input class="gift-lead__phone" type="tel" id="lead-phone" name="phone" placeholder="Mobile number (optional, only for texts)" autocomplete="tel" aria-label="Mobile number, only for texts">
+      <!-- Optional and never pre-checked. The words are gift_leads.SMS_CONSENT (sms-gift-v1); gift_leads_test checks they match. -->
+      <label class="gift-share gift-lead__sms">
+        <input type="checkbox" id="lead-sms">
+        <span id="lead-sms-words">Text me about the gift. GRID SCHOOL LLC may send texts, some automated, to the number above. Msg frequency varies. Msg &amp; data rates may apply. Reply STOP to opt out, HELP for help. Not required to buy. Terms: <a class="link" href="../sms/">gridschool.org/sms</a> · Privacy: <a class="link" href="../privacy/">gridschool.org/privacy</a></span>
+      </label>
+      <p class="sales-cta"><button class="btn btn--solid" type="submit" id="lead-send">Email me this <span class="arr" aria-hidden="true">→</span></button></p>
+      <p class="sales-fine" id="lead-note" role="status"></p>
+    </form>
+  </div>
+</section>
+
+<hr class="rule">
+
 <section class="sec sec--tight" id="faq">
   <div class="wrap">
     <p class="eyebrow">Straight answers</p>
@@ -148,6 +172,7 @@
       <details><summary>Who is it for?</summary><p>Someone 18 or older who can already write software and wants an engineering role: in their final year of a computer science degree, a recent graduate who hasn't found a position yet, or someone who needs a project that makes a team stop and look. The map is built for English-language engineering roles: the US, Canada, the UK, Singapore, Australia, and remote teams. They can study or live anywhere.</p></details>
       <details><summary>Can they start before they graduate?</summary><p>Yes, and the final year is a good time. Many new-graduate roles open close to a year before the start date, and a project built now is ready when they apply.</p></details>
       <details><summary>What will I see?</summary><p>If they agree: a short weekly email with the steps they finished, how many notes and applications they sent, replies, and what's next. You won't see what we talk about on calls, their drafts, or my reviews of their work. If they'd rather keep it private, you'll get one email saying they accepted.</p></details>
+      <details><summary>How does paying monthly work?</summary><p>Complete is $97 a month, billed to you from the day you give it, for at most 12 payments ($1,164), then it stops. They're never charged. Cancel any time from the link in your receipt; if you cancel before the 12th payment, their map pauses at the end of the month you paid for. Paying once is $997 instead of $1,164.</p></details>
       <details><summary>What if they don't want it?</summary><p>They say so from the email, and you're refunded in full. It works far better as their choice than as an assignment, so I'd rather they decline than start reluctantly.</p></details>
       <details><summary>Is a job guaranteed?</summary><p>No, and be wary of anyone who says it is. A company's yes is theirs. What I promise is the work: their map, the course, my review of what they send, and in the Residency, me building with them every week.</p></details>
       <details><summary>Who are you?</summary><p>Aden Jessee. I'm a working engineer: I build applied AI and agentic systems now, and I built software for years before that. GridSchool is the system I built to plan and run a job search the way I'd run an engineering project.</p></details>
@@ -160,6 +185,6 @@
 
 <footer><div class="wrap">GridSchool · <a href="mailto:support@gridschool.org">support@gridschool.org</a> · <a href="../terms/">Terms</a> · <a href="../privacy/">Privacy</a> · © 2026 GRID SCHOOL LLC · Boise, Idaho<br>A company's yes is theirs. Your evidence won't be.</div></footer>
 
-<script type="module" src="./gift.js?v=2c47259-202610271924"></script>
+<script type="module" src="./gift.js?v=759fedf-202610271938"></script>
 </body>
 </html>

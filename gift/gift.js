@@ -4,12 +4,15 @@
  *   ?claim=<token>  the person receiving it: accept (and choose the weekly note) or decline
  *   ?stop=<token>   either person: stop the weekly note
  *   ?sent=1         the giver, back from checkout (the gift Payment Links' success URL)
+ *   ?unsub=<token>  a parent lead: no more "Email me this" follow-ups
  *
- * The server side is site/server/gifts_api.py. Words for each outcome: gift-words.mjs.
+ * The pitch also has "Email me this" (gift_leads_api.py). The server side is site/server/gifts_api.py.
+ * Words for each outcome: gift-words.mjs.
  */
 
-import { PERSIST, link } from "../config.js?v=2c47259-202610271924";
-import { DONE, claimTitle, shareLabel, giftSource } from "./gift-words.mjs?v=2c47259-202610271924";
+import { PERSIST, link } from "../config.js?v=759fedf-202610271938";
+import { track, visitorId } from "../check/events.js?v=759fedf-202610271938";
+import { DONE, LEAD, claimTitle, shareLabel, giftSource, leadBody, leadProblem, scheduledWords } from "./gift-words.mjs?v=759fedf-202610271938";
 
 const params = new URLSearchParams(location.search);
 const $ = (id) => document.getElementById(id);
@@ -61,7 +64,7 @@ async function claim(token) {
     return;
   }
   if (gift.status === "claimed") return done("already", { href: "../begin/", label: "Sign in to my map" });
-  if (gift.status === "declined" || gift.status === "refunded") return done("closed", { href: "../check/?from=gift", label: "Take the free check" });
+  if (["declined", "refunded", "cancelled"].includes(gift.status)) return done("closed", { href: "../check/?from=gift", label: "Take the free check" });
   $("claim-title").textContent = claimTitle(gift);
   $("share-label").textContent = shareLabel(gift);
   const busy = (on) => ["accept", "decline"].forEach((id) => ($(id).disabled = on));
@@ -101,8 +104,59 @@ async function stop(token) {
   }
 }
 
-const token = (params.get("claim") || params.get("stop") || "").replace(/[^\w-]/g, "").slice(0, 80);
+async function unsubscribe(token) {
+  try {
+    await post("unsubscribe", { token });
+    done("unsubscribed");
+  } catch (error) {
+    done("stopFailed");
+    $("done-title").textContent = "That link didn't unsubscribe you.";
+    $("done-body").textContent = error.message;
+  }
+}
+
+/** "Email me this": the link now, two short notes this week. Texts only with the box ticked. */
+function lead() {
+  const form = $("lead");
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const fields = { email: $("lead-email").value, phone: $("lead-phone").value, sms: $("lead-sms").checked, company: $("lead-company").value };
+    const problem = leadProblem(fields);
+    $("lead-note").textContent = problem;
+    if (problem) return;
+    $("lead-send").disabled = true;
+    try {
+      await post("lead", leadBody({ ...fields, visitor: visitorId(), from: params.get("from") }));
+      $("lead-note").textContent = LEAD.sent;
+      form.reset();
+    } catch (error) {
+      $("lead-note").textContent = error.message;
+    } finally {
+      $("lead-send").disabled = false;
+    }
+  });
+}
+
+const token = (params.get("claim") || params.get("stop") || params.get("unsub") || "").replace(/[^\w-]/g, "").slice(0, 80);
 if (params.get("claim")) claim(token);
 else if (params.get("stop")) stop(token);
-else if (params.get("sent") === "1") done("sent");
-else only("pitch");
+else if (params.get("unsub")) unsubscribe(token);
+else if (params.get("sent") === "1") {
+  done("sent");
+  let later = null;
+  try {
+    later = scheduledWords(sessionStorage.getItem("gridschool.gift.sendOn"));
+    sessionStorage.removeItem("gridschool.gift.sendOn");
+  } catch {
+    /* no day kept: the plain thank-you stands */
+  }
+  if (later) {
+    $("done-title").textContent = later.title;
+    $("done-body").textContent = later.body;
+  }
+}
+else {
+  only("pitch");
+  lead();
+  track(PERSIST.endpoint, "gift.view", { source: giftSource(params.get("from")) });
+}

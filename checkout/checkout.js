@@ -1,13 +1,14 @@
 /**
- * checkout/: every plan button on the site lands here. Three choices (plan, how you pay, who it's for),
- * the exact terms for that combination next to the button, then Stripe's own Payment Link.
- * The rules and words are order.mjs; the links are config.js LINKS; the funnel counts checkout.view
- * and checkout.start (server/events.py).
+ * checkout/: every plan button on the site lands here. One question at a time: who it's for, then the plan
+ * (Complete is the card, with its own once/monthly toggle; the Residency is a quieter row that points to a
+ * conversation), then one line that says exactly what today's charge is, and a button that says the same.
+ * Then Stripe's own Payment Link. The rules and words are order.mjs; the links are config.js LINKS; the
+ * funnel counts checkout.view and checkout.start (server/events.py).
  */
 
-import { PERSIST, link } from "../config.js?v=2c47259-202610271924";
-import { track, visitorId } from "../check/events.js?v=2c47259-202610271924";
-import { MONEY, PLANS, order, payUrl, readParams } from "./order.mjs?v=2c47259-202610271924";
+import { PERSIST, link } from "../config.js?v=759fedf-202610271938";
+import { track, visitorId } from "../check/events.js?v=759fedf-202610271938";
+import { MONEY, PLANS, RESIDENCY_TALK, optionWords, order, payUrl, readParams, sendOnRange, summary } from "./order.mjs?v=759fedf-202610271938";
 
 const $ = (id) => document.getElementById(id);
 const state = readParams(location.search);
@@ -23,59 +24,93 @@ state.email = (() => {
   }
 })();
 
-function option(group, value, { title, price = "", detail = "", checked = false, disabled = false }) {
-  const label = document.createElement("label");
-  label.className = `co__option${disabled ? " is-off" : ""}`;
-  label.innerHTML = `<input type="radio" name="${group}" value="${value}"><span class="co__option-body"><b></b><span class="co__price"></span><small></small></span>`;
-  const input = label.querySelector("input");
-  input.checked = checked;
-  input.disabled = disabled;
-  label.querySelector("b").textContent = title;
-  label.querySelector(".co__price").textContent = price;
-  label.querySelector("small").textContent = detail;
+const el = (tag, className = "", text = "") => Object.assign(document.createElement(tag), { className, textContent: text });
+
+/** A radio drawn as one half of a two-way switch. */
+function segment(name, value, { title, detail = "", checked, onPick }) {
+  const label = el("label", "co__seg-option");
+  const input = Object.assign(document.createElement("input"), { type: "radio", name, value, checked });
   input.addEventListener("change", () => {
-    state[group] = group === "gift" ? value === "gift" : value;
-    render();
+    onPick();
+    // render() redraws the options: keep the keyboard where it was.
+    document.querySelector(`input[name="${name}"][value="${value}"]`)?.focus();
   });
+  const body = el("span", "co__seg-body");
+  body.append(el("b", "", title));
+  if (detail) body.append(el("small", "", detail));
+  label.append(input, body);
   return label;
+}
+
+/** The chosen plan: its name, its line, how to pay for it, and what's in it. */
+function planCard(key, o) {
+  const spec = PLANS[key];
+  const card = el("article", "co__plan is-on");
+  const bar = el("div", "plan__bar eyebrow");
+  bar.append(el("span", "", spec.name), el("span", "tag", spec.tag));
+  const toggle = el("div", "co__seg co__seg--pay");
+  toggle.setAttribute("role", "radiogroup");
+  toggle.setAttribute("aria-label", "How you pay");
+  for (const [billing, choice] of Object.entries(spec.billing)) {
+    if (o.gift && !choice.giftKey) continue;
+    toggle.append(segment("billing", billing, {
+      ...optionWords(choice, o.gift),
+      checked: billing === o.billing,
+      onPick: () => {
+        state.billing = billing;
+        render();
+      },
+    }));
+  }
+  const items = el("ul", "plan__list co__items");
+  items.append(...spec.items.map((text) => el("li", "", text)));
+  card.append(bar, el("p", "co__line", spec.line), toggle, items);
+  return card;
+}
+
+/** The plan not chosen, as one quiet row. The Residency points to a conversation, never a pay button. */
+function planRow(key) {
+  const spec = PLANS[key];
+  const row = el("article", "co__plan co__plan--row");
+  const text = el("div", "co__row-text");
+  const head = el("p", "co__row-head");
+  head.append(el("b", "", spec.name), el("span", "co__row-price", key === "residency" ? spec.price : spec.billing.monthly.price));
+  text.append(head, el("p", "co__row-line", spec.line));
+  let action;
+  if (key === "residency") {
+    action = Object.assign(el("a", "plan__alt co__row-act", "Talk to us"), { href: RESIDENCY_TALK });
+  } else {
+    action = Object.assign(el("button", "plan__alt co__row-act", `Choose ${spec.name.replace("GridSchool ", "")} instead`), { type: "button" });
+    action.addEventListener("click", () => {
+      state.plan = key;
+      state.billing = "";
+      render();
+    });
+  }
+  row.append(text, action);
+  return row;
 }
 
 function render() {
   const o = order(state);
   state.billing = o.billing;
-  const spec = PLANS[o.plan];
 
-  $("plans").replaceChildren(
-    ...Object.entries(PLANS).map(([key, plan]) =>
-      option("plan", key, { title: plan.name, price: plan.billing.once.price, detail: plan.tag, checked: key === o.plan })
-    )
-  );
-  $("billing").replaceChildren(
-    ...Object.entries(spec.billing).map(([key, choice]) =>
-      option("billing", key, {
-        title: choice.label,
-        price: choice.price,
-        detail: choice.detail,
-        checked: key === o.billing,
-        disabled: o.gift && !choice.giftKey,
-      })
-    )
-  );
-  const note = $("billing-note");
-  note.hidden = !(o.gift && o.plan === "complete");
-  note.textContent = "A gift is paid once, up front, so the free trial is only for buying it for yourself.";
   $("whom").replaceChildren(
-    option("gift", "me", { title: "Me", detail: "Your own map and seat", checked: !o.gift }),
-    option("gift", "gift", { title: "Someone else, as a gift", detail: "They accept it from their own email", checked: o.gift })
+    segment("gift", "me", { title: "For me", checked: !o.gift, onPick: () => ((state.gift = false), render()) }),
+    segment("gift", "gift", { title: "A gift for someone", checked: o.gift, onPick: () => ((state.gift = true), render()) })
+  );
+  // The Residency sits above Complete either way: a row when Complete is chosen, the card when a link asked for it.
+  $("plans").replaceChildren(
+    o.plan === "residency" ? planCard("residency", o) : planRow("residency"),
+    o.plan === "complete" ? planCard("complete", o) : planRow("complete")
   );
 
-  $("summary-name").textContent = o.gift ? `${spec.name}, as a gift` : spec.name;
-  $("summary-tag").textContent = spec.tag;
-  $("summary-line").textContent = spec.line;
-  $("summary-items").replaceChildren(...spec.items.map((text) => Object.assign(document.createElement("li"), { textContent: text })));
-  $("summary-due").textContent = o.due;
+  // A gift can wait for a chosen day (graduation day): only shown, and only sent, for a gift.
+  $("when").hidden = !o.gift;
+  const words = summary(o, new Date(), o.gift ? state.sendOn : "");
+  $("summary-line").textContent = words.line;
   $("summary-terms").textContent = o.terms;
-  $("summary-next").replaceChildren(...o.next.map((text) => Object.assign(document.createElement("li"), { textContent: text })));
+  $("summary-next").replaceChildren(...o.next.map((text) => el("li", "", text)));
   $("money").textContent = MONEY;
 
   // A gift is paid by someone else, so their own email goes in at Stripe, not the seat's.
@@ -85,7 +120,7 @@ function render() {
   $("closed").hidden = Boolean(url);
   if (url) {
     pay.href = url;
-    pay.firstChild.textContent = `${o.billing === "monthly" && o.plan === "complete" && !o.gift ? "Start my free week" : "Continue to secure checkout"} `;
+    pay.firstChild.textContent = `${words.button} `;
   } else {
     $("closed-mail").href = `mailto:support@gridschool.org?subject=${encodeURIComponent(`${o.name}${o.gift ? " (gift)" : ""}, ${o.billing === "monthly" ? "monthly" : "paid once"}`)}`;
   }
@@ -98,9 +133,54 @@ function render() {
   history.replaceState(null, "", `?${params}`);
 }
 
-$("pay").addEventListener("click", () => {
+state.sendOn = "";
+const range = sendOnRange();
+Object.assign($("send-on"), { min: range.min, max: range.max });
+$("send-on").addEventListener("input", (event) => {
+  state.sendOn = event.target.value;
+  render();
+});
+
+/** Save the chosen day first (Stripe's fields can't hold a date); the intent's id goes to Stripe instead of the visitor's. */
+async function saveDay() {
+  const res = await fetch(`${PERSIST.endpoint}/gift/intent`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ send_on: state.sendOn, visitor: visitorId() }),
+    signal: AbortSignal.timeout(8000),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || !data.id) throw new Error(data.error || "We couldn't save the day. Try again, or leave it empty to send it right away.");
+  return data;
+}
+
+$("pay").addEventListener("click", async (event) => {
   const o = order(state);
   track(PERSIST.endpoint, "checkout.start", { source: state.from, check: state.ck, props: { plan: `${o.plan}.${o.billing}${o.gift ? ".gift" : ""}` } });
+  if (!o.gift || !state.sendOn) {
+    try {
+      sessionStorage.removeItem("gridschool.gift.sendOn");
+    } catch {
+      /* nothing to clear */
+    }
+    return;
+  }
+  event.preventDefault();
+  const error = $("pay-error");
+  error.hidden = true;
+  try {
+    const saved = await saveDay();
+    try {
+      // gift/?sent=1 says "we'll send it on <day>" when the giver comes back from Stripe.
+      sessionStorage.setItem("gridschool.gift.sendOn", saved.send_on || "");
+    } catch {
+      /* the thank-you page just won't name the day */
+    }
+    location.href = payUrl(link(o.linkKey), { intent: saved.id, visitor: visitorId() });
+  } catch (problem) {
+    error.textContent = problem.message || "We couldn't save the day. Try again, or leave it empty to send it right away.";
+    error.hidden = false;
+  }
 });
 
 render();

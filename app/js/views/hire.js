@@ -16,10 +16,10 @@
  * half-typed form. Aden sees it read-only from the desk.
  */
 
-import { el, mount } from "../dom.js?v=2c47259-202610271924";
-import { panel, btn, field, toast, copy } from "../ui.js?v=2c47259-202610271924";
-import { isoDate, fmtDay } from "../time.js?v=2c47259-202610271924";
-import { STATUS, stepNumber } from "../graph/model.js?v=2c47259-202610271924";
+import { el, mount } from "../dom.js?v=759fedf-202610271938";
+import { panel, btn, field, toast, copy } from "../ui.js?v=759fedf-202610271938";
+import { isoDate, fmtDay } from "../time.js?v=759fedf-202610271938";
+import { STATUS, stepNumber } from "../graph/model.js?v=759fedf-202610271938";
 import {
   STAGES,
   RELATIONS,
@@ -64,15 +64,15 @@ import {
   targetCandidates,
   webLink,
   MAX_ACTIVE_TARGETS,
-} from "../search.js?v=2c47259-202610271924";
-import { storyCard, appRow } from "./search-parts.js?v=2c47259-202610271924";
-import { TOOLS, moveRoute } from "../engine.js?v=2c47259-202610271924";
-import { currentMove, setLiveJobs } from "../next-live.js?v=2c47259-202610271924";
-import { PERSIST } from "../../../config.js?v=2c47259-202610271924";
-import { matchedRoles, radarReady, fetchPacks, winsState, shareWin, draftPositioning } from "../roles-remote.js?v=2c47259-202610271924";
-import { createPackDrawer } from "./pack.js?v=2c47259-202610271924";
-import { createCampaignDrawer } from "./campaign.js?v=2c47259-202610271924";
-import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=2c47259-202610271924";
+} from "../search.js?v=759fedf-202610271938";
+import { storyCard, appRow } from "./search-parts.js?v=759fedf-202610271938";
+import { TOOLS, moveRoute } from "../engine.js?v=759fedf-202610271938";
+import { currentMove, setLiveJobs } from "../next-live.js?v=759fedf-202610271938";
+import { PERSIST } from "../../../config.js?v=759fedf-202610271938";
+import { matchedRoles, radarReady, fetchPacks, winsState, shareWin, draftPositioning } from "../roles-remote.js?v=759fedf-202610271938";
+import { createPackDrawer } from "./pack.js?v=759fedf-202610271938";
+import { createCampaignDrawer } from "./campaign.js?v=759fedf-202610271938";
+import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=759fedf-202610271938";
 
 const RUN_FAMILIES = ["proof", "presence", "network", "interview"];
 /** How many moves the day leads with. More than this reads as a wall, not a plan. */
@@ -131,6 +131,7 @@ export function renderHire(ctx, initialTool, campaignId) {
     getPortfolio: portfolio,
     getTarget: (id) => targetsOf(student()).find((t) => t.id === id),
     onBusy: () => redraw(), // a campaign started or finished writing: the target cards say so
+    onGoStep: (stepId) => current.navigate("map", stepId), // what a campaign is written from, missing: its step
     onPatch: (id, patch) => save((x) => ({ targets: patchTarget(seedTarget(x.targets, student(), id), id, patch) })),
     onTouch: (id, channel, entry) =>
       save((x) => ({ targets: touchTarget(seedTarget(x.targets, student(), id), id, channel), apps: addApp(x.apps, entry) }), { kind: "search.logged", payload: { kind: "warm", company: entry.company, from: `target:${channel}` } }),

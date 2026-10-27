@@ -2802,3 +2802,7 @@ pre.diagram--failed { border-color: var(--amber); }
 .view--step > .step, .view--step > .step--module { padding-bottom: 32px; }
 .step__preview { margin-top: var(--sp-5); }
 .step__preview-list { margin: 10px 0 0; padding-left: 20px; display: grid; gap: 8px; color: var(--ink-soft, #b8c6cf); font-size: 15px; }
+
+/* What a campaign is written from, missing (views/campaign.js, server/generator_inputs.py). */
+.camp__needs { display: grid; gap: 12px; padding: 14px 16px; border-left: 2px solid var(--warn); background: rgba(255, 179, 43, .05); }
+.camp__needs p { margin: 0; }

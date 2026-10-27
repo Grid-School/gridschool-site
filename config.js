@@ -20,9 +20,11 @@ export const LINKS = {
   residencyCheckout: "https://buy.stripe.com/fZu4gzcXU2zjeFv2HFdEs03",
   // GridSchool Residency as 3 monthly payments of $4,000 (the webhook tells Aden to stop it after 3).
   residencyCheckoutMonthly: "https://buy.stripe.com/fZu3cv4rogq9eFv5TRdEs04",
-  // Gifts (gift/): the same plans, paid once, with two custom fields at checkout, giftemail and giftname
+  // Gifts (gift/): the same plans, with two custom fields at checkout, giftemail and giftname
   // (ops/launch-copy.md §1). Until they're real, gift/'s buttons write to support@ instead.
   giftComplete: "https://buy.stripe.com/eVq8wP7DAa1Lapf4PNdEs05",
+  // Complete as a gift at $97 a month, billed to the giver from today (no trial); the webhook stops it at 12.
+  giftCompleteMonthly: "https://buy.stripe.com/5kQ14ncXUfm58h7dmjdEs08",
   giftResidency: "https://buy.stripe.com/28E7sLe1Yfm57d3dmjdEs06",
   giftResidencyMonthly: "https://buy.stripe.com/dRmbJ1aPMgq9gND3LJdEs07",
   // Stripe's customer portal login link: where anyone on a monthly plan cancels or changes their card.

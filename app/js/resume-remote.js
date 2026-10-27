@@ -3,8 +3,8 @@
  * answers with the current record, which the page simply takes and keeps going.
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=2c47259-202610271924";
-import { persistToken } from "./session.js?v=2c47259-202610271924";
+import { PERSIST, isPlaceholder } from "../../config.js?v=759fedf-202610271938";
+import { persistToken } from "./session.js?v=759fedf-202610271938";
 
 export function resumeReady() {
   return Boolean(persistToken() && PERSIST?.endpoint && !isPlaceholder(PERSIST.endpoint));

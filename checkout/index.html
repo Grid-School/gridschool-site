@@ -10,8 +10,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../rez.css?v=2c47259-202610271924">
-<link rel="stylesheet" href="../js/sales.css?v=2c47259-202610271924">
+<link rel="stylesheet" href="../rez.css?v=759fedf-202610271938">
+<link rel="stylesheet" href="../js/sales.css?v=759fedf-202610271938">
 </head>
 <body class="rez-page" data-from="checkout">
 
@@ -25,44 +25,44 @@
     <p class="eyebrow">Checkout</p>
     <h1 class="sales-h1 co__title">Choose how you'd like to start.</h1>
 
-    <div class="co__grid">
+    <!-- One question at a time (checkout.js draws the options; words in order.mjs). -->
+    <div class="co__flow">
       <form class="co__choices" id="choices" novalidate>
         <fieldset class="co__group">
-          <legend>Plan</legend>
-          <div class="co__options" id="plans"></div>
+          <legend>Who is this for?</legend>
+          <div class="co__seg" id="whom" role="radiogroup" aria-label="Who is this for?"></div>
         </fieldset>
         <fieldset class="co__group">
-          <legend>How you pay</legend>
-          <div class="co__options" id="billing"></div>
-          <p class="co__note" id="billing-note" hidden></p>
+          <legend>Choose a plan</legend>
+          <div class="co__plans" id="plans"></div>
         </fieldset>
-        <fieldset class="co__group">
-          <legend>Who it's for</legend>
-          <div class="co__options" id="whom"></div>
+        <!-- A gift only: the day their email goes (server gifts_api.intent, before Stripe). -->
+        <fieldset class="co__group" id="when" hidden>
+          <legend>When should they get it?</legend>
+          <input class="co__date" type="date" id="send-on" aria-describedby="send-on-hint">
+          <p class="co__hint" id="send-on-hint">Leave it empty and we email them as soon as you've paid. Or pick a day, like their graduation.</p>
         </fieldset>
       </form>
 
-      <aside class="co__summary" aria-labelledby="summary-name">
-        <div class="plan__bar eyebrow"><span id="summary-name">GridSchool Complete</span><span class="tag" id="summary-tag"></span></div>
-        <p class="co__line" id="summary-line"></p>
-        <ul class="plan__list co__items" id="summary-items"></ul>
-        <div class="co__due"><span>Due today</span><b id="summary-due"></b></div>
-        <p class="co__terms" id="summary-terms"></p>
+      <section class="co__summary" aria-label="What you pay">
+        <p class="co__charge" id="summary-line" aria-live="polite"></p>
         <a class="btn btn--solid co__pay" id="pay" href="#">Continue to secure checkout <span class="arr" aria-hidden="true">→</span></a>
+        <p class="co__hint" id="pay-error" role="alert" hidden></p>
         <p class="co__closed" id="closed" hidden>Online checkout opens soon. To start now, <a class="link" id="closed-mail" href="mailto:support@gridschool.org">write to support@gridschool.org</a> and I'll set it up by hand.</p>
+        <p class="co__terms" id="summary-terms"></p>
         <p class="sales-fine" id="money"></p>
         <p class="sales-fine">Payment is taken by Stripe on its own secure page; I never see your card. By continuing you agree to the <a class="link" href="../terms/">terms</a>.</p>
         <div class="co__next">
           <b class="eyebrow">What happens next</b>
           <ol id="summary-next"></ol>
         </div>
-      </aside>
+      </section>
     </div>
   </div>
 </main>
 
 <footer><div class="wrap">GridSchool · <a href="mailto:support@gridschool.org">support@gridschool.org</a> · <a href="../terms/">Terms</a> · <a href="../privacy/">Privacy</a> · © 2026 GRID SCHOOL LLC · Boise, Idaho</div></footer>
 
-<script type="module" src="./checkout.js?v=2c47259-202610271924"></script>
+<script type="module" src="./checkout.js?v=759fedf-202610271938"></script>
 </body>
 </html>

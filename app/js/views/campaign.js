@@ -11,12 +11,12 @@
  * in their own mail app, the call is their phone, LinkedIn is their click.
  */
 
-import { el, mount } from "../dom.js?v=2c47259-202610271924";
-import { btn, copy, toast, field } from "../ui.js?v=2c47259-202610271924";
-import { createModal } from "../modal.js?v=2c47259-202610271924";
-import { DAY0, FOLLOWUP_DAYS, nextTouch, fillLinks, peopleLinks } from "../search.js?v=2c47259-202610271924";
-import { draftCampaign, campaignAllowance } from "../roles-remote.js?v=2c47259-202610271924";
-import { workPanel } from "./work.js?v=2c47259-202610271924";
+import { el, mount } from "../dom.js?v=759fedf-202610271938";
+import { btn, copy, toast, field } from "../ui.js?v=759fedf-202610271938";
+import { createModal } from "../modal.js?v=759fedf-202610271938";
+import { DAY0, FOLLOWUP_DAYS, nextTouch, fillLinks, peopleLinks } from "../search.js?v=759fedf-202610271938";
+import { draftCampaign, campaignAllowance } from "../roles-remote.js?v=759fedf-202610271938";
+import { workPanel } from "./work.js?v=759fedf-202610271938";
 
 /** What the student gets, said before they spend a draft on it. */
 const WRITE_GETS = [
@@ -33,11 +33,11 @@ const WRITE_STEPS = [
   { label: "Writing the email, Loom ideas and LinkedIn note" },
   { label: "Writing the call scripts and follow-ups" },
 ];
-import { scriptWizard, recordNode, closeRehearsal } from "./loom-kit.js?v=2c47259-202610271924";
-import { nodeRail, nodeIntro } from "./node-rail.js?v=2c47259-202610271924";
-import { NODES, doneNodes, firstOpen, nextNode, prevNode, labelOf } from "../campaign-steps.js?v=2c47259-202610271924";
+import { scriptWizard, recordNode, closeRehearsal } from "./loom-kit.js?v=759fedf-202610271938";
+import { nodeRail, nodeIntro } from "./node-rail.js?v=759fedf-202610271938";
+import { NODES, doneNodes, firstOpen, nextNode, prevNode, labelOf } from "../campaign-steps.js?v=759fedf-202610271938";
 
-export function createCampaignDrawer({ slug, getTarget, onPatch, onTouch, getPortfolio, readOnly = () => false, onBusy = () => {} }) {
+export function createCampaignDrawer({ slug, getTarget, onPatch, onTouch, getPortfolio, readOnly = () => false, onBusy = () => {}, onGoStep = null }) {
   const modal = createModal({ label: "Target campaign", size: "reading", onClose: () => closeRehearsal() || close() });
   function close() {
     closeRehearsal();
@@ -83,7 +83,9 @@ export function createCampaignDrawer({ slug, getTarget, onPatch, onTouch, getPor
       if (openId !== targetId) toast(`The ${target.company} campaign is ready. Open it from Targets.`);
       else if (typeof result.left === "number" && result.left >= 0 && result.left <= 3) toast(`${result.left} campaign ${result.left === 1 ? "draft" : "drafts"} left this month.`, "warn");
     } catch (error) {
-      toast(`The campaign draft failed: ${error.message}`, "warn");
+      // A refusal for something missing is one line already (generator_inputs.py); anything else failed.
+      toast(error.status === 409 ? error.message : `The campaign draft failed: ${error.message}`, "warn");
+      if (error.status === 409) void refreshRoom();
     } finally {
       panel.stop();
       drafting.delete(targetId);
@@ -98,15 +100,28 @@ export function createCampaignDrawer({ slug, getTarget, onPatch, onTouch, getPor
     if (busy) return el("div.camp__writing", {}, busy.node, el("p.muted", {}, "You can close this. It keeps writing and shows up on the target when it's done."));
     if (ro) return el("p.muted", {}, "No campaign yet.");
     const out = room && room.limit >= 0 && room.left <= 0;
+    // Inputs before outputs (server/generator_inputs.py): what the campaign is written from, missing, says so
+    // here, with the step that fills it in, before anyone spends a draft on a generic one.
+    const gaps = room?.missing ?? [];
+    const STEP_NAME = { "b.resume": "Go to your resume", "p.path": "Go to Where you're going", "b.profile": "Go to Who you are" };
+    const blocked = gaps.length
+      ? el(
+          "div.camp__needs",
+          {},
+          el("p", {}, `Your campaign is written from ${gaps.map((g) => g.label).join(" and ")}. Add ${gaps.length === 1 ? "it" : "them"} first.`),
+          onGoStep ? el("div.row", {}, gaps.map((g) => btn({ label: STEP_NAME[g.step] ?? "Go to the step", variant: "solid", onclick: () => { close(); onGoStep(g.step); } }))) : null
+        )
+      : null;
     return el(
       "div.camp__start",
       {},
       el("p.camp__lead", {}, `A campaign is everything you'll send ${target.company}, written around the problem they're hiring someone to own:`),
       el("ul.camp__gets", {}, WRITE_GETS.map((g) => el("li", {}, g))),
       el("p.camp__cost", {}, "About a minute. ", room && room.limit >= 0 ? `Uses 1 of your ${room.limit} campaign drafts this month (${room.left} left).` : null),
-      out
-        ? el("p.camp__out", {}, `That's this month's ${room.limit} drafts. They open again on the 1st.`)
-        : btn({ label: "Write my campaign", variant: "solid", onclick: () => write(target.id) })
+      blocked ??
+        (out
+          ? el("p.camp__out", {}, `That's this month's ${room.limit} drafts. They open again on the 1st.`)
+          : btn({ label: "Write my campaign", variant: "solid", onclick: () => write(target.id) }))
     );
   }
 
