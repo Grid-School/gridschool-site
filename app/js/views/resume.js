@@ -11,24 +11,24 @@
  * confirms it. Every saved version has a name, the date and time it was made, and can be downloaded again.
  */
 
-import { el, mount } from "../dom.js?v=22c446e-202610271853";
-import { btn, toast } from "../ui.js?v=22c446e-202610271853";
-import { nodeRail } from "./node-rail.js?v=22c446e-202610271853";
-import { nextUp } from "../graph/model.js?v=22c446e-202610271853";
-import { isProgressReadOnly, refresh as refreshStore } from "../store.js?v=22c446e-202610271853";
-import { upgradeHref } from "../prep.js?v=22c446e-202610271853";
-import * as api from "../resume-remote.js?v=22c446e-202610271853";
-import { patient } from "../patient.js?v=22c446e-202610271853";
-import { doneIds } from "../steps.js?v=22c446e-202610271853";
-import { workPanel } from "./work.js?v=22c446e-202610271853";
-import { needsPanel, needFor, planBlock } from "./needs.js?v=22c446e-202610271853";
-import { sendSuggestion } from "../suggest-remote.js?v=22c446e-202610271853";
-import { newOpId } from "../../../data/map-proposal.mjs?v=22c446e-202610271853";
-import { titleRow } from "./titles.js?v=22c446e-202610271853";
-import { talkButton, canTalk } from "./voice.js?v=22c446e-202610271853";
-import { roundState, gained, RANGES, wantsNumber, addRange } from "../interview.js?v=22c446e-202610271853";
-import { setStepDetail } from "../next-live.js?v=22c446e-202610271853";
-import { stepsFor, claimsOf, linesOf, hasOutput, allConfirmed as confirmedAll, changedSinceSave as changedSince, savedAndDownloaded, nextAction } from "../resume-stages.js?v=22c446e-202610271853";
+import { el, mount } from "../dom.js?v=f2598aa-202610271919";
+import { btn, toast } from "../ui.js?v=f2598aa-202610271919";
+import { nodeRail } from "./node-rail.js?v=f2598aa-202610271919";
+import { nextUp } from "../graph/model.js?v=f2598aa-202610271919";
+import { isProgressReadOnly, refresh as refreshStore } from "../store.js?v=f2598aa-202610271919";
+import { upgradeHref } from "../prep.js?v=f2598aa-202610271919";
+import * as api from "../resume-remote.js?v=f2598aa-202610271919";
+import { patient } from "../patient.js?v=f2598aa-202610271919";
+import { doneIds } from "../steps.js?v=f2598aa-202610271919";
+import { workPanel } from "./work.js?v=f2598aa-202610271919";
+import { needsPanel, needFor, planBlock } from "./needs.js?v=f2598aa-202610271919";
+import { sendSuggestion } from "../suggest-remote.js?v=f2598aa-202610271919";
+import { newOpId } from "../../../data/map-proposal.mjs?v=f2598aa-202610271919";
+import { titleRow } from "./titles.js?v=f2598aa-202610271919";
+import { talkButton, canTalk } from "./voice.js?v=f2598aa-202610271919";
+import { roundState, gained, RANGES, wantsNumber, addRange } from "../interview.js?v=f2598aa-202610271919";
+import { setStepDetail } from "../next-live.js?v=f2598aa-202610271919";
+import { stepsFor, claimsOf, linesOf, hasOutput, allConfirmed as confirmedAll, changedSinceSave as changedSince, savedAndDownloaded, nextAction } from "../resume-stages.js?v=f2598aa-202610271919";
 
 const PDF_JS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs";
 const PDF_WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs";

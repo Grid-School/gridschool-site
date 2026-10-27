@@ -13,21 +13,21 @@ export const LINKS = {
   // Stripe Payment Links, one per button (ops/stripe-setup.md says how to make each one).
   // Until a link is real its buttons fall back: Complete to the free check, Residency to residency/.
   // GridSchool Complete, $997 once (12 months). The check's offer and the home and watch pages use it.
-  completeCheckout: "REPLACE_ME_CHECKOUT_COMPLETE",
+  completeCheckout: "https://buy.stripe.com/14A7sL4ro3DndBr4PNdEs01",
   // GridSchool Complete monthly: 7-day free trial, then $97 a month (the webhook stops it at 12).
-  completeCheckoutMonthly: "REPLACE_ME_CHECKOUT_COMPLETE_MONTHLY",
+  completeCheckoutMonthly: "https://buy.stripe.com/dRmbJ16zwei10OF81ZdEs02",
   // GridSchool Residency, $12,000 in full.
-  residencyCheckout: "REPLACE_ME_CHECKOUT_RESIDENCY",
+  residencyCheckout: "https://buy.stripe.com/fZu4gzcXU2zjeFv2HFdEs03",
   // GridSchool Residency as 3 monthly payments of $4,000 (the webhook tells Aden to stop it after 3).
-  residencyCheckoutMonthly: "REPLACE_ME_CHECKOUT_RESIDENCY_MONTHLY",
+  residencyCheckoutMonthly: "https://buy.stripe.com/fZu3cv4rogq9eFv5TRdEs04",
   // Gifts (gift/): the same plans, paid once, with two custom fields at checkout, giftemail and giftname
   // (ops/launch-copy.md §1). Until they're real, gift/'s buttons write to support@ instead.
-  giftComplete: "REPLACE_ME_CHECKOUT_GIFT_COMPLETE",
-  giftResidency: "REPLACE_ME_CHECKOUT_GIFT_RESIDENCY",
-  giftResidencyMonthly: "REPLACE_ME_CHECKOUT_GIFT_RESIDENCY_MONTHLY",
+  giftComplete: "https://buy.stripe.com/eVq8wP7DAa1Lapf4PNdEs05",
+  giftResidency: "https://buy.stripe.com/28E7sLe1Yfm57d3dmjdEs06",
+  giftResidencyMonthly: "https://buy.stripe.com/dRmbJ1aPMgq9gND3LJdEs07",
   // Stripe's customer portal login link: where anyone on a monthly plan cancels or changes their card.
   // Shown on terms/ and residency/; the server's STRIPE_PORTAL_URL is the same link, for emails.
-  billingPortal: "REPLACE_ME_STRIPE_PORTAL",
+  billingPortal: "https://billing.stripe.com/p/login/fZu00jaPM5Lv9lbeqndEs00",
   // The sales video on watch/ (an embeddable URL: YouTube embed, Loom embed, or a CDN mp4). Placeholder until set.
   vslVideo: "REPLACE_ME_VSL_EMBED",
   // Where a new resident books their kickoff (residency/?paid=1). Falls back to fitCall, then email.

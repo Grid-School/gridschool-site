@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { startingOn, nextSteps, WAIT_LINE } from "./welcome-copy.js?v=22c446e-202610271853";
+import { startingOn, nextSteps, WAIT_LINE } from "./welcome-copy.js?v=f2598aa-202610271919";
 
 const all = (me) => [startingOn(me), ...nextSteps(me).flat(), WAIT_LINE].join("\n");
 

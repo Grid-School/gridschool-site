@@ -4,8 +4,8 @@
  * steps is green only when both are done. A node that just finished pops once. Every node opens directly.
  */
 
-import { el } from "../dom.js?v=22c446e-202610271853";
-import { stepStates } from "../steps.js?v=22c446e-202610271853";
+import { el } from "../dom.js?v=f2598aa-202610271919";
+import { stepStates } from "../steps.js?v=f2598aa-202610271919";
 
 export function nodeRail({ nodes, done = [], here, fresh = [], onGo, label = "Steps" }) {
   return el(
