@@ -9,13 +9,13 @@
  * itself when the work is done, from wherever it was done.
  */
 
-import { el, mount } from "../dom.js?v=2f611ec-202610272301";
-import { btn, toast } from "../ui.js?v=2f611ec-202610272301";
-import { careerOf, searchOf, activeTargets, MAX_ACTIVE_TARGETS } from "../search.js?v=2f611ec-202610272301";
-import { isProgressReadOnly } from "../store.js?v=2f611ec-202610272301";
-import { field } from "../ui.js?v=2f611ec-202610272301";
-import { webLink } from "../search.js?v=2f611ec-202610272301";
-import { createPositioningCard } from "./positioning-card.js?v=2f611ec-202610272301";
+import { el, mount } from "../dom.js?v=e1b1240-202610280516";
+import { btn, toast } from "../ui.js?v=e1b1240-202610280516";
+import { careerOf, searchOf, activeTargets, MAX_ACTIVE_TARGETS } from "../search.js?v=e1b1240-202610280516";
+import { isProgressReadOnly } from "../store.js?v=e1b1240-202610280516";
+import { field } from "../ui.js?v=e1b1240-202610280516";
+import { webLink } from "../search.js?v=e1b1240-202610280516";
+import { createPositioningCard } from "./positioning-card.js?v=e1b1240-202610280516";
 
 const taskDone = (state, task) => state.student?.tasks?.[task?.id]?.state === "done";
 
@@ -44,6 +44,7 @@ function shell(build) {
     let node = options.node ?? null;
     const root = el("div.stepcheck");
     const mem = { ctx };  // what a step keeps between repaints (a drafter mid-draft, a field being typed in)
+    mem.rerender = () => render();
     const render = () => {
       mem.ctx = current;
       mount(root, build({ ctx: current, node, mem }));
@@ -89,7 +90,9 @@ export const renderLinkedinStep = shell(({ ctx, node, mem }) => {
   const career = careerOf(s);
   const search = searchOf(s);
   const ro = isProgressReadOnly();
-  const drafted = Boolean(career.headline);
+  // A headline drafted a moment ago counts: the drafter knows before the record syncs (positioning-card.js).
+  mem.card ??= createPositioningCard({ getCtx: () => mem.ctx, onDrafted: () => mem.rerender?.() });
+  const drafted = Boolean(career.headline || mem.card.headline());
   const live = Boolean(search.profileAt);
   const [draftTask, liveTask] = node?.tasks ?? [];
   follow(ctx, draftTask, drafted);

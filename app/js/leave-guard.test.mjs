@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { registerLeaveGuard, clearLeaveGuard, allowLeave, isLeaveDirty } from "./leave-guard.js?v=2f611ec-202610272301";
+import { registerLeaveGuard, clearLeaveGuard, allowLeave, isLeaveDirty } from "./leave-guard.js?v=e1b1240-202610280516";
 
 test("allowLeave confirms only when a registered form is dirty", () => {
   let dirty = false;

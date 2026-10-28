@@ -16,10 +16,10 @@
  * half-typed form. Aden sees it read-only from the desk.
  */
 
-import { el, mount } from "../dom.js?v=2f611ec-202610272301";
-import { panel, btn, field, toast, copy } from "../ui.js?v=2f611ec-202610272301";
-import { isoDate, fmtDay } from "../time.js?v=2f611ec-202610272301";
-import { STATUS } from "../graph/model.js?v=2f611ec-202610272301";
+import { el, mount } from "../dom.js?v=e1b1240-202610280516";
+import { panel, btn, field, toast, copy } from "../ui.js?v=e1b1240-202610280516";
+import { isoDate, fmtDay } from "../time.js?v=e1b1240-202610280516";
+import { STATUS } from "../graph/model.js?v=e1b1240-202610280516";
 import {
   STAGES,
   RELATIONS,
@@ -63,16 +63,16 @@ import {
   targetCandidates,
   webLink,
   MAX_ACTIVE_TARGETS,
-} from "../search.js?v=2f611ec-202610272301";
-import { storyCard, appRow } from "./search-parts.js?v=2f611ec-202610272301";
-import { TOOLS, moveRoute } from "../engine.js?v=2f611ec-202610272301";
-import { currentMove, setLiveJobs } from "../next-live.js?v=2f611ec-202610272301";
-import { PERSIST } from "../../../config.js?v=2f611ec-202610272301";
-import { matchedRoles, radarReady, fetchPacks, winsState, shareWin } from "../roles-remote.js?v=2f611ec-202610272301";
-import { createPackDrawer } from "./pack.js?v=2f611ec-202610272301";
-import { createCampaignDrawer } from "./campaign.js?v=2f611ec-202610272301";
-import { createPositioningCard } from "./positioning-card.js?v=2f611ec-202610272301";
-import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=2f611ec-202610272301";
+} from "../search.js?v=e1b1240-202610280516";
+import { storyCard, appRow } from "./search-parts.js?v=e1b1240-202610280516";
+import { TOOLS, moveRoute } from "../engine.js?v=e1b1240-202610280516";
+import { currentMove, setLiveJobs } from "../next-live.js?v=e1b1240-202610280516";
+import { PERSIST } from "../../../config.js?v=e1b1240-202610280516";
+import { matchedRoles, radarReady, fetchPacks, winsState, shareWin } from "../roles-remote.js?v=e1b1240-202610280516";
+import { createPackDrawer } from "./pack.js?v=e1b1240-202610280516";
+import { createCampaignDrawer } from "./campaign.js?v=e1b1240-202610280516";
+import { createPositioningCard } from "./positioning-card.js?v=e1b1240-202610280516";
+import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=e1b1240-202610280516";
 
 const RUN_FAMILIES = ["proof", "presence", "network", "interview"];
 /** Every Jobs screen (#/do/<id>); Profile is reached from the "Your LinkedIn" step, not a tab. */
@@ -201,7 +201,10 @@ export function renderHire(ctx, initialTool, campaignId) {
     return { lane: LANE_OF[move.kind], ...move };
   }
 
+  // A role shows on Today and again under Applications, and a button can only sit in one of them, so a
+  // move's actions can be a function that builds a fresh set for each list (the second list took them all).
   function renderMove({ kind, title, sub, actions }) {
+    if (typeof actions === "function") actions = actions();
     return el(
       "li.run__item",
       { "data-kind": kind },
@@ -265,9 +268,12 @@ export function renderHire(ctx, initialTool, campaignId) {
         runItem({
           kind: "target",
           targetId: t.id,
-          title: `${t.company}: ${touch.label}`,
-          sub: touch.kind === "day0" ? "Day 0 of your campaign. The drafts are written around what they need owned; record the Loom in your words." : "One new thing on the same thread. The drafts are ready.",
-          actions: [btn({ label: "Open campaign", variant: "solid", onclick: () => camp.open(t.id) })],
+          // A target whose campaign isn't written yet says so, instead of promising drafts that don't exist.
+          title: t.campaign ? `${t.company}: ${touch.label}` : `${t.company}: write the campaign`,
+          sub: !t.campaign
+            ? "About a minute. The email, Loom script, LinkedIn note and call opener, written from what they need owned."
+            : touch.kind === "day0" ? "Day 0 of your campaign. The drafts are written around what they need owned; record the Loom in your words." : "One new thing on the same thread. The drafts are ready.",
+          actions: [btn({ label: t.campaign ? "Open campaign" : "Write it", variant: "solid", onclick: () => camp.open(t.id) })],
         })
       );
     }
@@ -376,7 +382,7 @@ export function renderHire(ctx, initialTool, campaignId) {
           kind: "apply",
           title: `${role.company} · ${role.title.length > 72 ? `${role.title.slice(0, 70).replace(/[,\s]+\S*$/, "")}…` : role.title}`,
           sub: [level === "strong" ? "Strong fit" : level === "possible" ? "Possible fit" : null, role.ats === "hn" ? "Posted on HN Who's hiring, often by the founder" : null, ageLabel(role.published_at || role.first_seen_at, now), role.workplace, (role.locations ?? []).slice(0, 1).join(""), role.min_years ? `${role.min_years}+ yrs asked` : null].filter(Boolean).join(" · "),
-          actions: [
+          actions: () => [
             btn({ label: prepared ? "Open prep" : "Prepare", variant: prepared ? "ghost" : "solid", onclick: () => drawer.open(role) }),
             btn({ label: "Posting ↗", variant: "quiet", href: role.apply_url || role.url, target: "_blank" }),
             ro ? null : btn({ label: "Applied", variant: "quiet", onclick: () => logApplied(role) }),
@@ -387,7 +393,7 @@ export function renderHire(ctx, initialTool, campaignId) {
     if (!fresh.length) {
       const why = radar.loading ? "Looking for fresh roles…" : radar.off ? "Sign in to see fresh roles." : radar.error ? `The radar didn't answer (${radar.error}).` : "No fresh roles match your titles right now. Bring one in below: any posting you find can be prepared.";
       if (targets.apply.target > targets.apply.done)
-        items.push(runItem({ kind: "apply", title: `${targets.apply.target - targets.apply.done} application${targets.apply.target - targets.apply.done === 1 ? "" : "s"} today`, sub: why, actions: [btn({ label: "Bring a posting", variant: "ghost", onclick: () => document.getElementById("pz-title")?.focus() })] }));
+        items.push(runItem({ kind: "apply", title: `${targets.apply.target - targets.apply.done} application${targets.apply.target - targets.apply.done === 1 ? "" : "s"} today`, sub: why, actions: () => [btn({ label: "Bring a posting", variant: "ghost", onclick: () => document.getElementById("pz-title")?.focus() })] }));
     }
 
     // 4. The proof work on their map.

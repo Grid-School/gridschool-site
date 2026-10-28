@@ -11,15 +11,16 @@
  * Everything can be reopened: change an answer, run the read again, pick different titles.
  */
 
-import { el, mount } from "../dom.js?v=2f611ec-202610272301";
-import { btn, toast } from "../ui.js?v=2f611ec-202610272301";
-import { isProgressReadOnly } from "../store.js?v=2f611ec-202610272301";
-import { nodeRail } from "./node-rail.js?v=2f611ec-202610272301";
-import { doneIds } from "../steps.js?v=2f611ec-202610272301";
-import { workPanel } from "./work.js?v=2f611ec-202610272301";
-import { patient } from "../patient.js?v=2f611ec-202610272301";
-import * as api from "../path-remote.js?v=2f611ec-202610272301";
-import { loadProgress } from "../resume-remote.js?v=2f611ec-202610272301";
+import { el, mount } from "../dom.js?v=e1b1240-202610280516";
+import { nextUp } from "../graph/model.js?v=e1b1240-202610280516";
+import { btn, toast } from "../ui.js?v=e1b1240-202610280516";
+import { isProgressReadOnly } from "../store.js?v=e1b1240-202610280516";
+import { nodeRail } from "./node-rail.js?v=e1b1240-202610280516";
+import { doneIds } from "../steps.js?v=e1b1240-202610280516";
+import { workPanel } from "./work.js?v=e1b1240-202610280516";
+import { patient } from "../patient.js?v=e1b1240-202610280516";
+import * as api from "../path-remote.js?v=e1b1240-202610280516";
+import { loadProgress } from "../resume-remote.js?v=e1b1240-202610280516";
 
 const STEPS = [
   { id: "answer", label: "Answer", done: (s) => s.enough },
@@ -109,7 +110,9 @@ export function renderPath(ctx, options = {}) {
   function autoStage() {
     if (!rec.enough || rec.next) return "answer";
     if (!rec.doc.read) return "read";
-    if (!(rec.doc.chosen || []).length) return "titles";
+    // The honest read is the point of this step: once it's written it shows first, with "Pick the titles"
+    // under it, instead of jumping past it to the title list (2026-10-27 walkthrough).
+    if (!(rec.doc.chosen || []).length) return "read";
     return embedded ? "finish" : "titles";
   }
   const go = (id) => { stage = id; reviewing = false; render(); root.scrollIntoView?.({ block: "start", behavior: "smooth" }); };
@@ -117,7 +120,8 @@ export function renderPath(ctx, options = {}) {
   /* ---------- Answer ---------- */
   function answerBody() {
     const q = rec.next;
-    const answered = Object.keys(rec.doc.answers || {}).length;
+    // Answered or skipped both move the count on.
+    const answered = Object.keys(rec.doc.answers || {}).length + (rec.doc.skipped || []).length;
     const total = (rec.asked || []).length + (rec.doc.followups || []).length;
     if (reviewing || !q) {
       const list = Object.entries(rec.doc.answers || {});
@@ -171,7 +175,7 @@ export function renderPath(ctx, options = {}) {
           return el(`li.gd__title.${cls}`, {},
             el("div.gd__titlehead", {}, el("b", {}, t.title), el("span.gd__tag", {}, label)),
             el("p", {}, t.why),
-            el("small", {}, [t.postings != null ? `${t.postings} postings in 14 days` : null, t.stepping_stone ? "a stepping stone to your goal" : null].filter(Boolean).join(" · ")));
+            el("small", {}, [t.postings != null ? `${t.postings >= 500 ? "500+" : t.postings} postings in 14 days` : null, t.stepping_stone ? "a stepping stone to your goal" : null].filter(Boolean).join(" · ")));
         })),
         read.later ? el("section.gd__way", {},
           el("b.gd__eyebrow", {}, `The way to "${read.later.goal}"`),
@@ -202,7 +206,7 @@ export function renderPath(ctx, options = {}) {
           return el(`li${on ? ".is-on" : ""}`, {},
             el("button", { type: "button", "aria-pressed": on ? "true" : "false", disabled: Boolean(busy), onclick: () => toggle(t.title) },
               el("span.gd__box", { "aria-hidden": "true" }, on ? "✓" : ""),
-              el("span", {}, el("b", {}, t.title), el("small", {}, [REALISTIC[t.realistic]?.[0], t.postings != null ? `${t.postings} postings` : null, lenses.has(t.title.toLowerCase()) ? "resume exists" : null].filter(Boolean).join(" · ")))));
+              el("span", {}, el("b", {}, t.title), el("small", {}, [REALISTIC[t.realistic]?.[0], t.postings != null ? `${t.postings >= 500 ? "500+" : t.postings} postings` : null, lenses.has(t.title.toLowerCase()) ? "resume exists" : null].filter(Boolean).join(" · ")))));
         })),
         read.now.some((t) => t.realistic === "later") ? el("p.gd__hint", {}, `Not yet on the list: ${read.now.filter((t) => t.realistic === "later").map((t) => t.title).join(", ")}. The read says what would earn ${read.now.filter((t) => t.realistic === "later").length === 1 ? "it" : "them"}.`) : null,
       ],
@@ -214,8 +218,19 @@ export function renderPath(ctx, options = {}) {
   /* ---------- Finish ---------- */
   function finishBody() {
     const chosen = rec.doc.chosen || [];
-    return card("This step is done", `Resumes are set up for ${chosen.join(", ")}. The next step builds them, one question at a time.`, null,
-      btn({ label: "Go to your resume →", variant: "solid", onclick: () => current.navigate("map", "b.resume") }));
+    // The same next move as the bar and the footer: the resume step when it's still to do; when it's already
+    // done (a returning student adding titles), the map's next step, with the new resumes one click away.
+    const resumeStep = current.state.graph?.byId?.get("b.resume");
+    const resumeDone = resumeStep?.status === "lit";
+    const next = nextUp(current.state.graph);
+    if (!resumeDone || !next) {
+      return card("This step is done", `Resumes are set up for ${chosen.join(", ")}. The next step builds them, one question at a time.`, null,
+        btn({ label: "Go to your resume →", variant: "solid", onclick: () => current.navigate("map", "b.resume") }));
+    }
+    return card("This step is done", `Resumes are set up for ${chosen.join(", ")}. Build the new ones in Resume whenever you like: each title has its own questions and checklist.`, null,
+      el("div.row", {},
+        btn({ label: `Next: ${next.title} →`, variant: "solid", onclick: () => current.navigate("map", next.id) }),
+        btn({ label: "Build the new resumes", variant: "ghost", onclick: () => current.navigate("map", "b.resume") })));
   }
 
   /* ---------- helpers ---------- */

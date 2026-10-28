@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { stepRows, readyToSave, isStepComplete, canAdvance, readFlag, ROW } from "./step-progress.js?v=2f611ec-202610272301";
+import { stepRows, readyToSave, isStepComplete, canAdvance, readFlag, ROW } from "./step-progress.js?v=e1b1240-202610280516";
 
 const node = {
   id: "x",

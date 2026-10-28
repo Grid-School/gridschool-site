@@ -1,9 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { draftMap, draftRecord, routeFor, normalize, stepTitle, STAGES, ROLES, STOPS } from "./map-draft.js?v=2f611ec-202610272301";
-import { instanceErrors, resolveMap } from "../app/js/modules.js?v=2f611ec-202610272301";
-import { validateMap } from "../data/map-rules.mjs?v=2f611ec-202610272301";
-import { readLibrary } from "../data/module-library.mjs?v=2f611ec-202610272301";
+import { draftMap, draftRecord, routeFor, normalize, stepTitle, STAGES, ROLES, STOPS } from "./map-draft.js?v=e1b1240-202610280516";
+import { instanceErrors, resolveMap } from "../app/js/modules.js?v=e1b1240-202610280516";
+import { validateMap } from "../data/map-rules.mjs?v=e1b1240-202610280516";
+import { readLibrary } from "../data/module-library.mjs?v=e1b1240-202610280516";
 
 const library = readLibrary();
 const every = [];
@@ -65,7 +65,7 @@ test("the apply record is small and names every step", () => {
 });
 
 test("every map says who checks each step, and the defense is judged outside", async () => {
-  const { checkOf, checkSummary, CHECK } = await import("./map-draft.js?v=2f611ec-202610272301");
+  const { checkOf, checkSummary, CHECK } = await import("./map-draft.js?v=e1b1240-202610280516");
   for (const answers of every) {
     const map = draftMap(answers);
     assert.equal(map.nodes.filter((node) => checkOf(node) === CHECK.OUTSIDE).length, 1);

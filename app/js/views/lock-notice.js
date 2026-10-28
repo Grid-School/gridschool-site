@@ -3,9 +3,9 @@
  * Care without condescension: name what unlocks it, offer the next open step.
  */
 
-import { el } from "../dom.js?v=2f611ec-202610272301";
-import { btn } from "../ui.js?v=2f611ec-202610272301";
-import { STATUS, blockedBy, nextUp } from "../graph/model.js?v=2f611ec-202610272301";
+import { el } from "../dom.js?v=e1b1240-202610280516";
+import { btn } from "../ui.js?v=e1b1240-202610280516";
+import { STATUS, blockedBy, nextUp } from "../graph/model.js?v=e1b1240-202610280516";
 
 /** Short human reason + actions. Used on the map HUD and as a step-page gate. */
 export function lockNotice({ graph, node, onGo, onDismiss }) {
@@ -36,6 +36,12 @@ export function lockNotice({ graph, node, onGo, onDismiss }) {
         ? `${names[0]} still needs to be finished.`
         : `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]} still need to be finished.`;
 
+  // When the blocking step is itself waiting, the button goes further back: say so, or "Pick five targets
+  // still needs to be finished" sits over a button to the resume with nothing joining them.
+  const toward = blockers.find((item) => item.status === STATUS.OPEN) ?? null;
+  const first = toward ? null : nextUp(graph);
+  const chain = first && !blockers.some((item) => item.id === first.id) ? ` That starts with ${first.title}.` : "";
+
   return el(
     "div.lock-note",
     { role: "status" },
@@ -43,9 +49,9 @@ export function lockNotice({ graph, node, onGo, onDismiss }) {
     el(
       "p",
       {},
-      `“${node.title}” opens once the steps before it are done. ${list}`
+      `“${node.title}” opens once the steps before it are done. ${list}${chain}`
     ),
-    actions({ graph, onGo, onDismiss, goLabel: null, toward: blockers.find((item) => item.status === STATUS.OPEN) })
+    actions({ graph, onGo, onDismiss, goLabel: null, toward })
   );
 }
 

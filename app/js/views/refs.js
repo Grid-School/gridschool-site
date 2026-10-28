@@ -5,7 +5,7 @@
  * shrinks as the films ship instead of growing into a link farm.
  */
 
-import { el } from "../dom.js?v=2f611ec-202610272301";
+import { el } from "../dom.js?v=e1b1240-202610280516";
 
 export function refsBlock(node, { filmed = false } = {}) {
   if (filmed || !node.refs?.length) return null;

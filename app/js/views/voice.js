@@ -4,7 +4,7 @@
  * browser has no speech recognition, there's no button.
  */
 
-import { el } from "../dom.js?v=2f611ec-202610272301";
+import { el } from "../dom.js?v=e1b1240-202610280516";
 
 const Recognition = () => globalThis.SpeechRecognition || globalThis.webkitSpeechRecognition || null;
 

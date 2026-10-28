@@ -50,7 +50,16 @@ export function readiness({ rec, saves = [] }) {
   const later = needs.filter((n) => n.state === "later").length;
   const checks = [
     { id: "check", label: "Every line checked and kept", ok: allConfirmed(rec), go: linesOf(rec).length ? "check" : "write" },
-    { id: "save", label: "A version saved and downloaded", ok: savedAndDownloaded({ rec, saves }), go: "save" },
+    // A save made before the resume changed (a new title, an edited line) no longer counts: say so, or the
+    // student who saved last week can't see what's missing.
+    {
+      id: "save",
+      label: changedSinceSave({ rec, saves })
+        ? "This version saved and downloaded (it changed since your last save)"
+        : saves[0] && !(saves[0].downloads > 0) ? "Your saved version downloaded" : "A version saved and downloaded",
+      ok: savedAndDownloaded({ rec, saves }),
+      go: "save",
+    },
     { id: "needs", label: "The job's checklist worked out", ok: needs.length > 0, go: "questions" },
   ];
   const ready = checks.every((c) => c.ok);

@@ -6,13 +6,13 @@
  *   const card = createPositioningCard({ getCtx, onTitles });  card.node; card.render();
  */
 
-import { el, mount } from "../dom.js?v=2f611ec-202610272301";
-import { btn, copy, toast } from "../ui.js?v=2f611ec-202610272301";
-import { careerOf } from "../search.js?v=2f611ec-202610272301";
-import { draftPositioning, radarReady } from "../roles-remote.js?v=2f611ec-202610272301";
-import { isProgressReadOnly } from "../store.js?v=2f611ec-202610272301";
+import { el, mount } from "../dom.js?v=e1b1240-202610280516";
+import { btn, copy, toast } from "../ui.js?v=e1b1240-202610280516";
+import { careerOf } from "../search.js?v=e1b1240-202610280516";
+import { draftPositioning, radarReady } from "../roles-remote.js?v=e1b1240-202610280516";
+import { isProgressReadOnly } from "../store.js?v=e1b1240-202610280516";
 
-export function createPositioningCard({ getCtx, onTitles = null }) {
+export function createPositioningCard({ getCtx, onTitles = null, onDrafted = null }) {
   const node = el("div.poscard");
   let state = { busy: false, result: null, error: "" };
 
@@ -26,6 +26,7 @@ export function createPositioningCard({ getCtx, onTitles = null }) {
       state = { busy: false, result, error: "" };
       toast(result.saved ? "Your headline and About are ready." : "Your draft is ready to compare.");
       if (result.titles?.length) onTitles?.(result.titles);
+      if (result.saved) queueMicrotask(() => onDrafted?.());
     } catch (error) {
       state = { busy: false, result: null, error: error.message };
     }
@@ -94,5 +95,8 @@ export function createPositioningCard({ getCtx, onTitles = null }) {
   }
 
   render();
-  return { node, render };
+  /** The headline as it stands now: a draft just saved, else the one on the record. The page's copy of the
+   * record doesn't hear about a draft saved on the server until the next sync, so callers ask here. */
+  const headline = () => (state.result?.saved ? state.result.draft.headline : careerOf(getCtx().state.student).headline) || "";
+  return { node, render, headline };
 }

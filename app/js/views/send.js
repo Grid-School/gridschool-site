@@ -12,14 +12,15 @@
  * Nothing here needs history. The record starts with the first send through this node.
  */
 
-import { el, mount } from "../dom.js?v=2f611ec-202610272301";
-import { btn, toast } from "../ui.js?v=2f611ec-202610272301";
-import { isProgressReadOnly } from "../store.js?v=2f611ec-202610272301";
-import { addApp, answerAsk, outcomeAsks, noReply, pickVersion, sentBefore, thisWeek, networkOf, insideConnections, careerOf, searchOf, ageLabel } from "../search.js?v=2f611ec-202610272301";
-import { verdict, pickWeek } from "../send-verdict.js?v=2f611ec-202610272301";
-import { readiness } from "../resume-stages.js?v=2f611ec-202610272301";
-import { matchedRoles, radarReady } from "../roles-remote.js?v=2f611ec-202610272301";
-import * as api from "../resume-remote.js?v=2f611ec-202610272301";
+import { el, mount } from "../dom.js?v=e1b1240-202610280516";
+import { btn, toast } from "../ui.js?v=e1b1240-202610280516";
+import { isProgressReadOnly } from "../store.js?v=e1b1240-202610280516";
+import { addApp, answerAsk, outcomeAsks, noReply, pickVersion, sentBefore, thisWeek, networkOf, insideConnections, careerOf, searchOf, ageLabel } from "../search.js?v=e1b1240-202610280516";
+import { verdict, pickWeek } from "../send-verdict.js?v=e1b1240-202610280516";
+import { readiness } from "../resume-stages.js?v=e1b1240-202610280516";
+import { matchedRoles, radarReady } from "../roles-remote.js?v=e1b1240-202610280516";
+import * as api from "../resume-remote.js?v=e1b1240-202610280516";
+import { openResumeAt } from "./resume.js?v=e1b1240-202610280516";
 
 const WEEK_TARGET = 5;
 const LABEL = { apply: "Apply", reach: "Write first", skip: "Skip" };
@@ -76,7 +77,8 @@ export function renderSend(ctx, options = {}) {
         el(`li.sd__check${c.ok ? ".is-ok" : ""}`, {},
           el("span.sd__tick", { "aria-hidden": "true" }, c.ok ? "✓" : ""),
           el("span", {}, c.label),
-          c.ok ? null : btn({ label: "Go →", variant: "quiet", onclick: () => current.navigate("map", "b.resume") })))));
+          // Straight to the stage that's missing (Save, say), not wherever the resume would open on its own.
+          c.ok ? null : btn({ label: "Go →", variant: "quiet", onclick: () => { openResumeAt(c.go); current.navigate("map", "b.resume"); } })))));
   }
 
   /* ---------- the five ---------- */

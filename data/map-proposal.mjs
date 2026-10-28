@@ -40,7 +40,7 @@
  * Pure: no DOM, no network. node --test covers it (map-proposal.test.mjs).
  */
 
-import { validateMap } from "./map-rules.mjs?v=2f611ec-202610272301";
+import { validateMap } from "./map-rules.mjs?v=e1b1240-202610280516";
 
 export const OP_KINDS = ["add", "task", "move", "retire", "rename", "ask", "taskedit", "taskdrop"];
 export const MAX_OPS = 30;

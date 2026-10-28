@@ -13,8 +13,8 @@
  * Pure: the map (graph/rez) draws these; the tools live in views/hire.js.
  */
 
-import { nextUp } from "./graph/model.js?v=2f611ec-202610272301";
-import { returnedUnread } from "./tasks.js?v=2f611ec-202610272301";
+import { nextUp } from "./graph/model.js?v=e1b1240-202610280516";
+import { returnedUnread } from "./tasks.js?v=e1b1240-202610280516";
 import {
   searchOf,
   careerOf,
@@ -28,7 +28,7 @@ import {
   networkOf,
   insideConnections,
   shortTitle,
-} from "./search.js?v=2f611ec-202610272301";
+} from "./search.js?v=e1b1240-202610280516";
 
 export const TOOLS = {
   today: { label: "Today", hint: "Every move for today, in order" },
@@ -129,7 +129,7 @@ export function nextMove({ student, graph, now = new Date(), roles = [], packs =
   const insider = ready.find((r) => r.kind === "insider");
   if (insider) return make("insider", `Ask ${insider.person.name} at ${insider.role.company}`, `You know someone inside a company that's hiring for ${shortTitle(insider.role.title)}.`, "insider");
   const touch = touches.find((t) => t.kind === "day0");
-  if (touch) return { ...make("targets", `${touch.target.company}: ${touch.label}`, touch.target.campaign ? "The campaign is written. Today it goes out." : "Write the campaign, then send it today.", touch.target.campaign && !touch.target.touches?.email ? "campaign" : null), targetId: touch.target.id };
+  if (touch) return { ...make("targets", touch.target.campaign ? `${touch.target.company}: ${touch.label}` : `${touch.target.company}: write the campaign`, touch.target.campaign ? "The campaign is written. Today it goes out." : "Write the campaign, then send it today.", touch.target.campaign && !touch.target.touches?.email ? "campaign" : null), targetId: touch.target.id };
   if (!typed && career.headline && !s.profileAt) return make("profile", "Put your new headline and About on LinkedIn", "Recruiters search all day. Until this is live, they can't find you.");
   const ask = toAsk(peopleOf(student))[0];
   if (ask) return make("people", `Ask ${ask.name}${ask.company ? ` at ${ask.company}` : ""}`, "Asking someone you know beats an application almost every time.");
