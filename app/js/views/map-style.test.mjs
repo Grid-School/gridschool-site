@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mapStyleFor, MAP_STYLE } from "./map.js?v=e1b1240-202610280516";
-import { setProgressReadOnly } from "../store.js?v=e1b1240-202610280516";
+import { mapStyleFor, MAP_STYLE } from "./map.js?v=5983245-202610300745";
+import { setProgressReadOnly } from "../store.js?v=5983245-202610300745";
 
 const seat = (prefs) => ({ slug: "calixte", student: prefs ? { prefs } : {} });
 

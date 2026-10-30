@@ -2,8 +2,8 @@
  * Admin persist calls. Desk only. Student boards never import this.
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=e1b1240-202610280516";
-import { persistToken } from "./session.js?v=e1b1240-202610280516";
+import { PERSIST, isPlaceholder } from "../../config.js?v=5983245-202610300745";
+import { persistToken } from "./session.js?v=5983245-202610300745";
 
 function endpoint() {
   return String(PERSIST.endpoint || "").replace(/\/$/, "");
@@ -40,7 +40,10 @@ async function request(method, path, body) {
 
 /* How the app is used (server/activity_api.py): everyone's summary, and one student's sessions. */
 export const loadUsage = (days = 30) => request("GET", `/activity/summary?days=${encodeURIComponent(days)}`);
-export const loadStudentActivity = (slug, days = 30) => request("GET", `/students/${encodeURIComponent(slug)}/activity?days=${encodeURIComponent(days)}`);
+/* The Monday readout (server/readout_api.py): one week's funnel, and the week's ad spend typed by hand. */
+export const loadReadout = (week) => request("GET", `/admin/readout${week ? `?week=${encodeURIComponent(week)}` : ""}`);
+export const saveReadoutSpend = (week, amount) => request("POST", "/admin/readout/spend", { week, amount });
+export const loadStudentActivity =(slug, days = 30) => request("GET", `/students/${encodeURIComponent(slug)}/activity?days=${encodeURIComponent(days)}`);
 
 export async function listPersistSlugs() {
   if (!persistAdminReady()) return [];
@@ -80,6 +83,11 @@ export function rotateSeatToken(slug) {
 /** Merge identity fields (e.g. the Discord ID) without minting invites or tokens. */
 export function updateIdentity(slug, fields) {
   return request("PATCH", `/students/${slug}/identity`, fields);
+}
+
+/** Move a seat to another email and send the sign-in there (server billing_api.change_email). Answers {email, sent}. */
+export function changeSeatEmail(slug, email, { send = true } = {}) {
+  return request("POST", `/students/${slug}/email`, { email, send });
 }
 
 /** Every desk record (admin/desk.js, server/desk_api.py): [{kind, ref, data, updated_at}]. */

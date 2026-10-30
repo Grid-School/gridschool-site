@@ -1,22 +1,25 @@
 /**
  * The profile sheet. Who you are here, what you are enrolled in, and the
- * doors a member is owed: your data (export), the terms you agreed to, the
- * privacy notice, the room (Discord), and the way out (sign out).
+ * doors a member is owed: your data (export), the morning roles email (on or
+ * off), the terms you agreed to, the privacy notice, the room (Discord), and
+ * the way out (sign out).
  *
  * No billing UI on purpose: the terms say one payment through the checkout
  * partner and no subscription, so the receipt lives in the partner's email
  * and this sheet says so rather than pretending to a ledger it does not hold.
  */
 
-import { el } from "./dom.js?v=e1b1240-202610280516";
-import { btn, kv } from "./ui.js?v=e1b1240-202610280516";
-import { createModal } from "./modal.js?v=e1b1240-202610280516";
-import { icon } from "./icons.js?v=e1b1240-202610280516";
-import { link } from "../../config.js?v=e1b1240-202610280516";
-import { returnedUnread } from "./tasks.js?v=e1b1240-202610280516";
-import { initials } from "./rail.js?v=e1b1240-202610280516";
-import { slotSummary } from "./call-slot.js?v=e1b1240-202610280516";
-import { displayZone, studentSlot } from "./time.js?v=e1b1240-202610280516";
+import { el, mount } from "./dom.js?v=5983245-202610300745";
+import { btn, kv, toast } from "./ui.js?v=5983245-202610300745";
+import { createModal } from "./modal.js?v=5983245-202610300745";
+import { icon } from "./icons.js?v=5983245-202610300745";
+import { link } from "../../config.js?v=5983245-202610300745";
+import { returnedUnread } from "./tasks.js?v=5983245-202610300745";
+import { initials } from "./rail.js?v=5983245-202610300745";
+import { slotSummary } from "./call-slot.js?v=5983245-202610300745";
+import { displayZone, studentSlot } from "./time.js?v=5983245-202610300745";
+import { emailSetting } from "./daily-run.js?v=5983245-202610300745";
+import { dailyRunReady, dailyRunState, setDailyRun } from "./daily-run-remote.js?v=5983245-202610300745";
 
 
 export function createProfile({ getState, onExport, onReset, onSignOut, onNavigate }) {
@@ -75,6 +78,8 @@ export function createProfile({ getState, onExport, onReset, onSignOut, onNaviga
         )
       ),
 
+      emailBlock(slug),
+
       el(
         "section.profile__block",
         {},
@@ -95,6 +100,35 @@ export function createProfile({ getState, onExport, onReset, onSignOut, onNaviga
         el("span.profile__hint", {}, "Signing out forgets the access key on this device.")
       )
     );
+  }
+
+  /** The morning roles email (server/daily_run.py): where it is turned back on after the footer's stop link. */
+  function emailBlock(slug) {
+    if (!dailyRunReady(slug)) return null;
+    const body = el("div", {}, el("p.profile__note", {}, "Checking the email setting."));
+    const draw = (on) => {
+      const { status, action } = emailSetting(on);
+      const toggle = btn({
+        label: action,
+        variant: "quiet",
+        onclick: async () => {
+          toggle.disabled = true;
+          try {
+            const next = await setDailyRun(slug, !on);
+            draw(next.on);
+            toast(next.on ? "The morning roles email is back on." : "The morning roles email is off.");
+          } catch (error) {
+            toast(`That didn't save: ${error.message}`, "warn");
+            draw(on);
+          }
+        },
+      });
+      mount(body, el("div", {}, el("p.profile__note", {}, status), el("div.profile__acts", {}, toggle)));
+    };
+    dailyRunState(slug)
+      .then((state) => draw(state.on !== false))
+      .catch(() => mount(body, el("p.profile__note", {}, "The email setting didn't load. Try again in a minute.")));
+    return el("section.profile__block", {}, el("b.eyebrow", {}, "Morning roles email"), body);
   }
 
   function door(label, href, note, onclick) {

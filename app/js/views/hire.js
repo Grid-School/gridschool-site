@@ -16,10 +16,10 @@
  * half-typed form. Aden sees it read-only from the desk.
  */
 
-import { el, mount } from "../dom.js?v=e1b1240-202610280516";
-import { panel, btn, field, toast, copy } from "../ui.js?v=e1b1240-202610280516";
-import { isoDate, fmtDay } from "../time.js?v=e1b1240-202610280516";
-import { STATUS } from "../graph/model.js?v=e1b1240-202610280516";
+import { el, mount } from "../dom.js?v=5983245-202610300745";
+import { panel, btn, field, toast, copy } from "../ui.js?v=5983245-202610300745";
+import { isoDate, fmtDay } from "../time.js?v=5983245-202610300745";
+import { STATUS } from "../graph/model.js?v=5983245-202610300745";
 import {
   STAGES,
   RELATIONS,
@@ -63,16 +63,17 @@ import {
   targetCandidates,
   webLink,
   MAX_ACTIVE_TARGETS,
-} from "../search.js?v=e1b1240-202610280516";
-import { storyCard, appRow } from "./search-parts.js?v=e1b1240-202610280516";
-import { TOOLS, moveRoute } from "../engine.js?v=e1b1240-202610280516";
-import { currentMove, setLiveJobs } from "../next-live.js?v=e1b1240-202610280516";
-import { PERSIST } from "../../../config.js?v=e1b1240-202610280516";
-import { matchedRoles, radarReady, fetchPacks, winsState, shareWin } from "../roles-remote.js?v=e1b1240-202610280516";
-import { createPackDrawer } from "./pack.js?v=e1b1240-202610280516";
-import { createCampaignDrawer } from "./campaign.js?v=e1b1240-202610280516";
-import { createPositioningCard } from "./positioning-card.js?v=e1b1240-202610280516";
-import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=e1b1240-202610280516";
+} from "../search.js?v=5983245-202610300745";
+import { storyCard, appRow } from "./search-parts.js?v=5983245-202610300745";
+import { TOOLS, moveRoute } from "../engine.js?v=5983245-202610300745";
+import { currentMove, setLiveJobs } from "../next-live.js?v=5983245-202610300745";
+import { PERSIST } from "../../../config.js?v=5983245-202610300745";
+import { matchedRoles, radarReady, fetchPacks, winsState, shareWin } from "../roles-remote.js?v=5983245-202610300745";
+import { createPackDrawer } from "./pack.js?v=5983245-202610300745";
+import { createCampaignDrawer } from "./campaign.js?v=5983245-202610300745";
+import { createPositioningCard } from "./positioning-card.js?v=5983245-202610300745";
+import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=5983245-202610300745";
+import { roleKeyFromRoute } from "../daily-run.js?v=5983245-202610300745";
 
 const RUN_FAMILIES = ["proof", "presence", "network", "interview"];
 /** Every Jobs screen (#/do/<id>); Profile is reached from the "Your LinkedIn" step, not a tab. */
@@ -96,7 +97,7 @@ export function nextBuildStep(graph) {
     .sort((a, b) => (a.n ?? 0) - (b.n ?? 0))[0];
 }
 
-export function renderHire(ctx, initialTool, campaignId) {
+export function renderHire(ctx, initialTool, campaignId, routeArg) {
   let current = ctx;
   const readOnly = () => current.store.isProgressReadOnly?.() ?? false;
   const save = (change, event = null) => current.store.updateSearch(change, event);
@@ -106,6 +107,7 @@ export function renderHire(ctx, initialTool, campaignId) {
   // Prepared roles live on the server (Prepare, and the overnight run); the
   // student's own record keeps a copy so a reopen is instant even offline.
   let serverPacks = {};
+  let packsLoaded = false;
   const packFor = (key) => serverPacks[key] ?? packsOf(student())[key];
   const drawer = createPackDrawer({
     slug: ctx.state.slug,
@@ -172,7 +174,11 @@ export function renderHire(ctx, initialTool, campaignId) {
         setLiveJobs({ packs });
         draw();
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => {
+        packsLoaded = true;
+        openRoleFromRoute();
+      });
     const career = careerOf(student());
     const search = titles?.length ? titles : career.titles;
     try {
@@ -938,15 +944,37 @@ export function renderHire(ctx, initialTool, campaignId) {
   };
   openFromRoute(campaignId);
 
+  // #/do/today/role/<role key> opens that role prepared (each role in the morning email links here).
+  let roleRoute = roleKeyFromRoute(campaignId, routeArg);
+  let roleOpened = null;
+  function openRoleFromRoute() {
+    const key = roleRoute;
+    if (!key || key === roleOpened) return;
+    const entry = packFor(key);
+    if (!entry?.pack) {
+      if (!packsLoaded) return; // the prepared roles are still loading: this runs again when they land
+      roleOpened = key;
+      toast("That role isn't prepared here any more. Today has what's fresh.", "warn");
+      return;
+    }
+    roleOpened = key;
+    const live = radar.roles.find((r) => r.key === key);
+    drawer.open(live ?? { key, title: entry.role?.title ?? "", company: entry.role?.company ?? "", url: entry.role?.url ?? "" });
+  }
+  openRoleFromRoute();
+
   return {
     node,
-    update(next, tool, id) {
+    update(next, tool, id, arg) {
       current = next;
       if (TOOL_IDS.includes(tool)) focus = tool;
       redraw();
       camp.refresh();
       if (!id) openedFor = null;
       openFromRoute(id);
+      roleRoute = roleKeyFromRoute(id, arg);
+      if (!roleRoute) roleOpened = null;
+      openRoleFromRoute();
     },
   };
 }

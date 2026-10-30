@@ -10,43 +10,44 @@
  * aliases so links already in the wild still land somewhere true.
  */
 
-import { el, mount, download } from "./dom.js?v=e1b1240-202610280516";
-import * as store from "./store.js?v=e1b1240-202610280516";
-import { resolveSlug, slugFromUrl, currentSession, signOut, setPersistToken, inviteFromUrl, persistToken } from "./session.js?v=e1b1240-202610280516";
-import { tryStoredKey } from "./gate.js?v=e1b1240-202610280516";
-import { peekInvite } from "./persist-auth.js?v=e1b1240-202610280516";
-import { createRouter } from "./router.js?v=e1b1240-202610280516";
-import { createChrome } from "./chrome.js?v=e1b1240-202610280516";
-import { activeDoor } from "./rail.js?v=e1b1240-202610280516";
-import { toast } from "./ui.js?v=e1b1240-202610280516";
-import { isTestSeat } from "./test-seats.js?v=e1b1240-202610280516";
-import { renderLogin } from "./views/login.js?v=e1b1240-202610280516";
-import { renderToday } from "./views/today.js?v=e1b1240-202610280516";
-import { renderMap } from "./views/map.js?v=e1b1240-202610280516";
-import { renderStep, isStepArgs, moduleIdFromArgs } from "./views/step.js?v=e1b1240-202610280516";
-import { renderTasks } from "./views/tasks.js?v=e1b1240-202610280516";
-import { renderCalendar } from "./views/calendar.js?v=e1b1240-202610280516";
-import { renderLibrary } from "./views/library.js?v=e1b1240-202610280516";
-import { renderPosts } from "./views/posts.js?v=e1b1240-202610280516";
-import { renderHire } from "./views/hire.js?v=e1b1240-202610280516";
-import { renderResume } from "./views/resume.js?v=e1b1240-202610280516";
-import { renderProfile } from "./views/profile.js?v=e1b1240-202610280516";
-import { renderSend } from "./views/send.js?v=e1b1240-202610280516";
-import { renderPath } from "./views/path.js?v=e1b1240-202610280516";
-import { renderImages } from "./views/images.js?v=e1b1240-202610280516";
-import { renderStudio } from "./views/studio.js?v=e1b1240-202610280516";
-import { toggleDevUnlock, setDevUnlock } from "./dev-mode.js?v=e1b1240-202610280516";
-import { togglePreviewMedia, setPreviewMedia, isPreviewMedia } from "./preview-mode.js?v=e1b1240-202610280516";
-import { isInstructorDevice } from "./instructor-mode.js?v=e1b1240-202610280516";
-import { startReminders } from "./reminders.js?v=e1b1240-202610280516";
-import { watchReviewArrivals } from "./review-arrivals.js?v=e1b1240-202610280516";
-import { enterView, leaveView } from "./transitions.js?v=e1b1240-202610280516";
-import { gateRoutes } from "./features.js?v=e1b1240-202610280516";
-import * as measure from "./measure.js?v=e1b1240-202610280516";
-import { startTelemetry } from "./telemetry.js?v=e1b1240-202610280516";
-import { createNextBar } from "./views/next-bar.js?v=e1b1240-202610280516";
-import { useSeat } from "./next-live.js?v=e1b1240-202610280516";
-import { PERSIST, isPlaceholder } from "../../config.js?v=e1b1240-202610280516";
+import { el, mount, download } from "./dom.js?v=5983245-202610300745";
+import * as store from "./store.js?v=5983245-202610300745";
+import { resolveSlug, slugFromUrl, currentSession, signOut, setPersistToken, inviteFromUrl, persistToken } from "./session.js?v=5983245-202610300745";
+import { tryStoredKey } from "./gate.js?v=5983245-202610300745";
+import { peekInvite } from "./persist-auth.js?v=5983245-202610300745";
+import { createRouter } from "./router.js?v=5983245-202610300745";
+import { createChrome } from "./chrome.js?v=5983245-202610300745";
+import { activeDoor } from "./rail.js?v=5983245-202610300745";
+import { toast } from "./ui.js?v=5983245-202610300745";
+import { isTestSeat } from "./test-seats.js?v=5983245-202610300745";
+import { renderLogin } from "./views/login.js?v=5983245-202610300745";
+import { renderToday } from "./views/today.js?v=5983245-202610300745";
+import { renderMap } from "./views/map.js?v=5983245-202610300745";
+import { renderStep, isStepArgs, moduleIdFromArgs } from "./views/step.js?v=5983245-202610300745";
+import { renderTasks } from "./views/tasks.js?v=5983245-202610300745";
+import { renderCalendar } from "./views/calendar.js?v=5983245-202610300745";
+import { renderLibrary } from "./views/library.js?v=5983245-202610300745";
+import { renderPosts } from "./views/posts.js?v=5983245-202610300745";
+import { renderHire } from "./views/hire.js?v=5983245-202610300745";
+import { renderResume } from "./views/resume.js?v=5983245-202610300745";
+import { renderProfile } from "./views/profile.js?v=5983245-202610300745";
+import { renderSend } from "./views/send.js?v=5983245-202610300745";
+import { renderPath } from "./views/path.js?v=5983245-202610300745";
+import { renderImages } from "./views/images.js?v=5983245-202610300745";
+import { renderStudio } from "./views/studio.js?v=5983245-202610300745";
+import { toggleDevUnlock, setDevUnlock } from "./dev-mode.js?v=5983245-202610300745";
+import { togglePreviewMedia, setPreviewMedia, isPreviewMedia } from "./preview-mode.js?v=5983245-202610300745";
+import { isInstructorDevice } from "./instructor-mode.js?v=5983245-202610300745";
+import { startReminders } from "./reminders.js?v=5983245-202610300745";
+import { watchReviewArrivals } from "./review-arrivals.js?v=5983245-202610300745";
+import { enterView, leaveView } from "./transitions.js?v=5983245-202610300745";
+import { gateRoutes } from "./features.js?v=5983245-202610300745";
+import * as measure from "./measure.js?v=5983245-202610300745";
+import { startTelemetry } from "./telemetry.js?v=5983245-202610300745";
+import { markClicked } from "./daily-run-remote.js?v=5983245-202610300745";
+import { createNextBar } from "./views/next-bar.js?v=5983245-202610300745";
+import { useSeat } from "./next-live.js?v=5983245-202610300745";
+import { PERSIST, isPlaceholder } from "../../config.js?v=5983245-202610300745";
 
 /* Coach (today) and Posts are gated in features.js: switched off, they are
    not routes at all, so their links land on the Map. */
@@ -374,6 +375,7 @@ async function start() {
   // The event log hears the map opened (measure.js): a student on their own seat only.
   measure.enable({ role, slug, test: isTestSeat(slug) });
   measure.mapOpened();
+  measure.emailArrival(() => markClicked(slug));
   // How the app is used, click by click (telemetry.js): every signed-in student, test seats included (they're
   // marked on the desk). Never the desk viewing a board, never the demo.
   if (role === "student" && slug && slug !== "demo" && PERSIST?.endpoint && !isPlaceholder(PERSIST.endpoint)) startTelemetry(PERSIST.endpoint, persistToken);

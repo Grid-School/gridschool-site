@@ -5,8 +5,9 @@
  * Only a student on their own seat counts; the coach's console, the demo and test seats never do.
  */
 
-import { PERSIST } from "../../config.js?v=e1b1240-202610280516";
-import { track } from "../../check/events.js?v=e1b1240-202610280516";
+import { PERSIST } from "../../config.js?v=5983245-202610300745";
+import { track } from "../../check/events.js?v=5983245-202610300745";
+import { SOURCE, fromDailyRun, withoutFrom } from "./daily-run.js?v=5983245-202610300745";
 
 const CHUNK_TASK = /^q\.(c\d+)\.answer$/;
 const CHECKIN_TASK = "w.checkin.feel";
@@ -42,4 +43,18 @@ export function taskChecked(id, state, answers) {
   const event = on ? eventForTask(id, state, answers) : null;
   // track() sends each name once per page load; the funnel counts a person once per step anyway.
   if (event) track(PERSIST.endpoint, event.name, { props: event.props });
+}
+
+/**
+ * A visit from the morning roles email (?from=daily-run, server/daily_run.py): counted once in the event
+ * log with that source, and once on the seat (onClick), then the tag leaves the address so a reload or a
+ * copied link never counts again. Nothing else about the visit is sent; the email itself has no pixel.
+ */
+export function emailArrival(onClick) {
+  if (typeof location === "undefined" || !fromDailyRun(location.search)) return;
+  if (on) {
+    track(PERSIST.endpoint, "daily_run.click", { source: SOURCE });
+    onClick?.();
+  }
+  history.replaceState(null, "", `${location.pathname}${withoutFrom(location.search)}${location.hash}`);
 }

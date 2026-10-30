@@ -14,6 +14,10 @@
  * into the paid one (billing_api.py), so step 2 waits for its plan to read 'complete' and
  * step 4 opens the board they already had, with everything they did on it.
  *
+ * Typed the wrong email at checkout: Stripe sends a Complete buyer here with ?session_id=cs_... (ops/stripe-setup.py),
+ * so "Didn't get your sign-in email?" shows the email we have, masked, and moves the map to the right one
+ * (recovery.js; server billing_api.checkout_fix). The session id is the proof they paid; it works for a week.
+ *
  * Only for a payment: someone who reaches this page with no payment on its way (checkout/ marked
  * none in this browser, Stripe didn't send them, no welcome-email link) goes to signin/, which opens
  * whatever map the email has. The same goes for anyone whose account turns out to be free or
@@ -21,12 +25,13 @@
  * that never happened.
  */
 
-import { PERSIST, link } from "../config.js?v=e1b1240-202610280516";
-import * as Account from "../check/account.js?v=e1b1240-202610280516";
-import { enterSeat } from "../app/js/persist-auth.js?v=e1b1240-202610280516";
-import { startingOn, nextSteps, WAIT_LINE } from "./welcome-copy.js?v=e1b1240-202610280516";
-import { track } from "../check/events.js?v=e1b1240-202610280516";
-import { routeFor, fromStripe, sitePath } from "../signin/route.mjs?v=e1b1240-202610280516";
+import { PERSIST, link } from "../config.js?v=5983245-202610300745";
+import * as Account from "../check/account.js?v=5983245-202610300745";
+import { enterSeat } from "../app/js/persist-auth.js?v=5983245-202610300745";
+import { startingOn, nextSteps, WAIT_LINE } from "./welcome-copy.js?v=5983245-202610300745";
+import { track } from "../check/events.js?v=5983245-202610300745";
+import { routeFor, fromStripe, sitePath } from "../signin/route.mjs?v=5983245-202610300745";
+import { rememberSession, peek, fix, peekView, COPY } from "./recovery.js?v=5983245-202610300745";
 
 // Localhost never talks to production: ?api= when given, else the page's own origin.
 const API = (() => {
@@ -37,8 +42,11 @@ const API = (() => {
 })();
 const card = document.getElementById("card");
 const WAIT_MS = 90_000;
+// The checkout session from Stripe's after-payment link (kept for this tab): the proof for fixing a mistyped email.
+const ARRIVED_WITH_SESSION = new URLSearchParams(location.search).has("session_id");
+const SESSION = rememberSession(location.search);
 // A payment on its way: checkout/ marked it in this browser, or Stripe's page just sent them here.
-const PAYING = Account.paying() || fromStripe(document.referrer);
+const PAYING = Account.paying() || fromStripe(document.referrer) || (ARRIVED_WITH_SESSION && Boolean(SESSION));
 const toSignin = () => location.replace(sitePath("../signin/", location, API));
 
 /** Our words for a failure, never the browser's ("Failed to fetch"). */
@@ -62,6 +70,59 @@ const button = (label, onClick, solid = true) => {
   node.addEventListener("click", onClick);
   return node;
 };
+
+/** "Didn't get your sign-in email?": only for someone who arrived from Stripe's after-payment link. */
+function recoveryLink() {
+  if (!SESSION) return null;
+  const node = h("button", "btn btn--line", COPY.ask, { type: "button", style: "margin-top: 18px" });
+  node.addEventListener("click", recoveryView);
+  return node;
+}
+
+async function recoveryView() {
+  show(h("p", "eyebrow", "Your sign-in"), h("h1", "card__title", COPY.checking));
+  let answer = null;
+  try {
+    answer = await peek(API, SESSION);
+  } catch (problem) {
+    return show(h("p", "eyebrow", "Your sign-in"), h("h1", "card__title", COPY.ask), h("p", "card__error", say(problem), { role: "alert" }), h("div", "card__row", null, {}, [button("Try again", recoveryView, false), button("Back", () => signInView(), false)]));
+  }
+  const view = peekView(answer);
+  if (!answer) {
+    return show(h("p", "eyebrow", "Your sign-in"), h("h1", "card__title", view.title), h("p", "card__lead", view.lead), h("div", "card__row", null, {}, [button("Try again", recoveryView, false), button("Back", () => signInView(), false)]));
+  }
+  if (!view.canFix) {
+    return show(h("p", "eyebrow", "Your sign-in"), h("h1", "card__title", view.title), h("p", "card__lead", view.why), h("div", "card__row", null, {}, [button("Back", () => signInView(), false)]));
+  }
+  const form = h("form", "save", null, { novalidate: "" });
+  const email = h("input", "", null, { type: "email", autocomplete: "email", placeholder: COPY.placeholder, "aria-label": COPY.placeholder });
+  const error = h("p", "card__error", "", { role: "alert" });
+  const go = h("button", "btn btn--solid", COPY.fix, { type: "submit" });
+  form.append(h("div", "save__row", null, {}, [email, go]), error);
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    error.textContent = "";
+    const value = email.value.trim();
+    if (!/^\S+@\S+\.\S+$/.test(value)) return (error.textContent = "That email doesn't look right.");
+    go.disabled = true;
+    try {
+      // The server records the change on the seat's timeline (activity email.changed) and tells your coach.
+      const moved = await fix(API, SESSION, value);
+      codeView(moved.email || value, moved.sent ? COPY.moved(moved.email || value) : "We moved your map there, but the code didn't send. Reply to your receipt email and we'll get you in.");
+    } catch (problem) {
+      error.textContent = say(problem);
+      go.disabled = false;
+    }
+  });
+  show(
+    h("p", "eyebrow", "Your sign-in"),
+    h("h1", "card__title", view.title),
+    h("p", "card__lead", view.lead),
+    form,
+    h("div", "card__row", null, {}, [button(COPY.right, () => signInView(COPY.spam), false)])
+  );
+  email.focus();
+}
 
 function signInView(message = "") {
   const form = h("form", "save", null, { novalidate: "" });
@@ -88,12 +149,13 @@ function signInView(message = "") {
     h("p", "eyebrow", "Welcome to GridSchool"),
     h("h1", "card__title", "Let's open your map."),
     h("p", "card__lead", "Sign in with the email you paid with. We'll send you a 6-digit code; no password."),
-    form
+    form,
+    recoveryLink()
   );
   email.focus();
 }
 
-function codeView(email) {
+function codeView(email, note = "") {
   const form = h("form", "save", null, { novalidate: "" });
   const code = h("input", "code-input", null, { inputmode: "numeric", autocomplete: "one-time-code", maxlength: 6, placeholder: "6-digit code", "aria-label": "6-digit code" });
   const error = h("p", "card__error", "", { role: "alert" });
@@ -115,7 +177,7 @@ function codeView(email) {
       go.disabled = false;
     }
   });
-  show(h("p", "eyebrow", "Check your email"), h("h1", "card__title", `We sent a code to ${email}.`), form);
+  show(h("p", "eyebrow", "Check your email"), h("h1", "card__title", `We sent a code to ${email}.`), note ? h("p", "card__lead", note) : null, form, recoveryLink());
   code.focus();
 }
 
@@ -146,7 +208,9 @@ async function waitForSeat() {
         Account.donePaying();
         toSignin();
       }, false),
-    ])
+    ]),
+    // Signed in as one email and waiting, but the payment went to another (a typo at checkout).
+    recoveryLink()
   );
 }
 
@@ -208,6 +272,11 @@ async function boot() {
   if (params.get("demo") === "1") {
     const top = (params.get("top") || "").replace(/[^a-z]/g, "").slice(0, 20);
     return welcomeView({ demo: true, name: (params.get("name") || "Sam Rivera").slice(0, 60), checks: top ? [{ top: [{ id: top }] }] : [] });
+  }
+  if (params.has("session_id")) {
+    // Kept for this tab (recovery.js); off the address bar, so a copied link doesn't carry it.
+    params.delete("session_id");
+    history.replaceState(null, "", `${location.pathname}${params.size ? `?${params}` : ""}`);
   }
   const signin = params.get("signin");
   if (signin) {

@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import * as A from "./answer-chunk.js?v=e1b1240-202610280516";
+import * as A from "./answer-chunk.js?v=5983245-202610300745";
 
 const catalog = JSON.parse(readFileSync(new URL("../../data/intake/questions.json", import.meta.url)));
 const q = (id) => catalog.questions.find((item) => item.id === id);
