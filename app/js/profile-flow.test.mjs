@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import * as F from "./profile-flow.js?v=1fa97ed-202610310654";
+import * as F from "./profile-flow.js?v=72f2dd6-202610310710";
 
 const catalog = JSON.parse(readFileSync(new URL("../../data/intake/questions.json", import.meta.url)));
 const q = (id) => catalog.questions.find((item) => item.id === id);
@@ -102,4 +102,24 @@ test("Not now hides a stale item until something else changes", () => {
 test("only answers the map is built from update the map", () => {
   for (const id of ["stage", "role", "level", "months", "apps", "stop"]) assert.ok(F.touchesMap(id), id);
   for (const id of ["styleShots", "styleWords", "voiceSample", "photo"]) assert.ok(!F.touchesMap(id), id);
+});
+
+test("cardGaps: a skipped role is named, with the question that fills it", () => {
+  const gaps = F.cardGaps({ target: false, interests: true, taste: true, voice: true }, { answers: { stage: "grad" }, skipped: ["role", "headshot"] });
+  assert.deepEqual(gaps, [{ key: "target", stage: "you", q: "role", label: "The role you want next", why: "You skipped this one. Your card needs it." }]);
+});
+
+test("cardGaps: 'Not sure yet' and a short sample each say why", () => {
+  const gaps = F.cardGaps({ target: false, interests: true, taste: true, voice: false }, { answers: { role: "unsure", voiceSample: "Hi there, short note." }, skipped: [] });
+  assert.equal(gaps.length, 2);
+  assert.match(gaps[0].why, /Not sure yet/);
+  assert.equal(gaps[1].q, "voiceSample");
+  assert.match(gaps[1].why, /21 characters\. It needs 200/);
+});
+
+test("cardGaps: parts fed by several questions ask for one of them; a full card has no gaps", () => {
+  const [gap] = F.cardGaps({ target: true, interests: false, taste: true, voice: true }, { answers: {}, skipped: ["techInterests", "personalInterests"] });
+  assert.equal(gap.q, "techInterests");
+  assert.match(gap.why, /at least one/);
+  assert.deepEqual(F.cardGaps({ target: true, interests: true, taste: true, voice: true }, { answers: {}, skipped: [] }), []);
 });

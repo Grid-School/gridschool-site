@@ -3,9 +3,9 @@
  * sends the version it read; a 409 answers with the current record, which the page takes and keeps going.
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=1fa97ed-202610310654";
-import { persistToken } from "./session.js?v=1fa97ed-202610310654";
-import { plainError } from "./plain-error.js?v=1fa97ed-202610310654";
+import { PERSIST, isPlaceholder } from "../../config.js?v=72f2dd6-202610310710";
+import { persistToken } from "./session.js?v=72f2dd6-202610310710";
+import { plainError } from "./plain-error.js?v=72f2dd6-202610310710";
 
 export function pathReady() {
   return Boolean(persistToken() && PERSIST?.endpoint && !isPlaceholder(PERSIST.endpoint));

@@ -10,9 +10,9 @@
  * When the radar is off the match is simply empty and the page says so.
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=1fa97ed-202610310654";
-import { persistToken } from "./session.js?v=1fa97ed-202610310654";
-import { plainError } from "./plain-error.js?v=1fa97ed-202610310654";
+import { PERSIST, isPlaceholder } from "../../config.js?v=72f2dd6-202610310710";
+import { persistToken } from "./session.js?v=72f2dd6-202610310710";
+import { plainError } from "./plain-error.js?v=72f2dd6-202610310710";
 
 export function radarReady() {
   return Boolean(persistToken() && PERSIST?.endpoint && !isPlaceholder(PERSIST.endpoint));

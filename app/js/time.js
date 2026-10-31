@@ -4,7 +4,7 @@
  * stays true when a start date or a 1:1 slot moves.
  */
 
-import { normalizeSlot, occurrenceInWeek, partsIn, validZone, browserZone } from "./call-slot.js?v=1fa97ed-202610310654";
+import { normalizeSlot, occurrenceInWeek, partsIn, validZone, browserZone } from "./call-slot.js?v=72f2dd6-202610310710";
 
 const DAY_MS = 86400000;
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];

@@ -16,10 +16,10 @@
  * half-typed form. Aden sees it read-only from the desk.
  */
 
-import { el, mount } from "../dom.js?v=1fa97ed-202610310654";
-import { panel, btn, field, toast, copy } from "../ui.js?v=1fa97ed-202610310654";
-import { isoDate, fmtDay } from "../time.js?v=1fa97ed-202610310654";
-import { STATUS } from "../graph/model.js?v=1fa97ed-202610310654";
+import { el, mount } from "../dom.js?v=72f2dd6-202610310710";
+import { panel, btn, field, toast, copy } from "../ui.js?v=72f2dd6-202610310710";
+import { isoDate, fmtDay } from "../time.js?v=72f2dd6-202610310710";
+import { STATUS } from "../graph/model.js?v=72f2dd6-202610310710";
 import {
   STAGES,
   RELATIONS,
@@ -63,17 +63,20 @@ import {
   targetCandidates,
   webLink,
   MAX_ACTIVE_TARGETS,
-} from "../search.js?v=1fa97ed-202610310654";
-import { storyCard, appRow } from "./search-parts.js?v=1fa97ed-202610310654";
-import { TOOLS, moveRoute } from "../engine.js?v=1fa97ed-202610310654";
-import { currentMove, setLiveJobs } from "../next-live.js?v=1fa97ed-202610310654";
-import { PERSIST } from "../../../config.js?v=1fa97ed-202610310654";
-import { matchedRoles, radarReady, fetchPacks, winsState, shareWin } from "../roles-remote.js?v=1fa97ed-202610310654";
-import { createPackDrawer } from "./pack.js?v=1fa97ed-202610310654";
-import { createCampaignDrawer } from "./campaign.js?v=1fa97ed-202610310654";
-import { createPositioningCard } from "./positioning-card.js?v=1fa97ed-202610310654";
-import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=1fa97ed-202610310654";
-import { roleKeyFromRoute } from "../daily-run.js?v=1fa97ed-202610310654";
+} from "../search.js?v=72f2dd6-202610310710";
+import { storyCard, appRow } from "./search-parts.js?v=72f2dd6-202610310710";
+import { TOOLS, moveRoute } from "../engine.js?v=72f2dd6-202610310710";
+import { currentMove, setLiveJobs } from "../next-live.js?v=72f2dd6-202610310710";
+import { PERSIST } from "../../../config.js?v=72f2dd6-202610310710";
+import { matchedRoles, radarReady, fetchPacks, winsState, shareWin } from "../roles-remote.js?v=72f2dd6-202610310710";
+import { createPackDrawer } from "./pack.js?v=72f2dd6-202610310710";
+import { createCampaignDrawer } from "./campaign.js?v=72f2dd6-202610310710";
+import { createPositioningCard } from "./positioning-card.js?v=72f2dd6-202610310710";
+import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=72f2dd6-202610310710";
+import { roleKeyFromRoute } from "../daily-run.js?v=72f2dd6-202610310710";
+import { readiness, nextAction } from "../resume-stages.js?v=72f2dd6-202610310710";
+import * as resumeApi from "../resume-remote.js?v=72f2dd6-202610310710";
+import { openResumeAt } from "./resume.js?v=72f2dd6-202610310710";
 
 const RUN_FAMILIES = ["proof", "presence", "network", "interview"];
 /** Every Jobs screen (#/do/<id>); Profile is reached from the "Your LinkedIn" step, not a tab. */
@@ -87,7 +90,7 @@ const TOOL_WHY = {
 };
 
 /** Which lane of the grid each kind of move works. */
-const LANE_OF = { prep: "interview", inside: "network", target: "pipeline", profile: "presence", warm: "network", follow: "pipeline", apply: "pipeline" };
+const LANE_OF = { resume: "pipeline", prep: "interview", inside: "network", target: "pipeline", profile: "presence", warm: "network", follow: "pipeline", apply: "pipeline" };
 
 
 /** The next open step on their map in a lane that builds proof or presence. */
@@ -104,6 +107,9 @@ export function renderHire(ctx, initialTool, campaignId, routeArg) {
   const student = () => current.state.student;
 
   let radar = { roles: [], off: !radarReady(), loading: radarReady() };
+  // Is the resume for their title ready to send (resume-stages.readiness, the rule Send and the emails use)?
+  // null until it loads, or when it can't: then Today reads as it always did.
+  let resumeGate = null;
   // Prepared roles live on the server (Prepare, and the overnight run); the
   // student's own record keeps a copy so a reopen is instant even offline.
   let serverPacks = {};
@@ -116,6 +122,7 @@ export function renderHire(ctx, initialTool, campaignId, routeArg) {
     savePack: (key, entry) => save((s) => ({ packs: keepPack(s.packs, key, entry) })),
     onApplied: (role) => logApplied(role),
     onTarget: (role) => makeTarget({ role }),
+    resumeWait: () => (resumeGate && !resumeGate.ready ? { title: resumeGate.next?.move?.title || "Finish your resume", open: openResume } : null),
   });
 
   const portfolio = () => searchOf(student()).portfolio || careerOf(student()).portfolio || "";
@@ -187,6 +194,23 @@ export function renderHire(ctx, initialTool, campaignId, routeArg) {
       radar = { roles: [], off: false, loading: false, error: error.message };
     }
     setLiveJobs({ roles: radar.roles ?? [] });
+    draw();
+  }
+
+  function openResume() {
+    openResumeAt(resumeGate?.next?.stage || resumeGate?.stage);
+    current.navigate("map", "b.resume");
+  }
+
+  async function loadResumeGate() {
+    try {
+      const [rec, s] = await Promise.all([resumeApi.loadResume(ctx.state.slug), resumeApi.listSaves(ctx.state.slug).catch(() => ({ saves: [] }))]);
+      const saves = s.saves || [];
+      const ready = readiness({ rec, saves });
+      resumeGate = { ready: ready.ready, next: nextAction({ rec, saves }), stage: ready.checks.find((c) => !c.ok)?.go };
+    } catch {
+      resumeGate = null;
+    }
     draw();
   }
 
@@ -380,6 +404,19 @@ export function renderHire(ctx, initialTool, campaignId, routeArg) {
       .sort((a, b) => rank(a.r) - rank(b.r) || a.i - b.i)
       .map(({ r }) => r)
       .slice(0, Math.max(0, targets.apply.target - targets.apply.done));
+    const waiting = resumeGate && !resumeGate.ready;
+    if (waiting) {
+      const next = resumeGate.next?.move || { title: "Finish your resume", why: "" };
+      items.push(
+        runItem({
+          kind: "resume",
+          stepId: "b.resume",
+          title: `Before you send: ${next.title[0].toLowerCase()}${next.title.slice(1)}`,
+          sub: `${next.why} ${!fresh.length ? "Sending starts once your resume is ready." : fresh.length === 1 ? "1 role is waiting below; send once your resume is ready." : `${fresh.length} roles are waiting below; send once your resume is ready.`}`.trim(),
+          actions: [btn({ label: "Open my resume", variant: "solid", onclick: openResume })],
+        })
+      );
+    }
     for (const role of fresh) {
       const prepared = Boolean(packFor(role.key));
       const level = packFor(role.key)?.pack?.fit_level;
@@ -387,16 +424,16 @@ export function renderHire(ctx, initialTool, campaignId, routeArg) {
         runItem({
           kind: "apply",
           title: `${role.company} · ${role.title.length > 72 ? `${role.title.slice(0, 70).replace(/[,\s]+\S*$/, "")}…` : role.title}`,
-          sub: [level === "strong" ? "Strong fit" : level === "possible" ? "Possible fit" : null, role.ats === "hn" ? "Posted on HN Who's hiring, often by the founder" : null, ageLabel(role.published_at || role.first_seen_at, now), role.workplace, (role.locations ?? []).slice(0, 1).join(""), role.min_years ? `${role.min_years}+ yrs asked` : null].filter(Boolean).join(" · "),
+          sub: [waiting ? "Waits for your resume" : null, level === "strong" ? "Strong fit" : level === "possible" ? "Possible fit" : null, role.ats === "hn" ? "Posted on HN Who's hiring, often by the founder" : null, ageLabel(role.published_at || role.first_seen_at, now), role.workplace, (role.locations ?? []).slice(0, 1).join(""), role.min_years ? `${role.min_years}+ yrs asked` : null].filter(Boolean).join(" · "),
           actions: () => [
-            btn({ label: prepared ? "Open prep" : "Prepare", variant: prepared ? "ghost" : "solid", onclick: () => drawer.open(role) }),
+            btn({ label: prepared ? "Open prep" : "Prepare", variant: prepared && !waiting ? "ghost" : waiting ? "quiet" : "solid", onclick: () => drawer.open(role) }),
             btn({ label: "Posting ↗", variant: "quiet", href: role.apply_url || role.url, target: "_blank" }),
             ro ? null : btn({ label: "Applied", variant: "quiet", onclick: () => logApplied(role) }),
           ],
         })
       );
     }
-    if (!fresh.length) {
+    if (!fresh.length && !waiting) {
       const why = radar.loading ? "Looking for fresh roles…" : radar.off ? "Sign in to see fresh roles." : radar.error ? `Fresh roles didn't load. ${radar.error} You can still bring a posting in below.` : "No fresh roles match your titles right now. Bring one in below: any posting you find can be prepared.";
       if (targets.apply.target > targets.apply.done)
         items.push(runItem({ kind: "apply", title: `${targets.apply.target - targets.apply.done} application${targets.apply.target - targets.apply.done === 1 ? "" : "s"} today`, sub: why, actions: () => [btn({ label: "Bring a posting", variant: "ghost", onclick: () => openForm("applications", "pz-title") })] }));
@@ -956,6 +993,7 @@ export function renderHire(ctx, initialTool, campaignId, routeArg) {
   redraw();
   void loadRadar();
   void loadWins();
+  void loadResumeGate();
   // #/do/targets/<campaign id> opens that campaign (a campaign node on the map links here).
   let openedFor = null;
   const openFromRoute = (id) => {

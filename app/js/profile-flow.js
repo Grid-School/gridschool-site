@@ -161,3 +161,35 @@ export const MAP_INPUTS = new Set(["stage", "role", "level", "months", "apps", "
 
 /** Whether changing this answer should update a map the app builds. */
 export const touchesMap = (qid) => MAP_INPUTS.has(qid);
+
+/** The shortest writing sample the card counts as your voice (server/seeds.py VOICE_MIN). */
+export const VOICE_MIN = 200;
+
+/**
+ * What the card still needs before "Who you are" can finish: for each part the server's card reports as
+ * not filled (seeds.complete), the question that fills it and why it isn't filled now. A question can be
+ * skipped and its part still show done, so "Go there" has to open the question, not the part.
+ */
+const CARD_PARTS = [
+  { key: "target", stage: "you", q: "role", label: "The role you want next", from: ["role"] },
+  { key: "interests", stage: "into", q: "techInterests", label: "What you're into", from: ["techInterests", "personalInterests"] },
+  { key: "taste", stage: "taste", q: "styleWords", label: "Your taste", from: ["styleWords", "styleRefs", "styleShots"] },
+  { key: "voice", stage: "voice", q: "voiceSample", label: "Your voice: something you wrote", from: ["voiceSample"] },
+];
+
+export function cardGaps(complete, state) {
+  const answers = state?.answers || {};
+  const skipped = state?.skipped || [];
+  return CARD_PARTS.filter((part) => !complete?.[part.key]).map((part) => {
+    const sample = String(answers.voiceSample ?? "").trim();
+    let why = "Your card needs this one.";
+    if (part.key === "target" && String(answers.role ?? "").toLowerCase() === "unsure") {
+      why = "\"Not sure yet\" can't aim your card. Pick the closest one; you can change it any time.";
+    } else if (part.key === "voice" && sample && sample.length < VOICE_MIN) {
+      why = `Your sample is ${sample.length} characters. It needs ${VOICE_MIN} or more, a few sentences.`;
+    } else if (part.from.every((id) => skipped.includes(id) || answers[id] === undefined)) {
+      why = part.from.length > 1 ? "You skipped these. Your card needs at least one." : "You skipped this one. Your card needs it.";
+    }
+    return { key: part.key, stage: part.stage, q: part.q, label: part.label, why };
+  });
+}

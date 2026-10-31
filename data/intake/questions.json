@@ -1032,7 +1032,7 @@
       "id": "voiceSample",
       "chunk": "c7",
       "prompt": "Paste something you wrote: a post, an email or a message.",
-      "help": "A few sentences or more, in your normal voice. Drafts we write for you will sound like this.",
+      "help": "A few sentences, 200 characters or more, in your normal voice. Drafts we write for you will sound like this.",
       "kind": "text",
       "max": 4000,
       "affects": [

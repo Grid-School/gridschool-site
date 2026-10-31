@@ -12,12 +12,12 @@
  * with the prepared role (entry.steps), so it reopens where they left off.
  */
 
-import { el, mount } from "../dom.js?v=1fa97ed-202610310654";
-import { btn, copy, toast } from "../ui.js?v=1fa97ed-202610310654";
-import { createModal } from "../modal.js?v=1fa97ed-202610310654";
-import { peopleLinks, ageLabel } from "../search.js?v=1fa97ed-202610310654";
-import { prepareRole } from "../roles-remote.js?v=1fa97ed-202610310654";
-import { nodeRail, nodeIntro } from "./node-rail.js?v=1fa97ed-202610310654";
+import { el, mount } from "../dom.js?v=72f2dd6-202610310710";
+import { btn, copy, toast } from "../ui.js?v=72f2dd6-202610310710";
+import { createModal } from "../modal.js?v=72f2dd6-202610310710";
+import { peopleLinks, ageLabel } from "../search.js?v=72f2dd6-202610310710";
+import { prepareRole } from "../roles-remote.js?v=72f2dd6-202610310710";
+import { nodeRail, nodeIntro } from "./node-rail.js?v=72f2dd6-202610310710";
 
 export const PACK_NODES = [
   { id: "fit", label: "Fit" },
@@ -31,7 +31,7 @@ export function packFirstOpen(steps) {
   return PACK_NODES.find((n) => !steps?.[n.id])?.id ?? PACK_NODES[PACK_NODES.length - 1].id;
 }
 
-export function createPackDrawer({ slug, getPack, savePack, onApplied, onTarget = null, readOnly = () => false }) {
+export function createPackDrawer({ slug, getPack, savePack, onApplied, onTarget = null, readOnly = () => false, resumeWait = () => null }) {
   const modal = createModal({ label: "Prepare this role", size: "reading", onClose: () => modal.setOpen(false) });
   modal.layer.classList.add("modal--fixed", "pack-modal");
 
@@ -128,6 +128,8 @@ export function createPackDrawer({ slug, getPack, savePack, onApplied, onTarget 
     } else if (flow.here === "apply") {
       node = [
         nodeIntro("Apply", "Open the posting and apply on their site. Lead with the points below, use their words where they're true, and paste the note if the form has a box for one."),
+        // Not ready to send (resume-stages.readiness): say the one step first, so nobody applies with a resume that isn't done.
+        ((wait) => wait ? el("div.pack__warn", {}, el("p", {}, `Your resume isn't ready to send yet. Next: ${wait.title}. Apply once it's ready; this role keeps.`), btn({ label: "Open my resume", variant: "ghost", onclick: () => { modal.setOpen(false); wait.open(); } })) : null)(resumeWait()),
         pack.emphasis.length ? block("Lead with", list(pack.emphasis, "ol"), pack.emphasis.join("\n")) : null,
         pack.keywords.length ? block("Their words, where true", el("div.pack__chips", {}, pack.keywords.map((k) => el("span.chip2", {}, k))), pack.keywords.join(", ")) : null,
         pack.note ? block("Application note", el("p.pack__text", {}, pack.note), pack.note) : null,

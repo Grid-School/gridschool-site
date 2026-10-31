@@ -25,22 +25,22 @@
  * builder made; a coach's map is left alone), or "Something's off" sends the coach a note.
  */
 
-import { el, mount } from "../dom.js?v=1fa97ed-202610310654";
-import { btn, toast } from "../ui.js?v=1fa97ed-202610310654";
-import { nodeRail } from "./node-rail.js?v=1fa97ed-202610310654";
-import { doneIds } from "../steps.js?v=1fa97ed-202610310654";
-import { nextUp } from "../graph/model.js?v=1fa97ed-202610310654";
-import { isProgressReadOnly } from "../store.js?v=1fa97ed-202610310654";
-import * as A from "../answer-chunk.js?v=1fa97ed-202610310654";
-import * as I from "../../../data/intake/intake.mjs?v=1fa97ed-202610310654";
-import * as F from "../profile-flow.js?v=1fa97ed-202610310654";
-import { control } from "./answer.js?v=1fa97ed-202610310654";
-import { filePayload } from "./images.js?v=1fa97ed-202610310654";
-import { readDraft, writeDraft, clearDraft } from "../drafts.js?v=1fa97ed-202610310654";
-import { intakeReady, loadIntake, saveChunk, rebuildMap, loadSeeds } from "../intake-remote.js?v=1fa97ed-202610310654";
-import { imagesReady, loadImages, uploadImage, removeImage, imageUrl, makeImages } from "../images-remote.js?v=1fa97ed-202610310654";
-import { draftPositioning } from "../roles-remote.js?v=1fa97ed-202610310654";
-import { loadStudio, makeProjects, buildVoice } from "../studio-remote.js?v=1fa97ed-202610310654";
+import { el, mount } from "../dom.js?v=72f2dd6-202610310710";
+import { btn, toast } from "../ui.js?v=72f2dd6-202610310710";
+import { nodeRail } from "./node-rail.js?v=72f2dd6-202610310710";
+import { doneIds } from "../steps.js?v=72f2dd6-202610310710";
+import { nextUp } from "../graph/model.js?v=72f2dd6-202610310710";
+import { isProgressReadOnly } from "../store.js?v=72f2dd6-202610310710";
+import * as A from "../answer-chunk.js?v=72f2dd6-202610310710";
+import * as I from "../../../data/intake/intake.mjs?v=72f2dd6-202610310710";
+import * as F from "../profile-flow.js?v=72f2dd6-202610310710";
+import { control } from "./answer.js?v=72f2dd6-202610310710";
+import { filePayload } from "./images.js?v=72f2dd6-202610310710";
+import { readDraft, writeDraft, clearDraft } from "../drafts.js?v=72f2dd6-202610310710";
+import { intakeReady, loadIntake, saveChunk, rebuildMap, loadSeeds } from "../intake-remote.js?v=72f2dd6-202610310710";
+import { imagesReady, loadImages, uploadImage, removeImage, imageUrl, makeImages } from "../images-remote.js?v=72f2dd6-202610310710";
+import { draftPositioning } from "../roles-remote.js?v=72f2dd6-202610310710";
+import { loadStudio, makeProjects, buildVoice } from "../studio-remote.js?v=72f2dd6-202610310710";
 
 /* The stages, each a few questions from one chunk. Upload questions name the images kind they go to.
    A question stage is done when every question it asks now is answered or skipped; Finish is done when
@@ -101,6 +101,7 @@ export function renderProfile(ctx, options = {}) {
   let images = null;
   let stage = null;
   let cursor = null; // {stage, q}: a question opened on purpose (Back, Change, an upload in progress)
+  let need = null; // {q, why}: a question Finish sent them to; saving it goes back to Finish
   let busy = "";
   let reporting = false;
   let error = "";
@@ -237,6 +238,7 @@ export function renderProfile(ctx, options = {}) {
     delete drafts[q.id];
     clearDraft(slug, DRAFT(q.id));
     cursor = null; // on to the next open question here, or this part's summary
+    if (need?.q === q.id) [stage, need] = ["finish", null];
     if (changed) await afterChange([q.id]);
     render();
   }
@@ -251,6 +253,7 @@ export function renderProfile(ctx, options = {}) {
     delete drafts[q.id];
     clearDraft(slug, DRAFT(q.id));
     cursor = null;
+    if (need?.q === q.id) [stage, need] = ["finish", null];
     if (I.isAnswered(before, q.id)) await afterChange([q.id]);
     render();
   }
@@ -396,6 +399,7 @@ export function renderProfile(ctx, options = {}) {
   function go(id) {
     stage = id;
     cursor = null;
+    need = null;
     reporting = false;
     render();
     root.scrollIntoView?.({ block: "start", behavior: "smooth" });
@@ -405,6 +409,7 @@ export function renderProfile(ctx, options = {}) {
     if (!target) return;
     stage = target.stage;
     cursor = target.q ? { stage: target.stage, q: target.q } : null;
+    need = target.why && target.q ? { q: target.q, why: target.why } : null;
     reporting = false;
     render();
     root.scrollIntoView?.({ block: "start", behavior: "smooth" });
@@ -491,9 +496,10 @@ export function renderProfile(ctx, options = {}) {
     const settledNow = settled(q);
     return stageCard(
       `${st.label} · question ${n} of ${asked.length}`,
-      place ? `Question ${place.n} of ${place.total} in this step.${settledNow && !isUpload ? " You answered this already; change it or move on." : ""}` : null,
+      place ? `Question ${place.n} of ${place.total} in this step.${settledNow && !isUpload && need?.q !== q.id ? (answered ? " You answered this already; change it or move on." : " You skipped this one; answer it or move on.") : ""}` : null,
       [
         el("div.rz__q", {}, el("p.rz__qtext", {}, q.prompt), q.help ? el("p.rz__why", {}, q.help) : null),
+        need?.q === q.id ? el("p.rz__hint", {}, need.why) : null,
         input,
         state.sources?.[q.id] === "resume" ? el("p.rz__hint", {}, "Filled in from your resume. Change it if it's wrong.") : null,
       ],
@@ -577,16 +583,18 @@ export function renderProfile(ctx, options = {}) {
   /* ---------- finish ---------- */
   function finishBody() {
     const next = nodeDone() ? nextUp(current.state.graph) : null;
-    // "Go there" opens the first part the card is actually missing, not the start of the questions.
-    const c = seeds?.complete ?? {};
-    const missingPart = !c.target ? "you" : !c.interests ? "into" : !c.taste ? "taste" : !c.voice ? "voice" : "you";
-    const checks = [
-      ["Your target, what you're into, your taste and your voice", youDone(), missingPart],
-      ["Your LinkedIn as it is today", linkedinDone(), "linkedin"],
-    ];
-    const ready = checks.every(([, ok]) => ok);
-    const list = el("ul.rz__checks", {}, checks.map(([label, ok, id]) =>
-      el(`li${ok ? ".is-ok" : ""}`, {}, el("span.rz__tick", { "aria-hidden": "true" }, ok ? "✓" : "○"), label, ok ? null : btn({ label: "Go there", variant: "quiet", onclick: () => go(id) }))));
+    // A part can show done with its question skipped, so each gap names its question, says why, and opens it.
+    const cardChecks = youDone()
+      ? [{ label: "Your target, what you're into, your taste and your voice", ok: true }]
+      : !seeds
+        ? [{ label: "Your target, what you're into, your taste and your voice", why: "Your card didn't load.", act: "Check again", onclick: async () => { await refreshSeeds(); render(); } }]
+        : F.cardGaps(seeds.complete, state).map((gap) => ({ label: gap.label, why: gap.why, act: "Answer it", onclick: () => open({ stage: gap.stage, q: gap.q, why: gap.why }) }));
+    const checks = [...cardChecks, { label: "Your LinkedIn as it is today", ok: linkedinDone(), act: "Go there", onclick: () => go("linkedin") }];
+    const ready = checks.every((check) => check.ok);
+    const list = el("ul.rz__checks", {}, checks.map(({ label, ok, why, act, onclick }) =>
+      el(`li${ok ? ".is-ok" : ""}`, {}, el("span.rz__tick", { "aria-hidden": "true" }, ok ? "✓" : "○"),
+        why ? el("span.pf__gap", {}, el("b", {}, label), el("span.pf__why", {}, why)) : label,
+        ok ? null : btn({ label: act, variant: "quiet", onclick }))));
     if (nodeDone()) {
       return stageCard("This step is done", "Everything we make for you now starts from your card. You can change any answer any time: use Back or the parts above.", list,
         [backButton(), next && next.id !== node?.id ? btn({ label: `Next step: ${next.title} →`, variant: "solid", onclick: () => current.navigate("map", next.id) }) : btn({ label: "Back to your map", variant: "solid", onclick: () => current.navigate("map") })]);

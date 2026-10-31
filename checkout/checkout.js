@@ -6,10 +6,10 @@
  * funnel counts checkout.view and checkout.start (server/events.py).
  */
 
-import { PERSIST, link } from "../config.js?v=1fa97ed-202610310654";
-import { markPaying } from "../check/account.js?v=1fa97ed-202610310654";
-import { track, visitorId } from "../check/events.js?v=1fa97ed-202610310654";
-import { DAY_NOT_SAVED, MONEY, PLANS, RESIDENCY_TALK, optionWords, order, payHref, payUrl, readParams, saveIntent, sendOnRange, summary } from "./order.mjs?v=1fa97ed-202610310654";
+import { PERSIST, link } from "../config.js?v=72f2dd6-202610310710";
+import { markPaying } from "../check/account.js?v=72f2dd6-202610310710";
+import { track, visitorId } from "../check/events.js?v=72f2dd6-202610310710";
+import { DAY_NOT_SAVED, MONEY, PLANS, RESIDENCY_TALK, optionWords, order, payHref, payUrl, readParams, saveIntent, sendOnRange, summary } from "./order.mjs?v=72f2dd6-202610310710";
 
 const $ = (id) => document.getElementById(id);
 const state = readParams(location.search);

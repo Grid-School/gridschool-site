@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { canRevealMemberInvite, isLocalHost } from "./member-invite.js?v=1fa97ed-202610310654";
+import { canRevealMemberInvite, isLocalHost } from "./member-invite.js?v=72f2dd6-202610310710";
 
 test("localhost can see the invite, including on the demo slug", () => {
   assert.equal(isLocalHost("localhost"), true);

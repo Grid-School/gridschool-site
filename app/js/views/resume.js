@@ -11,25 +11,25 @@
  * confirms it. Every saved version has a name, the date and time it was made, and can be downloaded again.
  */
 
-import { el, mount } from "../dom.js?v=1fa97ed-202610310654";
-import { btn, toast } from "../ui.js?v=1fa97ed-202610310654";
-import { nodeRail } from "./node-rail.js?v=1fa97ed-202610310654";
-import { nextUp } from "../graph/model.js?v=1fa97ed-202610310654";
-import { isProgressReadOnly, refresh as refreshStore } from "../store.js?v=1fa97ed-202610310654";
-import { upgradeHref } from "../prep.js?v=1fa97ed-202610310654";
-import * as api from "../resume-remote.js?v=1fa97ed-202610310654";
-import { patient } from "../patient.js?v=1fa97ed-202610310654";
-import { doneIds } from "../steps.js?v=1fa97ed-202610310654";
-import { workPanel } from "./work.js?v=1fa97ed-202610310654";
-import { needsPanel, needFor, planBlock } from "./needs.js?v=1fa97ed-202610310654";
-import { sendSuggestion } from "../suggest-remote.js?v=1fa97ed-202610310654";
-import { newOpId } from "../../../data/map-proposal.mjs?v=1fa97ed-202610310654";
-import { titleRow } from "./titles.js?v=1fa97ed-202610310654";
-import { talkButton, canTalk } from "./voice.js?v=1fa97ed-202610310654";
-import { roundState, gained, RANGES, wantsNumber, addRange } from "../interview.js?v=1fa97ed-202610310654";
-import { setStepDetail } from "../next-live.js?v=1fa97ed-202610310654";
-import { stepsFor, claimsOf, linesOf, hasOutput, allConfirmed as confirmedAll, changedSinceSave as changedSince, savedAndDownloaded, nextAction } from "../resume-stages.js?v=1fa97ed-202610310654";
-import { bindDraft, clearDraft } from "../drafts.js?v=1fa97ed-202610310654";
+import { el, mount } from "../dom.js?v=72f2dd6-202610310710";
+import { btn, toast } from "../ui.js?v=72f2dd6-202610310710";
+import { nodeRail } from "./node-rail.js?v=72f2dd6-202610310710";
+import { nextUp } from "../graph/model.js?v=72f2dd6-202610310710";
+import { isProgressReadOnly, refresh as refreshStore } from "../store.js?v=72f2dd6-202610310710";
+import { upgradeHref } from "../prep.js?v=72f2dd6-202610310710";
+import * as api from "../resume-remote.js?v=72f2dd6-202610310710";
+import { patient } from "../patient.js?v=72f2dd6-202610310710";
+import { doneIds } from "../steps.js?v=72f2dd6-202610310710";
+import { workPanel } from "./work.js?v=72f2dd6-202610310710";
+import { needsPanel, needFor, planBlock } from "./needs.js?v=72f2dd6-202610310710";
+import { sendSuggestion } from "../suggest-remote.js?v=72f2dd6-202610310710";
+import { newOpId } from "../../../data/map-proposal.mjs?v=72f2dd6-202610310710";
+import { titleRow } from "./titles.js?v=72f2dd6-202610310710";
+import { talkButton, canTalk } from "./voice.js?v=72f2dd6-202610310710";
+import { roundState, gained, RANGES, wantsNumber, addRange } from "../interview.js?v=72f2dd6-202610310710";
+import { setStepDetail } from "../next-live.js?v=72f2dd6-202610310710";
+import { stepsFor, claimsOf, linesOf, hasOutput, allConfirmed as confirmedAll, changedSinceSave as changedSince, savedAndDownloaded, nextAction } from "../resume-stages.js?v=72f2dd6-202610310710";
+import { bindDraft, clearDraft } from "../drafts.js?v=72f2dd6-202610310710";
 
 const PDF_JS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs";
 const PDF_WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs";

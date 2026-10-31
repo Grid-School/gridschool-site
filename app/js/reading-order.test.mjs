@@ -8,7 +8,7 @@ import {
   displayReadingTitle,
   numberCurriculumReadings,
   walkReadings,
-} from "./reading-order.js?v=1fa97ed-202610310654";
+} from "./reading-order.js?v=72f2dd6-202610310710";
 
 const site = join(dirname(fileURLToPath(import.meta.url)), "../..");
 const curriculum = JSON.parse(readFileSync(join(site, "data/curriculum.json"), "utf8"));

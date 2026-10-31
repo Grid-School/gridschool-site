@@ -80,6 +80,9 @@
   .rz .cnodes li { flex: 1 1 0; min-width: 0; }
   .rz .cnodes li:not(.is-here) .cnodes__label { display: none; }
 }
+.rz__checks .pf__gap { display: grid; gap: 2px; }
+.rz__checks .pf__gap b { color: var(--text); font-weight: 600; }
+.rz__checks .pf__why { font-size: 0.92em; }
 .rz__checks li.is-ok { color: var(--text); border-color: color-mix(in srgb, var(--ok) 45%, var(--line)); }
 .rz__tick { width: 1.2em; text-align: center; color: var(--muted); }
 .rz__checks li.is-ok .rz__tick { color: var(--ok); }
