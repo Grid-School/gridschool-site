@@ -62,7 +62,7 @@
     {"value": "unsure", "label": "Not sure yet"}
   ],
   "commitment": {
-    "version": "sprint-2026-11-v3",
+    "version": "sprint-2026-11-v4",
     "give": [
       "Roles prepared for you every morning: fresh postings that fit you, the person to message at each, and the note written.",
       "Send Day every week, live together or on your own time.",
@@ -71,7 +71,7 @@
       "A reply from your coach within one business day."
     ],
     "ask": [
-      "About 10 hours a week for the six weeks.",
+      "About 10 to 15 hours a week for the six weeks.",
       "5 sends a week once your resume is ready (3 at the least), each logged in the app the same day.",
       "Send Day each week, live or on your own time.",
       "From week 2, one 30-minute conversation with a design partner, someone who could use a small tool you build, and a one-paragraph write-up of their problem.",

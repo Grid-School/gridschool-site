@@ -72,7 +72,7 @@ const NEXT = {
   complete: [
     "Stripe takes the payment on its own secure page.",
     "You land back here, signed in, with your map and the whole course open.",
-    "Your coach reviews your map within a day and starts on your first week's work.",
+    "Your map is checked the moment it's built, and your first week's work is prepared overnight.",
   ],
   residency: [
     "Stripe takes the payment on its own secure page.",

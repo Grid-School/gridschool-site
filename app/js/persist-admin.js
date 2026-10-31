@@ -2,8 +2,8 @@
  * Admin persist calls. Desk only. Student boards never import this.
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=fc7db25-202610310827";
-import { persistToken } from "./session.js?v=fc7db25-202610310827";
+import { PERSIST, isPlaceholder } from "../../config.js?v=f96b76b-202610312232";
+import { persistToken } from "./session.js?v=f96b76b-202610312232";
 
 function endpoint() {
   return String(PERSIST.endpoint || "").replace(/\/$/, "");
@@ -45,7 +45,7 @@ export const loadUsage = (days = 30) => request("GET", `/activity/summary?days=$
 export const loadSprint = () => request("GET", "/admin/sprint");
 export const sprintAction = (slug, action, { email = false, reason = "" } = {}) =>
   request("POST", `/admin/sprint/${encodeURIComponent(slug)}`, { action, email, reason });
-export const runSprint = ({ job = "daily", dry = true } = {}) => request("POST", "/admin/sprint/run", { job, dry });
+export const runSprint = ({ job = "daily", dry = true, label } = {}) => request("POST", "/admin/sprint/run", { job, dry, ...(label ? { label } : {}) });
 /* The filter before a call (server/fit_api.py): every fit, a decision on one, and the weekly free-user list. */
 export const loadFits = () => request("GET", "/admin/fit");
 export const setFit = (checkId, status, note = "") => request("POST", `/admin/fit/${encodeURIComponent(checkId)}`, { status, note });

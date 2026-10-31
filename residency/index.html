@@ -13,8 +13,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../rez.css?v=fc7db25-202610310827">
-<link rel="stylesheet" href="../js/sales.css?v=fc7db25-202610310827">
+<link rel="stylesheet" href="../rez.css?v=f96b76b-202610312232">
+<link rel="stylesheet" href="../js/sales.css?v=f96b76b-202610312232">
 </head>
 <body class="rez-page" data-from="residency">
 
@@ -27,7 +27,7 @@
     <a href="#faq">Questions</a>
   </nav>
   <span class="nav__end"><a class="nav__signin" href="../signin/">Sign in</a>
-  <a class="nav__cta" href="#price">Reserve a spot</a></span>
+  <a class="nav__cta" href="../check/">Start with the free check</a></span>
 </header>
 
 <main>
@@ -120,18 +120,18 @@
         <div class="plan__bar eyebrow"><span>Pay in full</span><span class="tag">simplest</span></div>
         <div class="plan__foot">
           <p class="plan__price"><b>$12,000</b><span>One payment.</span></p>
-          <a class="btn btn--solid" href="../checkout/?plan=residency&amp;billing=once&amp;from=residency">Reserve a spot, $12,000 <span class="arr" aria-hidden="true">→</span></a>
+          <p class="sales-fine"><b>The Residency is closed to new students.</b> The founding cohort replaces it and starts January 4.</p><a class="btn btn--solid" href="../check/">Start with the free check <span class="arr" aria-hidden="true">→</span></a>
         </div>
       </article>
       <article class="plan">
         <div class="plan__bar eyebrow"><span>Three payments</span><span class="tag">same total</span></div>
         <div class="plan__foot">
           <p class="plan__price"><b>$4,000</b> a month<span>Three payments, then it stops. $12,000 in all.</span></p>
-          <a class="btn btn--line" href="../checkout/?plan=residency&amp;billing=monthly&amp;from=residency">Reserve a spot, 3 × $4,000 <span class="arr" aria-hidden="true">→</span></a>
+          <a class="btn btn--line" href="../sprint/">Or the free six-week sprint <span class="arr" aria-hidden="true">→</span></a>
         </div>
       </article>
     </div>
-    <p class="sales-fine" id="talk">Want to talk first? <a class="link" href="../apply/">Book a 20-minute call</a>. Buying it for someone else? <a class="link" href="../checkout/?plan=residency&amp;gift=1&amp;from=residency">Give it as a gift</a>.</p>
+    <p class="sales-fine" id="talk">Want to talk first? Start with the <a class="link" href="../check/">free check</a>; a call comes after a short fit step. Parents: <a class="link" href="../parents/">read this first</a>.</p>
     <p class="sales-fine">The week-2 exit: if after two weeks it's the wrong room, unused tuition comes back. That's the only guarantee. A company's yes is still theirs: I don't promise a job, and nobody honest can.</p>
   </div>
 </section>
@@ -156,7 +156,7 @@
 <footer class="foot"><div class="wrap">GridSchool Residency · <a href="mailto:support@gridschool.org">support@gridschool.org</a> · <a href="../terms/">Terms</a> · <a href="../privacy/">Privacy</a> · © 2026 GRID SCHOOL LLC · Boise, Idaho</div></footer>
 
 <script type="module">
-import { link } from "../config.js?v=fc7db25-202610310827";
+import { link } from "../config.js?v=f96b76b-202610312232";
 // After payment: the kickoff booking instead of the pitch.
 if (new URLSearchParams(location.search).get("paid") === "1") {
   document.getElementById("paid").hidden = false;

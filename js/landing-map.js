@@ -10,7 +10,7 @@
  * the map: kept steps slide, new ones arrive lit, dropped ones fade.
  */
 
-import { draftMap, stepTitle, checkOf, checkSummary, CHECK, FAMILIES, PHASES } from "./map-draft.js?v=fc7db25-202610310827";
+import { draftMap, stepTitle, checkOf, checkSummary, CHECK, FAMILIES, PHASES } from "./map-draft.js?v=f96b76b-202610312232";
 import {
   svgEl,
   drawGrid,
@@ -22,7 +22,7 @@ import {
   arrivalFractions,
   rezIn,
   prefersReducedMotion,
-} from "./rez/road.js?v=fc7db25-202610310827";
+} from "./rez/road.js?v=f96b76b-202610312232";
 
 /*
  * Everything sits on one grid. CELL is half a lane: lanes are every second
@@ -44,8 +44,8 @@ const ARRIVAL_DELAY = 900;
 const ARRIVED_KEY = "gridschool.arrived";
 
 const CHECK_LABEL = {
-  [CHECK.ADEN]: "Reviewed by Aden, in writing",
-  [CHECK.OUTSIDE]: "Judged by an engineer who did not help you",
+  [CHECK.ADEN]: "Checked as you go, before it counts",
+  [CHECK.OUTSIDE]: "Done live, and recorded for you to send",
   [CHECK.ALONE]: "You run it; we read the numbers in your 1:1",
 };
 
@@ -327,7 +327,7 @@ function readChecks(nodes) {
     const span = el("span", `key key--${kind}`, text);
     return span;
   };
-  const parts = [key(CHECK.ADEN, `${count(CHECK.ADEN)} reviewed by me`), key(CHECK.OUTSIDE, `${count(CHECK.OUTSIDE)} judged outside`)];
+  const parts = [key(CHECK.ADEN, `${count(CHECK.ADEN)} checked as you go`), key(CHECK.OUTSIDE, `${count(CHECK.OUTSIDE)} done live`)];
   if (count(CHECK.ALONE)) parts.push(el("span", "key key--alone", `${count(CHECK.ALONE)} you run alone`));
   out.replaceChildren(...parts);
   out.setAttribute("aria-label", checkSummary(nodes));

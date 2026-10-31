@@ -5,9 +5,9 @@
  * Only a student on their own seat counts; the coach's console, the demo and test seats never do.
  */
 
-import { PERSIST } from "../../config.js?v=fc7db25-202610310827";
-import { track } from "../../check/events.js?v=fc7db25-202610310827";
-import { SOURCE, fromDailyRun, withoutFrom } from "./daily-run.js?v=fc7db25-202610310827";
+import { PERSIST } from "../../config.js?v=f96b76b-202610312232";
+import { track } from "../../check/events.js?v=f96b76b-202610312232";
+import { SOURCE, fromDailyRun, withoutFrom } from "./daily-run.js?v=f96b76b-202610312232";
 
 const CHUNK_TASK = /^q\.(c\d+)\.answer$/;
 const CHECKIN_TASK = "w.checkin.feel";

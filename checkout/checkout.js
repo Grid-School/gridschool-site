@@ -6,13 +6,17 @@
  * funnel counts checkout.view and checkout.start (server/events.py).
  */
 
-import { PERSIST, link } from "../config.js?v=fc7db25-202610310827";
-import { markPaying } from "../check/account.js?v=fc7db25-202610310827";
-import { track, visitorId } from "../check/events.js?v=fc7db25-202610310827";
-import { DAY_NOT_SAVED, MONEY, PLANS, RESIDENCY_TALK, optionWords, order, payHref, payUrl, readParams, saveIntent, sendOnRange, summary } from "./order.mjs?v=fc7db25-202610310827";
+import { PERSIST, link } from "../config.js?v=f96b76b-202610312232";
+import { markPaying } from "../check/account.js?v=f96b76b-202610312232";
+import { track, visitorId } from "../check/events.js?v=f96b76b-202610312232";
+import { DAY_NOT_SAVED, MONEY, PLANS, RESIDENCY_TALK, optionWords, order, payHref, payUrl, readParams, saveIntent, sendOnRange, summary } from "./order.mjs?v=f96b76b-202610312232";
 
 const $ = (id) => document.getElementById(id);
 const state = readParams(location.search);
+// The Residency is closed to new students (2026-10-29, ops/gridschool-vision.md §7): an old link lands on Complete
+// with a note, and no Residency pay button is drawn.
+const residencyAsked = state.plan === "residency";
+if (residencyAsked) state.plan = "complete";
 // From the in-map offer: the free seat's account email, so the payment upgrades that seat (check/check.js).
 // Read once from this tab's session storage; never from the address.
 state.email = (() => {
@@ -101,10 +105,9 @@ function render() {
     segment("gift", "gift", { title: "A gift for someone", checked: o.gift, onPick: () => ((state.gift = true), render()) })
   );
   // The Residency sits above Complete either way: a row when Complete is chosen, the card when a link asked for it.
-  $("plans").replaceChildren(
-    o.plan === "residency" ? planCard("residency", o) : planRow("residency"),
-    o.plan === "complete" ? planCard("complete", o) : planRow("complete")
-  );
+  const closed = el("p", "co__note");
+  closed.append("The Residency is closed to new students. The founding cohort starts January 4: ", Object.assign(document.createElement("a"), { href: "../check/", textContent: "start with the free check" }), ".");
+  $("plans").replaceChildren(...[residencyAsked ? closed : null, planCard("complete", o)].filter(Boolean));
 
   // A gift can wait for a chosen day (graduation day): only shown, and only sent, for a gift.
   $("when").hidden = !o.gift;

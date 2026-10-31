@@ -10,10 +10,10 @@
  *   be picked first) and so marks the step done.
  */
 
-import { el } from "../dom.js?v=fc7db25-202610310827";
-import { btn, toast } from "../ui.js?v=fc7db25-202610310827";
-import { LINKS, CHANNELS, PERSIST, link, isPlaceholder } from "../../../config.js?v=fc7db25-202610310827";
-import { withSavedState, taskIsComplete } from "../task-state.js?v=fc7db25-202610310827";
+import { el } from "../dom.js?v=f96b76b-202610312232";
+import { btn, toast } from "../ui.js?v=f96b76b-202610312232";
+import { LINKS, CHANNELS, PERSIST, link, isPlaceholder } from "../../../config.js?v=f96b76b-202610312232";
+import { withSavedState, taskIsComplete } from "../task-state.js?v=f96b76b-202610312232";
 
 export const START_ID = "s.start";
 export const ON_ITS_WAY = "Your invite is on its way. The button shows up here once it's ready.";
@@ -102,7 +102,7 @@ export function startBlock(node, { free = false } = {}) {
       "div.start__community",
       {},
       el("b.eyebrow", {}, "The community"),
-      el("p", {}, "Fresh roles every morning, a weekly send day, and people at the same stage as you."),
+      el("p", {}, "Fresh roles every morning once your resume is ready, and people at the same stage as you."),
       rooms.length ? el("ul.start__rooms", {}, rooms.map((line) => el("li", {}, line))) : null,
       door
     )

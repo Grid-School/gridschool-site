@@ -12,15 +12,15 @@
  * Nothing here needs history. The record starts with the first send through this node.
  */
 
-import { el, mount } from "../dom.js?v=fc7db25-202610310827";
-import { btn, toast } from "../ui.js?v=fc7db25-202610310827";
-import { isProgressReadOnly } from "../store.js?v=fc7db25-202610310827";
-import { addApp, answerAsk, outcomeAsks, noReply, pickVersion, sentBefore, thisWeek, networkOf, insideConnections, careerOf, searchOf, ageLabel } from "../search.js?v=fc7db25-202610310827";
-import { verdict, pickWeek } from "../send-verdict.js?v=fc7db25-202610310827";
-import { readiness } from "../resume-stages.js?v=fc7db25-202610310827";
-import { matchedRoles, radarReady } from "../roles-remote.js?v=fc7db25-202610310827";
-import * as api from "../resume-remote.js?v=fc7db25-202610310827";
-import { openResumeAt } from "./resume.js?v=fc7db25-202610310827";
+import { el, mount } from "../dom.js?v=f96b76b-202610312232";
+import { btn, toast } from "../ui.js?v=f96b76b-202610312232";
+import { isProgressReadOnly } from "../store.js?v=f96b76b-202610312232";
+import { addApp, answerAsk, outcomeAsks, noReply, pickVersion, sentBefore, thisWeek, networkOf, insideConnections, careerOf, searchOf, ageLabel } from "../search.js?v=f96b76b-202610312232";
+import { verdict, pickWeek } from "../send-verdict.js?v=f96b76b-202610312232";
+import { readiness } from "../resume-stages.js?v=f96b76b-202610312232";
+import { matchedRoles, radarReady } from "../roles-remote.js?v=f96b76b-202610312232";
+import * as api from "../resume-remote.js?v=f96b76b-202610312232";
+import { openResumeAt } from "./resume.js?v=f96b76b-202610312232";
 
 const WEEK_TARGET = 5;
 const WEEK_FLOOR = 3; // 3 keeps you on track; 5 is the goal (plan Part 13, decided 2026-10-31)

@@ -4,8 +4,11 @@
  * what gets sent, and the words for each route.
  */
 
-/** Set to the film's embed URL once film 1 exists; until then the script below is the intro. */
-export const FILM_URL = "";
+/** Film 1's embed URL comes from LINKS.introFilm (config.js or the console's Site links); "" shows the script. */
+export function filmUrl(links = {}) {
+  const url = String(links.introFilm || "");
+  return url.startsWith("https://") ? url : "";
+}
 
 export const INTRO = {
   title: "Before we talk: what changed, and who this is for",

@@ -7,12 +7,13 @@
  * the signed-in account, else the board's own token, else the saved check's id (this browser's check).
  */
 
-import { PERSIST } from "../../config.js?v=fc7db25-202610310827";
-import * as Account from "../../check/account.js?v=fc7db25-202610310827";
-import { track, visitorId } from "../../check/events.js?v=fc7db25-202610310827";
-import { enterSeat } from "../../app/js/persist-auth.js?v=fc7db25-202610310827";
-import { currentSession } from "../../app/js/session.js?v=fc7db25-202610310827";
-import { checkHref, dayText, fullName, identity, resultHead, savedCheck, sourceFrom, stepAnswers, stepProblem } from "../sprint-model.mjs?v=fc7db25-202610310827";
+import { PERSIST } from "../../config.js?v=f96b76b-202610312232";
+import * as Account from "../../check/account.js?v=f96b76b-202610312232";
+import { track, visitorId } from "../../check/events.js?v=f96b76b-202610312232";
+import { enterSeat } from "../../app/js/persist-auth.js?v=f96b76b-202610312232";
+import { currentSession } from "../../app/js/session.js?v=f96b76b-202610312232";
+import { rememberRoute } from "../../app/js/return-to.js?v=f96b76b-202610312232";
+import { checkHref, dayText, fullName, identity, resultHead, savedCheck, sourceFrom, stepAnswers, stepProblem } from "../sprint-model.mjs?v=f96b76b-202610312232";
 
 const LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
 const API = (() => {
@@ -116,8 +117,24 @@ function boardHref(slug, node = "") {
   return url.toString() + (node ? `#/map/${node}` : "");
 }
 
+/** "Open my map": straight to the board when this browser is signed in, else sign in and come back to the step. */
+function mapButton(label, node = "s.sprint", { solid = true } = {}) {
+  return btn(label, () => {
+    const session = currentSession();
+    if (session?.persistToken && session.slug) {
+      location.href = boardHref(session.slug, node);
+      return;
+    }
+    rememberRoute(node ? `#/map/${node}` : "");
+    location.href = `../../signin/${LOCAL ? `?api=${encodeURIComponent(API)}` : ""}`;
+  }, { solid });
+}
+
 async function openMap(session, node = "") {
+  // On a revisit the screen has no new session: use the one this browser already has.
+  if (!session?.persistToken) session = currentSession();
   if (!session?.persistToken) {
+    rememberRoute(node ? `#/map/${node}` : "");
     location.href = `../../signin/${LOCAL ? `?api=${encodeURIComponent(API)}` : ""}`;
     return;
   }
@@ -348,7 +365,7 @@ function statusScreen(app) {
       h("p", {}, h("span", { class: "sp__badge" }, "You're in")),
       h("h1", {}, head.title),
       h("p", { class: "sp__lede" }, `Your sprint runs to ${dayText(app.ends, { weekday: true })}. Your roles arrive each morning.`),
-      h("div", { class: "sp__acts" }, link("Open my map", `../../signin/${LOCAL ? `?api=${encodeURIComponent(API)}` : ""}`, { solid: true }), app.calendar ? link("Add to my calendar", app.calendar) : null, app.community ? link("Join the community", app.community) : null),
+      h("div", { class: "sp__acts" }, mapButton("Open my map"), app.calendar ? link("Add to my calendar", app.calendar) : null, app.community ? link("Join the community", app.community) : null),
     );
   }
   if (app.status === "waitlist") return resultScreen({ ...known, decision: "waitlist", reason: app.reason || "All the seats are taken right now." });
@@ -358,10 +375,10 @@ function statusScreen(app) {
       h("p", {}, h("span", { class: "sp__badge sp__badge--no" }, "Seat released")),
       h("h1", {}, "Your seat went to the next person."),
       h("p", { class: "sp__lede" }, "It was quiet for 7 days, so it went to the waitlist. Nothing you did is lost: your map and every checked task are still yours. When you have the time again, rejoin the waitlist."),
-      h("div", { class: "sp__acts" }, btn("Rejoin the waitlist", () => stepScreen()), link("Sign in to your map", "../../signin/")),
+      h("div", { class: "sp__acts" }, btn("Rejoin the waitlist", () => stepScreen()), mapButton("Open my map", "", { solid: false })),
     );
   }
-  return show(eyebrow("The free sprint"), h("h1", {}, "The sprint has ended for you."), h("p", { class: "sp__lede" }, "Your map and everything on it are still yours."), h("div", { class: "sp__acts" }, link("Sign in to your map", "../../signin/", { solid: true })));
+  return show(eyebrow("The free sprint"), h("h1", {}, "The sprint has ended for you."), h("p", { class: "sp__lede" }, "Your map and everything on it are still yours."), h("div", { class: "sp__acts" }, mapButton("Open my map", "s.review")));
 }
 
 async function start() {

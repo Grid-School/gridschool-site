@@ -1,17 +1,17 @@
 /** One button asks the authenticated GridSchool queue for an unseen post. */
 
-import { el } from "../dom.js?v=fc7db25-202610310827";
-import { btn, field } from "../ui.js?v=fc7db25-202610310827";
-import { formatAge } from "../posts/age.js?v=fc7db25-202610310827";
-import { SUGGESTIONS, addKeyword, parseKeywords } from "../posts/search.js?v=fc7db25-202610310827";
-import { loadDesk, rememberSeen, saveDesk, todayKey } from "../posts/desk.js?v=fc7db25-202610310827";
+import { el } from "../dom.js?v=f96b76b-202610312232";
+import { btn, field } from "../ui.js?v=f96b76b-202610312232";
+import { formatAge } from "../posts/age.js?v=f96b76b-202610312232";
+import { SUGGESTIONS, addKeyword, parseKeywords } from "../posts/search.js?v=f96b76b-202610312232";
+import { loadDesk, rememberSeen, saveDesk, todayKey } from "../posts/desk.js?v=f96b76b-202610312232";
 import {
   fetchNextOpportunity,
   fetchPreviewOpportunity,
   markOpportunity,
   queueMode,
   retireOpportunity,
-} from "../posts/remote.js?v=fc7db25-202610310827";
+} from "../posts/remote.js?v=f96b76b-202610312232";
 
 const OFF_NOTE = {
   demo: "The demo board does not use live posts. Sign in to a student board.",

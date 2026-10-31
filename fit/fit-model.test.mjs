@@ -1,6 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { INTRO, QUESTIONS, ownWords, parentScript, payload, result } from "./fit-model.mjs?v=fc7db25-202610310827";
+import { INTRO, QUESTIONS, filmUrl, ownWords, parentScript, payload, result } from "./fit-model.mjs?v=f96b76b-202610312232";
+
+test("the intro film comes from the links, and only an https embed counts", () => {
+  assert.equal(filmUrl({ introFilm: "https://www.youtube.com/embed/abc" }), "https://www.youtube.com/embed/abc");
+  assert.equal(filmUrl({ introFilm: "REPLACE_ME_INTRO_FILM_EMBED" }), "");
+  assert.equal(filmUrl({}), "");
+});
 
 const filled = {
   built: `${QUESTIONS[0].starter}a shift-swap sheet eight of us used every week.`,

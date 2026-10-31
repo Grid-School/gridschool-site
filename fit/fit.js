@@ -5,10 +5,15 @@
  * kit on the call screen: a note in the grad's own numbers and a link to the parent page.
  */
 
-import { PERSIST } from "../config.js?v=fc7db25-202610310827";
-import { track } from "../check/events.js?v=fc7db25-202610310827";
-import { savedCheck } from "../sprint/sprint-model.mjs?v=fc7db25-202610310827";
-import { FILM_URL, HOURS, INTRO, PAYERS, QUESTIONS, parentScript, payload, result } from "./fit-model.mjs?v=fc7db25-202610310827";
+import { PERSIST, LINKS, isPlaceholder } from "../config.js?v=f96b76b-202610312232";
+import { applySiteOverrides } from "../js/site-overrides.js?v=f96b76b-202610312232";
+import { track } from "../check/events.js?v=f96b76b-202610312232";
+import { savedCheck } from "../sprint/sprint-model.mjs?v=f96b76b-202610312232";
+import { HOURS, INTRO, PAYERS, QUESTIONS, filmUrl, parentScript, payload, result } from "./fit-model.mjs?v=f96b76b-202610312232";
+
+let FILM_URL = "";
+/** The booking link: the server's, else the one set in the console (LINKS.fitCall). */
+const bookingLink = (next) => next.booking || (isPlaceholder(LINKS.fitCall) || !String(LINKS.fitCall).startsWith("https://") ? null : LINKS.fitCall);
 
 const LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
 const API = (() => {
@@ -98,6 +103,13 @@ async function copy(text, button) {
   }
 }
 
+/** Their earlier answers back in the fields, with the starter sentences, for "Answer again". */
+function prefill(saved = {}) {
+  for (const q of QUESTIONS) if (saved[q.id]) values[q.id] = `${q.starter}${saved[q.id]}`;
+  if (saved.hours) values.hours = saved.hours;
+  if (saved.payer) values.payer = saved.payer;
+}
+
 /* ---------- screens ---------- */
 
 function nobody() {
@@ -176,12 +188,14 @@ function parentKit(next) {
 }
 
 function done(next) {
-  const words = result(next, info?.first || "");
+  const words = result({ ...next, booking: bookingLink(next) }, info?.first || "");
   const acts = [];
-  if (next.route === "call" && next.booking) acts.push(link("Pick a time", next.booking, { solid: true, newTab: true }));
+  if (next.route === "call" && bookingLink(next)) acts.push(link("Pick a time", bookingLink(next), { solid: true, newTab: true }));
   if (next.route === "sprint") acts.push(link("Apply for the free sprint", local("../sprint/apply/?from=fit"), { solid: true }));
-  if (next.route === "self") acts.push(link("See the self-serve plan", local(`../check/?id=${checkId}`), { solid: true }));
+  if (next.route === "self") acts.push(link("See the self-serve plan", local(`../check/?id=${checkId}&step=offer`), { solid: true }));
   if (next.route === "free" || next.route === "sprint") acts.push(link("Open my free map", local(`../check/?id=${checkId}`)));
+  // "Come back to this page" means it: a free or self-serve result can be answered again until the coach decides.
+  if (next.canRedo) acts.push(h("button", { class: "sp__back", type: "button", onclick: () => { prefill(next.answers); intro(); } }, "Answer again"));
   show(
     h("span", { class: `sp__badge${next.route === "call" ? "" : next.route === "free" ? " sp__badge--no" : " sp__badge--wait"}` }, words.badge),
     h("h1", {}, words.title),
@@ -192,12 +206,15 @@ function done(next) {
 }
 
 async function start() {
+  await applySiteOverrides().catch(() => null);
+  FILM_URL = filmUrl(LINKS);
   if (!checkId) return nobody();
   try {
     info = await call(`/fit/${checkId}`);
   } catch (problem) {
     if (problem.status === 404) return nobody();
-    show(eyebrow("Before a call"), h("h1", {}, "One moment."), h("p", { class: "sp__lede" }, say(problem)));
+    show(eyebrow("Before a call"), h("h1", {}, "That didn't load."), h("p", { class: "sp__lede" }, say(problem)),
+      h("div", { class: "sp__acts" }, btn("Try again", () => { show(eyebrow("Before a call"), h("h1", {}, "One moment.")); start(); })));
     return;
   }
   track(API, "fit.view", { check: checkId });

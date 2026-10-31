@@ -10,44 +10,45 @@
  * aliases so links already in the wild still land somewhere true.
  */
 
-import { el, mount, download } from "./dom.js?v=fc7db25-202610310827";
-import * as store from "./store.js?v=fc7db25-202610310827";
-import { resolveSlug, slugFromUrl, currentSession, signOut, setPersistToken, inviteFromUrl, persistToken } from "./session.js?v=fc7db25-202610310827";
-import { tryStoredKey } from "./gate.js?v=fc7db25-202610310827";
-import { peekInvite } from "./persist-auth.js?v=fc7db25-202610310827";
-import { createRouter } from "./router.js?v=fc7db25-202610310827";
-import { createChrome } from "./chrome.js?v=fc7db25-202610310827";
-import { activeDoor } from "./rail.js?v=fc7db25-202610310827";
-import { toast } from "./ui.js?v=fc7db25-202610310827";
-import { isTestSeat } from "./test-seats.js?v=fc7db25-202610310827";
-import { renderLogin } from "./views/login.js?v=fc7db25-202610310827";
-import { renderToday } from "./views/today.js?v=fc7db25-202610310827";
-import { renderMap } from "./views/map.js?v=fc7db25-202610310827";
-import { renderStep, isStepArgs, moduleIdFromArgs } from "./views/step.js?v=fc7db25-202610310827";
-import { renderTasks } from "./views/tasks.js?v=fc7db25-202610310827";
-import { renderCalendar } from "./views/calendar.js?v=fc7db25-202610310827";
-import { renderLibrary } from "./views/library.js?v=fc7db25-202610310827";
-import { renderPosts } from "./views/posts.js?v=fc7db25-202610310827";
-import { renderHire } from "./views/hire.js?v=fc7db25-202610310827";
-import { renderResume } from "./views/resume.js?v=fc7db25-202610310827";
-import { renderProfile } from "./views/profile.js?v=fc7db25-202610310827";
-import { renderSend } from "./views/send.js?v=fc7db25-202610310827";
-import { renderPath } from "./views/path.js?v=fc7db25-202610310827";
-import { renderImages } from "./views/images.js?v=fc7db25-202610310827";
-import { renderStudio } from "./views/studio.js?v=fc7db25-202610310827";
-import { toggleDevUnlock, setDevUnlock } from "./dev-mode.js?v=fc7db25-202610310827";
-import { togglePreviewMedia, setPreviewMedia, isPreviewMedia } from "./preview-mode.js?v=fc7db25-202610310827";
-import { isInstructorDevice } from "./instructor-mode.js?v=fc7db25-202610310827";
-import { startReminders } from "./reminders.js?v=fc7db25-202610310827";
-import { watchReviewArrivals } from "./review-arrivals.js?v=fc7db25-202610310827";
-import { enterView, leaveView } from "./transitions.js?v=fc7db25-202610310827";
-import { gateRoutes } from "./features.js?v=fc7db25-202610310827";
-import * as measure from "./measure.js?v=fc7db25-202610310827";
-import { startTelemetry } from "./telemetry.js?v=fc7db25-202610310827";
-import { markClicked } from "./daily-run-remote.js?v=fc7db25-202610310827";
-import { createNextBar } from "./views/next-bar.js?v=fc7db25-202610310827";
-import { useSeat } from "./next-live.js?v=fc7db25-202610310827";
-import { PERSIST, isPlaceholder } from "../../config.js?v=fc7db25-202610310827";
+import { el, mount, download } from "./dom.js?v=f96b76b-202610312232";
+import * as store from "./store.js?v=f96b76b-202610312232";
+import { resolveSlug, slugFromUrl, currentSession, signOut, setPersistToken, inviteFromUrl, persistToken } from "./session.js?v=f96b76b-202610312232";
+import { tryStoredKey } from "./gate.js?v=f96b76b-202610312232";
+import { peekInvite } from "./persist-auth.js?v=f96b76b-202610312232";
+import { createRouter } from "./router.js?v=f96b76b-202610312232";
+import { createChrome } from "./chrome.js?v=f96b76b-202610312232";
+import { activeDoor } from "./rail.js?v=f96b76b-202610312232";
+import { toast } from "./ui.js?v=f96b76b-202610312232";
+import { isTestSeat } from "./test-seats.js?v=f96b76b-202610312232";
+import { renderLogin } from "./views/login.js?v=f96b76b-202610312232";
+import { renderToday } from "./views/today.js?v=f96b76b-202610312232";
+import { renderMap } from "./views/map.js?v=f96b76b-202610312232";
+import { renderStep, isStepArgs, moduleIdFromArgs } from "./views/step.js?v=f96b76b-202610312232";
+import { renderTasks } from "./views/tasks.js?v=f96b76b-202610312232";
+import { renderCalendar } from "./views/calendar.js?v=f96b76b-202610312232";
+import { renderLibrary } from "./views/library.js?v=f96b76b-202610312232";
+import { renderPosts } from "./views/posts.js?v=f96b76b-202610312232";
+import { renderHire } from "./views/hire.js?v=f96b76b-202610312232";
+import { renderResume } from "./views/resume.js?v=f96b76b-202610312232";
+import { renderProfile } from "./views/profile.js?v=f96b76b-202610312232";
+import { renderSend } from "./views/send.js?v=f96b76b-202610312232";
+import { renderPath } from "./views/path.js?v=f96b76b-202610312232";
+import { renderImages } from "./views/images.js?v=f96b76b-202610312232";
+import { renderStudio } from "./views/studio.js?v=f96b76b-202610312232";
+import { toggleDevUnlock, setDevUnlock } from "./dev-mode.js?v=f96b76b-202610312232";
+import { togglePreviewMedia, setPreviewMedia, isPreviewMedia } from "./preview-mode.js?v=f96b76b-202610312232";
+import { isInstructorDevice } from "./instructor-mode.js?v=f96b76b-202610312232";
+import { startReminders } from "./reminders.js?v=f96b76b-202610312232";
+import { watchReviewArrivals } from "./review-arrivals.js?v=f96b76b-202610312232";
+import { enterView, leaveView } from "./transitions.js?v=f96b76b-202610312232";
+import { gateRoutes } from "./features.js?v=f96b76b-202610312232";
+import * as measure from "./measure.js?v=f96b76b-202610312232";
+import { startTelemetry } from "./telemetry.js?v=f96b76b-202610312232";
+import { markClicked } from "./daily-run-remote.js?v=f96b76b-202610312232";
+import { createNextBar } from "./views/next-bar.js?v=f96b76b-202610312232";
+import { useSeat, currentMove } from "./next-live.js?v=f96b76b-202610312232";
+import { moveRoute } from "./engine.js?v=f96b76b-202610312232";
+import { PERSIST, isPlaceholder } from "../../config.js?v=f96b76b-202610312232";
 
 /* Coach (today) and Posts are gated in features.js: switched off, they are
    not routes at all, so their links land on the Map. */
@@ -66,6 +67,8 @@ const VIEWS = gateRoutes({
   path: { render: renderPath, persistent: true },
   images: { render: renderImages, persistent: true },
   studio: { render: renderStudio, persistent: true },
+  // #/next: whatever step is next for this student (emails link here when the step they'd name may be locked).
+  next: { render: renderMap, persistent: true },
 });
 
 /** Old links keep working after surfaces folded. */
@@ -157,6 +160,13 @@ function resumeStep(graph) {
 }
 
 function renderRoute() {
+  // #/next resolves to the student's next move, the same one the Next bar shows, so a link never lands on a lock.
+  if (route.name === "next") {
+    const move = currentMove(store.state());
+    const [name, ...args] = move && move.kind !== "rest" ? moveRoute(move) : ["map"];
+    history.replaceState(null, "", `#/${[name, ...args].join("/")}`);
+    route = { name, args };
+  }
   // The rail's Resume opens the same step page the map does, so the resume never looks two ways.
   if (route.name === "resume" && !route.args.length) {
     const step = resumeStep(store.state().graph);

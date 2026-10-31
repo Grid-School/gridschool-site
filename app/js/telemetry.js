@@ -11,7 +11,7 @@
  * Batched every few seconds; the last batch goes with the page as it closes. Measuring never breaks the page.
  */
 
-import { visitorId } from "../../check/events.js?v=fc7db25-202610310827";
+import { visitorId } from "../../check/events.js?v=f96b76b-202610312232";
 
 const SESSION_KEY = "gridschool.session.tab.v1";
 const FLUSH_MS = 5000;

@@ -11,10 +11,11 @@
  * The server counts the sign-in itself (account.signin, events.py) with from "signin".
  */
 
-import { PERSIST } from "../config.js?v=fc7db25-202610310827";
-import * as Account from "../check/account.js?v=fc7db25-202610310827";
-import { enterSeat } from "../app/js/persist-auth.js?v=fc7db25-202610310827";
-import { routeFor, sitePath } from "./route.mjs?v=fc7db25-202610310827";
+import { PERSIST } from "../config.js?v=f96b76b-202610312232";
+import * as Account from "../check/account.js?v=f96b76b-202610312232";
+import { enterSeat } from "../app/js/persist-auth.js?v=f96b76b-202610312232";
+import { routeFor, sitePath } from "./route.mjs?v=f96b76b-202610312232";
+import { takeRoute } from "../app/js/return-to.js?v=f96b76b-202610312232";
 
 // Localhost never talks to production: ?api= when given, else the page's own origin.
 const API = (() => {
@@ -161,9 +162,11 @@ async function openBoard(path, body = {}) {
   const out = await res.json().catch(() => ({}));
   if (res.status === 401) return emailView("Your sign-in expired. Sign in again and your map opens.");
   if (res.status === 404 && path === "/account/free-seat") return noneView(Account.session()?.email || "");
-  if (!res.ok) throw new Error(out.error || "Your map didn't open. Try again in a moment.");
+  // A paused seat (subscription ended, refunded, payments failed) can't open; failedView offers the way back in.
+  if (!res.ok) throw Object.assign(new Error(out.error || "Your map didn't open. Try again in a moment."), { status: res.status, paused: res.status === 403 && /paused/i.test(out.error || "") });
   const slug = await enterSeat(out);
-  go("../app/", { s: slug });
+  // Back to the screen an email linked to, if sign-in got in the way (app/js/return-to.js).
+  location.assign(sitePath("../app/", location, API, { s: slug }) + takeRoute());
 }
 
 function noneView(email) {
@@ -197,7 +200,9 @@ function failedView(problem, retry) {
     h("h1", "card__title", "Your map didn't open."),
     h("p", "card__error", say(problem), { role: "alert" }),
     h("div", "card__row", null, {}, [
-      button("Try again", retry),
+      problem?.paused
+        ? h("a", "btn btn--solid", "Restart GridSchool Complete", { href: sitePath("../checkout/", location, API, { plan: "complete", from: "signin" }) })
+        : button("Try again", retry),
       textlink("Sign in with a different email", async () => {
         await Account.signOut(API);
         emailView();

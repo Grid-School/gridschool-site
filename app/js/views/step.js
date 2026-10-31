@@ -8,40 +8,40 @@
  * reading as a shareable page).
  */
 
-import { el, mount } from "../dom.js?v=fc7db25-202610310827";
-import { btn, placeholder, toast, field } from "../ui.js?v=fc7db25-202610310827";
-import { STATUS, blockedBy, isSpine, nextUp, stepNumber, stepCount, specOf } from "../graph/model.js?v=fc7db25-202610310827";
-import { taskRow, reviewScores } from "./parts.js?v=fc7db25-202610310827";
-import { statusLabel, trackLabel, ccvvLabel } from "../copy.js?v=fc7db25-202610310827";
-import { videoCard, resolveMedia, filmSummary } from "./video.js?v=fc7db25-202610310827";
-import { handoffDisclosure } from "./handoff.js?v=fc7db25-202610310827";
-import { withSavedState, isCountTask } from "../task-state.js?v=fc7db25-202610310827";
-import { renderMarkdown, splitTitle } from "../markdown.js?v=fc7db25-202610310827";
-import { hydrateMermaid, mermaidSource } from "../mermaid.js?v=fc7db25-202610310827";
-import { provesBlock } from "./proves.js?v=fc7db25-202610310827";
-import { modeLine } from "./mode.js?v=fc7db25-202610310827";
-import { artifactLine } from "./artifact.js?v=fc7db25-202610310827";
-import { refsBlock } from "./refs.js?v=fc7db25-202610310827";
-import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=fc7db25-202610310827";
-import { electiveBlock } from "./elective.js?v=fc7db25-202610310827";
-import { fromAdenCard } from "./from-aden.js?v=fc7db25-202610310827";
-import { helpBlock } from "./step-help.js?v=fc7db25-202610310827";
-import { signoffNotice, submitLabel, linkHint } from "./signoff.js?v=fc7db25-202610310827";
-import { stepSpine, canAdvance, readyToSave, readFlag } from "./step-progress.js?v=fc7db25-202610310827";
-import { createReadingModal } from "./reading-modal.js?v=fc7db25-202610310827";
-import { bindDraft, clearDraft } from "../drafts.js?v=fc7db25-202610310827";
-import { registerLeaveGuard, clearLeaveGuard, isLeaveDirty } from "../leave-guard.js?v=fc7db25-202610310827";
-import { isPreviewMedia } from "../preview-mode.js?v=fc7db25-202610310827";
-import { siteOverridesDoc, dropSiteOverridesCache } from "../../../js/site-overrides.js?v=fc7db25-202610310827";
-import { isCompleteMap, isFreeMap, stageTime, upgradeHref, PAID_ASK, PAID_TASKS, PAID_VIDEO, DFY_LINE, FILM_COMING, COURSE_LINE, COURSE_ASK, COURSE_TASKS } from "../prep.js?v=fc7db25-202610310827";
-import { sampleBlock } from "./sample.js?v=fc7db25-202610310827";
-import { startBlock, startFinish } from "./start.js?v=fc7db25-202610310827";
-import { answerBlock } from "./answer.js?v=fc7db25-202610310827";
-import { renderResume } from "./resume.js?v=fc7db25-202610310827";
-import { renderProfile } from "./profile.js?v=fc7db25-202610310827";
-import { renderSend } from "./send.js?v=fc7db25-202610310827";
-import { renderPath } from "./path.js?v=fc7db25-202610310827";
-import { renderLinkedinStep, renderTargetsStep } from "./step-checklist.js?v=fc7db25-202610310827";
+import { el, mount } from "../dom.js?v=f96b76b-202610312232";
+import { btn, placeholder, toast, field } from "../ui.js?v=f96b76b-202610312232";
+import { STATUS, blockedBy, isSpine, nextUp, stepNumber, stepCount, specOf } from "../graph/model.js?v=f96b76b-202610312232";
+import { taskRow, reviewScores } from "./parts.js?v=f96b76b-202610312232";
+import { statusLabel, trackLabel, ccvvLabel } from "../copy.js?v=f96b76b-202610312232";
+import { videoCard, resolveMedia, filmSummary } from "./video.js?v=f96b76b-202610312232";
+import { handoffDisclosure } from "./handoff.js?v=f96b76b-202610312232";
+import { withSavedState, isCountTask } from "../task-state.js?v=f96b76b-202610312232";
+import { renderMarkdown, splitTitle } from "../markdown.js?v=f96b76b-202610312232";
+import { hydrateMermaid, mermaidSource } from "../mermaid.js?v=f96b76b-202610312232";
+import { provesBlock } from "./proves.js?v=f96b76b-202610312232";
+import { modeLine } from "./mode.js?v=f96b76b-202610312232";
+import { artifactLine } from "./artifact.js?v=f96b76b-202610312232";
+import { refsBlock } from "./refs.js?v=f96b76b-202610312232";
+import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=f96b76b-202610312232";
+import { electiveBlock } from "./elective.js?v=f96b76b-202610312232";
+import { fromAdenCard } from "./from-aden.js?v=f96b76b-202610312232";
+import { helpBlock } from "./step-help.js?v=f96b76b-202610312232";
+import { signoffNotice, submitLabel, linkHint } from "./signoff.js?v=f96b76b-202610312232";
+import { stepSpine, canAdvance, readyToSave, readFlag } from "./step-progress.js?v=f96b76b-202610312232";
+import { createReadingModal } from "./reading-modal.js?v=f96b76b-202610312232";
+import { bindDraft, clearDraft } from "../drafts.js?v=f96b76b-202610312232";
+import { registerLeaveGuard, clearLeaveGuard, isLeaveDirty } from "../leave-guard.js?v=f96b76b-202610312232";
+import { isPreviewMedia } from "../preview-mode.js?v=f96b76b-202610312232";
+import { siteOverridesDoc, dropSiteOverridesCache } from "../../../js/site-overrides.js?v=f96b76b-202610312232";
+import { isCompleteMap, isFreeMap, stageTime, upgradeHref, PAID_ASK, PAID_TASKS, PAID_VIDEO, DFY_LINE, FILM_COMING, COURSE_LINE, COURSE_ASK, COURSE_TASKS } from "../prep.js?v=f96b76b-202610312232";
+import { sampleBlock } from "./sample.js?v=f96b76b-202610312232";
+import { startBlock, startFinish } from "./start.js?v=f96b76b-202610312232";
+import { answerBlock } from "./answer.js?v=f96b76b-202610312232";
+import { renderResume } from "./resume.js?v=f96b76b-202610312232";
+import { renderProfile } from "./profile.js?v=f96b76b-202610312232";
+import { renderSend } from "./send.js?v=f96b76b-202610312232";
+import { renderPath } from "./path.js?v=f96b76b-202610312232";
+import { renderLinkedinStep, renderTargetsStep } from "./step-checklist.js?v=f96b76b-202610312232";
 
 const TOOLS = { profile: renderProfile, send: renderSend, path: renderPath, linkedin: renderLinkedinStep, targets: renderTargetsStep };
 
@@ -59,7 +59,7 @@ function builderBlock(ctx, node) {
   }
   return el("section.step__tool", {}, tool.node);
 }
-import { videoAccess, isFilmed } from "../../../data/video-access.mjs?v=fc7db25-202610310827";
+import { videoAccess, isFilmed } from "../../../data/video-access.mjs?v=f96b76b-202610312232";
 
 const FALLBACK_VIDEO = {
   title: "Lesson",
@@ -916,7 +916,7 @@ export function renderStep(ctx, nodeId, moduleId = null) {
       );
 
       async function save(entry) {
-        const { fetchSiteOverrides, saveSiteOverrides } = await import("../persist-admin.js?v=fc7db25-202610310827");
+        const { fetchSiteOverrides, saveSiteOverrides } = await import("../persist-admin.js?v=f96b76b-202610312232");
         const current = await fetchSiteOverrides().catch(() => ({ doc: {} }));
         const doc = current.doc ?? {};
         const nodes = { ...(doc.copy?.nodes ?? {}) };

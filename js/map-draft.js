@@ -42,7 +42,7 @@ export const FAMILIES = [
 export const PHASES = [
   { id: "position", label: "Get findable", short: "Findable", pace: "weeks 1 to 2" },
   { id: "prove", label: "Ship the proof", short: "Proof", pace: "weeks 2 to 5" },
-  { id: "land", label: "Land the seat", short: "Land", pace: "weeks 5 to 8, then until hired" },
+  { id: "land", label: "Land the seat", short: "Land", pace: "weeks 5 to 16" },
 ];
 
 /**
@@ -58,10 +58,10 @@ export function checkOf(node) {
   return RUN_ALONE.has(node.module.split("@")[0]) ? CHECK.ALONE : CHECK.ADEN;
 }
 
-/** "8 reviewed by me · 1 judged by an outside engineer · 2 you run alone" */
+/** "8 checked as you go · 1 done live · 2 you run alone" */
 export function checkSummary(nodes) {
   const count = (kind) => nodes.filter((node) => checkOf(node) === kind).length;
-  const parts = [`${count(CHECK.ADEN)} reviewed by me`, `${count(CHECK.OUTSIDE)} judged by an outside engineer`];
+  const parts = [`${count(CHECK.ADEN)} checked as you go`, `${count(CHECK.OUTSIDE)} done live`];
   const alone = count(CHECK.ALONE);
   if (alone) parts.push(`${alone} you run alone`);
   return parts.join(" · ");
@@ -115,7 +115,7 @@ export function draftMap(input) {
   if (stop === "technical") add("land", "iv.technical", "mock-interview", "interview", `Mock technical round, ${want}`);
   if (stop === "final") add("land", "iv.panel", "mock-interview", "interview", "Mock final panel");
   add("land", "pi.prep", "company-prep", "pipeline");
-  add("land", "iv.defense", "mock-interview", "interview", "The defense: an outside engineer's written verdict");
+  add("land", "iv.defense", "mock-interview", "interview", "Defend it: your spec and checks, and a changed requirement, live");
 
   const nodes = steps.map((step, index) => ({
     id: step.id,

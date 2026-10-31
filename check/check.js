@@ -14,14 +14,14 @@
  * this browser so a refresh loses nothing; the resume text never does.
  */
 
-import { PERSIST, link } from "../config.js?v=fc7db25-202610310827";
-import * as I from "../data/intake/intake.mjs?v=fc7db25-202610310827";
-import { mountCheckMap } from "./check-map.js?v=fc7db25-202610310827";
-import * as Account from "./account.js?v=fc7db25-202610310827";
-import { enterSeat } from "../app/js/persist-auth.js?v=fc7db25-202610310827";
-import { track, visitorId } from "./events.js?v=fc7db25-202610310827";
-import * as Share from "./share.mjs?v=fc7db25-202610310827";
-import { drawShareCard, cardBlob } from "./share-card.js?v=fc7db25-202610310827";
+import { PERSIST, link } from "../config.js?v=f96b76b-202610312232";
+import * as I from "../data/intake/intake.mjs?v=f96b76b-202610312232";
+import { mountCheckMap } from "./check-map.js?v=f96b76b-202610312232";
+import * as Account from "./account.js?v=f96b76b-202610312232";
+import { enterSeat } from "../app/js/persist-auth.js?v=f96b76b-202610312232";
+import { track, visitorId } from "./events.js?v=f96b76b-202610312232";
+import * as Share from "./share.mjs?v=f96b76b-202610312232";
+import { drawShareCard, cardBlob } from "./share-card.js?v=f96b76b-202610312232";
 
 const KEY = "gridschool.check.v1";
 const SHARE_KEY = "gridschool.share.v1";
@@ -1021,7 +1021,7 @@ function shareButton(hits) {
     ...hits.map((hit, n) => `${n + 1}. ${hit.title}`),
     "",
     `For $${price.full} (${price.months} months, ${price.refundDays}-day refund), or $${price.monthly} a month after a ${price.trialDays}-day free trial, they do the first week's work: ${offer.prepared[hits[0].id] || ""}`.trim(),
-    "A person reviews everything before I send it, and every send and reply is tracked.",
+    "Every draft is checked before I send it, nothing goes out without me, and every send and reply is tracked.",
   ].join("\n");
   const copy = link_("Copy a summary to show someone", async () => {
     try {

@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { DAY_NOT_SAVED, PLANS, dayWords, optionWords, order, payHref, readParams, payUrl, saveIntent, savedDay, sendOnRange, summary } from "./order.mjs?v=fc7db25-202610310827";
+import { DAY_NOT_SAVED, PLANS, dayWords, optionWords, order, payHref, readParams, payUrl, saveIntent, savedDay, sendOnRange, summary } from "./order.mjs?v=f96b76b-202610312232";
 
 const quiet = { setTimeout: () => 1, clearTimeout: () => {} };
 

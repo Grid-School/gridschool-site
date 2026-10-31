@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GridSchool Residency. Your next engineering role, mapped from where you stand.</title>
-<meta name="description" content="New grad or eight years in, teams hire what they can open and check. Draft your map in three answers, then a working engineer walks it with you every week until a company hires you.">
-<meta property="og:title" content="GridSchool Residency. Your next engineering role, mapped from where you stand.">
-<meta property="og:description" content="Draft your map in three answers. Reviewed work, a public case study, and a written verdict from an engineer who did not help you. I stay until a company hires you.">
+<title>GridSchool. Your first engineering role, mapped from where you stand.</title>
+<meta name="description" content="For new software engineers: roles that fit you every morning, the person to reach and a note written for you, and a real-user project a hiring manager can check. Start with the free two-minute check.">
+<meta property="og:title" content="GridSchool. Your first engineering role, mapped from where you stand.">
+<meta property="og:description" content="Roles that fit you every morning, the person to reach, and a note written for you. You send; every reply is tracked. Free check, free six-week sprint, and a founding cohort from January 4.">
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <meta property="og:url" content="https://gridschool.org/">
 <meta property="og:type" content="website">
@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="rez.css?v=fc7db25-202610310827">
+<link rel="stylesheet" href="rez.css?v=f96b76b-202610312232">
 <script>/* First view of a session gets the arrival; a repeat starts drawn (js/landing-map.js). */
 try { if (!sessionStorage.getItem("gridschool.arrived") && !matchMedia("(prefers-reduced-motion: reduce)").matches) document.documentElement.classList.add("first-view"); } catch (e) {}</script>
 </head>
@@ -43,23 +43,23 @@ try { if (!sessionStorage.getItem("gridschool.arrived") && !matchMedia("(prefers
     <a href="#faq">Questions</a>
   </nav>
   <span class="nav__end"><a class="nav__signin" href="signin/">Sign in</a>
-  <a class="nav__cta" href="apply/" data-book>Book a call <kbd>B</kbd></a></span>
+  <a class="nav__cta" href="check/?from=home-nav" data-book>Free check <kbd>B</kbd></a></span>
 </header>
 
 <main id="top">
 
 <!-- ============ HERO ============ -->
-<section class="hero" aria-label="GridSchool Residency">
+<section class="hero" aria-label="GridSchool">
   <div class="wrap hero__grid">
     <div class="hero__words">
-      <p class="hero__eyebrow">GridSchool Residency</p>
-      <h1><span>Your next engineering role,</span> <em>mapped from where you stand.</em></h1>
-      <p class="hero__sub">A route built around your goal, and a working engineer who reviews every step with you until a company hires you.</p>
+      <p class="hero__eyebrow">For new software engineers</p>
+      <h1><span>Your first engineering role,</span> <em>mapped from where you stand.</em></h1>
+      <p class="hero__sub">Every morning: roles that fit you, the person to reach at each, and a note written for you. You send it in your own words, and every reply is tracked.</p>
       <div class="hero__cta">
-        <a class="btn btn--solid" id="cta" href="apply/" data-book>Book a call to walk this map <span class="arr" aria-hidden="true">→</span></a>
+        <a class="btn btn--solid" id="cta" href="check/?from=home" data-book>Take the free check <span class="arr" aria-hidden="true">→</span></a>
       </div>
-      <p class="hero__fine">20-minute call. We finish your map on it.</p>
-      <p class="hero__alt">Not ready for a call? <a class="link" href="check/?from=home">Take the free 2-minute check <span aria-hidden="true">→</span></a></p>
+      <p class="hero__fine">Two minutes. You keep your map either way.</p>
+      <p class="hero__alt">Or join the <a class="link" href="sprint/?from=home">free six-week sprint, from November 4 <span aria-hidden="true">→</span></a></p>
     </div>
 
     <div class="compiler" aria-label="Draft your map">
@@ -67,9 +67,9 @@ try { if (!sessionStorage.getItem("gridschool.arrived") && !matchMedia("(prefers
         I am
         <label for="f-stage">Where you are</label>
         <span class="pick"><select id="f-stage">
-          <option value="grad">a new CS grad</option>
+          <option value="grad" selected>a new CS grad</option>
           <option value="self">self-taught or from a bootcamp</option>
-          <option value="working" selected>a working engineer</option>
+          <option value="working">a working engineer</option>
           <option value="laidoff">between roles</option>
         </select></span>
         aiming for
@@ -111,20 +111,20 @@ try { if (!sessionStorage.getItem("gridschool.arrived") && !matchMedia("(prefers
 <!-- ============ STATEMENT + WHO ============ -->
 <section class="sec" id="who">
   <div class="wrap">
-    <p class="statement" id="statement">AI made code cheap to write. <span class="lit">Teams now hire the engineers they can trust with what it writes.</span></p>
+    <p class="statement" id="statement">AI made code cheap to write. <span class="lit">Teams now hire the people who find the real problem, define what good looks like, and answer for the result.</span></p>
 
     <div class="bets" aria-label="What GridSchool bets on">
-      <div><span class="k">bet 01</span><h3>Proof over credentials</h3><p>A reviewed change and a public case study say more than a certificate or a list of tools.</p></div>
+      <div><span class="k">bet 01</span><h3>Proof a person can check</h3><p>A real user, a written spec and its checks, something shipped and measured. A hiring manager can open it in ten minutes.</p></div>
       <div><span class="k">bet 02</span><h3>AI with judgment</h3><p>Agents, evals, and the structure of a codebase are the new fundamentals. Using AI well means being able to check what it did.</p></div>
-      <div><span class="k">bet 03</span><h3>A route, not a curriculum</h3><p>Your map is built from your goal and rebuilt from what happens: a rejection, a new target, an interview that went sideways.</p></div>
-      <div><span class="k">bet 04</span><h3>Review over content</h3><p>Tutorials are free. An engineer reading your work every week and sending it back is not.</p></div>
+      <div><span class="k">bet 03</span><h3>A route built for you</h3><p>Your map is built from your goal and rebuilt from what happens: a rejection, a new target, an interview that went sideways.</p></div>
+      <div><span class="k">bet 04</span><h3>People first</h3><p>Hiring runs on trust. Five honest notes a week to named people, with something they can check, beat a hundred portal applications.</p></div>
     </div>
 
     <div class="who">
       <div>
         <p class="eyebrow">01 · New to the field</p>
-        <h3>CS grad, bootcamp, or self-taught</h3>
-        <p>Hundreds of applications and no team that has seen you own a change. You need work that is yours, inside a system that existed before you did, reviewed by someone who reads code for a living.</p>
+        <h3>Final-year, recent grad, or bootcamp</h3>
+        <p>Hundreds of applications and mostly silence. You need a resume that is ready, notes to real people instead of portals, and one project for a real user that a hiring manager can check.</p>
         <p class="route">route <i>build</i> → proof first, then presence</p>
       </div>
       <div>
@@ -140,7 +140,7 @@ try { if (!sessionStorage.getItem("gridschool.arrived") && !matchMedia("(prefers
         <p class="route">route <i>career-first, sprint</i></p>
       </div>
     </div>
-    <p class="not-for"><b>Not for you if</b> you cannot yet build something that runs end to end, you want a job-or-refund promise, or you will not have your work reviewed by another engineer.</p>
+    <p class="not-for"><b>Not for you if</b> you want someone to apply for you, you want a job guarantee, or you don't enjoy solving problems for people. The free tools stay free either way.</p>
   </div>
 </section>
 
@@ -150,14 +150,14 @@ try { if (!sessionStorage.getItem("gridschool.arrived") && !matchMedia("(prefers
 <section class="sec" id="proof">
   <div class="wrap">
     <p class="eyebrow">What you leave with</p>
-    <h2>Four things a hiring manager can open in under a minute.</h2>
+    <h2>Four things a hiring manager can check in ten minutes.</h2>
     <p class="lede">What your map builds toward. Shown here as empty specimens, because nobody can buy them filled in.</p>
 
     <div class="specimens">
       <article class="spec rez">
         <div class="spec__bar eyebrow"><span>01 · Review</span><span class="tag">specimen</span></div>
-        <h3>A reviewed change to a real system</h3>
-        <p>A pull request with the review thread, the check that catches the defect, and your explanation of why.</p>
+        <h3>A change you shipped with agents, and checked</h3>
+        <p>The change, the check that catches the defect, and your explanation of why. The proof that you can review what AI writes.</p>
         <div class="spec__body">
           <div class="diff">
             <div class="diff__file"><span>sync/retry.ts</span><span>+2 −1</span></div>
@@ -168,13 +168,13 @@ try { if (!sessionStorage.getItem("gridschool.arrived") && !matchMedia("(prefers
       </article>
 
       <article class="spec rez">
-        <div class="spec__bar eyebrow"><span>02 · Verdict</span><span class="tag">empty on purpose</span></div>
-        <h3>A written verdict from an engineer who did not help you</h3>
-        <p>Filled in live at your defense, on the recording. The first thing worth sending a hiring manager.</p>
+        <div class="spec__bar eyebrow"><span>02 · Real user</span><span class="tag">empty on purpose</span></div>
+        <h3>A real user, in their own words</h3>
+        <p>A local business, a club or a nonprofit that gave you an hour. What they needed, written down the way they said it.</p>
         <div class="spec__body form">
-          <div class="form__q">Would you interview this person now?<i></i></div>
-          <div class="form__q">If not, what evidence is missing?<i></i></div>
-          <div class="form__q">Reader, role, date<i></i></div>
+          <div class="form__q">What they do, and what gets in their way<i></i></div>
+          <div class="form__q">What you built for them<i></i></div>
+          <div class="form__q">What changed after<i></i></div>
         </div>
       </article>
 
@@ -194,12 +194,12 @@ try { if (!sessionStorage.getItem("gridschool.arrived") && !matchMedia("(prefers
       </article>
 
       <article class="spec rez">
-        <div class="spec__bar eyebrow"><span>04 · Defense</span><span class="tag">specimen</span></div>
-        <h3>A recorded defense, judged by an outside engineer</h3>
-        <p>You explain your strongest work, then handle a change you did not see coming, in front of an engineer who did not help you. The recording is yours to send.</p>
+        <div class="spec__bar eyebrow"><span>04 · Walkthrough</span><span class="tag">specimen</span></div>
+        <h3>Your 90-second walkthrough</h3>
+        <p>The problem, the spec, the checks and the result, said out loud, then your answer to "how do you use AI?" The recording is yours to send.</p>
         <div class="spec__body tape">
           <div class="tape__track"><div class="tape__wave" id="wave" aria-hidden="true"></div><span class="tape__split" aria-hidden="true"></span></div>
-          <div class="tape__legend"><span><b>part 1</b>your work, explained</span><span><b>part 2</b>a change you did not see coming</span></div>
+          <div class="tape__legend"><span><b>part 1</b>your work, explained</span><span><b>part 2</b>how you used AI, and how you checked it</span></div>
         </div>
       </article>
     </div>
@@ -212,13 +212,13 @@ try { if (!sessionStorage.getItem("gridschool.arrived") && !matchMedia("(prefers
 <section class="sec" id="week">
   <div class="wrap">
     <p class="eyebrow">How a week runs</p>
-    <h2>A senior engineer reads your work every week.</h2>
-    <p class="lede">Eight weeks of teaching and review, 10 to 15 hours a week. After week 8 the 1:1 keeps going until a company hires you.</p>
+    <h2>About 10 to 15 hours a week, and most of the busywork is done for you.</h2>
+    <p class="lede">Once your resume is ready: 5 sends a week (3 at the least), plus one step a week on your real-user project.</p>
     <div class="week">
-      <div><span class="k">45 min</span><h3>Your 1:1</h3><p>Your code, your plan, your blockers. Same slot every week.</p></div>
-      <div><span class="k">up to 3</span><h3>Written reviews</h3><p>On real work. Accepted, or sent back with the one thing to change first.</p></div>
-      <div><span class="k">75 min</span><h3>Cohort call</h3><p>Up to five people. What shipped, what broke, who went quiet.</p></div>
-      <div><span class="k">same day</span><h3>Discord answers</h3><p>Stuck for thirty honest minutes, you ask. I answer that day.</p></div>
+      <div><span class="k">every morning</span><h3>Your roles</h3><p>Roles that fit you, the person to reach at each, and the note written. In your inbox and in the app.</p></div>
+      <div><span class="k">5 a week</span><h3>Your sends</h3><p>You send them yourself, in your own words. Every reply is tracked, and silence gets a follow-up.</p></div>
+      <div><span class="k">1 step</span><h3>Your project</h3><p>A conversation, a spec, a check, or something shipped for your design partner.</p></div>
+      <div><span class="k">weekly</span><h3>Clinics</h3><p>In the sprint and the cohort: bring what's stuck, and leave with the next step.</p></div>
     </div>
   </div>
 </section>
@@ -236,12 +236,12 @@ try { if (!sessionStorage.getItem("gridschool.arrived") && !matchMedia("(prefers
       <p>So this is where my time goes. I automate the busywork of a search with the same kind of systems I build, and I plan a map for each engineer around their own goal, so no week goes to work that does not move you toward the role you want.</p>
     </div>
     <div>
-      <p class="eyebrow">Founding terms</p>
+      <p class="eyebrow">How it works with money</p>
       <ul class="terms" style="margin-top:22px">
-        <li><b>The rate is quoted on the call.</b> It rises once the founding five have defended in front of outside engineers.</li>
-        <li><b>The week-2 exit.</b> If either of us says wrong room by the end of week 2, unused tuition comes back. No forms.</li>
-        <li><b>The one condition.</b> Work every day. Go quiet for three weeks and your spot pauses and I call you.</li>
-        <li><b>After week 8 I stay.</b> Weekly 1:1, interview prep from your own work, until a company hires you. A company's yes is still theirs.</li>
+        <li><b>Free to start.</b> The check, your map and the six-week sprint cost nothing.</li>
+        <li><b>The founding cohort is the program.</b> $3,000, or 3 payments of $1,100, from January 4. Reservations open December 1, after a short fit step and a call with the grad on it.</li>
+        <li><b>Self-serve is there if you need it.</b> Without the hours or a payer: $97 a month, or $997 for a year.</li>
+        <li><b>No job promises.</b> Nobody honest can make one. From November 25 we publish our numbers, the weak weeks included.</li>
       </ul>
     </div>
   </div>
@@ -254,8 +254,8 @@ try { if (!sessionStorage.getItem("gridschool.arrived") && !matchMedia("(prefers
 <section class="sec" id="plans">
   <div class="wrap">
     <p class="eyebrow">Three ways in</p>
-    <h2>The same map. How much of me is in it is up to you.</h2>
-    <p class="lede">Every plan starts from the free check, where you stand today. Run the course yourself, or have me build it with you.</p>
+    <h2>Start free. Go further when it's earning its place.</h2>
+    <p class="lede">Every path starts from the free check, where you stand today.</p>
     <p class="sales-fine plans-currency">Prices are in US dollars and include any sales tax or VAT. Checkout shows them in your own currency.</p>
 
     <div class="plans plans--three">
@@ -265,7 +265,7 @@ try { if (!sessionStorage.getItem("gridschool.arrived") && !matchMedia("(prefers
         <ul class="plan__list">
           <li>What's most likely in the way of interviews, and a ten-minute step for today</li>
           <li>Profile images, and your headline, About and top roles, each with its film</li>
-          <li>The rest of the course on your map, so you can see the whole road</li>
+          <li>The free six-week sprint when seats are open, from November 4</li>
           <li>No card, nothing to cancel</li>
         </ul>
         <div class="plan__foot">
@@ -276,8 +276,24 @@ try { if (!sessionStorage.getItem("gridschool.arrived") && !matchMedia("(prefers
       </article>
 
       <article class="plan plan--complete">
-        <div class="plan__bar eyebrow"><span>GridSchool Complete</span><span class="tag">you run it</span></div>
-        <h3>The whole course and the system, with your first week prepared.</h3>
+        <div class="plan__bar eyebrow"><span>The founding cohort</span><span class="tag">Starts January 4</span></div>
+        <h3>Sixteen weeks with your coach and a small cohort: daily roles, a real-user project, and the proof employers can check.</h3>
+        <ul class="plan__list">
+          <li>Everything in Complete</li>
+          <li>A real-user project with a design partner, start to finish</li>
+          <li>Clinics with your coach, and a cohort at the same stage</li>
+          <li>Starts after a short fit step and a call, with the grad on it</li>
+        </ul>
+        <div class="plan__foot">
+          <p class="plan__price"><b>$3,000</b><span>Or 3 payments of $1,100. Reservations open December 1.</span></p>
+          <a class="btn btn--solid" href="check/?from=home-plans">Start with the free check <span class="arr" aria-hidden="true">→</span></a>
+          <a class="plan__alt" href="sprint/">Or the free six-week sprint</a>
+        </div>
+      </article>
+
+      <article class="plan">
+        <div class="plan__bar eyebrow"><span>GridSchool Complete</span><span class="tag">self-serve</span></div>
+        <h3>The same system, run on your own, for when you don't have the hours or a payer.</h3>
         <ul class="plan__list">
           <li>Every module and every film: profile, proof, people, search, interviews and the offer</li>
           <li>Fresh roles that fit your map, who to reach on each team, and a note to each in your voice</li>
@@ -286,24 +302,8 @@ try { if (!sessionStorage.getItem("gridschool.arrived") && !matchMedia("(prefers
         </ul>
         <div class="plan__foot">
           <p class="plan__price"><b>$997</b> once<span>Or 7 days free, then $97 a month.</span></p>
-          <a class="btn btn--solid" href="checkout/?plan=complete&amp;from=home">Choose how to pay <span class="arr" aria-hidden="true">→</span></a>
+          <a class="btn btn--line" href="checkout/?plan=complete&amp;from=home">Choose how to pay <span class="arr" aria-hidden="true">→</span></a>
           <a class="plan__alt" href="checkout/?plan=complete&amp;gift=1&amp;from=home">Give it as a gift</a>
-        </div>
-      </article>
-
-      <article class="plan plan--residency">
-        <div class="plan__bar eyebrow"><span>GridSchool Residency</span><span class="tag">I build it with you</span></div>
-        <h3>I work with you as an engineer, building your projects, until you sign an offer.</h3>
-        <ul class="plan__list">
-          <li>Everything in Complete</li>
-          <li>Calls twice a week for the first 8 weeks, building your projects together</li>
-          <li>Then a weekly 1:1 until you sign an offer, for up to 12 months</li>
-          <li>The week-2 exit: wrong room, and unused tuition comes back</li>
-        </ul>
-        <div class="plan__foot">
-          <p class="plan__price"><b>$12,000</b><span>Or 3 payments of $4,000. Three spots.</span></p>
-          <a class="btn btn--line" href="checkout/?plan=residency&amp;from=home">Reserve a spot <span class="arr" aria-hidden="true">→</span></a>
-          <a class="plan__alt" href="residency/">How the Residency works</a>
         </div>
       </article>
     </div>
@@ -317,13 +317,13 @@ try { if (!sessionStorage.getItem("gridschool.arrived") && !matchMedia("(prefers
   <div class="wrap">
     <p class="eyebrow">Straight answers</p>
     <div class="faq" style="margin-top:24px">
-      <details><summary>Will you get me a job?</summary><p>I make you the candidate a team can evaluate and trust: reviewed work on real systems, a public case study, an outside engineer's verdict, and my reference. I prepare every interview from your own work and keep working with you until you land. A company's yes is still theirs.</p></details>
-      <details><summary>I already have years of experience. Is this too junior for me?</summary><p>Your map starts where you are. For working engineers it usually skips the practice codebase and goes straight to turning past work into public proof, a project aimed at the role you want, and rehearsing the rounds where you stall.</p></details>
-      <details><summary>How is the map decided?</summary><p>The sentence at the top of this page drafts it from three answers, using the same steps the platform runs. On the call we finish it from your resume, your target companies, and where your last interviews stopped. Every step ends in something a stranger can open.</p></details>
-      <details><summary>Why not follow the map on my own?</summary><p>You can, and the draft is yours to keep. What a list cannot do is read your work and send it back, change the plan when an interview goes sideways, or sign a verdict as someone who did not help you. Most steps on your map end in a written review from me, and the defense is judged by an outside engineer. That part is what you pay for.</p></details>
-      <details><summary>Is this a bootcamp?</summary><p>No. A bootcamp teaches a stack to beginners. This starts from software you can already write and works on what gets you hired next, planned around you and reviewed every week.</p></details>
-      <details><summary>Why trust you, with no placements yet?</summary><p>Don't take it on trust. The free check runs the method on your own situation before you pay anything, and the first two course modules are yours to use. Complete has a 14-day refund on the one-time price, the monthly plan cancels any time, and the Residency has the week-2 exit.</p></details>
-      <details><summary>Can a parent pay for it?</summary><p>Yes: <a class="link" href="gift/">give it as a gift</a>. They choose to accept it from their own email (if they don't, you're refunded in full), and if they agree you get a short weekly note on their progress.</p></details>
+      <details><summary>Will you get me a job?</summary><p>Nobody honest can promise that. What we do: roles that fit you every morning, notes to real people, a real-user project a hiring manager can check, and every reply tracked. A company's yes is theirs.</p></details>
+      <details><summary>I already have years of experience. Is this too junior for me?</summary><p>Your map starts where you are. For working engineers it usually goes straight to turning past work into proof a stranger can check, the titles that fit now, and the rounds where you stall.</p></details>
+      <details><summary>How is the map decided?</summary><p>The sentence at the top of this page drafts it from three answers, using the same steps the platform runs. The free check finishes it from your resume and where your search stops. Every step ends in something a person can check.</p></details>
+      <details><summary>Why not follow the map on my own?</summary><p>You can, and the map is yours to keep. What you'd be doing by hand: researching roles and the person to reach every morning, drafting each note, tracking every reply and follow-up, and finding a real user for your project. In the cohort you also get clinics and people at the same stage.</p></details>
+      <details><summary>Is this a bootcamp?</summary><p>No. A bootcamp teaches a stack to beginners. This starts from software you can already write and works on what gets you hired: a ready resume, sends to real people, and one project for a real user.</p></details>
+      <details><summary>Why trust you, with no placements yet?</summary><p>Don't take it on trust. The free check runs on your own situation before you pay anything, the sprint is free, and we publish the sprint's numbers at weeks 3 and 6, the weak weeks included. Complete has a 14-day refund on the one-time price, and the founding cohort's refund terms are on its page before anyone pays.</p></details>
+      <details><summary>Can a parent pay for it?</summary><p>Yes. Parents start with <a class="link" href="parents/">this page</a>: what changed in hiring, what we do, and what we can't promise. The founding cohort starts after a call with the grad on it. A parent can also <a class="link" href="gift/">give the self-serve plan as a gift</a>.</p></details>
       <details><summary>Can I cancel the monthly plan?</summary><p>Any time, online, in two clicks. It starts with 7 free days, then $97 a month, and it stops on its own after 12 payments. We email you 3 days before the first charge.</p></details>
     </div>
   </div>
@@ -331,9 +331,9 @@ try { if (!sessionStorage.getItem("gridschool.arrived") && !matchMedia("(prefers
 
 <section class="final" id="final">
   <div class="wrap">
-    <h2>Twenty minutes to finish your map.</h2>
-    <p class="lede">Bring your resume and the last interview that didn't go your way. You leave the call with the route either way.</p>
-    <a class="btn btn--solid" href="apply/" data-book>Book a call to walk this map <span class="arr" aria-hidden="true">→</span></a>
+    <h2>Two minutes to see where you stand.</h2>
+    <p class="lede">The free check reads where your search stops and builds your map. You keep it either way.</p>
+    <a class="btn btn--solid" href="check/?from=home-final" data-book>Take the free check <span class="arr" aria-hidden="true">→</span></a>
   </div>
   <div class="horizon" aria-hidden="true"></div>
 </section>
@@ -341,9 +341,9 @@ try { if (!sessionStorage.getItem("gridschool.arrived") && !matchMedia("(prefers
 </main>
 
 <footer>
-  <div class="wrap">GridSchool Residency · <a href="mailto:support@gridschool.org">support@gridschool.org</a> · © 2026 GRID SCHOOL LLC · Boise, Idaho · <a href="signin/">Sign in</a> · <a href="privacy/">Privacy</a> · <a href="terms/">Terms</a><br>A company's yes is theirs. Your evidence won't be.</div>
+  <div class="wrap">GridSchool · <a href="mailto:support@gridschool.org">support@gridschool.org</a> · © 2026 GRID SCHOOL LLC · Boise, Idaho · <a href="signin/">Sign in</a> · <a href="privacy/">Privacy</a> · <a href="terms/">Terms</a><br>We can't promise anyone a job. A company's yes is theirs.</div>
 </footer>
 
-<script type="module" src="landing.js?v=fc7db25-202610310827"></script>
+<script type="module" src="landing.js?v=f96b76b-202610312232"></script>
 </body>
 </html>

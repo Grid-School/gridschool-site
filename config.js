@@ -8,7 +8,11 @@
 
 export const LINKS = {
   application: "REPLACE_ME_TALLY_URL",
+  // The founding cohort (founding/): $3,000 in full, 3 payments of $1,100, and the $300 reservation. Made by
+  // `python3 ops/stripe-setup.py --live --write-config`, which fills these in. Until then founding/ says reservations
+  // open December 1 and offers the free check instead of a pay button.
   foundingCheckout: "REPLACE_ME_CHECKOUT_FOUNDING",
+  foundingCheckoutMonthly: "REPLACE_ME_CHECKOUT_FOUNDING_MONTHLY",
   depositCheckout: "REPLACE_ME_CHECKOUT_DEPOSIT",
   // Stripe Payment Links, one per button (ops/stripe-setup.md says how to make each one).
   // Until a link is real its buttons fall back: Complete to the free check, Residency to residency/.
@@ -16,17 +20,18 @@ export const LINKS = {
   completeCheckout: "https://buy.stripe.com/14A7sL4ro3DndBr4PNdEs01",
   // GridSchool Complete monthly: 7-day free trial, then $97 a month (the webhook stops it at 12).
   completeCheckoutMonthly: "https://buy.stripe.com/dRmbJ16zwei10OF81ZdEs02",
-  // GridSchool Residency, $12,000 in full.
-  residencyCheckout: "https://buy.stripe.com/fZu4gzcXU2zjeFv2HFdEs03",
+  // The Residency closed to new students on 2026-10-29: its four links are retired (stripe-setup.py RETIRED switches
+  // them off in Stripe). GridSchool Residency, $12,000 in full.
+  residencyCheckout: "REPLACE_ME_RETIRED_RESIDENCYCHECKOUT",
   // GridSchool Residency as 3 monthly payments of $4,000 (the webhook tells Aden to stop it after 3).
-  residencyCheckoutMonthly: "https://buy.stripe.com/fZu3cv4rogq9eFv5TRdEs04",
+  residencyCheckoutMonthly: "REPLACE_ME_RETIRED_RESIDENCYCHECKOUTMONTHLY",
   // Gifts (gift/): the same plans, with two custom fields at checkout, giftemail and giftname
   // (ops/launch-copy.md §1). Until they're real, gift/'s buttons write to support@ instead.
   giftComplete: "https://buy.stripe.com/eVq8wP7DAa1Lapf4PNdEs05",
   // Complete as a gift at $97 a month, billed to the giver from today (no trial); the webhook stops it at 12.
   giftCompleteMonthly: "https://buy.stripe.com/5kQ14ncXUfm58h7dmjdEs08",
-  giftResidency: "https://buy.stripe.com/28E7sLe1Yfm57d3dmjdEs06",
-  giftResidencyMonthly: "https://buy.stripe.com/dRmbJ1aPMgq9gND3LJdEs07",
+  giftResidency: "REPLACE_ME_RETIRED_GIFTRESIDENCY",
+  giftResidencyMonthly: "REPLACE_ME_RETIRED_GIFTRESIDENCYMONTHLY",
   // Stripe's customer portal login link: where anyone on a monthly plan cancels or changes their card.
   // Shown on terms/ and residency/; the server's STRIPE_PORTAL_URL is the same link, for emails.
   billingPortal: "https://billing.stripe.com/p/login/fZu00jaPM5Lv9lbeqndEs00",
@@ -39,7 +44,13 @@ export const LINKS = {
   adenPhoto: "REPLACE_ME_ADEN_PHOTO",
   // Aden's short welcome video on begin/ (an embeddable URL: Loom or YouTube embed). Hidden until set.
   welcomeVideo: "REPLACE_ME_WELCOME_VIDEO_EMBED",
+  // The booking link people see when the fit step routes them to a call (fit/, parents/). Set it here or in the
+  // console (Site, Links, fitCall); the server's FIT_BOOKING_URL is the fallback.
   fitCall: "REPLACE_ME_CALCOM_FIT_20MIN",
+  // Film 1 (the intro, on fit/) and film P (the parent film, on parents/), as embeddable URLs (YouTube or Loom
+  // embed). Until set, each page shows the script as text (ops/beliefs-and-films-2026-10-31.md).
+  introFilm: "REPLACE_ME_INTRO_FILM_EMBED",
+  parentFilm: "REPLACE_ME_PARENT_FILM_EMBED",
   oneOnOne: "REPLACE_ME_CALCOM_1ON1_45MIN",
   // The free community's public door. The free check shows "Join the community" once this is
   // "https://lab.gridschool.org/community", which redirects to the invite in the server's
