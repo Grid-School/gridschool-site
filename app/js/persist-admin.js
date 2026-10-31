@@ -2,8 +2,8 @@
  * Admin persist calls. Desk only. Student boards never import this.
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=5983245-202610300745";
-import { persistToken } from "./session.js?v=5983245-202610300745";
+import { PERSIST, isPlaceholder } from "../../config.js?v=7288040-202610310409";
+import { persistToken } from "./session.js?v=7288040-202610310409";
 
 function endpoint() {
   return String(PERSIST.endpoint || "").replace(/\/$/, "");
@@ -41,6 +41,11 @@ async function request(method, path, body) {
 /* How the app is used (server/activity_api.py): everyone's summary, and one student's sessions. */
 export const loadUsage = (days = 30) => request("GET", `/activity/summary?days=${encodeURIComponent(days)}`);
 /* The Monday readout (server/readout_api.py): one week's funnel, and the week's ad spend typed by hand. */
+/* The free sprint (server/sprint_api.py): everyone in it, a decision on one seat, and today's job (dry by default). */
+export const loadSprint = () => request("GET", "/admin/sprint");
+export const sprintAction = (slug, action, { email = false, reason = "" } = {}) =>
+  request("POST", `/admin/sprint/${encodeURIComponent(slug)}`, { action, email, reason });
+export const runSprint = ({ job = "daily", dry = true } = {}) => request("POST", "/admin/sprint/run", { job, dry });
 export const loadReadout = (week) => request("GET", `/admin/readout${week ? `?week=${encodeURIComponent(week)}` : ""}`);
 export const saveReadoutSpend = (week, amount) => request("POST", "/admin/readout/spend", { week, amount });
 export const loadStudentActivity =(slug, days = 30) => request("GET", `/students/${encodeURIComponent(slug)}/activity?days=${encodeURIComponent(days)}`);

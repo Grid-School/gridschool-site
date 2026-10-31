@@ -14,7 +14,7 @@
  * own flag, because the flag is exactly what drifts when something goes wrong.
  */
 
-import { el, mount, clear } from "./dom.js?v=5983245-202610300745";
+import { el, mount, clear } from "./dom.js?v=7288040-202610310409";
 
 const OUT_MS = 220;
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])';

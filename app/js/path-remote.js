@@ -3,8 +3,8 @@
  * sends the version it read; a 409 answers with the current record, which the page takes and keeps going.
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=5983245-202610300745";
-import { persistToken } from "./session.js?v=5983245-202610300745";
+import { PERSIST, isPlaceholder } from "../../config.js?v=7288040-202610310409";
+import { persistToken } from "./session.js?v=7288040-202610310409";
 
 export function pathReady() {
   return Boolean(persistToken() && PERSIST?.endpoint && !isPlaceholder(PERSIST.endpoint));

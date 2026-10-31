@@ -1,0 +1,78 @@
+{
+  "about": "The free proof sprint (ops/sprint-intake-plan.md). Every date, the cap, the waves, the clinic times and who gets in live here, read by server/sprint.py and shown by sprint/ (GET /sprint/status). Change the commitment text and you must change its version: each signature stores the text and the version it agreed to.",
+  "cohort": "sprint-2026-11",
+  "name": "The free proof sprint",
+  "starts": "2026-11-04",
+  "ends": "2026-12-18",
+  "whatsNext": "2026-12-15",
+  "lastJoin": "2026-11-25",
+  "publish": ["2026-11-25", "2026-12-18"],
+  "cap": 13,
+  "joinWindowDays": 6,
+  "timezone": "America/New_York",
+  "waves": [
+    {"id": "w1", "label": "Wave 1", "starts": "2026-11-04", "seats": 8},
+    {"id": "w2", "label": "Wave 2", "starts": "2026-11-11", "seats": 5},
+    {"id": "w3", "label": "Wave 3", "starts": "2026-11-18", "seats": 0}
+  ],
+  "quiet": {"nudge": 4, "warn": 5, "release": 7},
+  "activation": [1, 3, 5],
+  "sendDay": {"weekday": "TH", "time": "13:00", "minutes": 60, "label": "Thursday, 1pm Eastern"},
+  "clinics": [
+    {"id": "weekday", "label": "Tuesday, 8pm Eastern", "short": "Weekday evening", "weekday": "TU", "time": "20:00", "minutes": 60},
+    {"id": "saturday", "label": "Saturday, noon Eastern", "short": "Saturday noon", "weekday": "SA", "time": "12:00", "minutes": 60},
+    {"id": "async", "label": "Neither, I'll do it async", "short": "Async"}
+  ],
+  "criteria": {
+    "auth": ["no"],
+    "hours": ["10to20", "gt20"],
+    "hoursAsk": ["5to10"],
+    "school": ["final", "recent"],
+    "built": true,
+    "experiencedStages": ["working"],
+    "experiencedLevels": ["senior", "staff"],
+    "experienced": "waitlist"
+  },
+  "school": [
+    {"value": "final", "label": "I'm in my final year of a degree or bootcamp"},
+    {"value": "recent", "label": "I finished in the last 2 years"},
+    {"value": "older", "label": "I finished more than 2 years ago"},
+    {"value": "none", "label": "No degree or bootcamp, I taught myself"}
+  ],
+  "adjacent": [
+    "Implementation Engineer",
+    "Solutions Engineer",
+    "AI Integration Engineer",
+    "Associate AI Engineer",
+    "QA Engineer or SDET",
+    "Data Engineer",
+    "Cloud Associate",
+    "Salesforce or ServiceNow Developer",
+    "Software Engineer I (defense)"
+  ],
+  "payer": [
+    {"value": "me", "label": "Me"},
+    {"value": "parent", "label": "A parent"},
+    {"value": "unsure", "label": "Not sure"}
+  ],
+  "commitment": {
+    "version": "sprint-2026-11-v1",
+    "give": [
+      "Roles prepared for you every morning: fresh postings that fit you, the person to message at each, and the note written.",
+      "Send Day every week, live together or on your own time.",
+      "Two clinics a week where you bring what's stuck.",
+      "Your numbers every Monday: sends, replies, screens and interviews.",
+      "A reply from your coach within one business day."
+    ],
+    "ask": [
+      "About 10 hours a week for the six weeks.",
+      "Log every send in the app, the same day you send it.",
+      "Send Day each week, live or on your own time.",
+      "An honest review at the end, good or bad."
+    ],
+    "quiet": "If your seat is quiet for 7 days (no visit to the app, no send logged and no task ticked), it goes to the next person on the waitlist. You'll get two emails before that happens. Your map and everything on it stay yours, free, and you can rejoin the waitlist.",
+    "data": "We publish the sprint's numbers at weeks 3 and 6: sends, reply rate, screens and interviews, as counts across everyone. Never your name, your messages or the companies you contacted.",
+    "quote": "You may quote my review with my first name. I understand it will say I took part for free.",
+    "sign": "Type your full name to agree."
+  }
+}

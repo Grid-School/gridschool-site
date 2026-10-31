@@ -7,11 +7,11 @@
  * rest after it, and the coach opens with it.
  */
 
-import { el, mount } from "../dom.js?v=5983245-202610300745";
-import { btn } from "../ui.js?v=5983245-202610300745";
-import { moveRoute, movesAfterNext, isHere } from "../engine.js?v=5983245-202610300745";
-import { liveRoles, livePacks, onNextChange, currentMove } from "../next-live.js?v=5983245-202610300745";
-import { isoDate } from "../time.js?v=5983245-202610300745";
+import { el, mount } from "../dom.js?v=7288040-202610310409";
+import { btn } from "../ui.js?v=7288040-202610310409";
+import { moveRoute, movesAfterNext, isHere } from "../engine.js?v=7288040-202610310409";
+import { liveRoles, livePacks, onNextChange, currentMove } from "../next-live.js?v=7288040-202610310409";
+import { isoDate } from "../time.js?v=7288040-202610310409";
 
 export { currentMove };
 

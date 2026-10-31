@@ -4,8 +4,8 @@
  * node it's about, not in a chat thread that has lost the context.
  */
 
-import { el } from "../dom.js?v=5983245-202610300745";
-import { btn, toast } from "../ui.js?v=5983245-202610300745";
+import { el } from "../dom.js?v=7288040-202610310409";
+import { btn, toast } from "../ui.js?v=7288040-202610310409";
 
 export function helpBlock({ node, store, isAdmin = false }) {
   if (isAdmin || node.kind === "future" || node.type === "reference") return null;

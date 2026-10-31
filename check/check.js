@@ -14,14 +14,14 @@
  * this browser so a refresh loses nothing; the resume text never does.
  */
 
-import { PERSIST, link } from "../config.js?v=5983245-202610300745";
-import * as I from "../data/intake/intake.mjs?v=5983245-202610300745";
-import { mountCheckMap } from "./check-map.js?v=5983245-202610300745";
-import * as Account from "./account.js?v=5983245-202610300745";
-import { enterSeat } from "../app/js/persist-auth.js?v=5983245-202610300745";
-import { track, visitorId } from "./events.js?v=5983245-202610300745";
-import * as Share from "./share.mjs?v=5983245-202610300745";
-import { drawShareCard, cardBlob } from "./share-card.js?v=5983245-202610300745";
+import { PERSIST, link } from "../config.js?v=7288040-202610310409";
+import * as I from "../data/intake/intake.mjs?v=7288040-202610310409";
+import { mountCheckMap } from "./check-map.js?v=7288040-202610310409";
+import * as Account from "./account.js?v=7288040-202610310409";
+import { enterSeat } from "../app/js/persist-auth.js?v=7288040-202610310409";
+import { track, visitorId } from "./events.js?v=7288040-202610310409";
+import * as Share from "./share.mjs?v=7288040-202610310409";
+import { drawShareCard, cardBlob } from "./share-card.js?v=7288040-202610310409";
 
 const KEY = "gridschool.check.v1";
 const SHARE_KEY = "gridschool.share.v1";
@@ -115,7 +115,7 @@ function insightLine() {
 }
 
 function fresh() {
-  return { view: "q", qid: null, state: I.emptyState(), read: null, readStatus: "idle", followups: [], saved: null, resumeOffered: false, from: "" };
+  return { view: "q", qid: null, state: I.emptyState(), read: null, readStatus: "idle", followups: [], saved: null, resumeOffered: false, from: "", sprint: false };
 }
 
 /* ---------- storage: a convenience, never required ---------- */
@@ -282,7 +282,7 @@ const VIEWS = {
     const adLine = opening ? Share.sourceLine(store.from, sources) : "";
     const filter = opening ? Share.filterLine(store.from, sources) : "";
     return [
-      opening ? h("p", "eyebrow eyebrow--open", `${checkName()} · 2 minutes`) : null,
+      opening ? h("p", "eyebrow eyebrow--open", store.sprint ? `The free sprint · step 1 of 2: ${checkName().toLowerCase()} · 2 minutes` : `${checkName()} · 2 minutes`) : null,
       adLine ? h("p", `card__lede${filter ? " card__lede--filtered" : ""}`, adLine) : null,
       filter ? h("p", "card__filter", filter) : null,
       opening ? null : insightLine(),
@@ -437,6 +437,14 @@ const RESULT_STEPS = {
   },
 
   keep() {
+    // From the sprint page (?sprint=1): once the map is saved, the sprint step is next (sprint/apply/).
+    if (store.sprint) {
+      return [
+        h("p", "eyebrow", "The free sprint · save your map"),
+        h("div", "keep-main", null, {}, [saveForm()]),
+        row(link_("Not now, continue", () => goStep("next")), backTo("finding")),
+      ].filter(Boolean);
+    }
     return [
       stepLabel(2),
       h("div", "keep-main", null, {}, [saveForm()]),
@@ -456,6 +464,7 @@ const RESULT_STEPS = {
     return [
       h("p", "eyebrow", "Your scan"),
       h("h2", "card__title", "What would help most now?", { tabindex: -1 }),
+      store.sprint && store.saved?.id ? sprintRow() : null,
       store.saved?.id ? openMapRow() : null,
       h("div", "options options--choices", null, {}, free.filter(Boolean)),
       row(backTo("keep"), link_("Start over", () => restart(true))),
@@ -721,7 +730,8 @@ function saveForm() {
     );
     // Saved: their map is a free board of their own, and this opens it, with or without a sign-in
     // (the check's own id opens the seat made from it: server free_seat.check_seat_session).
-    draw(...[openMapRow(), done, communityBlock()].filter(Boolean));
+    // From sprint/: the sprint step is the next thing; the free map stays one tap away inside it.
+    draw(...[store.sprint ? sprintRow() : openMapRow(), done, communityBlock()].filter(Boolean));
     prepareShare();
   };
 
@@ -867,6 +877,18 @@ function openMapRow() {
     }
   }, { solid: true, arrow: true, focus: true });
   return h("div", "saved__open", null, {}, [h("h3", "card__sub card__sub--keep", "Your map is ready."), h("p", "card__help", "It starts with the step that walks you through fixing this. Free, and yours to keep."), row(open), error]);
+}
+
+/**
+ * The sprint step (sprint/apply/), after the map is saved: it reads this browser's saved check, so the
+ * person never answers anything twice. The source they arrived with goes along.
+ */
+function sprintRow() {
+  const url = new URL("../sprint/apply/", location.href);
+  if (store.from) url.searchParams.set("from", store.from);
+  if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) url.searchParams.set("api", API);
+  const go = button("Continue to the sprint step", () => (location.href = url.toString()), { solid: true, arrow: true, focus: true });
+  return h("div", "saved__open", null, {}, [h("h3", "card__sub card__sub--keep", "Your map is saved. One short step left."), h("p", "card__help", "Confirm your target and a clinic time, and you'll know right away if you're in."), row(go)]);
 }
 
 /** The board for a seat. On this Mac the board gets the same local API the check uses. */
@@ -1297,12 +1319,14 @@ async function boot() {
     // From a free board's "Have us do this" (?step=offer): straight to the offer on their own check.
     const asked = params.get("step");
     if (asked === "offer") store.rstep = offer ? "offer" : "next"; // without Stripe yet, the offer says how to start
+    if (params.get("sprint") === "1") store.sprint = true;
     show("result");
     booted = true;
     return drawMap({ first: true });
   }
   restore();
   store.from = store.from || arrivedFrom();
+  if (params.get("sprint") === "1") store.sprint = true; // from sprint/: the sprint step comes after the map is saved
   if (store.view in VIEWS && store.view !== "wait" && (store.view !== "q" || store.qid)) show(store.view, store.qid);
   else next();
   booted = true;
