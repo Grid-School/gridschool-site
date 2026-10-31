@@ -55,8 +55,14 @@
     {"value": "parent", "label": "A parent"},
     {"value": "unsure", "label": "Not sure"}
   ],
+  "talk": [
+    {"value": "enjoy", "label": "I enjoy it"},
+    {"value": "fine", "label": "I'm fine with it"},
+    {"value": "build", "label": "I'd rather just build"},
+    {"value": "unsure", "label": "Not sure yet"}
+  ],
   "commitment": {
-    "version": "sprint-2026-11-v2",
+    "version": "sprint-2026-11-v3",
     "give": [
       "Roles prepared for you every morning: fresh postings that fit you, the person to message at each, and the note written.",
       "Send Day every week, live together or on your own time.",
@@ -68,6 +74,7 @@
       "About 10 hours a week for the six weeks.",
       "5 sends a week once your resume is ready (3 at the least), each logged in the app the same day.",
       "Send Day each week, live or on your own time.",
+      "From week 2, one 30-minute conversation with a design partner, someone who could use a small tool you build, and a one-paragraph write-up of their problem.",
       "An honest review at the end, good or bad."
     ],
     "quiet": "If your seat is quiet for 7 days (no visit to the app, no send logged and no task ticked), it goes to the next person on the waitlist. You'll get two emails before that happens. Your map and everything on it stay yours, free, and you can rejoin the waitlist.",

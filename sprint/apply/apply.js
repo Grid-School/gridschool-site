@@ -7,12 +7,12 @@
  * the signed-in account, else the board's own token, else the saved check's id (this browser's check).
  */
 
-import { PERSIST } from "../../config.js?v=72f2dd6-202610310710";
-import * as Account from "../../check/account.js?v=72f2dd6-202610310710";
-import { track, visitorId } from "../../check/events.js?v=72f2dd6-202610310710";
-import { enterSeat } from "../../app/js/persist-auth.js?v=72f2dd6-202610310710";
-import { currentSession } from "../../app/js/session.js?v=72f2dd6-202610310710";
-import { checkHref, dayText, fullName, identity, resultHead, savedCheck, sourceFrom, stepAnswers, stepProblem } from "../sprint-model.mjs?v=72f2dd6-202610310710";
+import { PERSIST } from "../../config.js?v=fc7db25-202610310827";
+import * as Account from "../../check/account.js?v=fc7db25-202610310827";
+import { track, visitorId } from "../../check/events.js?v=fc7db25-202610310827";
+import { enterSeat } from "../../app/js/persist-auth.js?v=fc7db25-202610310827";
+import { currentSession } from "../../app/js/session.js?v=fc7db25-202610310827";
+import { checkHref, dayText, fullName, identity, resultHead, savedCheck, sourceFrom, stepAnswers, stepProblem } from "../sprint-model.mjs?v=fc7db25-202610310827";
 
 const LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
 const API = (() => {
@@ -151,7 +151,7 @@ function problemScreen(message) {
 
 function stepScreen(note = "") {
   const asked = me.ask || [];
-  values = { title: values.title ?? me.title, adjacent: values.adjacent ?? "", clinic: values.clinic ?? "", payer: values.payer ?? "", ...values };
+  values = { title: values.title ?? me.title, adjacent: values.adjacent ?? "", clinic: values.clinic ?? "", payer: values.payer ?? "", talk: values.talk ?? "", ...values };
   const error = h("p", { class: "sp__error", role: "alert" }, note);
   const parts = [];
   const known = me.known || {};
@@ -210,6 +210,11 @@ function stepScreen(note = "") {
       h("p", { class: "sp__help" }, "So the notes we write match your profile. Skip it if you don't have one yet."),
       h("input", { type: "url", id: "linkedin", placeholder: "https://www.linkedin.com/in/…", value: values.linkedin || "", oninput: (e) => (values.linkedin = e.target.value) })));
   }
+  if ((status.talk || []).length) {
+    parts.push(h("fieldset", { class: "sp__q" }, h("legend", {}, "How do you feel about talking with the people who'll use what you build? (optional)"),
+      h("p", { class: "sp__help" }, "Part of the work is talking with them to learn what they need. Any answer is fine. It helps your coach plan with you, and it doesn't change whether you get a seat."),
+      choice("talk", status.talk, values.talk, (v) => (values.talk = v))));
+  }
   parts.push(h("fieldset", { class: "sp__q" }, h("legend", {}, "Which clinic suits you?"),
     h("p", { class: "sp__help" }, "Clinics are where you bring what's stuck. Pick the one you'd usually join."),
     choice("clinic", (status.clinics || []).map((c) => ({ value: c.id, label: c.label })), values.clinic, (v) => (values.clinic = v))));
@@ -256,6 +261,7 @@ function requestBody(extra = {}) {
     titles: { main: values.title, adjacent: values.adjacent },
     clinic: values.clinic,
     payer: values.payer,
+    talk: values.talk,
     ...extra,
   };
 }

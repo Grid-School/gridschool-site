@@ -14,14 +14,14 @@
  * this browser so a refresh loses nothing; the resume text never does.
  */
 
-import { PERSIST, link } from "../config.js?v=72f2dd6-202610310710";
-import * as I from "../data/intake/intake.mjs?v=72f2dd6-202610310710";
-import { mountCheckMap } from "./check-map.js?v=72f2dd6-202610310710";
-import * as Account from "./account.js?v=72f2dd6-202610310710";
-import { enterSeat } from "../app/js/persist-auth.js?v=72f2dd6-202610310710";
-import { track, visitorId } from "./events.js?v=72f2dd6-202610310710";
-import * as Share from "./share.mjs?v=72f2dd6-202610310710";
-import { drawShareCard, cardBlob } from "./share-card.js?v=72f2dd6-202610310710";
+import { PERSIST, link } from "../config.js?v=fc7db25-202610310827";
+import * as I from "../data/intake/intake.mjs?v=fc7db25-202610310827";
+import { mountCheckMap } from "./check-map.js?v=fc7db25-202610310827";
+import * as Account from "./account.js?v=fc7db25-202610310827";
+import { enterSeat } from "../app/js/persist-auth.js?v=fc7db25-202610310827";
+import { track, visitorId } from "./events.js?v=fc7db25-202610310827";
+import * as Share from "./share.mjs?v=fc7db25-202610310827";
+import { drawShareCard, cardBlob } from "./share-card.js?v=fc7db25-202610310827";
 
 const KEY = "gridschool.check.v1";
 const SHARE_KEY = "gridschool.share.v1";
@@ -999,10 +999,11 @@ function offerBlock(hits, checkout) {
     error,
     h("p", "card__fine", offer.payNote),
     h("p", "card__fine", "Prices are in US dollars and include any sales tax or VAT. Checkout shows them in your own currency."),
+    // The founding cohort and the free sprint come with calls, so they start with the step before a call (fit/).
     h("p", "card__fine", null, {}, [
-      "Want me on calls with you, building your projects together? ",
-      h("a", "", "See the Residency", { href: `../residency/${DEMO ? "?demo=1" : ""}` }),
-      ".",
+      "Want a coach and a cohort, with calls? ",
+      h("a", "", "See if a call fits", { href: `../fit/${store.saved?.id ? `?id=${store.saved.id}` : ""}` }),
+      ". It takes about five minutes.",
     ]),
     row(shareButton(hits))
   );

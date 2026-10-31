@@ -16,10 +16,10 @@
  * half-typed form. Aden sees it read-only from the desk.
  */
 
-import { el, mount } from "../dom.js?v=72f2dd6-202610310710";
-import { panel, btn, field, toast, copy } from "../ui.js?v=72f2dd6-202610310710";
-import { isoDate, fmtDay } from "../time.js?v=72f2dd6-202610310710";
-import { STATUS } from "../graph/model.js?v=72f2dd6-202610310710";
+import { el, mount } from "../dom.js?v=fc7db25-202610310827";
+import { panel, btn, field, toast, copy } from "../ui.js?v=fc7db25-202610310827";
+import { isoDate, fmtDay } from "../time.js?v=fc7db25-202610310827";
+import { STATUS } from "../graph/model.js?v=fc7db25-202610310827";
 import {
   STAGES,
   RELATIONS,
@@ -63,20 +63,20 @@ import {
   targetCandidates,
   webLink,
   MAX_ACTIVE_TARGETS,
-} from "../search.js?v=72f2dd6-202610310710";
-import { storyCard, appRow } from "./search-parts.js?v=72f2dd6-202610310710";
-import { TOOLS, moveRoute } from "../engine.js?v=72f2dd6-202610310710";
-import { currentMove, setLiveJobs } from "../next-live.js?v=72f2dd6-202610310710";
-import { PERSIST } from "../../../config.js?v=72f2dd6-202610310710";
-import { matchedRoles, radarReady, fetchPacks, winsState, shareWin } from "../roles-remote.js?v=72f2dd6-202610310710";
-import { createPackDrawer } from "./pack.js?v=72f2dd6-202610310710";
-import { createCampaignDrawer } from "./campaign.js?v=72f2dd6-202610310710";
-import { createPositioningCard } from "./positioning-card.js?v=72f2dd6-202610310710";
-import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=72f2dd6-202610310710";
-import { roleKeyFromRoute } from "../daily-run.js?v=72f2dd6-202610310710";
-import { readiness, nextAction } from "../resume-stages.js?v=72f2dd6-202610310710";
-import * as resumeApi from "../resume-remote.js?v=72f2dd6-202610310710";
-import { openResumeAt } from "./resume.js?v=72f2dd6-202610310710";
+} from "../search.js?v=fc7db25-202610310827";
+import { storyCard, appRow } from "./search-parts.js?v=fc7db25-202610310827";
+import { TOOLS, moveRoute } from "../engine.js?v=fc7db25-202610310827";
+import { currentMove, setLiveJobs } from "../next-live.js?v=fc7db25-202610310827";
+import { PERSIST } from "../../../config.js?v=fc7db25-202610310827";
+import { matchedRoles, radarReady, fetchPacks, winsState, shareWin } from "../roles-remote.js?v=fc7db25-202610310827";
+import { createPackDrawer } from "./pack.js?v=fc7db25-202610310827";
+import { createCampaignDrawer } from "./campaign.js?v=fc7db25-202610310827";
+import { createPositioningCard } from "./positioning-card.js?v=fc7db25-202610310827";
+import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=fc7db25-202610310827";
+import { roleKeyFromRoute } from "../daily-run.js?v=fc7db25-202610310827";
+import { readiness, nextAction } from "../resume-stages.js?v=fc7db25-202610310827";
+import * as resumeApi from "../resume-remote.js?v=fc7db25-202610310827";
+import { openResumeAt } from "./resume.js?v=fc7db25-202610310827";
 
 const RUN_FAMILIES = ["proof", "presence", "network", "interview"];
 /** Every Jobs screen (#/do/<id>); Profile is reached from the "Your LinkedIn" step, not a tab. */

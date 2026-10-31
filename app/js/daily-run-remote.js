@@ -6,9 +6,9 @@
  *   markClicked    POST /students/:slug/daily-run  {clicked: true}: they opened the app from the email
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=72f2dd6-202610310710";
-import { persistToken } from "./session.js?v=72f2dd6-202610310710";
-import { plainError } from "./plain-error.js?v=72f2dd6-202610310710";
+import { PERSIST, isPlaceholder } from "../../config.js?v=fc7db25-202610310827";
+import { persistToken } from "./session.js?v=fc7db25-202610310827";
+import { plainError } from "./plain-error.js?v=fc7db25-202610310827";
 
 export function dailyRunReady(slug) {
   return Boolean(slug && slug !== "demo" && persistToken() && PERSIST?.endpoint && !isPlaceholder(PERSIST.endpoint));

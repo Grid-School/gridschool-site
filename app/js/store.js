@@ -9,9 +9,9 @@
  * data/students/<slug>.json.
  */
 
-import { loadBoard, boardCurriculum, libraryFor } from "./api.js?v=72f2dd6-202610310710";
-import { buildGraph } from "./graph/model.js?v=72f2dd6-202610310710";
-import { weekNumber, studentWeek, ownSchedule, hasOwnMap } from "./time.js?v=72f2dd6-202610310710";
+import { loadBoard, boardCurriculum, libraryFor } from "./api.js?v=fc7db25-202610310827";
+import { buildGraph } from "./graph/model.js?v=fc7db25-202610310827";
+import { weekNumber, studentWeek, ownSchedule, hasOwnMap } from "./time.js?v=fc7db25-202610310827";
 import {
   read,
   clear as clearPersist,
@@ -21,11 +21,11 @@ import {
   mergeStudent,
   STUDENT_KEYS,
   INSTRUCTOR_KEYS,
-} from "./persist.js?v=72f2dd6-202610310710";
-import { flushAfterLocalWrite, hydrateFromRemote, persistStatus, startPolling } from "./persist-remote.js?v=72f2dd6-202610310710";
-import { validReviewReturn } from "./review.js?v=72f2dd6-202610310710";
-import { isDevUnlock } from "./dev-mode.js?v=72f2dd6-202610310710";
-import * as measure from "./measure.js?v=72f2dd6-202610310710";
+} from "./persist.js?v=fc7db25-202610310827";
+import { flushAfterLocalWrite, hydrateFromRemote, persistStatus, startPolling } from "./persist-remote.js?v=fc7db25-202610310827";
+import { validReviewReturn } from "./review.js?v=fc7db25-202610310827";
+import { isDevUnlock } from "./dev-mode.js?v=fc7db25-202610310827";
+import * as measure from "./measure.js?v=fc7db25-202610310827";
 
 export { validReviewReturn };
 

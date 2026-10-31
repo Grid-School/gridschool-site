@@ -16,25 +16,25 @@
  * went with it, because on the floor position is derived from sequence.
  */
 
-import { el, mount } from "../dom.js?v=72f2dd6-202610310710";
-import { btn, toast } from "../ui.js?v=72f2dd6-202610310710";
-import { createScene3d } from "../graph/scene3d/index.js?v=72f2dd6-202610310710";
-import { createRezScene } from "../graph/rez/index.js?v=72f2dd6-202610310710";
-import { STATUS, nextUp, progress, visibleGraph, stepNumber } from "../graph/model.js?v=72f2dd6-202610310710";
-import { STANDING, STANDING_LABEL, standingOf } from "../graph/standing.js?v=72f2dd6-202610310710";
-import { icon } from "../icons.js?v=72f2dd6-202610310710";
-import { trackLabel } from "../copy.js?v=72f2dd6-202610310710";
-import { mapList } from "./map-list.js?v=72f2dd6-202610310710";
-import { dueLabel } from "./from-aden.js?v=72f2dd6-202610310710";
-import { createGridState, hashFor, RESERVED_ARGS, VIEW } from "./grid-state.js?v=72f2dd6-202610310710";
-import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=72f2dd6-202610310710";
-import { isProgressReadOnly } from "../store.js?v=72f2dd6-202610310710";
-import { setLiveJobs } from "../next-live.js?v=72f2dd6-202610310710";
-import { matchedRoles, fetchPacks, radarReady } from "../roles-remote.js?v=72f2dd6-202610310710";
-import { careerOf } from "../search.js?v=72f2dd6-202610310710";
-import { routeGraph, isLandmark } from "../graph/route.js?v=72f2dd6-202610310710";
-import { isFreeMap, upgradeHref } from "../prep.js?v=72f2dd6-202610310710";
-import { createSuggest } from "./suggest.js?v=72f2dd6-202610310710";
+import { el, mount } from "../dom.js?v=fc7db25-202610310827";
+import { btn, toast } from "../ui.js?v=fc7db25-202610310827";
+import { createScene3d } from "../graph/scene3d/index.js?v=fc7db25-202610310827";
+import { createRezScene } from "../graph/rez/index.js?v=fc7db25-202610310827";
+import { STATUS, nextUp, progress, visibleGraph, stepNumber } from "../graph/model.js?v=fc7db25-202610310827";
+import { STANDING, STANDING_LABEL, standingOf } from "../graph/standing.js?v=fc7db25-202610310827";
+import { icon } from "../icons.js?v=fc7db25-202610310827";
+import { trackLabel } from "../copy.js?v=fc7db25-202610310827";
+import { mapList } from "./map-list.js?v=fc7db25-202610310827";
+import { dueLabel } from "./from-aden.js?v=fc7db25-202610310827";
+import { createGridState, hashFor, RESERVED_ARGS, VIEW } from "./grid-state.js?v=fc7db25-202610310827";
+import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=fc7db25-202610310827";
+import { isProgressReadOnly } from "../store.js?v=fc7db25-202610310827";
+import { setLiveJobs } from "../next-live.js?v=fc7db25-202610310827";
+import { matchedRoles, fetchPacks, radarReady } from "../roles-remote.js?v=fc7db25-202610310827";
+import { careerOf } from "../search.js?v=fc7db25-202610310827";
+import { routeGraph, isLandmark } from "../graph/route.js?v=fc7db25-202610310827";
+import { isFreeMap, upgradeHref } from "../prep.js?v=fc7db25-202610310827";
+import { createSuggest } from "./suggest.js?v=fc7db25-202610310827";
 
 /** Top clears the bar, right the control stack, bottom the next-step card. */
 const INSETS = { top: 64, right: 72, bottom: 96, left: 40 };

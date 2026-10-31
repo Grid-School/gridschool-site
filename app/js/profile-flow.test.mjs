@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import * as F from "./profile-flow.js?v=72f2dd6-202610310710";
+import * as F from "./profile-flow.js?v=fc7db25-202610310827";
 
 const catalog = JSON.parse(readFileSync(new URL("../../data/intake/questions.json", import.meta.url)));
 const q = (id) => catalog.questions.find((item) => item.id === id);
