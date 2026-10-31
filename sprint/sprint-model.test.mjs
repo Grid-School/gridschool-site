@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { checkHref, dayText, fullName, identity, resultHead, savedCheck, seatsLine, sourceFrom, stepAnswers, stepProblem } from "./sprint-model.mjs?v=7288040-202610310409";
+import { checkHref, dayText, fullName, identity, resultHead, savedCheck, seatsLine, sourceFrom, stepAnswers, stepProblem } from "./sprint-model.mjs?v=c7fe5aa-202610310430";
 
 test("dates read as calendar days, with the weekday when asked", () => {
   assert.equal(dayText("2026-11-04"), "November 4");

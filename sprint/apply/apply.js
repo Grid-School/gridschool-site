@@ -7,12 +7,12 @@
  * the signed-in account, else the board's own token, else the saved check's id (this browser's check).
  */
 
-import { PERSIST } from "../../config.js?v=7288040-202610310409";
-import * as Account from "../../check/account.js?v=7288040-202610310409";
-import { track, visitorId } from "../../check/events.js?v=7288040-202610310409";
-import { enterSeat } from "../../app/js/persist-auth.js?v=7288040-202610310409";
-import { currentSession } from "../../app/js/session.js?v=7288040-202610310409";
-import { checkHref, dayText, fullName, identity, resultHead, savedCheck, sourceFrom, stepAnswers, stepProblem } from "../sprint-model.mjs?v=7288040-202610310409";
+import { PERSIST } from "../../config.js?v=c7fe5aa-202610310430";
+import * as Account from "../../check/account.js?v=c7fe5aa-202610310430";
+import { track, visitorId } from "../../check/events.js?v=c7fe5aa-202610310430";
+import { enterSeat } from "../../app/js/persist-auth.js?v=c7fe5aa-202610310430";
+import { currentSession } from "../../app/js/session.js?v=c7fe5aa-202610310430";
+import { checkHref, dayText, fullName, identity, resultHead, savedCheck, sourceFrom, stepAnswers, stepProblem } from "../sprint-model.mjs?v=c7fe5aa-202610310430";
 
 const LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
 const API = (() => {
@@ -149,10 +149,10 @@ function problemScreen(message) {
   show(eyebrow("The free sprint"), h("h1", {}, "That didn't work."), h("p", { class: "sp__lede" }, message), h("div", { class: "sp__acts" }, btn("Try again", () => start())));
 }
 
-function stepScreen() {
+function stepScreen(note = "") {
   const asked = me.ask || [];
   values = { title: values.title ?? me.title, adjacent: values.adjacent ?? "", clinic: values.clinic ?? "", payer: values.payer ?? "", ...values };
-  const error = h("p", { class: "sp__error", role: "alert" });
+  const error = h("p", { class: "sp__error", role: "alert" }, note);
   const parts = [];
   const known = me.known || {};
   const knownBits = [
@@ -235,13 +235,13 @@ function stepScreen() {
       submit.disabled = false;
       if (problem.data?.missing) {
         me.ask = problem.data.missing;
-        stepScreen();
+        return stepScreen(say(problem));
       }
       error.textContent = say(problem);
     }
   });
   show(
-    eyebrow("The free sprint · step 2 of 2"),
+    eyebrow("The free sprint · step 2 of 3"),
     h("h1", {}, /^[\p{L}'-]{2,}$/u.test(String(me.name || "").split(" ")[0]) ? `Almost there, ${me.name.split(" ")[0]}.` : "Almost there."),
     h("p", { class: "sp__lede" }, "A few things for the sprint. We only ask what your check didn't already tell us."),
     parts,
@@ -260,9 +260,9 @@ function requestBody(extra = {}) {
   };
 }
 
-function commitScreen() {
+function commitScreen(note = "") {
   const c = commitment || status.commitment;
-  const error = h("p", { class: "sp__error", role: "alert" });
+  const error = h("p", { class: "sp__error", role: "alert" }, note);
   const name = h("input", { type: "text", id: "fullname", autocomplete: "name", maxlength: "120", placeholder: "Your full name" });
   const quote = h("input", { type: "checkbox", id: "quote" });
   const agree = btn("I agree, set up my seat", async () => {
@@ -279,13 +279,13 @@ function commitScreen() {
       agree.disabled = false;
       if (problem.status === 409 && problem.data?.commitment) {
         commitment = problem.data.commitment;
-        commitScreen();
+        return commitScreen(say(problem));
       }
       error.textContent = say(problem);
     }
   });
   show(
-    eyebrow("The free sprint · the agreement"),
+    eyebrow("The free sprint · step 3 of 3, the agreement"),
     h("h1", {}, "What we each give."),
     h("p", { class: "sp__lede" }, `Six weeks, ${dayText(status.starts)} to ${dayText(status.ends)}. Free. Read it once, then type your name.`),
     h("p", { class: "sp__h" }, "We give"),

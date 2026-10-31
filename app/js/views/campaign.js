@@ -11,12 +11,12 @@
  * in their own mail app, the call is their phone, LinkedIn is their click.
  */
 
-import { el, mount } from "../dom.js?v=7288040-202610310409";
-import { btn, copy, toast, field } from "../ui.js?v=7288040-202610310409";
-import { createModal } from "../modal.js?v=7288040-202610310409";
-import { DAY0, FOLLOWUP_DAYS, nextTouch, fillLinks, peopleLinks } from "../search.js?v=7288040-202610310409";
-import { draftCampaign, campaignAllowance } from "../roles-remote.js?v=7288040-202610310409";
-import { workPanel } from "./work.js?v=7288040-202610310409";
+import { el, mount } from "../dom.js?v=c7fe5aa-202610310430";
+import { btn, copy, toast, field } from "../ui.js?v=c7fe5aa-202610310430";
+import { createModal } from "../modal.js?v=c7fe5aa-202610310430";
+import { DAY0, FOLLOWUP_DAYS, nextTouch, fillLinks, peopleLinks } from "../search.js?v=c7fe5aa-202610310430";
+import { draftCampaign, campaignAllowance } from "../roles-remote.js?v=c7fe5aa-202610310430";
+import { workPanel } from "./work.js?v=c7fe5aa-202610310430";
 
 /** When each step happens, beside it in the step list. */
 const WHEN = { who: "Prep", script: "Prep", record: "Prep", email: "Day 0", linkedin: "Day 0", call: "Day 0", follow: "Day 3 · 7 · 14" };
@@ -36,9 +36,9 @@ const WRITE_STEPS = [
   { label: "Writing the email, Loom ideas and LinkedIn note" },
   { label: "Writing the call scripts and follow-ups" },
 ];
-import { scriptWizard, recordNode, closeRehearsal } from "./loom-kit.js?v=7288040-202610310409";
-import { nodeIntro } from "./node-rail.js?v=7288040-202610310409";
-import { NODES, doneNodes, firstOpen, nextNode, prevNode, labelOf } from "../campaign-steps.js?v=7288040-202610310409";
+import { scriptWizard, recordNode, closeRehearsal } from "./loom-kit.js?v=c7fe5aa-202610310430";
+import { nodeIntro } from "./node-rail.js?v=c7fe5aa-202610310430";
+import { NODES, doneNodes, firstOpen, nextNode, prevNode, labelOf } from "../campaign-steps.js?v=c7fe5aa-202610310430";
 
 export function createCampaignDrawer({ slug, getTarget, onPatch, onTouch, getPortfolio, readOnly = () => false, onBusy = () => {}, onGoStep = null }) {
   const modal = createModal({ label: "Target campaign", size: "reading", onClose: () => closeRehearsal() || close() });
@@ -87,7 +87,7 @@ export function createCampaignDrawer({ slug, getTarget, onPatch, onTouch, getPor
       else if (typeof result.left === "number" && result.left >= 0 && result.left <= 3) toast(`${result.left} campaign ${result.left === 1 ? "draft" : "drafts"} left this month.`, "warn");
     } catch (error) {
       // A refusal for something missing is one line already (generator_inputs.py); anything else failed.
-      toast(error.status === 409 ? error.message : `The campaign draft failed: ${error.message}`, "warn");
+      toast(error.status === 409 ? error.message : `The draft wasn't written. ${error.message}`, "warn");
       if (error.status === 409) void refreshRoom();
     } finally {
       panel.stop();

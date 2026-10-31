@@ -9,13 +9,13 @@
  * itself when the work is done, from wherever it was done.
  */
 
-import { el, mount } from "../dom.js?v=7288040-202610310409";
-import { btn, toast } from "../ui.js?v=7288040-202610310409";
-import { careerOf, searchOf, activeTargets, MAX_ACTIVE_TARGETS } from "../search.js?v=7288040-202610310409";
-import { isProgressReadOnly } from "../store.js?v=7288040-202610310409";
-import { field } from "../ui.js?v=7288040-202610310409";
-import { webLink } from "../search.js?v=7288040-202610310409";
-import { createPositioningCard } from "./positioning-card.js?v=7288040-202610310409";
+import { el, mount } from "../dom.js?v=c7fe5aa-202610310430";
+import { btn, toast } from "../ui.js?v=c7fe5aa-202610310430";
+import { careerOf, searchOf, activeTargets, MAX_ACTIVE_TARGETS } from "../search.js?v=c7fe5aa-202610310430";
+import { isProgressReadOnly } from "../store.js?v=c7fe5aa-202610310430";
+import { field } from "../ui.js?v=c7fe5aa-202610310430";
+import { webLink } from "../search.js?v=c7fe5aa-202610310430";
+import { createPositioningCard } from "./positioning-card.js?v=c7fe5aa-202610310430";
 
 const taskDone = (state, task) => state.student?.tasks?.[task?.id]?.state === "done";
 

@@ -12,15 +12,15 @@
  * Nothing here needs history. The record starts with the first send through this node.
  */
 
-import { el, mount } from "../dom.js?v=7288040-202610310409";
-import { btn, toast } from "../ui.js?v=7288040-202610310409";
-import { isProgressReadOnly } from "../store.js?v=7288040-202610310409";
-import { addApp, answerAsk, outcomeAsks, noReply, pickVersion, sentBefore, thisWeek, networkOf, insideConnections, careerOf, searchOf, ageLabel } from "../search.js?v=7288040-202610310409";
-import { verdict, pickWeek } from "../send-verdict.js?v=7288040-202610310409";
-import { readiness } from "../resume-stages.js?v=7288040-202610310409";
-import { matchedRoles, radarReady } from "../roles-remote.js?v=7288040-202610310409";
-import * as api from "../resume-remote.js?v=7288040-202610310409";
-import { openResumeAt } from "./resume.js?v=7288040-202610310409";
+import { el, mount } from "../dom.js?v=c7fe5aa-202610310430";
+import { btn, toast } from "../ui.js?v=c7fe5aa-202610310430";
+import { isProgressReadOnly } from "../store.js?v=c7fe5aa-202610310430";
+import { addApp, answerAsk, outcomeAsks, noReply, pickVersion, sentBefore, thisWeek, networkOf, insideConnections, careerOf, searchOf, ageLabel } from "../search.js?v=c7fe5aa-202610310430";
+import { verdict, pickWeek } from "../send-verdict.js?v=c7fe5aa-202610310430";
+import { readiness } from "../resume-stages.js?v=c7fe5aa-202610310430";
+import { matchedRoles, radarReady } from "../roles-remote.js?v=c7fe5aa-202610310430";
+import * as api from "../resume-remote.js?v=c7fe5aa-202610310430";
+import { openResumeAt } from "./resume.js?v=c7fe5aa-202610310430";
 
 const WEEK_TARGET = 5;
 const LABEL = { apply: "Apply", reach: "Write first", skip: "Skip" };
@@ -37,6 +37,7 @@ export function renderSend(ctx, options = {}) {
   let open = null; // the posting they're looking at
   let busy = "";
   let error = "";
+  let loadedAt = 0; // when the resume was last read, so coming back from fixing it reads it again
 
   const readOnly = () => isProgressReadOnly();
   const student = () => current.state.student;
@@ -49,9 +50,10 @@ export function renderSend(ctx, options = {}) {
 
   async function load() {
     if (!api.resumeReady()) {
-      error = "Sign in to send from the board.";
+      error = "Sign in to see this week's sends.";
       return render();
     }
+    loadedAt = Date.now();
     try {
       const [r, s] = await Promise.all([api.loadResume(slug), api.listSaves(slug).catch(() => ({ saves: [] }))]);
       rec = r;
@@ -91,7 +93,12 @@ export function renderSend(ctx, options = {}) {
   }
 
   function fiveBody() {
-    if (roles === null) return el("div.pack__wait", {}, el("span.pack__spinner", { "aria-hidden": "true" }), el("p", {}, radarReady() ? "Looking at this week's postings." : "The job radar isn't on for this account yet."));
+    if (roles === null && !radarReady()) {
+      // No feed for this account: say so without a spinner that never stops, and give the way that works.
+      return el("div.rz__empty", {}, el("p", {}, "Fresh postings aren't switched on for your account yet. Bring in a posting you found, and we'll prepare it with you."),
+        btn({ label: "Bring a posting →", variant: "ghost", onclick: () => current.navigate("do", "applications") }));
+    }
+    if (roles === null) return el("div.pack__wait", {}, el("span.pack__spinner", { "aria-hidden": "true" }), el("p", {}, "Looking at this week's postings."));
     const picks = pickWeek(roles.roles || [], { apps: apps(), needs: needs(), insidersOf });
     if (!picks.length) return el("p.rz__empty", {}, `Nothing fresh for ${title()} this week that you haven't already sent to. Check again in a day or two, or add another title on your resume.`);
     return el("ol.sd__five", {}, picks.map(({ role, v }) =>
@@ -163,7 +170,10 @@ export function renderSend(ctx, options = {}) {
   }
 
   function render() {
-    if (error && !rec) return mount(root, el("div.rz", {}, el("p.rz__empty", {}, error)));
+    if (error && !rec) {
+      return mount(root, el("div.rz", {}, el("p.rz__empty", {}, error),
+        el("div.rz__next", {}, api.resumeReady() ? btn({ label: "Try again", variant: "ghost", onclick: () => { error = ""; render(); load(); } }) : btn({ label: "Sign in", variant: "solid", href: "../signin/" }))));
+    }
     if (!rec) return mount(root, el("div.rz", {}, el("div.pack__wait", {}, el("span.pack__spinner", { "aria-hidden": "true" }), el("p", {}, "Opening."))));
     const ready = readiness({ rec, saves });
     if (!ready.ready) return mount(root, el("div.rz.rz--embedded", {}, lockedBody(ready)));
@@ -185,7 +195,10 @@ export function renderSend(ctx, options = {}) {
         rec = null;
         load();
       } else if (rec) {
-        render();
+        // Back from fixing the resume (the lock's "Go →"), or roles never fetched: read again, at most every few seconds.
+        const stale = !readiness({ rec, saves }).ready || (roles === null && radarReady());
+        if (stale && Date.now() - loadedAt > 3000) load();
+        else render();
       }
     },
   };

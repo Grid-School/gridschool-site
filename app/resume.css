@@ -109,8 +109,28 @@
 .pf__thumb.is-broken { opacity: .3; }
 .pf__thumbs--small { padding: 4px 0; }
 .pf__answers { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-.pf__answers li { padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); cursor: pointer; font-size: 14px; }
+.pf__answers li { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .pf__answers li:hover { border-color: var(--cyan); }
+.pf__answer { display: grid; gap: 4px; min-width: 0; overflow-wrap: anywhere; }
+.pf__answers li .b { flex: none; }
+/* Uploads: the rule, the thumbnails with Replace and Remove, the count, and a drop area. */
+.pf__rule { margin: 0; }
+.pf__count { margin: 0; font-size: 13px; }
+.pf__thumbwrap { margin: 0; }
+.pf__thumbwrap figcaption { font-size: 12px; }
+.pf__thumbacts { display: flex; gap: 2px; }
+.pf__thumbacts .b { padding: 4px 8px; font-size: 13px; }
+.pf__replace { position: relative; overflow: hidden; cursor: pointer; }
+.pf__replace .rz__file { position: absolute; inset: 0; opacity: 0; cursor: pointer; margin: 0; }
+.pf__replace[aria-disabled="true"] { opacity: .5; pointer-events: none; }
+.rz__drop.is-over { border-color: var(--cyan); background: rgba(40, 225, 255, .06); }
+/* What a change left out of date, and what was updated at once. */
+.pf__fresh { margin: 0 0 8px; font-size: 13px; color: var(--cyan); }
+.pf__stale { display: grid; gap: 8px; margin: 12px 0; }
+.pf__stale-note { margin: 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); font-size: 14px; }
+.pf__stale-item { display: grid; gap: 8px; padding: 10px 12px; border: 1px solid var(--warn); border-radius: var(--radius-sm); font-size: 14px; }
+.pf__stale-item p { margin: 0; }
+.pf__stale-acts { display: flex; flex-wrap: wrap; gap: 8px; }
 .view--profile .answer__opts, .view--profile .answer__input { margin-left: 0; }
 .view--profile .answer__input { width: 100%; box-sizing: border-box; }
 

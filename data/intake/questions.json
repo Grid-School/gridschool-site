@@ -711,11 +711,12 @@
     {
       "id": "photo",
       "chunk": "c4",
-      "prompt": "Add your current profile photo, if you have one.",
+      "prompt": "Add your current profile photo, if you have one. One image.",
       "kind": "upload",
       "accept": [
         "image/png",
-        "image/jpeg"
+        "image/jpeg",
+        "image/webp"
       ],
       "max": 1,
       "affects": [
@@ -725,11 +726,12 @@
     {
       "id": "banner",
       "chunk": "c4",
-      "prompt": "Add your current LinkedIn banner, if you have one.",
+      "prompt": "Add your current LinkedIn banner, if you have one. One image.",
       "kind": "upload",
       "accept": [
         "image/png",
-        "image/jpeg"
+        "image/jpeg",
+        "image/webp"
       ],
       "max": 1,
       "affects": [
@@ -764,7 +766,8 @@
       "kind": "upload",
       "accept": [
         "image/png",
-        "image/jpeg"
+        "image/jpeg",
+        "image/webp"
       ],
       "max": 3,
       "askIf": [
@@ -1012,8 +1015,8 @@
     {
       "id": "styleShots",
       "chunk": "c7",
-      "prompt": "Add screenshots of looks you like.",
-      "help": "Pinterest boards, sites, posters, app screens, anything. Up to 6. We use them for your banner and your portfolio.",
+      "prompt": "Add up to 6 screenshots of looks you like.",
+      "help": "Pinterest boards, sites, posters, app screens, anything. Your coach uses them to shape your banner and portfolio.",
       "kind": "upload",
       "accept": [
         "image/png",

@@ -25,13 +25,13 @@
  * that never happened.
  */
 
-import { PERSIST, link } from "../config.js?v=7288040-202610310409";
-import * as Account from "../check/account.js?v=7288040-202610310409";
-import { enterSeat } from "../app/js/persist-auth.js?v=7288040-202610310409";
-import { startingOn, nextSteps, WAIT_LINE } from "./welcome-copy.js?v=7288040-202610310409";
-import { track } from "../check/events.js?v=7288040-202610310409";
-import { routeFor, fromStripe, sitePath } from "../signin/route.mjs?v=7288040-202610310409";
-import { rememberSession, peek, fix, peekView, COPY } from "./recovery.js?v=7288040-202610310409";
+import { PERSIST, link } from "../config.js?v=c7fe5aa-202610310430";
+import * as Account from "../check/account.js?v=c7fe5aa-202610310430";
+import { enterSeat } from "../app/js/persist-auth.js?v=c7fe5aa-202610310430";
+import { startingOn, nextSteps, WAIT_LINE } from "./welcome-copy.js?v=c7fe5aa-202610310430";
+import { track } from "../check/events.js?v=c7fe5aa-202610310430";
+import { routeFor, fromStripe, sitePath } from "../signin/route.mjs?v=c7fe5aa-202610310430";
+import { rememberSession, peek, fix, peekView, COPY } from "./recovery.js?v=c7fe5aa-202610310430";
 
 // Localhost never talks to production: ?api= when given, else the page's own origin.
 const API = (() => {
@@ -72,6 +72,12 @@ const button = (label, onClick, solid = true) => {
 };
 
 /** "Didn't get your sign-in email?": only for someone who arrived from Stripe's after-payment link. */
+const textlink = (label, onClick) => {
+  const node = h("button", "textlink", label, { type: "button" });
+  node.addEventListener("click", onClick);
+  return node;
+};
+
 function recoveryLink() {
   if (!SESSION) return null;
   const node = h("button", "btn btn--line", COPY.ask, { type: "button", style: "margin-top: 18px" });
@@ -177,7 +183,28 @@ function codeView(email, note = "") {
       go.disabled = false;
     }
   });
-  show(h("p", "eyebrow", "Check your email"), h("h1", "card__title", `We sent a code to ${email}.`), note ? h("p", "card__lead", note) : null, form, recoveryLink());
+  // A code that never comes, or an email typed wrong, shouldn't need a reload (signin.js has the same two links).
+  const links = h("div", "card__row", null, {}, [
+    textlink("Send a new code", async () => {
+      error.textContent = "";
+      try {
+        const { sent } = await Account.sendCode(API, email, "begin");
+        error.textContent = sent ? "A new code is on its way." : "We couldn't send a code just now. Reply to your receipt email and we'll get you in.";
+      } catch (problem) {
+        error.textContent = say(problem);
+      }
+    }),
+    textlink("Use a different email", () => signInView()),
+  ]);
+  show(
+    h("p", "eyebrow", "Check your email"),
+    h("h1", "card__title", `We sent a code to ${email}.`),
+    note ? h("p", "card__lead", note) : null,
+    h("p", "card__help", "It works for 15 minutes. Nothing after a minute? Check spam."),
+    form,
+    links,
+    recoveryLink()
+  );
   code.focus();
 }
 

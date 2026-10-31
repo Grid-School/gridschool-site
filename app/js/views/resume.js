@@ -11,24 +11,25 @@
  * confirms it. Every saved version has a name, the date and time it was made, and can be downloaded again.
  */
 
-import { el, mount } from "../dom.js?v=7288040-202610310409";
-import { btn, toast } from "../ui.js?v=7288040-202610310409";
-import { nodeRail } from "./node-rail.js?v=7288040-202610310409";
-import { nextUp } from "../graph/model.js?v=7288040-202610310409";
-import { isProgressReadOnly, refresh as refreshStore } from "../store.js?v=7288040-202610310409";
-import { upgradeHref } from "../prep.js?v=7288040-202610310409";
-import * as api from "../resume-remote.js?v=7288040-202610310409";
-import { patient } from "../patient.js?v=7288040-202610310409";
-import { doneIds } from "../steps.js?v=7288040-202610310409";
-import { workPanel } from "./work.js?v=7288040-202610310409";
-import { needsPanel, needFor, planBlock } from "./needs.js?v=7288040-202610310409";
-import { sendSuggestion } from "../suggest-remote.js?v=7288040-202610310409";
-import { newOpId } from "../../../data/map-proposal.mjs?v=7288040-202610310409";
-import { titleRow } from "./titles.js?v=7288040-202610310409";
-import { talkButton, canTalk } from "./voice.js?v=7288040-202610310409";
-import { roundState, gained, RANGES, wantsNumber, addRange } from "../interview.js?v=7288040-202610310409";
-import { setStepDetail } from "../next-live.js?v=7288040-202610310409";
-import { stepsFor, claimsOf, linesOf, hasOutput, allConfirmed as confirmedAll, changedSinceSave as changedSince, savedAndDownloaded, nextAction } from "../resume-stages.js?v=7288040-202610310409";
+import { el, mount } from "../dom.js?v=c7fe5aa-202610310430";
+import { btn, toast } from "../ui.js?v=c7fe5aa-202610310430";
+import { nodeRail } from "./node-rail.js?v=c7fe5aa-202610310430";
+import { nextUp } from "../graph/model.js?v=c7fe5aa-202610310430";
+import { isProgressReadOnly, refresh as refreshStore } from "../store.js?v=c7fe5aa-202610310430";
+import { upgradeHref } from "../prep.js?v=c7fe5aa-202610310430";
+import * as api from "../resume-remote.js?v=c7fe5aa-202610310430";
+import { patient } from "../patient.js?v=c7fe5aa-202610310430";
+import { doneIds } from "../steps.js?v=c7fe5aa-202610310430";
+import { workPanel } from "./work.js?v=c7fe5aa-202610310430";
+import { needsPanel, needFor, planBlock } from "./needs.js?v=c7fe5aa-202610310430";
+import { sendSuggestion } from "../suggest-remote.js?v=c7fe5aa-202610310430";
+import { newOpId } from "../../../data/map-proposal.mjs?v=c7fe5aa-202610310430";
+import { titleRow } from "./titles.js?v=c7fe5aa-202610310430";
+import { talkButton, canTalk } from "./voice.js?v=c7fe5aa-202610310430";
+import { roundState, gained, RANGES, wantsNumber, addRange } from "../interview.js?v=c7fe5aa-202610310430";
+import { setStepDetail } from "../next-live.js?v=c7fe5aa-202610310430";
+import { stepsFor, claimsOf, linesOf, hasOutput, allConfirmed as confirmedAll, changedSinceSave as changedSince, savedAndDownloaded, nextAction } from "../resume-stages.js?v=c7fe5aa-202610310430";
+import { bindDraft, clearDraft } from "../drafts.js?v=c7fe5aa-202610310430";
 
 const PDF_JS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs";
 const PDF_WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs";
@@ -406,6 +407,15 @@ export function renderResume(ctx, options = {}) {
       lastGain.lines.length ? el("ul", {}, lastGain.lines.slice(0, 4).map((line) => el("li", {}, line))) : null);
   }
 
+  /** The keyboard tip under an answer: the right key for this computer, and none on a phone. */
+  function saveKeyTip() {
+    const touch = typeof matchMedia === "function" && matchMedia("(pointer: coarse)").matches;
+    const mac = typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent || "");
+    const keys = touch ? "" : ` Press ${mac ? "Cmd" : "Ctrl"}+Enter to save.`;
+    if (canTalk()) return `Tip: talking is faster.${keys}`;
+    return keys ? `Tip:${keys}` : null;
+  }
+
   function questionsBody() {
     const q = rec.next;
     const round = roundState(rec, { keepGoing });
@@ -421,7 +431,12 @@ export function renderResume(ctx, options = {}) {
       );
     }
     const box = el("textarea.rz__text", { rows: 6, placeholder: "Talk it through the way you would to a friend. Rough numbers are fine: say \"about\"." });
-    const send = () => (box.value.trim() ? run("Reading your answer.", (r) => api.answerQuestion(slug, rec.version, q.id, box.value, r), WORK.answer) : toast("Type an answer, or press Skip.", "warn"));
+    // What's typed lives on this device until the answer is saved: a failed save, a redraw or a reload keeps it.
+    const draftId = `resume.answer.${q.id}`;
+    bindDraft(box, { slug, id: draftId });
+    const send = () => (box.value.trim()
+      ? run("Reading your answer.", (r) => api.answerQuestion(slug, rec.version, q.id, box.value, r).then((out) => { clearDraft(slug, draftId); return out; }), WORK.answer)
+      : toast("Type an answer, or press Skip.", "warn"));
     const skipIt = (label) => run(label, () => api.skipQuestion(slug, rec.version, q.id));
     box.addEventListener("keydown", (e) => {
       if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) send();
@@ -440,7 +455,7 @@ export function renderResume(ctx, options = {}) {
         el("div.rz__q", {}, el("p.rz__qtext", {}, q.text), q.why ? el("p.rz__why", {}, q.why) : null),
         box,
         el("div.rz__aids", {}, talkButton(box), ranges),
-        el("p.rz__hint", {}, canTalk() ? "Tip: talking is faster. Press Cmd+Enter to save." : "Tip: press Cmd+Enter to save."),
+        el("p.rz__hint", {}, saveKeyTip()),
         gainBlock(),
       ],
       [
@@ -537,6 +552,11 @@ export function renderResume(ctx, options = {}) {
   async function download(save, fmt) {
     if (fmt === "pdf") {
       printPdf(save.text, save.name);
+      // The print dialog is the download: log it so "saved and downloaded" ticks and Finish opens.
+      api.renderSave(slug, save.id, "pdf")
+        .then(() => api.listSaves(slug))
+        .then((out) => { saves = out.saves || saves; render(); })
+        .catch(() => {});
       return;
     }
     if (busy) return;

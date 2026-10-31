@@ -8,11 +8,12 @@
  * Everything they upload is private to them.
  */
 
-import { el, mount } from "../dom.js?v=7288040-202610310409";
-import { btn, toast } from "../ui.js?v=7288040-202610310409";
-import { nodeRail, nodeIntro } from "./node-rail.js?v=7288040-202610310409";
-import * as api from "../images-remote.js?v=7288040-202610310409";
-import { STAGES, cropBox, needsShrink, shrinkTo, doneStages, firstOpen, sourceFor, allowanceLine } from "../image-crop.js?v=7288040-202610310409";
+import { el, mount } from "../dom.js?v=c7fe5aa-202610310430";
+import { btn, toast } from "../ui.js?v=c7fe5aa-202610310430";
+import { nodeRail, nodeIntro } from "./node-rail.js?v=c7fe5aa-202610310430";
+import * as api from "../images-remote.js?v=c7fe5aa-202610310430";
+import * as F from "../profile-flow.js?v=c7fe5aa-202610310430";
+import { STAGES, cropBox, needsShrink, shrinkTo, doneStages, firstOpen, sourceFor, allowanceLine } from "../image-crop.js?v=c7fe5aa-202610310430";
 
 const ACCEPT = "image/jpeg,image/png,image/webp";
 const LINKEDIN = { headshot: { width: 800, height: 800 }, banner: { width: 1584, height: 396 } };
@@ -21,7 +22,7 @@ function loadImage(src) {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => resolve(img);
-    img.onerror = () => reject(new Error("That file isn't an image this browser can open. Use a JPEG or PNG."));
+    img.onerror = () => reject(new Error("That file isn't an image this browser can open. Use a JPEG, PNG or WebP."));
     img.src = src;
   });
 }
@@ -153,39 +154,92 @@ export function renderImages(ctx) {
     return img;
   }
 
-  function uploader(kind, label, hint) {
-    const input = el("input", { type: "file", accept: ACCEPT, class: "im__file" });
-    input.addEventListener("change", async () => {
-      const file = input.files?.[0];
+  /** Upload several files one after another (the server takes one at a time), then say what went in. */
+  async function addFiles(kind, files, max) {
+    if (busy) return;
+    const have = kind === "face" ? (rec.uploads.face || []).length : 0;
+    const q = { max };
+    const images = files.filter(F.isImageFile);
+    const plan = F.planAdd(have, images, q);
+    const failed = images.length < files.length ? ["That file isn't an image. Use a JPEG, PNG or WebP."] : [];
+    let added = 0;
+    for (const [i, file] of plan.take.entries()) {
+      busy = plan.take.length > 1 ? `Adding photo ${i + 1} of ${plan.take.length}.` : "Uploading.";
+      render();
+      try {
+        rec = await api.uploadImage(slug, kind, await filePayload(file));
+        added += 1;
+      } catch (e) {
+        failed.push(e.message);
+      }
+    }
+    busy = "";
+    const line = F.addedLine({ added, left: plan.left, failed }, q);
+    if (line && (failed.length || plan.left || added > 1)) toast(line, failed.length || plan.left ? "warn" : "ok", { ms: 8000 });
+    render();
+  }
+
+  function picker(kind, { multiple = false, onFiles }) {
+    const input = el("input", { type: "file", accept: ACCEPT, class: "im__file", multiple: multiple || null });
+    input.addEventListener("change", () => {
+      const files = Array.from(input.files || []);
       input.value = "";
-      if (!file) return;
-      run("Uploading.", async () => api.uploadImage(slug, kind, await filePayload(file)));
+      if (files.length) onFiles(files);
     });
-    return el("label.im__drop", {}, el("b", {}, label), hint ? el("span", {}, hint) : null, input);
+    return input;
+  }
+
+  function uploader(kind, label, hint, max = 1) {
+    const drop = el("label.im__drop", {}, el("b", {}, label), hint ? el("span", {}, hint) : null,
+      picker(kind, { multiple: max > 1, onFiles: (files) => addFiles(kind, files, max) }));
+    drop.addEventListener("dragover", (e) => { e.preventDefault(); drop.classList.add("is-over"); });
+    drop.addEventListener("dragleave", () => drop.classList.remove("is-over"));
+    drop.addEventListener("drop", (e) => {
+      e.preventDefault();
+      drop.classList.remove("is-over");
+      const files = Array.from(e.dataTransfer?.files || []);
+      if (files.length) addFiles(kind, files, max);
+    });
+    return drop;
   }
 
   /* ---------- Photos ---------- */
   function photosBody() {
     const faces = rec.uploads.face || [];
-    const full = faces.length >= rec.limits.faces;
-    const one = (item, label) =>
+    const max = rec.limits.faces;
+    const full = faces.length >= max;
+    // Replace swaps a face photo in its place (the server does both at once); a current photo or banner just replaces.
+    const one = (item, label, kind) =>
       el("figure.im__item", {}, thumb(item.id), el("figcaption", {}, label),
-        btn({ label: "Remove", variant: "quiet", disabled: Boolean(busy), onclick: () => run("Removing.", () => api.removeImage(slug, item.id)) }));
+        el("div.im__acts", {},
+          el("label.b.b--quiet.im__replace", { "aria-disabled": busy ? "true" : null }, "Replace",
+            picker(kind, { onFiles: (files) => run("Replacing.", async () => api.uploadImage(slug, kind, await filePayload(files[0]), kind === "face" ? item.id : null)) })),
+          btn({ label: "Remove", variant: "quiet", disabled: Boolean(busy), onclick: () => run("Removing.", () => api.removeImage(slug, item.id)) })));
+    const rule = `Up to ${max} photos, picked together or one at a time. JPEG, PNG or WebP, up to 5 MB each. Bigger photos are made smaller for you.`;
     return [
-      nodeIntro("Add 1 to 3 photos of your face", "Face a window, hold the phone at eye level, no sunglasses. Your headshot is made from these and still looks like you. Only you can see them."),
-      el("div.im__grid", {}, faces.map((f, i) => one(f, `Photo ${i + 1}`))),
-      full ? el("p.im__why", {}, "That's three. Remove one to add a different photo.") : uploader("face", faces.length ? "Add another photo" : "Choose a photo", "JPEG, PNG or WebP"),
+      nodeIntro(`Add 1 to ${max} photos of your face`, "Face a window, hold the phone at eye level, no sunglasses. Your headshot is made from these and still looks like you. Only you can see them."),
+      el("p.im__why", {}, rule),
+      el("div.im__grid", {}, faces.map((f, i) => one(f, `Photo ${i + 1}`, "face"))),
+      faces.length ? el("p.im__why", { "aria-live": "polite" }, F.countLine(faces.length, { max })) : null,
+      full ? null : uploader("face", faces.length ? "Add more photos" : `Choose photos (up to ${max})`, "Or drop them here. You can pick several at once.", max),
       el("div.im__more", {},
         el("h3", {}, "Your current photo and banner (optional)"),
-        el("p.im__why", {}, "If you have them, add them here. You can also crop them to LinkedIn's sizes on the last step."),
+        el("p.im__why", {}, "One image each, if you have them. You can also crop them to LinkedIn's sizes on the last step."),
         el("div.im__grid", {},
-          rec.uploads.photo_current ? one(rec.uploads.photo_current, "Current photo") : uploader("photo_current", "Current profile photo"),
-          rec.uploads.banner_current ? one(rec.uploads.banner_current, "Current banner") : uploader("banner_current", "Current banner"))),
-      faces.length ? el("div.im__row", {}, btn({ label: "Next: your headshot", variant: "solid", onclick: () => go("headshot") })) : null,
+          rec.uploads.photo_current ? one(rec.uploads.photo_current, "Current photo", "photo_current") : uploader("photo_current", "Current profile photo", "One image"),
+          rec.uploads.banner_current ? one(rec.uploads.banner_current, "Current banner", "banner_current") : uploader("banner_current", "Current banner", "One image"))),
+      faces.length || rec.uploads.photo_current ? el("div.im__row", {}, btn({ label: "Next: your headshot", variant: "solid", onclick: () => go("headshot") })) : null,
     ];
   }
 
   /* ---------- Headshot / Banner ---------- */
+  /** When an answer these were made from changed after they were made (server/profile_deps.py). Never remade by itself. */
+  function staleNote(kind) {
+    const item = (rec.stale || []).find((s) => s.output === kind);
+    if (!item || !(rec.options[kind] || []).length) return null;
+    return el("p.im__note", {}, `${F.changedLine(item.changed)} after these were made. Make three more to use your new answers, or keep the ones you have.`);
+  }
+
   function makeBody(kind) {
     const isHead = kind === "headshot";
     const options = rec.options[kind] || [];
@@ -211,6 +265,7 @@ export function renderImages(ctx) {
     return [
       intro,
       needFace ? el("p.im__note", {}, "Add a photo of your face first.") : null,
+      staleNote(kind),
       choices,
       el("div.im__make", {},
         options.length ? ask : null,
@@ -241,7 +296,7 @@ export function renderImages(ctx) {
       nodeIntro("Download them at LinkedIn's sizes, then post them", "Drag the sliders until it sits right, then download. On LinkedIn, open your profile: click your photo to change it, and the camera on the banner to change that."),
       piece("headshot"),
       piece("banner"),
-      el("p.im__why", {}, "Then tick the last task on this step of your map."),
+      el("div.im__row", {}, btn({ label: "Back to your map", variant: "ghost", onclick: () => ctx.navigate("map") })),
     ];
   }
 

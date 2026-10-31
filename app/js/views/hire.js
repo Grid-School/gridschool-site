@@ -16,10 +16,10 @@
  * half-typed form. Aden sees it read-only from the desk.
  */
 
-import { el, mount } from "../dom.js?v=7288040-202610310409";
-import { panel, btn, field, toast, copy } from "../ui.js?v=7288040-202610310409";
-import { isoDate, fmtDay } from "../time.js?v=7288040-202610310409";
-import { STATUS } from "../graph/model.js?v=7288040-202610310409";
+import { el, mount } from "../dom.js?v=c7fe5aa-202610310430";
+import { panel, btn, field, toast, copy } from "../ui.js?v=c7fe5aa-202610310430";
+import { isoDate, fmtDay } from "../time.js?v=c7fe5aa-202610310430";
+import { STATUS } from "../graph/model.js?v=c7fe5aa-202610310430";
 import {
   STAGES,
   RELATIONS,
@@ -63,17 +63,17 @@ import {
   targetCandidates,
   webLink,
   MAX_ACTIVE_TARGETS,
-} from "../search.js?v=7288040-202610310409";
-import { storyCard, appRow } from "./search-parts.js?v=7288040-202610310409";
-import { TOOLS, moveRoute } from "../engine.js?v=7288040-202610310409";
-import { currentMove, setLiveJobs } from "../next-live.js?v=7288040-202610310409";
-import { PERSIST } from "../../../config.js?v=7288040-202610310409";
-import { matchedRoles, radarReady, fetchPacks, winsState, shareWin } from "../roles-remote.js?v=7288040-202610310409";
-import { createPackDrawer } from "./pack.js?v=7288040-202610310409";
-import { createCampaignDrawer } from "./campaign.js?v=7288040-202610310409";
-import { createPositioningCard } from "./positioning-card.js?v=7288040-202610310409";
-import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=7288040-202610310409";
-import { roleKeyFromRoute } from "../daily-run.js?v=7288040-202610310409";
+} from "../search.js?v=c7fe5aa-202610310430";
+import { storyCard, appRow } from "./search-parts.js?v=c7fe5aa-202610310430";
+import { TOOLS, moveRoute } from "../engine.js?v=c7fe5aa-202610310430";
+import { currentMove, setLiveJobs } from "../next-live.js?v=c7fe5aa-202610310430";
+import { PERSIST } from "../../../config.js?v=c7fe5aa-202610310430";
+import { matchedRoles, radarReady, fetchPacks, winsState, shareWin } from "../roles-remote.js?v=c7fe5aa-202610310430";
+import { createPackDrawer } from "./pack.js?v=c7fe5aa-202610310430";
+import { createCampaignDrawer } from "./campaign.js?v=c7fe5aa-202610310430";
+import { createPositioningCard } from "./positioning-card.js?v=c7fe5aa-202610310430";
+import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=c7fe5aa-202610310430";
+import { roleKeyFromRoute } from "../daily-run.js?v=c7fe5aa-202610310430";
 
 const RUN_FAMILIES = ["proof", "presence", "network", "interview"];
 /** Every Jobs screen (#/do/<id>); Profile is reached from the "Your LinkedIn" step, not a tab. */
@@ -338,7 +338,7 @@ export function renderHire(ctx, initialTool, campaignId, routeArg) {
           kind: "warm",
           title: `${warmLeft} more ${warmLeft === 1 ? "person" : "people"} to reach today`,
           sub: "Everyone on your list is asked. Add the next ones: a former colleague, someone in the seat at a company you applied to.",
-          actions: [btn({ label: "Add people", variant: "ghost", onclick: () => { const more = document.querySelector(".hire__more"); if (more) more.open = true; document.getElementById("pp-name")?.focus(); } })],
+          actions: [btn({ label: "Add people", variant: "ghost", onclick: () => openForm("people", "pp-name", ".hire__more") })],
         })
       );
     }
@@ -348,7 +348,7 @@ export function renderHire(ctx, initialTool, campaignId, routeArg) {
           kind: "warm",
           title: "List 10 people you've worked with",
           sub: "Every past job is a list of people who now work somewhere else. That list is your fastest way in.",
-          actions: [btn({ label: "Add people", variant: "ghost", onclick: () => { const more = document.querySelector(".hire__more"); if (more) more.open = true; document.getElementById("pp-name")?.focus(); } })],
+          actions: [btn({ label: "Add people", variant: "ghost", onclick: () => openForm("people", "pp-name", ".hire__more") })],
         })
       );
     }
@@ -397,9 +397,9 @@ export function renderHire(ctx, initialTool, campaignId, routeArg) {
       );
     }
     if (!fresh.length) {
-      const why = radar.loading ? "Looking for fresh roles…" : radar.off ? "Sign in to see fresh roles." : radar.error ? `The radar didn't answer (${radar.error}).` : "No fresh roles match your titles right now. Bring one in below: any posting you find can be prepared.";
+      const why = radar.loading ? "Looking for fresh roles…" : radar.off ? "Sign in to see fresh roles." : radar.error ? `Fresh roles didn't load. ${radar.error} You can still bring a posting in below.` : "No fresh roles match your titles right now. Bring one in below: any posting you find can be prepared.";
       if (targets.apply.target > targets.apply.done)
-        items.push(runItem({ kind: "apply", title: `${targets.apply.target - targets.apply.done} application${targets.apply.target - targets.apply.done === 1 ? "" : "s"} today`, sub: why, actions: () => [btn({ label: "Bring a posting", variant: "ghost", onclick: () => document.getElementById("pz-title")?.focus() })] }));
+        items.push(runItem({ kind: "apply", title: `${targets.apply.target - targets.apply.done} application${targets.apply.target - targets.apply.done === 1 ? "" : "s"} today`, sub: why, actions: () => [btn({ label: "Bring a posting", variant: "ghost", onclick: () => openForm("applications", "pz-title") })] }));
     }
 
     // 4. The proof work on their map.
@@ -925,6 +925,27 @@ export function renderHire(ctx, initialTool, campaignId, routeArg) {
       } else if (++tries < 30) requestAnimationFrame(land);
     };
     requestAnimationFrame(land);
+  }
+
+  /**
+   * Open another tool's form from Today: switch to that tool first (its section is hidden here), open the
+   * fold that holds the form, then put the cursor in it once the route has drawn it. Before, "Add people"
+   * and "Bring a posting" focused a hidden field and nothing happened.
+   */
+  function openForm(tool, fieldId, fold = null) {
+    if (focus !== tool) current.navigate("do", tool);
+    // The route change draws the tool and then focuses the page (boot.js), so wait for the route, then focus.
+    let tries = 0;
+    const land = () => {
+      const field = [...document.querySelectorAll(`#${fieldId}`)].find((f) => f.isConnected && f.closest("section:not([hidden])"));
+      if (location.hash.endsWith(`/${tool}`) && field) {
+        const holder = fold ? field.closest(fold) || document.querySelector(fold) : field.closest("details");
+        if (holder && "open" in holder) holder.open = true;
+        field.scrollIntoView({ behavior: "smooth", block: "center" });
+        field.focus({ preventScroll: true });
+      } else if (++tries < 40) setTimeout(land, 25);
+    };
+    setTimeout(land, 25);
   }
 
   function redraw() {

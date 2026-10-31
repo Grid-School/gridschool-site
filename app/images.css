@@ -18,6 +18,12 @@
 .im__thumb { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: var(--radius-sm); background: var(--bg2); border: 1px solid var(--line); }
 .im__drop { display: grid; gap: 4px; align-content: center; min-height: 120px; padding: 16px; border: 1px dashed var(--line); border-radius: var(--radius-sm); cursor: pointer; }
 .im__drop span { color: var(--muted); font-size: 13px; }
+.im__drop.is-over { border-color: var(--cyan); background: rgba(40, 225, 255, .06); }
+/* Replace and Remove under each photo. */
+.im__acts { display: flex; gap: 4px; }
+.im__replace { position: relative; overflow: hidden; cursor: pointer; }
+.im__replace .im__file { position: absolute; inset: 0; opacity: 0; cursor: pointer; margin: 0; }
+.im__replace[aria-disabled="true"] { opacity: .5; pointer-events: none; }
 .im__file { margin-top: 6px; color: var(--muted); max-width: 100%; }
 .im__more { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
 .im__more h3, .im__piece h3 { margin: 0; font-size: 16px; }

@@ -8,7 +8,7 @@
  * the server says it's done (or the call has come back).
  */
 
-import { el } from "../dom.js?v=7288040-202610310409";
+import { el } from "../dom.js?v=c7fe5aa-202610310430";
 
 const SHOWN_NOTES = 6;
 

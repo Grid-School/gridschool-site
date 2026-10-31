@@ -6,11 +6,11 @@
  *   const card = createPositioningCard({ getCtx, onTitles });  card.node; card.render();
  */
 
-import { el, mount } from "../dom.js?v=7288040-202610310409";
-import { btn, copy, toast } from "../ui.js?v=7288040-202610310409";
-import { careerOf } from "../search.js?v=7288040-202610310409";
-import { draftPositioning, radarReady } from "../roles-remote.js?v=7288040-202610310409";
-import { isProgressReadOnly } from "../store.js?v=7288040-202610310409";
+import { el, mount } from "../dom.js?v=c7fe5aa-202610310430";
+import { btn, copy, toast } from "../ui.js?v=c7fe5aa-202610310430";
+import { careerOf } from "../search.js?v=c7fe5aa-202610310430";
+import { draftPositioning, radarReady } from "../roles-remote.js?v=c7fe5aa-202610310430";
+import { isProgressReadOnly } from "../store.js?v=c7fe5aa-202610310430";
 
 export function createPositioningCard({ getCtx, onTitles = null, onDrafted = null }) {
   const node = el("div.poscard");

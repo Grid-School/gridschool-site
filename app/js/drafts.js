@@ -19,6 +19,16 @@ export function readDraft(slug, id) {
   }
 }
 
+/** Keep what's typed on this device until it's saved (an empty value clears it). */
+export function writeDraft(slug, id, value) {
+  try {
+    if (value === null || value === undefined || value === "") localStorage.removeItem(key(slug, id));
+    else localStorage.setItem(key(slug, id), String(value));
+  } catch {
+    /* storage unavailable: the page still holds the text */
+  }
+}
+
 export function clearDraft(slug, id) {
   try {
     localStorage.removeItem(key(slug, id));

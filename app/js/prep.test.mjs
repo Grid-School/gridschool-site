@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { prepOf, prepHint, opensLater, shortDay, isCompleteMap, stageTime, isFreeMap, upgradeHref } from "./prep.js?v=7288040-202610310409";
-import { buildGraph, nextUp, STATUS } from "./graph/model.js?v=7288040-202610310409";
+import { prepOf, prepHint, opensLater, shortDay, isCompleteMap, stageTime, isFreeMap, upgradeHref } from "./prep.js?v=c7fe5aa-202610310430";
+import { buildGraph, nextUp, STATUS } from "./graph/model.js?v=c7fe5aa-202610310430";
 
 const STAGES = [
   { id: "roles", label: "Finding roles" },

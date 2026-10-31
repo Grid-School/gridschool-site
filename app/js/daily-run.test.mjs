@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { SOURCE, fromDailyRun, withoutFrom, roleKeyFromRoute, emailSetting } from "./daily-run.js?v=7288040-202610310409";
+import { SOURCE, fromDailyRun, withoutFrom, roleKeyFromRoute, emailSetting } from "./daily-run.js?v=c7fe5aa-202610310430";
 
 test("fromDailyRun: only the email's own tag counts", () => {
   assert.equal(SOURCE, "daily-run");
