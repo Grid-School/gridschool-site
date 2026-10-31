@@ -10,10 +10,10 @@
  *   be picked first) and so marks the step done.
  */
 
-import { el } from "../dom.js?v=b58674a-202610310432";
-import { btn, toast } from "../ui.js?v=b58674a-202610310432";
-import { LINKS, CHANNELS, PERSIST, link, isPlaceholder } from "../../../config.js?v=b58674a-202610310432";
-import { withSavedState, taskIsComplete } from "../task-state.js?v=b58674a-202610310432";
+import { el } from "../dom.js?v=1fa97ed-202610310654";
+import { btn, toast } from "../ui.js?v=1fa97ed-202610310654";
+import { LINKS, CHANNELS, PERSIST, link, isPlaceholder } from "../../../config.js?v=1fa97ed-202610310654";
+import { withSavedState, taskIsComplete } from "../task-state.js?v=1fa97ed-202610310654";
 
 export const START_ID = "s.start";
 export const ON_ITS_WAY = "Your invite is on its way. The button shows up here once it's ready.";
@@ -138,7 +138,7 @@ export function startFinish(node, { student, store } = {}) {
   return el(
     "section.start__finish",
     {},
-    el("p", {}, "About 10 to 15 hours a week and one send every week. Ready?"),
+    el("p", {}, "About 10 to 15 hours a week. Once your resume is ready: 5 sends a week, 3 at the least. Ready?"),
     go
   );
 }

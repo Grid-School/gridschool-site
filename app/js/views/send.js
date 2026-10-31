@@ -12,17 +12,18 @@
  * Nothing here needs history. The record starts with the first send through this node.
  */
 
-import { el, mount } from "../dom.js?v=b58674a-202610310432";
-import { btn, toast } from "../ui.js?v=b58674a-202610310432";
-import { isProgressReadOnly } from "../store.js?v=b58674a-202610310432";
-import { addApp, answerAsk, outcomeAsks, noReply, pickVersion, sentBefore, thisWeek, networkOf, insideConnections, careerOf, searchOf, ageLabel } from "../search.js?v=b58674a-202610310432";
-import { verdict, pickWeek } from "../send-verdict.js?v=b58674a-202610310432";
-import { readiness } from "../resume-stages.js?v=b58674a-202610310432";
-import { matchedRoles, radarReady } from "../roles-remote.js?v=b58674a-202610310432";
-import * as api from "../resume-remote.js?v=b58674a-202610310432";
-import { openResumeAt } from "./resume.js?v=b58674a-202610310432";
+import { el, mount } from "../dom.js?v=1fa97ed-202610310654";
+import { btn, toast } from "../ui.js?v=1fa97ed-202610310654";
+import { isProgressReadOnly } from "../store.js?v=1fa97ed-202610310654";
+import { addApp, answerAsk, outcomeAsks, noReply, pickVersion, sentBefore, thisWeek, networkOf, insideConnections, careerOf, searchOf, ageLabel } from "../search.js?v=1fa97ed-202610310654";
+import { verdict, pickWeek } from "../send-verdict.js?v=1fa97ed-202610310654";
+import { readiness } from "../resume-stages.js?v=1fa97ed-202610310654";
+import { matchedRoles, radarReady } from "../roles-remote.js?v=1fa97ed-202610310654";
+import * as api from "../resume-remote.js?v=1fa97ed-202610310654";
+import { openResumeAt } from "./resume.js?v=1fa97ed-202610310654";
 
 const WEEK_TARGET = 5;
+const WEEK_FLOOR = 3; // 3 keeps you on track; 5 is the goal (plan Part 13, decided 2026-10-31)
 const LABEL = { apply: "Apply", reach: "Write first", skip: "Skip" };
 
 export function renderSend(ctx, options = {}) {
@@ -89,7 +90,8 @@ export function renderSend(ctx, options = {}) {
     return el("header.sd__head", {},
       el("h2", {}, `Send this week: ${done} of ${WEEK_TARGET}`),
       el("p.rz__now", {}, done >= WEEK_TARGET ? "Five out. Anything more this week is a bonus; the asks come on their own."
-        : `${WEEK_TARGET - done} to go. Each one here was picked for you, with the reason. About ${Math.max(4, (WEEK_TARGET - done) * 4)} minutes.`));
+        : done >= WEEK_FLOOR ? `On track. ${WEEK_TARGET - done} more makes five. About ${(WEEK_TARGET - done) * 4} minutes.`
+        : `${WEEK_FLOOR - done} to go to stay on track (3 a week), 5 is the goal. Each one here was picked for you, with the reason. About ${Math.max(4, (WEEK_FLOOR - done) * 4)} minutes.`));
   }
 
   function fiveBody() {
@@ -130,7 +132,7 @@ export function renderSend(ctx, options = {}) {
         { kind: "search.logged", payload: { kind: "apply", company: role.company, from: "send" } });
       toast(`Sent: ${role.company}. We'll ask in 3 days what came back.`, "ok");
       open = null;
-      if (thisWeek(apps()).apply >= WEEK_TARGET && node?.tasks?.[0]) current.store.setTaskState(node.tasks[0].id, "done");
+      if (thisWeek(apps()).apply >= WEEK_FLOOR && node?.tasks?.[0]) current.store.setTaskState(node.tasks[0].id, "done");
       render();
     };
     return el("section.sd__job", {},

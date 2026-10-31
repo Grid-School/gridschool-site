@@ -5,8 +5,8 @@
  * the end, and B to focus Book.
  */
 
-import { mountLandingMap } from "./js/landing-map.js?v=b58674a-202610310432";
-import { enhancePickers } from "./js/picker.js?v=b58674a-202610310432";
+import { mountLandingMap } from "./js/landing-map.js?v=1fa97ed-202610310654";
+import { enhancePickers } from "./js/picker.js?v=1fa97ed-202610310654";
 
 enhancePickers();
 mountLandingMap();

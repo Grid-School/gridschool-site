@@ -13,8 +13,8 @@
  * Pure: the map (graph/rez) draws these; the tools live in views/hire.js.
  */
 
-import { nextUp } from "./graph/model.js?v=b58674a-202610310432";
-import { returnedUnread } from "./tasks.js?v=b58674a-202610310432";
+import { nextUp } from "./graph/model.js?v=1fa97ed-202610310654";
+import { returnedUnread } from "./tasks.js?v=1fa97ed-202610310654";
 import {
   searchOf,
   careerOf,
@@ -28,7 +28,7 @@ import {
   networkOf,
   insideConnections,
   shortTitle,
-} from "./search.js?v=b58674a-202610310432";
+} from "./search.js?v=1fa97ed-202610310654";
 
 export const TOOLS = {
   today: { label: "Today", hint: "Every move for today, in order" },

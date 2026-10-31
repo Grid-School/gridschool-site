@@ -25,22 +25,22 @@
  * builder made; a coach's map is left alone), or "Something's off" sends the coach a note.
  */
 
-import { el, mount } from "../dom.js?v=b58674a-202610310432";
-import { btn, toast } from "../ui.js?v=b58674a-202610310432";
-import { nodeRail } from "./node-rail.js?v=b58674a-202610310432";
-import { doneIds } from "../steps.js?v=b58674a-202610310432";
-import { nextUp } from "../graph/model.js?v=b58674a-202610310432";
-import { isProgressReadOnly } from "../store.js?v=b58674a-202610310432";
-import * as A from "../answer-chunk.js?v=b58674a-202610310432";
-import * as I from "../../../data/intake/intake.mjs?v=b58674a-202610310432";
-import * as F from "../profile-flow.js?v=b58674a-202610310432";
-import { control } from "./answer.js?v=b58674a-202610310432";
-import { filePayload } from "./images.js?v=b58674a-202610310432";
-import { readDraft, writeDraft, clearDraft } from "../drafts.js?v=b58674a-202610310432";
-import { intakeReady, loadIntake, saveChunk, rebuildMap, loadSeeds } from "../intake-remote.js?v=b58674a-202610310432";
-import { imagesReady, loadImages, uploadImage, removeImage, imageUrl, makeImages } from "../images-remote.js?v=b58674a-202610310432";
-import { draftPositioning } from "../roles-remote.js?v=b58674a-202610310432";
-import { loadStudio, makeProjects, buildVoice } from "../studio-remote.js?v=b58674a-202610310432";
+import { el, mount } from "../dom.js?v=1fa97ed-202610310654";
+import { btn, toast } from "../ui.js?v=1fa97ed-202610310654";
+import { nodeRail } from "./node-rail.js?v=1fa97ed-202610310654";
+import { doneIds } from "../steps.js?v=1fa97ed-202610310654";
+import { nextUp } from "../graph/model.js?v=1fa97ed-202610310654";
+import { isProgressReadOnly } from "../store.js?v=1fa97ed-202610310654";
+import * as A from "../answer-chunk.js?v=1fa97ed-202610310654";
+import * as I from "../../../data/intake/intake.mjs?v=1fa97ed-202610310654";
+import * as F from "../profile-flow.js?v=1fa97ed-202610310654";
+import { control } from "./answer.js?v=1fa97ed-202610310654";
+import { filePayload } from "./images.js?v=1fa97ed-202610310654";
+import { readDraft, writeDraft, clearDraft } from "../drafts.js?v=1fa97ed-202610310654";
+import { intakeReady, loadIntake, saveChunk, rebuildMap, loadSeeds } from "../intake-remote.js?v=1fa97ed-202610310654";
+import { imagesReady, loadImages, uploadImage, removeImage, imageUrl, makeImages } from "../images-remote.js?v=1fa97ed-202610310654";
+import { draftPositioning } from "../roles-remote.js?v=1fa97ed-202610310654";
+import { loadStudio, makeProjects, buildVoice } from "../studio-remote.js?v=1fa97ed-202610310654";
 
 /* The stages, each a few questions from one chunk. Upload questions name the images kind they go to.
    A question stage is done when every question it asks now is answered or skipped; Finish is done when

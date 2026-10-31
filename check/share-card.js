@@ -5,7 +5,7 @@
  * gridschool.org/check. Never a name, an email or anything from a resume.
  */
 
-import { calmestLanes } from "../js/rez/road.js?v=b58674a-202610310432";
+import { calmestLanes } from "../js/rez/road.js?v=1fa97ed-202610310654";
 
 const W = 1200;
 const H = 630;

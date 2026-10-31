@@ -13,13 +13,13 @@
  * own column on the floor: listed, never in the required count.
  */
 
-import { el } from "../dom.js?v=b58674a-202610310432";
-import { panel, btn, copy, dot } from "../ui.js?v=b58674a-202610310432";
-import { STATUS, isSide, nextUp, stepNumber, stepCount, specOf } from "../graph/model.js?v=b58674a-202610310432";
-import { inSequence, standingOf, STANDING_LABEL, STANDING_TONE } from "../graph/standing.js?v=b58674a-202610310432";
-import { reviewScores } from "./parts.js?v=b58674a-202610310432";
-import { fmtDay } from "../time.js?v=b58674a-202610310432";
-import { dueBadge } from "./from-aden.js?v=b58674a-202610310432";
+import { el } from "../dom.js?v=1fa97ed-202610310654";
+import { panel, btn, copy, dot } from "../ui.js?v=1fa97ed-202610310654";
+import { STATUS, isSide, nextUp, stepNumber, stepCount, specOf } from "../graph/model.js?v=1fa97ed-202610310654";
+import { inSequence, standingOf, STANDING_LABEL, STANDING_TONE } from "../graph/standing.js?v=1fa97ed-202610310654";
+import { reviewScores } from "./parts.js?v=1fa97ed-202610310654";
+import { fmtDay } from "../time.js?v=1fa97ed-202610310654";
+import { dueBadge } from "./from-aden.js?v=1fa97ed-202610310654";
 
 export function mapList({ state, onOpenNode }) {
   const { graph, student } = state;

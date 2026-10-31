@@ -56,7 +56,7 @@
     {"value": "unsure", "label": "Not sure"}
   ],
   "commitment": {
-    "version": "sprint-2026-11-v1",
+    "version": "sprint-2026-11-v2",
     "give": [
       "Roles prepared for you every morning: fresh postings that fit you, the person to message at each, and the note written.",
       "Send Day every week, live together or on your own time.",
@@ -66,7 +66,7 @@
     ],
     "ask": [
       "About 10 hours a week for the six weeks.",
-      "Log every send in the app, the same day you send it.",
+      "5 sends a week once your resume is ready (3 at the least), each logged in the app the same day.",
       "Send Day each week, live or on your own time.",
       "An honest review at the end, good or bad."
     ],

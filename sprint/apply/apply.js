@@ -7,12 +7,12 @@
  * the signed-in account, else the board's own token, else the saved check's id (this browser's check).
  */
 
-import { PERSIST } from "../../config.js?v=b58674a-202610310432";
-import * as Account from "../../check/account.js?v=b58674a-202610310432";
-import { track, visitorId } from "../../check/events.js?v=b58674a-202610310432";
-import { enterSeat } from "../../app/js/persist-auth.js?v=b58674a-202610310432";
-import { currentSession } from "../../app/js/session.js?v=b58674a-202610310432";
-import { checkHref, dayText, fullName, identity, resultHead, savedCheck, sourceFrom, stepAnswers, stepProblem } from "../sprint-model.mjs?v=b58674a-202610310432";
+import { PERSIST } from "../../config.js?v=1fa97ed-202610310654";
+import * as Account from "../../check/account.js?v=1fa97ed-202610310654";
+import { track, visitorId } from "../../check/events.js?v=1fa97ed-202610310654";
+import { enterSeat } from "../../app/js/persist-auth.js?v=1fa97ed-202610310654";
+import { currentSession } from "../../app/js/session.js?v=1fa97ed-202610310654";
+import { checkHref, dayText, fullName, identity, resultHead, savedCheck, sourceFrom, stepAnswers, stepProblem } from "../sprint-model.mjs?v=1fa97ed-202610310654";
 
 const LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
 const API = (() => {
