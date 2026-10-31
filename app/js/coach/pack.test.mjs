@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { nodeLines } from "./pack.js?v=c7fe5aa-202610310430";
+import { nodeLines } from "./pack.js?v=b58674a-202610310432";
 
 const base = { n: 4, title: "You can read a system", evidence: "A trace note." };
 

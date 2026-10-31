@@ -10,10 +10,10 @@
  *   be picked first) and so marks the step done.
  */
 
-import { el } from "../dom.js?v=c7fe5aa-202610310430";
-import { btn, toast } from "../ui.js?v=c7fe5aa-202610310430";
-import { LINKS, CHANNELS, PERSIST, link, isPlaceholder } from "../../../config.js?v=c7fe5aa-202610310430";
-import { withSavedState, taskIsComplete } from "../task-state.js?v=c7fe5aa-202610310430";
+import { el } from "../dom.js?v=b58674a-202610310432";
+import { btn, toast } from "../ui.js?v=b58674a-202610310432";
+import { LINKS, CHANNELS, PERSIST, link, isPlaceholder } from "../../../config.js?v=b58674a-202610310432";
+import { withSavedState, taskIsComplete } from "../task-state.js?v=b58674a-202610310432";
 
 export const START_ID = "s.start";
 export const ON_ITS_WAY = "Your invite is on its way. The button shows up here once it's ready.";

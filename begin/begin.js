@@ -25,13 +25,13 @@
  * that never happened.
  */
 
-import { PERSIST, link } from "../config.js?v=c7fe5aa-202610310430";
-import * as Account from "../check/account.js?v=c7fe5aa-202610310430";
-import { enterSeat } from "../app/js/persist-auth.js?v=c7fe5aa-202610310430";
-import { startingOn, nextSteps, WAIT_LINE } from "./welcome-copy.js?v=c7fe5aa-202610310430";
-import { track } from "../check/events.js?v=c7fe5aa-202610310430";
-import { routeFor, fromStripe, sitePath } from "../signin/route.mjs?v=c7fe5aa-202610310430";
-import { rememberSession, peek, fix, peekView, COPY } from "./recovery.js?v=c7fe5aa-202610310430";
+import { PERSIST, link } from "../config.js?v=b58674a-202610310432";
+import * as Account from "../check/account.js?v=b58674a-202610310432";
+import { enterSeat } from "../app/js/persist-auth.js?v=b58674a-202610310432";
+import { startingOn, nextSteps, WAIT_LINE } from "./welcome-copy.js?v=b58674a-202610310432";
+import { track } from "../check/events.js?v=b58674a-202610310432";
+import { routeFor, fromStripe, sitePath } from "../signin/route.mjs?v=b58674a-202610310432";
+import { rememberSession, peek, fix, peekView, COPY } from "./recovery.js?v=b58674a-202610310432";
 
 // Localhost never talks to production: ?api= when given, else the page's own origin.
 const API = (() => {

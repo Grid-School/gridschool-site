@@ -14,14 +14,14 @@
  * this browser so a refresh loses nothing; the resume text never does.
  */
 
-import { PERSIST, link } from "../config.js?v=c7fe5aa-202610310430";
-import * as I from "../data/intake/intake.mjs?v=c7fe5aa-202610310430";
-import { mountCheckMap } from "./check-map.js?v=c7fe5aa-202610310430";
-import * as Account from "./account.js?v=c7fe5aa-202610310430";
-import { enterSeat } from "../app/js/persist-auth.js?v=c7fe5aa-202610310430";
-import { track, visitorId } from "./events.js?v=c7fe5aa-202610310430";
-import * as Share from "./share.mjs?v=c7fe5aa-202610310430";
-import { drawShareCard, cardBlob } from "./share-card.js?v=c7fe5aa-202610310430";
+import { PERSIST, link } from "../config.js?v=b58674a-202610310432";
+import * as I from "../data/intake/intake.mjs?v=b58674a-202610310432";
+import { mountCheckMap } from "./check-map.js?v=b58674a-202610310432";
+import * as Account from "./account.js?v=b58674a-202610310432";
+import { enterSeat } from "../app/js/persist-auth.js?v=b58674a-202610310432";
+import { track, visitorId } from "./events.js?v=b58674a-202610310432";
+import * as Share from "./share.mjs?v=b58674a-202610310432";
+import { drawShareCard, cardBlob } from "./share-card.js?v=b58674a-202610310432";
 
 const KEY = "gridschool.check.v1";
 const SHARE_KEY = "gridschool.share.v1";
@@ -938,7 +938,6 @@ async function goToCheckout(checkout, email = "") {
  */
 function offerBlock(hits, checkout) {
   const price = offer.price;
-  const photo = link("adenPhoto");
   const section = h("section", "offer", null, { "aria-labelledby": "offer-title" });
   const error = h("p", "card__error", "", { role: "alert" });
   const ask = h("form", "save offer__ask", null, { novalidate: "", hidden: "" });
@@ -974,10 +973,10 @@ function offerBlock(hits, checkout) {
     }
   });
 
+  // The review is automatic for self-serve: no name, no promise of a person's turnaround ("your coach" rule).
   const who = h("div", "offer__who");
   who.append(
-    photo ? h("img", "offer__face", null, { src: photo, alt: "Aden Jessee", width: 44, height: 44 }) : h("span", "offer__face offer__face--initials", "AJ", { "aria-hidden": "true" }),
-    h("p", "", null, {}, [h("b", "", "Aden Jessee reviews your map within 24 hours."), h("span", "", " He's a working applied-AI engineer, and he approves everything before you send it.")])
+    h("p", "", null, {}, [h("b", "", "Your map is checked the moment it's built."), h("span", "", " It keeps updating as you answer more and as replies come in. Nothing goes out until you send it.")])
   );
   const prepared = offer.prepared[hits[0].id];
   section.append(
