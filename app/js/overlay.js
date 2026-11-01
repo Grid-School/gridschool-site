@@ -23,8 +23,8 @@ import {
   INSTRUCTOR_KEYS,
   ATTENTION_KINDS,
   ATTENTION_LABELS,
-} from "./persist.js?v=aa20e2c-202611010029";
-import { flushAfterLocalWrite, remoteEnabled } from "./persist-remote.js?v=aa20e2c-202611010029";
+} from "./persist.js?v=7b0c6e7-202611010037";
+import { flushAfterLocalWrite, remoteEnabled } from "./persist-remote.js?v=7b0c6e7-202611010037";
 
 export {
   overlayKey,

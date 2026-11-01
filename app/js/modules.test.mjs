@@ -11,10 +11,10 @@ import {
   loadModules,
   resolveWithLibrary,
   SLOTS,
-} from "./modules.js?v=aa20e2c-202611010029";
-import { validateMap } from "../../data/map-rules.mjs?v=aa20e2c-202611010029";
-import { boardCurriculum } from "./api.js?v=aa20e2c-202611010029";
-import { readLibrary, MODULE_DIR } from "../../data/module-library.mjs?v=aa20e2c-202611010029";
+} from "./modules.js?v=7b0c6e7-202611010037";
+import { validateMap } from "../../data/map-rules.mjs?v=7b0c6e7-202611010037";
+import { boardCurriculum } from "./api.js?v=7b0c6e7-202611010037";
+import { readLibrary, MODULE_DIR } from "../../data/module-library.mjs?v=7b0c6e7-202611010037";
 
 const site = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const readJson = (path) => JSON.parse(readFileSync(path, "utf8"));

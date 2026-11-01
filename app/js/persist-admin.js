@@ -2,8 +2,8 @@
  * Admin persist calls. Desk only. Student boards never import this.
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=aa20e2c-202611010029";
-import { persistToken } from "./session.js?v=aa20e2c-202611010029";
+import { PERSIST, isPlaceholder } from "../../config.js?v=7b0c6e7-202611010037";
+import { persistToken } from "./session.js?v=7b0c6e7-202611010037";
 
 function endpoint() {
   return String(PERSIST.endpoint || "").replace(/\/$/, "");
@@ -50,6 +50,8 @@ export const runSprint = ({ job = "daily", dry = true, label } = {}) => request(
 export const loadFits = () => request("GET", "/admin/fit");
 export const setFit = (checkId, status, note = "") => request("POST", `/admin/fit/${encodeURIComponent(checkId)}`, { status, note });
 export const loadFreeSignals = () => request("GET", "/admin/free-signals");
+/* A free seat to Complete at no charge, outside the sprint (server/comp_api.py). */
+export const compSeat = (slug, note = "") => request("POST", `/admin/seat/${encodeURIComponent(slug)}/comp`, { note });
 export const loadReadout = (week) => request("GET", `/admin/readout${week ? `?week=${encodeURIComponent(week)}` : ""}`);
 export const saveReadoutSpend = (week, amount) => request("POST", "/admin/readout/spend", { week, amount });
 export const loadStudentActivity =(slug, days = 30) => request("GET", `/students/${encodeURIComponent(slug)}/activity?days=${encodeURIComponent(days)}`);

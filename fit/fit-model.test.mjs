@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { INTRO, QUESTIONS, filmUrl, ownWords, parentScript, payload, result } from "./fit-model.mjs?v=aa20e2c-202611010029";
+import { INTRO, QUESTIONS, filmUrl, ownWords, parentScript, payload, result } from "./fit-model.mjs?v=7b0c6e7-202611010037";
 
 test("the intro film comes from the links, and only an https embed counts", () => {
   assert.equal(filmUrl({ introFilm: "https://www.youtube.com/embed/abc" }), "https://www.youtube.com/embed/abc");

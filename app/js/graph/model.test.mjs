@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { buildGraph, nextUp, progress, stepCount, visibleGraph, isSide, isSpine, trackOf, stepNumber, STATUS, TRACK } from "./model.js?v=aa20e2c-202611010029";
-import { buildQueue } from "../tasks.js?v=aa20e2c-202611010029";
+import { buildGraph, nextUp, progress, stepCount, visibleGraph, isSide, isSpine, trackOf, stepNumber, STATUS, TRACK } from "./model.js?v=7b0c6e7-202611010037";
+import { buildQueue } from "../tasks.js?v=7b0c6e7-202611010037";
 
 const families = [
   { id: "ccvv", track: "spine" },

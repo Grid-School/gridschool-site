@@ -7,13 +7,13 @@
  * the signed-in account, else the board's own token, else the saved check's id (this browser's check).
  */
 
-import { PERSIST } from "../../config.js?v=aa20e2c-202611010029";
-import * as Account from "../../check/account.js?v=aa20e2c-202611010029";
-import { track, visitorId } from "../../check/events.js?v=aa20e2c-202611010029";
-import { enterSeat } from "../../app/js/persist-auth.js?v=aa20e2c-202611010029";
-import { currentSession } from "../../app/js/session.js?v=aa20e2c-202611010029";
-import { rememberRoute } from "../../app/js/return-to.js?v=aa20e2c-202611010029";
-import { checkHref, dayText, fullName, identity, resultHead, savedCheck, sourceFrom, stepAnswers, stepProblem } from "../sprint-model.mjs?v=aa20e2c-202611010029";
+import { PERSIST } from "../../config.js?v=7b0c6e7-202611010037";
+import * as Account from "../../check/account.js?v=7b0c6e7-202611010037";
+import { track, visitorId } from "../../check/events.js?v=7b0c6e7-202611010037";
+import { enterSeat } from "../../app/js/persist-auth.js?v=7b0c6e7-202611010037";
+import { currentSession } from "../../app/js/session.js?v=7b0c6e7-202611010037";
+import { rememberRoute } from "../../app/js/return-to.js?v=7b0c6e7-202611010037";
+import { checkHref, dayText, fullName, identity, resultHead, savedCheck, sourceFrom, stepAnswers, stepProblem } from "../sprint-model.mjs?v=7b0c6e7-202611010037";
 
 const LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
 const API = (() => {
