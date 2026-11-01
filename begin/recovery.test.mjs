@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { sessionFrom, rememberSession, peekView, peek, fix, COPY } from "./recovery.js?v=7b0c6e7-202611010037";
+import { sessionFrom, rememberSession, peekView, peek, fix, COPY } from "./recovery.js?v=f1e84e9-202611010114";
 
 const SESSION = "cs_test_a1B2c3D4e5F6g7H8i9J0";
 

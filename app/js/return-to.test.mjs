@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { rememberRoute, takeRoute } from "./return-to.js?v=7b0c6e7-202611010037";
+import { rememberRoute, takeRoute } from "./return-to.js?v=f1e84e9-202611010114";
 
 function memory() {
   const m = new Map();

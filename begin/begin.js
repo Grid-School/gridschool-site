@@ -25,13 +25,13 @@
  * that never happened.
  */
 
-import { PERSIST, link } from "../config.js?v=7b0c6e7-202611010037";
-import * as Account from "../check/account.js?v=7b0c6e7-202611010037";
-import { enterSeat } from "../app/js/persist-auth.js?v=7b0c6e7-202611010037";
-import { startingOn, nextSteps, WAIT_LINE } from "./welcome-copy.js?v=7b0c6e7-202611010037";
-import { track } from "../check/events.js?v=7b0c6e7-202611010037";
-import { routeFor, fromStripe, sitePath } from "../signin/route.mjs?v=7b0c6e7-202611010037";
-import { rememberSession, peek, fix, peekView, COPY } from "./recovery.js?v=7b0c6e7-202611010037";
+import { PERSIST, link } from "../config.js?v=f1e84e9-202611010114";
+import * as Account from "../check/account.js?v=f1e84e9-202611010114";
+import { enterSeat } from "../app/js/persist-auth.js?v=f1e84e9-202611010114";
+import { startingOn, nextSteps, WAIT_LINE } from "./welcome-copy.js?v=f1e84e9-202611010114";
+import { track } from "../check/events.js?v=f1e84e9-202611010114";
+import { routeFor, fromStripe, sitePath } from "../signin/route.mjs?v=f1e84e9-202611010114";
+import { rememberSession, peek, fix, peekView, COPY } from "./recovery.js?v=f1e84e9-202611010114";
 
 // Localhost never talks to production: ?api= when given, else the page's own origin.
 const API = (() => {

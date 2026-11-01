@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
-import { arrivedFrom, filterLine, isAd, lineKey, randomRef, refFromCheck, shareUrl, sourceLine } from "./share.mjs?v=7b0c6e7-202611010037";
+import { arrivedFrom, filterLine, isAd, lineKey, randomRef, refFromCheck, shareUrl, sourceLine } from "./share.mjs?v=f1e84e9-202611010114";
 
 const SOURCES = JSON.parse(readFileSync(new URL("../data/intake/sources.json", import.meta.url), "utf8"));
 

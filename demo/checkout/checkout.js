@@ -5,7 +5,7 @@
  * finding, and from there to the made-up Complete map. The real checkout is Stripe.
  */
 
-import { offerOf } from "./offer.js?v=7b0c6e7-202611010037";
+import { offerOf } from "./offer.js?v=f1e84e9-202611010114";
 
 const params = new URLSearchParams(location.search);
 const card = document.getElementById("card");
@@ -81,7 +81,7 @@ async function render() {
       choice("monthly", `$${price.monthly} a month`, `${price.trialDays} days free first`),
     ]),
     h("div", "order", null, {}, [
-      h("div", "order__line", null, {}, [h("span", "", "Aden reviews your map"), h("b", "", "within 24 hours")]),
+      h("div", "order__line", null, {}, [h("span", "", "Your map is checked"), h("b", "", "the moment it's built")]),
       h("div", "order__line", null, {}, [h("span", "", "Refund"), h("b", "", `${price.refundDays} days on the one-time price`)]),
       h("div", "order__line order__total", null, {}, [h("span", "", "Due today"), total]),
     ]),

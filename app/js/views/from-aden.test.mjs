@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { parseInline, parseNotes, dueLabel, dueTone, daysUntil, safeLinks, fromAdenModel, fromAdenCard } from "./from-aden.js?v=7b0c6e7-202611010037";
-import { dueSoon } from "./tasks.js?v=7b0c6e7-202611010037";
+import { parseInline, parseNotes, dueLabel, dueTone, daysUntil, safeLinks, fromAdenModel, fromAdenCard } from "./from-aden.js?v=f1e84e9-202611010114";
+import { dueSoon } from "./tasks.js?v=f1e84e9-202611010114";
 
 test("the card is null when Aden left nothing (or the node is free-form)", () => {
   assert.equal(fromAdenModel({}), null);

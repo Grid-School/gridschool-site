@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { fbcFrom } from "./events.js?v=7b0c6e7-202611010037";
+import { fbcFrom } from "./events.js?v=f1e84e9-202611010114";
 
 test("a visit from a Meta ad keeps its click id in Meta's format, first-seen time and all", () => {
   assert.equal(fbcFrom("?fbclid=IwAR0abcdefghij&from=meta:P-1", "", 1793000000000), "fb.1.1793000000000.IwAR0abcdefghij");

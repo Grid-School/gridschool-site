@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { roundState, factLine, gained, addRange, wantsNumber } from "./interview.js?v=7b0c6e7-202611010037";
+import { roundState, factLine, gained, addRange, wantsNumber } from "./interview.js?v=f1e84e9-202611010114";
 
 const rec = (done, open) => ({ round: { size: 8, done }, graph: { queue: Array.from({ length: open }, (_, i) => ({ id: `q${i}`, state: "open" })) } });
 

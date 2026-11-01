@@ -5,11 +5,11 @@
  * kit on the call screen: a note in the grad's own numbers and a link to the parent page.
  */
 
-import { PERSIST, LINKS, isPlaceholder } from "../config.js?v=7b0c6e7-202611010037";
-import { applySiteOverrides } from "../js/site-overrides.js?v=7b0c6e7-202611010037";
-import { track } from "../check/events.js?v=7b0c6e7-202611010037";
-import { savedCheck } from "../sprint/sprint-model.mjs?v=7b0c6e7-202611010037";
-import { HOURS, INTRO, PAYERS, QUESTIONS, filmUrl, parentScript, payload, result } from "./fit-model.mjs?v=7b0c6e7-202611010037";
+import { PERSIST, LINKS, isPlaceholder } from "../config.js?v=f1e84e9-202611010114";
+import { applySiteOverrides } from "../js/site-overrides.js?v=f1e84e9-202611010114";
+import { track } from "../check/events.js?v=f1e84e9-202611010114";
+import { savedCheck } from "../sprint/sprint-model.mjs?v=f1e84e9-202611010114";
+import { HOURS, INTRO, PAYERS, QUESTIONS, filmUrl, parentScript, payload, result } from "./fit-model.mjs?v=f1e84e9-202611010114";
 
 let FILM_URL = "";
 /** The booking link: the server's, else the one set in the console (LINKS.fitCall). */

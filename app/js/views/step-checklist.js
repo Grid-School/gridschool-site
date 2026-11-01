@@ -9,13 +9,13 @@
  * itself when the work is done, from wherever it was done.
  */
 
-import { el, mount } from "../dom.js?v=7b0c6e7-202611010037";
-import { btn, toast } from "../ui.js?v=7b0c6e7-202611010037";
-import { careerOf, searchOf, activeTargets, MAX_ACTIVE_TARGETS } from "../search.js?v=7b0c6e7-202611010037";
-import { isProgressReadOnly } from "../store.js?v=7b0c6e7-202611010037";
-import { field } from "../ui.js?v=7b0c6e7-202611010037";
-import { webLink } from "../search.js?v=7b0c6e7-202611010037";
-import { createPositioningCard } from "./positioning-card.js?v=7b0c6e7-202611010037";
+import { el, mount } from "../dom.js?v=f1e84e9-202611010114";
+import { btn, toast } from "../ui.js?v=f1e84e9-202611010114";
+import { careerOf, searchOf, activeTargets, MAX_ACTIVE_TARGETS } from "../search.js?v=f1e84e9-202611010114";
+import { isProgressReadOnly } from "../store.js?v=f1e84e9-202611010114";
+import { field } from "../ui.js?v=f1e84e9-202611010114";
+import { webLink } from "../search.js?v=f1e84e9-202611010114";
+import { createPositioningCard } from "./positioning-card.js?v=f1e84e9-202611010114";
 
 const taskDone = (state, task) => state.student?.tasks?.[task?.id]?.state === "done";
 
