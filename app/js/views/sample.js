@@ -7,9 +7,9 @@
  * isn't built. On the demo board the role is a made-up stand-in, and says so.
  */
 
-import { el } from "../dom.js?v=f96b76b-202610312232";
-import { btn, toast } from "../ui.js?v=f96b76b-202610312232";
-import { shortDay, PAID_ASK } from "../prep.js?v=f96b76b-202610312232";
+import { el } from "../dom.js?v=aa20e2c-202611010029";
+import { btn, toast } from "../ui.js?v=aa20e2c-202611010029";
+import { shortDay, PAID_ASK } from "../prep.js?v=aa20e2c-202611010029";
 
 export function sampleBlock(node, { upgrade = null } = {}) {
   const sample = node?.sample;

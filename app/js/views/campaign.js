@@ -11,12 +11,12 @@
  * in their own mail app, the call is their phone, LinkedIn is their click.
  */
 
-import { el, mount } from "../dom.js?v=f96b76b-202610312232";
-import { btn, copy, toast, field } from "../ui.js?v=f96b76b-202610312232";
-import { createModal } from "../modal.js?v=f96b76b-202610312232";
-import { DAY0, FOLLOWUP_DAYS, nextTouch, fillLinks, peopleLinks } from "../search.js?v=f96b76b-202610312232";
-import { draftCampaign, campaignAllowance } from "../roles-remote.js?v=f96b76b-202610312232";
-import { workPanel } from "./work.js?v=f96b76b-202610312232";
+import { el, mount } from "../dom.js?v=aa20e2c-202611010029";
+import { btn, copy, toast, field } from "../ui.js?v=aa20e2c-202611010029";
+import { createModal } from "../modal.js?v=aa20e2c-202611010029";
+import { DAY0, FOLLOWUP_DAYS, nextTouch, fillLinks, peopleLinks } from "../search.js?v=aa20e2c-202611010029";
+import { draftCampaign, campaignAllowance } from "../roles-remote.js?v=aa20e2c-202611010029";
+import { workPanel } from "./work.js?v=aa20e2c-202611010029";
 
 /** When each step happens, beside it in the step list. */
 const WHEN = { who: "Prep", script: "Prep", record: "Prep", email: "Day 0", linkedin: "Day 0", call: "Day 0", follow: "Day 3 · 7 · 14" };
@@ -36,9 +36,9 @@ const WRITE_STEPS = [
   { label: "Writing the email, Loom ideas and LinkedIn note" },
   { label: "Writing the call scripts and follow-ups" },
 ];
-import { scriptWizard, recordNode, closeRehearsal } from "./loom-kit.js?v=f96b76b-202610312232";
-import { nodeIntro } from "./node-rail.js?v=f96b76b-202610312232";
-import { NODES, doneNodes, firstOpen, nextNode, prevNode, labelOf } from "../campaign-steps.js?v=f96b76b-202610312232";
+import { scriptWizard, recordNode, closeRehearsal } from "./loom-kit.js?v=aa20e2c-202611010029";
+import { nodeIntro } from "./node-rail.js?v=aa20e2c-202611010029";
+import { NODES, doneNodes, firstOpen, nextNode, prevNode, labelOf } from "../campaign-steps.js?v=aa20e2c-202611010029";
 
 export function createCampaignDrawer({ slug, getTarget, onPatch, onTouch, getPortfolio, readOnly = () => false, onBusy = () => {}, onGoStep = null }) {
   const modal = createModal({ label: "Target campaign", size: "reading", onClose: () => closeRehearsal() || close() });

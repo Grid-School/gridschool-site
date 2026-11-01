@@ -14,14 +14,14 @@
  * this browser so a refresh loses nothing; the resume text never does.
  */
 
-import { PERSIST, link } from "../config.js?v=f96b76b-202610312232";
-import * as I from "../data/intake/intake.mjs?v=f96b76b-202610312232";
-import { mountCheckMap } from "./check-map.js?v=f96b76b-202610312232";
-import * as Account from "./account.js?v=f96b76b-202610312232";
-import { enterSeat } from "../app/js/persist-auth.js?v=f96b76b-202610312232";
-import { track, visitorId } from "./events.js?v=f96b76b-202610312232";
-import * as Share from "./share.mjs?v=f96b76b-202610312232";
-import { drawShareCard, cardBlob } from "./share-card.js?v=f96b76b-202610312232";
+import { PERSIST, link } from "../config.js?v=aa20e2c-202611010029";
+import * as I from "../data/intake/intake.mjs?v=aa20e2c-202611010029";
+import { mountCheckMap } from "./check-map.js?v=aa20e2c-202611010029";
+import * as Account from "./account.js?v=aa20e2c-202611010029";
+import { enterSeat } from "../app/js/persist-auth.js?v=aa20e2c-202611010029";
+import { track, visitorId } from "./events.js?v=aa20e2c-202611010029";
+import * as Share from "./share.mjs?v=aa20e2c-202611010029";
+import { drawShareCard, cardBlob } from "./share-card.js?v=aa20e2c-202611010029";
 
 const KEY = "gridschool.check.v1";
 const SHARE_KEY = "gridschool.share.v1";

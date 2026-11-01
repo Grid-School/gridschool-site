@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { plainMessage, plainError } from "./plain-error.js?v=f96b76b-202610312232";
+import { plainMessage, plainError } from "./plain-error.js?v=aa20e2c-202611010029";
 
 test("messages written for students pass through", () => {
   assert.equal(plainMessage(400, "That image is over 5 MB. Use a smaller one."), "That image is over 5 MB. Use a smaller one.");

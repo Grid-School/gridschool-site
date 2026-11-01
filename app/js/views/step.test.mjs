@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { isStepArgs, moduleIdFromArgs, tasksLead } from "./step.js?v=f96b76b-202610312232";
+import { isStepArgs, moduleIdFromArgs, tasksLead } from "./step.js?v=aa20e2c-202611010029";
 
 const graph = { byId: new Map([["or.start", {}], ["gr.parse", {}], ["cv.four", {}]]) };
 
