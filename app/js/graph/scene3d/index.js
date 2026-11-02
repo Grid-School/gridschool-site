@@ -16,16 +16,16 @@
  * behind it. Reduced motion skips both animations and jumps.
  */
 
-import { el, clear } from "../../dom.js?v=3f8058e-202611020733";
-import { traceSet, stepNumber } from "../model.js?v=3f8058e-202611020733";
-import { loadThree } from "./three.js?v=3f8058e-202611020733";
-import { readPalette } from "./palette.js?v=3f8058e-202611020733";
-import { createCamera3d } from "./camera3d.js?v=3f8058e-202611020733";
-import { createPillar, paintPillar, placePillar, disposePillar } from "./pillars.js?v=3f8058e-202611020733";
-import { STANDING, standingOf } from "../standing.js?v=3f8058e-202611020733";
-import { createEnvironment } from "./environment.js?v=3f8058e-202611020733";
-import { planFloor, NODE_R } from "./floorplan.js?v=3f8058e-202611020733";
-import { makeGlyph } from "./glyphs.js?v=3f8058e-202611020733";
+import { el, clear } from "../../dom.js?v=b7c5890-202611020907";
+import { traceSet, stepNumber } from "../model.js?v=b7c5890-202611020907";
+import { loadThree } from "./three.js?v=b7c5890-202611020907";
+import { readPalette } from "./palette.js?v=b7c5890-202611020907";
+import { createCamera3d } from "./camera3d.js?v=b7c5890-202611020907";
+import { createPillar, paintPillar, placePillar, disposePillar } from "./pillars.js?v=b7c5890-202611020907";
+import { STANDING, standingOf } from "../standing.js?v=b7c5890-202611020907";
+import { createEnvironment } from "./environment.js?v=b7c5890-202611020907";
+import { planFloor, NODE_R } from "./floorplan.js?v=b7c5890-202611020907";
+import { makeGlyph } from "./glyphs.js?v=b7c5890-202611020907";
 
 const BEAM_LIFT = 1.2;
 /** Below this camera height the titles come in; above it, numbers only. */

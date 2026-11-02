@@ -5,9 +5,9 @@
  * ending in the free check for their grad.
  */
 
-import { PERSIST, LINKS, isPlaceholder } from "../config.js?v=3f8058e-202611020733";
-import { applySiteOverrides } from "../js/site-overrides.js?v=3f8058e-202611020733";
-import { track, visitorId } from "../check/events.js?v=3f8058e-202611020733";
+import { PERSIST, LINKS, isPlaceholder } from "../config.js?v=b7c5890-202611020907";
+import { applySiteOverrides } from "../js/site-overrides.js?v=b7c5890-202611020907";
+import { track, visitorId } from "../check/events.js?v=b7c5890-202611020907";
 
 const LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
 const API = (() => {

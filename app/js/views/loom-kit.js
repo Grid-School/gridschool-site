@@ -13,10 +13,10 @@
  * pointing at real work is the costly signal; a generated one would spend it.
  */
 
-import { el } from "../dom.js?v=3f8058e-202611020733";
-import { btn } from "../ui.js?v=3f8058e-202611020733";
-import { BEATS, composeBeats, tidyAnswers, scriptSeconds, blanksLeft, voiceFlags } from "../loom-script.js?v=3f8058e-202611020733";
-import { SLIDES, partDone, scriptDone } from "../campaign-steps.js?v=3f8058e-202611020733";
+import { el } from "../dom.js?v=b7c5890-202611020907";
+import { btn } from "../ui.js?v=b7c5890-202611020907";
+import { BEATS, composeBeats, tidyAnswers, scriptSeconds, blanksLeft, voiceFlags } from "../loom-script.js?v=b7c5890-202611020907";
+import { SLIDES, partDone, scriptDone } from "../campaign-steps.js?v=b7c5890-202611020907";
 
 /** Seconds a Loom should land in. */
 export const PACE = { min: 45, low: 60, high: 90, max: 105 };
