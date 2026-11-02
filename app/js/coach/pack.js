@@ -9,14 +9,14 @@
  * concatenate user text into the system prompt.
  */
 
-import { COACH } from "../../../config.js?v=f1e84e9-202611010114";
-import { nextAction } from "./next.js?v=f1e84e9-202611010114";
-import { currentMove } from "../next-live.js?v=f1e84e9-202611010114";
-import { retrieve, formatSnippets } from "./memory.js?v=f1e84e9-202611010114";
-import { credits, formatUsd } from "./credits.js?v=f1e84e9-202611010114";
-import { modeOf } from "../modes.js?v=f1e84e9-202611010114";
-import { artifactOf } from "../artifacts.js?v=f1e84e9-202611010114";
-import { stepNumber } from "../graph/model.js?v=f1e84e9-202611010114";
+import { COACH } from "../../../config.js?v=3f8058e-202611020733";
+import { nextAction } from "./next.js?v=3f8058e-202611020733";
+import { currentMove } from "../next-live.js?v=3f8058e-202611020733";
+import { retrieve, formatSnippets } from "./memory.js?v=3f8058e-202611020733";
+import { credits, formatUsd } from "./credits.js?v=3f8058e-202611020733";
+import { modeOf } from "../modes.js?v=3f8058e-202611020733";
+import { artifactOf } from "../artifacts.js?v=3f8058e-202611020733";
+import { stepNumber } from "../graph/model.js?v=3f8058e-202611020733";
 
 const FENCE = "-----";
 

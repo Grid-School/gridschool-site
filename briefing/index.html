@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The 7-minute briefing. GridSchool</title>
+<meta name="description" content="What happened to entry-level software jobs, and the job that replaced it. A 7-minute briefing from a working engineer.">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../rez.css?v=3f8058e-202611020733">
+<link rel="stylesheet" href="../js/sales.css?v=3f8058e-202611020733">
+<link rel="stylesheet" href="../sprint/sprint.css?v=3f8058e-202611020733">
+<style>
+  .bf h2 { margin: 36px 0 10px; font-size: 20px; font-weight: 500; color: var(--lumen); }
+  .bf p, .bf li { font-size: 16px; }
+  .bf__film { position: relative; aspect-ratio: 16 / 9; margin: 0 0 24px; border-radius: var(--radius-sm); overflow: hidden; background: var(--panel); }
+  .bf__film iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .bf__src { margin-top: 28px; color: var(--muted); font-size: 13px; }
+  .bf__trap { position: absolute; left: -9999px; }
+</style>
+</head>
+<body class="rez-page" data-from="briefing">
+
+<header class="nav is-scrolled">
+  <a class="brand" href="../" aria-label="GridSchool home"><span>GRID<b>SCHOOL</b></span></a>
+  <span class="nav__end"><span class="eyebrow">The briefing</span></span>
+</header>
+
+<main class="sp">
+  <div class="wrap">
+    <article class="sp__card bf">
+      <p class="eyebrow">The 7-minute briefing</p>
+      <h1>What happened to entry-level software jobs, and the job that replaced it.</h1>
+      <p class="sp__lede">From a working engineer who builds AI systems for engineering teams. For new grads, students, career changers, and the parents watching it happen.</p>
+
+      <form data-gate novalidate>
+        <div class="sp__q">
+          <label class="sp__label" for="bf-email">Your email</label>
+          <input id="bf-email" type="email" autocomplete="email" required>
+          <p class="sp__help">One email with the link, so you can come back. Nothing else unless you ask.</p>
+        </div>
+        <fieldset class="sp__q">
+          <legend>I'm a</legend>
+          <div class="sp__opts" role="radiogroup">
+            <label class="sp__opt"><input type="radio" name="who" value="grad"><span>Recent graduate or job seeker</span></label>
+            <label class="sp__opt"><input type="radio" name="who" value="student"><span>Student, graduating soon</span></label>
+            <label class="sp__opt"><input type="radio" name="who" value="parent"><span>Parent</span></label>
+            <label class="sp__opt"><input type="radio" name="who" value="other"><span>Something else</span></label>
+          </div>
+        </fieldset>
+        <input class="bf__trap" name="company" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <p class="sp__error" data-error role="alert"></p>
+        <div class="sp__acts"><button class="btn btn--solid" type="submit">Open the briefing<span class="arr" aria-hidden="true"> →</span></button></div>
+      </form>
+
+      <section data-body hidden>
+        <div class="bf__film" data-film hidden></div>
+
+        <h2>1. What happened</h2>
+        <p>Hiring for people aged 22 to 25 in software and other AI-exposed jobs is about 19% below their peers in jobs AI touches less. Experienced workers in the same jobs show no gap. Almost all of it is fewer hires; layoffs barely moved. If you've sent a hundred applications and heard almost nothing, that's the market you're in, and the reason is specific.</p>
+
+        <h2>2. Why</h2>
+        <p>AI got very good at work whose result can be checked automatically, and code is that kind of work. The small, well-defined tasks juniors used to learn on are exactly what AI tools now do well. So companies hire fewer people for that work. Many students used AI to get through school; that's common now, and it left a gap: knowing how to get an answer from it, without much practice checking it, explaining it, and standing behind it.</p>
+
+        <h2>3. Where the work went</h2>
+        <p>The work didn't vanish. IBM is tripling its entry-level hiring in 2026, software developers included, after rewriting those jobs around talking with customers, checking what AI produces, and owning results. What companies still need is someone who can find out what a real person needs, write down what good looks like, build it with AI tools, and answer for the result.</p>
+        <p>Software engineer is still by far the biggest market, so fundamentals still count. The edge on top of them is product judgment. The junior doors that grew are often called something else: AI integration, implementation, solutions. Forward deployed engineering grew fastest of all, and most of those roles are senior, so it's a goal for a couple of years in.</p>
+
+        <h2>4. How hiring works now</h2>
+        <p>Applications per job have roughly doubled since 2022, and one recruiting platform counts about 291 applications per hire. Many are written by AI and filtered by AI, and each side trusts the other less. Silence is now the normal response, even to good candidates. What still gets read: a short, honest note to a real person, someone who vouches for you, and work a hiring manager can check in ten minutes.</p>
+
+        <h2>5. What to do about it</h2>
+        <ol class="sp__list">
+          <li>Get your resume right once for each title you're aiming at, then stop rewriting it.</li>
+          <li>Search software engineer plus one nearby title, with evidence for both.</li>
+          <li>Send about 5 notes a week to named people, each with something they can check. Follow up once or twice; silence isn't a no.</li>
+          <li>Build one small thing for a real person: a local business, a club, a nonprofit. Find their problem, write down what good looks like, ship it, and show what changed.</li>
+          <li>Read your industry once a month: what's growing, what three postings for your title ask for, and where your proof fits.</li>
+        </ol>
+
+        <h2>Your next step</h2>
+        <div data-next></div>
+        <p class="bf__src">Sources: Stanford Digital Economy Lab (Aug 2026); IBM (Feb 2026); LinkedIn and Ashby hiring data; Indeed Hiring Lab (Jul 2026). Nobody honest can promise anyone a job. A company's yes is theirs.</p>
+      </section>
+    </article>
+  </div>
+</main>
+
+<footer><div class="wrap">GridSchool · <a href="mailto:support@gridschool.org">support@gridschool.org</a> · <a href="../terms/">Terms</a> · <a href="../privacy/">Privacy</a> · © 2026 GRID SCHOOL LLC · Boise, Idaho</div></footer>
+
+<script type="module" src="./briefing.js?v=3f8058e-202611020733"></script>
+</body>
+</html>

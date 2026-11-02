@@ -9,13 +9,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../rez.css?v=f1e84e9-202611010114">
-<link rel="stylesheet" href="../js/sales.css?v=f1e84e9-202611010114">
-<link rel="stylesheet" href="../sprint/sprint.css?v=f1e84e9-202611010114">
+<link rel="stylesheet" href="../rez.css?v=3f8058e-202611020733">
+<link rel="stylesheet" href="../js/sales.css?v=3f8058e-202611020733">
+<link rel="stylesheet" href="../sprint/sprint.css?v=3f8058e-202611020733">
 <style>
   .pp p { font-size: 16px; }
   .pp h2 { margin: 34px 0 10px; font-size: 20px; font-weight: 500; color: var(--lumen); }
   .pp__status { min-height: 1.4em; margin: 14px 0 0; color: var(--soft); }
+  .pp__trap { position: absolute; left: -9999px; }
   .pp__film { position: relative; aspect-ratio: 16 / 9; margin: 0 0 24px; border-radius: var(--radius-sm); overflow: hidden; background: var(--panel); }
   .pp__film iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 </style>
@@ -53,9 +54,30 @@
       <p>Your graduate can show you what they've sent and what came back at any time; it's all tracked on their map. Ask one question a week instead of checking in every day. The decision to join is theirs, and the call starts with what they want.</p>
       <p>The founding cohort is $3,000, or three payments of $1,100, and a $300 deposit holds a seat once reservations open on December 1. The price is on the page so there are no surprises on the call.</p>
 
-      <div class="sp__acts" data-act>
-        <a class="btn btn--solid" href="../check/">Have your graduate take the free check<span class="arr" aria-hidden="true"> →</span></a>
-      </div>
+      <form data-handoff novalidate>
+        <h2>Send this to your graduate</h2>
+        <p>We'll send them one email, from you, with this explanation and the free check. Nobody signs them up for anything, and they decide what happens next.</p>
+        <div class="sp__row">
+          <label class="sp__label" for="ho-grad-first">Their first name</label>
+          <input id="ho-grad-first" type="text" autocomplete="off">
+          <label class="sp__label" for="ho-grad-email">Their email</label>
+          <input id="ho-grad-email" type="email" autocomplete="off">
+          <label class="sp__label" for="ho-name">Your name</label>
+          <input id="ho-name" type="text" autocomplete="name">
+          <label class="sp__label" for="ho-email">Your email</label>
+          <input id="ho-email" type="email" autocomplete="email">
+          <label class="sp__label" for="ho-note">A short note from you (optional)</label>
+          <textarea id="ho-note" rows="2" placeholder="I read this and thought of you."></textarea>
+        </div>
+        <input class="pp__trap" name="company" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <p class="sp__error" data-handoff-error role="alert"></p>
+        <div class="sp__acts">
+          <button class="btn btn--solid" type="submit">Send it to them<span class="arr" aria-hidden="true"> →</span></button>
+          <a class="plan__alt" href="../check/">Or take the free check yourself, to see what they'd see</a>
+        </div>
+      </form>
+
+      <div class="sp__acts" data-act></div>
       <p class="pp__status" data-status role="status"></p>
       <p class="pp__more" data-more hidden></p>
     </article>
@@ -64,6 +86,6 @@
 
 <footer><div class="wrap">GridSchool · <a href="mailto:support@gridschool.org">support@gridschool.org</a> · <a href="../terms/">Terms</a> · <a href="../privacy/">Privacy</a> · © 2026 GRID SCHOOL LLC · Boise, Idaho<br>We can't promise anyone a job. A company's yes is theirs. Research figures: Stanford Digital Economy Lab (August 2026), IBM (February 2026), LinkedIn and Ashby hiring data.</div></footer>
 
-<script type="module" src="./parents.js?v=f1e84e9-202611010114"></script>
+<script type="module" src="./parents.js?v=3f8058e-202611020733"></script>
 </body>
 </html>

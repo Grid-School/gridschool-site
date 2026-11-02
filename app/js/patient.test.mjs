@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { patient, replyLost } from "./patient.js?v=f1e84e9-202611010114";
+import { patient, replyLost } from "./patient.js?v=3f8058e-202611020733";
 
 const noSleep = async () => {};
 const netError = () => new TypeError("Failed to fetch");

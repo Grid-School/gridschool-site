@@ -4,6 +4,7 @@
     "stage": {
       "grad": "New grads are judged mostly on what a stranger can open and check: a project, a repo, a write-up.",
       "self": "Without a degree to lean on, the first thing a reviewer can open does most of the work.",
+      "changer": "Career changers are read on what carries over. Name the work you already did that a software team needs, then show one thing you built.",
       "working": "Working engineers are hired through people more often than portals. We'll see how much of your search goes that way.",
       "laidoff": "A gap is easier to explain than most people fear. What matters is what you did with it."
     },

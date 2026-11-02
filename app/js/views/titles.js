@@ -4,8 +4,8 @@
  * the screen): a select with each title's checklist score in words, "Add a title", and, quietly, remove.
  */
 
-import { el } from "../dom.js?v=f1e84e9-202611010114";
-import { btn } from "../ui.js?v=f1e84e9-202611010114";
+import { el } from "../dom.js?v=3f8058e-202611020733";
+import { btn } from "../ui.js?v=3f8058e-202611020733";
 
 const score = (t) => (t.fit?.total ? `${t.fit.shown} of ${t.fit.total} on the checklist` : "checklist not worked out yet");
 

@@ -3,8 +3,8 @@
  * yet rather than taking their money, and hands the record to lead.js.
  */
 
-import { submit, ingestLead } from "../js/lead.js?v=f1e84e9-202611010114";
-import { draftMap, draftRecord, stepTitle, STAGES, STOPS } from "../js/map-draft.js?v=f1e84e9-202611010114";
+import { submit, ingestLead } from "../js/lead.js?v=3f8058e-202611020733";
+import { draftMap, draftRecord, stepTitle, STAGES, STOPS } from "../js/map-draft.js?v=3f8058e-202611020733";
 
 const form = document.getElementById("form");
 const screen = document.getElementById("screen");
@@ -19,6 +19,7 @@ let draft = null;
 const YEARS_FOR = {
   grad: "CS degree, never held a software job",
   self: "Self-taught, never held a software job",
+  changer: "Changing careers into software",
   laidoff: "More than two years, laid off",
 };
 const SEARCH_FOR = {

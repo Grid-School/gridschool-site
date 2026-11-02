@@ -90,6 +90,10 @@
           "label": "Self-taught or from a bootcamp"
         },
         {
+          "value": "changer",
+          "label": "Changing careers into software"
+        },
+        {
           "value": "working",
           "label": "Working as an engineer"
         },

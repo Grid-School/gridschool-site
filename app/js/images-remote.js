@@ -3,9 +3,9 @@
  * student's token and shown from object URLs, never from a public address.
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=f1e84e9-202611010114";
-import { persistToken } from "./session.js?v=f1e84e9-202611010114";
-import { plainError } from "./plain-error.js?v=f1e84e9-202611010114";
+import { PERSIST, isPlaceholder } from "../../config.js?v=3f8058e-202611020733";
+import { persistToken } from "./session.js?v=3f8058e-202611020733";
+import { plainError } from "./plain-error.js?v=3f8058e-202611020733";
 
 export function imagesReady() {
   return Boolean(persistToken() && PERSIST?.endpoint && !isPlaceholder(PERSIST.endpoint));

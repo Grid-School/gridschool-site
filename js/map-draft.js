@@ -12,6 +12,7 @@
 export const STAGES = {
   grad: "a new CS grad",
   self: "self-taught or from a bootcamp",
+  changer: "changing careers into software",
   working: "a working engineer",
   laidoff: "between roles",
 };

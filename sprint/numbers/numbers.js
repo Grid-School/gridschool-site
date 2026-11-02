@@ -3,7 +3,7 @@
  * publish). Counts across everyone, a reply rate only once there are enough sends, and the portal baseline beside it.
  */
 
-import { PERSIST } from "../../config.js?v=f1e84e9-202611010114";
+import { PERSIST } from "../../config.js?v=3f8058e-202611020733";
 
 const LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
 const API = (() => {

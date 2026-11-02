@@ -3,9 +3,9 @@
  * answers with the current record, which the page simply takes and keeps going.
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=f1e84e9-202611010114";
-import { persistToken } from "./session.js?v=f1e84e9-202611010114";
-import { plainError } from "./plain-error.js?v=f1e84e9-202611010114";
+import { PERSIST, isPlaceholder } from "../../config.js?v=3f8058e-202611020733";
+import { persistToken } from "./session.js?v=3f8058e-202611020733";
+import { plainError } from "./plain-error.js?v=3f8058e-202611020733";
 
 export function resumeReady() {
   return Boolean(persistToken() && PERSIST?.endpoint && !isPlaceholder(PERSIST.endpoint));

@@ -11,7 +11,7 @@
  * Pure. Returns every error so a map is fixed in one pass.
  */
 
-import { NODE_TYPES } from "./node-types.mjs?v=f1e84e9-202611010114";
+import { NODE_TYPES } from "./node-types.mjs?v=3f8058e-202611020733";
 
 export const TRACKS = new Set(["spine", "depth", "side"]);
 const DATE = /^\d{4}-\d{2}-\d{2}$/;

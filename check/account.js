@@ -7,8 +7,8 @@
  * The session token lives in this browser only; losing it just means signing in again.
  */
 
-import { AUTH, isPlaceholder } from "../config.js?v=f1e84e9-202611010114";
-import { visitorId } from "./events.js?v=f1e84e9-202611010114";
+import { AUTH, isPlaceholder } from "../config.js?v=3f8058e-202611020733";
+import { visitorId } from "./events.js?v=3f8058e-202611020733";
 
 const KEY = "gridschool.account.v1";
 const GSI = "https://accounts.google.com/gsi/client";

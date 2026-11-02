@@ -1,8 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { communityHref, inviteReady, forgetInvite, roomLines, imInChanges, isStartDone, ON_ITS_WAY } from "./start.js?v=f1e84e9-202611010114";
-import { buildGraph, nextUp, stepCount, stepNumber } from "../graph/model.js?v=f1e84e9-202611010114";
-import { nextMove } from "../engine.js?v=f1e84e9-202611010114";
+import { communityHref, inviteReady, forgetInvite, roomLines, imInChanges, isStartDone, ON_ITS_WAY } from "./start.js?v=3f8058e-202611020733";
+import { buildGraph, nextUp, stepCount, stepNumber } from "../graph/model.js?v=3f8058e-202611020733";
+import { nextMove } from "../engine.js?v=3f8058e-202611020733";
 
 // The shape server/start_step.py makes (start_step_test.py keeps the server side honest).
 const START = {
@@ -79,4 +79,24 @@ test("Start here is 01, the rest shift, and a fresh map's next move is Start her
   const after = buildGraph(MAP, { tasks });
   assert.equal(after.byId.get("s.start").status, "lit");
   assert.equal(nextMove({ student: { tasks }, graph: after }).stepId, "b.profile");
+});
+
+test("on an older map the foundation comes before the coach's own steps, resume builder first", () => {
+  // Cait's map in Nov 2026: her coach's steps 01-23, the foundation tacked on at 24-29 (resume 24, Who you are 25).
+  const done = { "s.start": { state: "done" } };
+  const older = {
+    ...MAP,
+    nodes: [
+      START,
+      builder("p.images", 3),
+      builder("p.brand", 4),
+      { ...builder("b.resume", 24), requires: [] },
+      { ...builder("b.profile", 25), requires: [] },
+      { ...builder("p.path", 26), requires: [] },
+    ],
+  };
+  const tasks = Object.fromEntries(START.tasks.map((t) => [t.id, { state: "done", answers: t.fields ? { slot: "weekends" } : {} }]));
+  const graph = buildGraph(older, { tasks, ...done });
+  assert.equal(graph.byId.get("p.images").status, "open");
+  assert.equal(nextUp(graph).id, "b.resume");
 });

@@ -50,6 +50,8 @@ export const LINKS = {
   // Film 1 (the intro, on fit/) and film P (the parent film, on parents/), as embeddable URLs (YouTube or Loom
   // embed). Until set, each page shows the script as text (ops/beliefs-and-films-2026-10-31.md).
   introFilm: "REPLACE_ME_INTRO_FILM_EMBED",
+  // The briefing lead magnet's video (briefing/): films 1 and 3 together. Until set, the briefing is the written page.
+  briefingFilm: "REPLACE_ME_BRIEFING_FILM_EMBED",
   parentFilm: "REPLACE_ME_PARENT_FILM_EMBED",
   oneOnOne: "REPLACE_ME_CALCOM_1ON1_45MIN",
   // The free community's public door. The free check shows "Join the community" once this is

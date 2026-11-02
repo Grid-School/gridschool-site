@@ -16,10 +16,10 @@
  * never gate a node: a habit is kept, not finished.
  */
 
-import { taskIsComplete, isCountTask } from "../task-state.js?v=f1e84e9-202611010114";
-import { typeOf, specOf } from "../../../data/node-types.mjs?v=f1e84e9-202611010114";
-import { prepOf, prepHint, opensLater, shortDay, isFreeMap, PAID_HINT, COURSE_HINT } from "../prep.js?v=f1e84e9-202611010114";
-import { FREE_MODULES, isCourseStep, moduleId } from "../../../data/video-access.mjs?v=f1e84e9-202611010114";
+import { taskIsComplete, isCountTask } from "../task-state.js?v=3f8058e-202611020733";
+import { typeOf, specOf } from "../../../data/node-types.mjs?v=3f8058e-202611020733";
+import { prepOf, prepHint, opensLater, shortDay, isFreeMap, PAID_HINT, COURSE_HINT } from "../prep.js?v=3f8058e-202611020733";
+import { FREE_MODULES, isCourseStep, moduleId } from "../../../data/video-access.mjs?v=3f8058e-202611020733";
 
 export { typeOf, specOf };
 
@@ -391,12 +391,33 @@ function daysUntil(due, now) {
 /** A due date this close (or past) moves a node to the front. */
 export const DUE_SOON_DAYS = 3;
 
+/**
+ * The foundation steps every map shares: Start here, Who you are, Where you're going, and the resume builder.
+ * On a paid map they come before the coach's own steps, in their own order. Maps made before the foundation
+ * existed put it at the end of the line (step 24 of 29), so a student was sent to a banner or a taste board
+ * while their resume waited; nothing else is worth their time until there's a resume they can send. A free map
+ * keeps its own order (its first step is Today).
+ */
+export const FOUNDATION = ["s.start", "b.profile", "p.path", "b.resume"];
+
+function foundationFirst(graph) {
+  return !graph.nodes.some((node) => node.paidOnly);
+}
+
 function openCore(graph, now = new Date()) {
   const soon = (node) => (node.due ? daysUntil(node.due, now) <= DUE_SOON_DAYS : false);
+  const rank = foundationFirst(graph) ? (node) => (FOUNDATION.includes(node.id) ? 0 : 1) : () => 0;
   return graph.nodes
     .filter((node) => node.status === STATUS.OPEN && node.kind !== "future" && !isSide(node) && canBeNext(node) && !node.preparing)
-    .sort((a, b) => Number(soon(b)) - Number(soon(a)) || (soon(a) && soon(b) ? a.due.localeCompare(b.due) : 0) || a.n - b.n);
+    .sort(
+      (a, b) =>
+        Number(soon(b)) - Number(soon(a)) ||
+        (soon(a) && soon(b) ? a.due.localeCompare(b.due) : 0) ||
+        rank(a) - rank(b) ||
+        a.n - b.n
+    );
 }
+
 
 /**
  * The node the student should be working. A step due within three days
@@ -454,8 +475,11 @@ export function progress(graph) {
  * and the list all say this, so they can't disagree.
  */
 export function stepCount(graph) {
+  // Every step that carries a number counts toward "of Y", so the header and the numbers on the list agree
+  // (a later step, like "From your first job toward CPU design", or a coach step the student can't tick off,
+  // still has one).
   const steps = graph.nodes
-    .filter((node) => node.kind !== "future" && !isSide(node) && isSpine(node) && counts(node) && !node.paidOnly)
+    .filter((node) => !isSide(node) && isSpine(node) && !node.marker && !node.paidOnly)
     .sort((a, b) => a.n - b.n);
   const done = steps.filter((node) => node.status === STATUS.LIT).length;
   const here = nextUp(graph);

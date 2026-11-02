@@ -3,9 +3,9 @@
  * curriculum; this secret opens the lab notebook on Postgres.
  */
 
-import { el, mount } from "./dom.js?v=f1e84e9-202611010114";
-import { persistToken, setPersistToken } from "./session.js?v=f1e84e9-202611010114";
-import { remoteEnabled } from "./persist-remote.js?v=f1e84e9-202611010114";
+import { el, mount } from "./dom.js?v=3f8058e-202611020733";
+import { persistToken, setPersistToken } from "./session.js?v=3f8058e-202611020733";
+import { remoteEnabled } from "./persist-remote.js?v=3f8058e-202611020733";
 
 export function needsPersistToken(slug) {
   return remoteEnabled(slug) && !persistToken();

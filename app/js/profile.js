@@ -9,17 +9,17 @@
  * and this sheet says so rather than pretending to a ledger it does not hold.
  */
 
-import { el, mount } from "./dom.js?v=f1e84e9-202611010114";
-import { btn, kv, toast } from "./ui.js?v=f1e84e9-202611010114";
-import { createModal } from "./modal.js?v=f1e84e9-202611010114";
-import { icon } from "./icons.js?v=f1e84e9-202611010114";
-import { link } from "../../config.js?v=f1e84e9-202611010114";
-import { returnedUnread } from "./tasks.js?v=f1e84e9-202611010114";
-import { initials } from "./rail.js?v=f1e84e9-202611010114";
-import { slotSummary } from "./call-slot.js?v=f1e84e9-202611010114";
-import { displayZone, studentSlot } from "./time.js?v=f1e84e9-202611010114";
-import { emailSetting } from "./daily-run.js?v=f1e84e9-202611010114";
-import { dailyRunReady, dailyRunState, setDailyRun } from "./daily-run-remote.js?v=f1e84e9-202611010114";
+import { el, mount } from "./dom.js?v=3f8058e-202611020733";
+import { btn, kv, toast } from "./ui.js?v=3f8058e-202611020733";
+import { createModal } from "./modal.js?v=3f8058e-202611020733";
+import { icon } from "./icons.js?v=3f8058e-202611020733";
+import { link } from "../../config.js?v=3f8058e-202611020733";
+import { returnedUnread } from "./tasks.js?v=3f8058e-202611020733";
+import { initials } from "./rail.js?v=3f8058e-202611020733";
+import { slotSummary } from "./call-slot.js?v=3f8058e-202611020733";
+import { displayZone, studentSlot } from "./time.js?v=3f8058e-202611020733";
+import { emailSetting } from "./daily-run.js?v=3f8058e-202611020733";
+import { dailyRunReady, dailyRunState, setDailyRun } from "./daily-run-remote.js?v=3f8058e-202611020733";
 
 
 export function createProfile({ getState, onExport, onReset, onSignOut, onNavigate }) {

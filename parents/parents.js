@@ -5,9 +5,9 @@
  * ending in the free check for their grad.
  */
 
-import { PERSIST, LINKS, isPlaceholder } from "../config.js?v=f1e84e9-202611010114";
-import { applySiteOverrides } from "../js/site-overrides.js?v=f1e84e9-202611010114";
-import { track } from "../check/events.js?v=f1e84e9-202611010114";
+import { PERSIST, LINKS, isPlaceholder } from "../config.js?v=3f8058e-202611020733";
+import { applySiteOverrides } from "../js/site-overrides.js?v=3f8058e-202611020733";
+import { track, visitorId } from "../check/events.js?v=3f8058e-202611020733";
 
 const LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
 const API = (() => {
@@ -56,6 +56,36 @@ async function tap(joining) {
   }
 }
 
+/* "Send this to your graduate" (POST /parents/handoff, server/briefing_api.py): one email to them, from the parent. */
+const handoff = document.querySelector("[data-handoff]");
+const handoffError = document.querySelector("[data-handoff-error]");
+handoff?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  handoffError.textContent = "";
+  const val = (id) => handoff.querySelector(id).value.trim();
+  const body = {
+    gradFirst: val("#ho-grad-first"), gradEmail: val("#ho-grad-email"), parentName: val("#ho-name"), parentEmail: val("#ho-email"),
+    note: val("#ho-note"), visitor: visitorId(), company: handoff.querySelector("[name=company]").value,
+  };
+  if (!body.gradFirst) return (handoffError.textContent = "Add their first name, so the email greets them.");
+  if (!/^\S+@\S+\.\S+$/.test(body.gradEmail)) return (handoffError.textContent = "Their email doesn't look right.");
+  if (!/^\S+@\S+\.\S+$/.test(body.parentEmail)) return (handoffError.textContent = "Your email doesn't look right.");
+  const button = handoff.querySelector("button");
+  button.disabled = true;
+  try {
+    const res = await fetch(`${API}/parents/handoff`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    const out = await res.json().catch(() => ({}));
+    if (!res.ok && res.status !== 429) throw new Error(out.error || "");
+    handoff.replaceChildren(Object.assign(document.createElement("p"), {
+      className: "pp__status",
+      textContent: `Sent. ${body.gradFirst} gets one email from you with this page and the free check. If they take the check and it fits, the call happens with them on it, and you're welcome to join.`,
+    }));
+  } catch (problem) {
+    button.disabled = false;
+    handoffError.textContent = problem.message || "That didn't go through. Try again in a moment.";
+  }
+});
+
 const linkOr = (key) => (!isPlaceholder(LINKS[key]) && String(LINKS[key]).startsWith("https://") ? LINKS[key] : null);
 
 async function start() {
@@ -70,6 +100,7 @@ async function start() {
   booking = linkOr("fitCall");
   track(API, "parents.view", { check: forId });
   if (!forId) return;
+  if (handoff) handoff.hidden = true;
   try {
     const res = await fetch(`${API}/fit/${forId}/parent`);
     if (!res.ok) return;

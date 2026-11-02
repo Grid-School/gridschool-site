@@ -4,8 +4,8 @@
  * real (ops/stripe-setup.py --write-config). ?paid=1 is where Stripe returns after a payment.
  */
 
-import { LINKS, isPlaceholder } from "../config.js?v=f1e84e9-202611010114";
-import { applySiteOverrides } from "../js/site-overrides.js?v=f1e84e9-202611010114";
+import { LINKS, isPlaceholder } from "../config.js?v=3f8058e-202611020733";
+import { applySiteOverrides } from "../js/site-overrides.js?v=3f8058e-202611020733";
 
 await applySiteOverrides().catch(() => null);
 
