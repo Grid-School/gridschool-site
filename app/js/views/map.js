@@ -16,25 +16,27 @@
  * went with it, because on the floor position is derived from sequence.
  */
 
-import { el, mount } from "../dom.js?v=b7c5890-202611020907";
-import { btn, toast } from "../ui.js?v=b7c5890-202611020907";
-import { createScene3d } from "../graph/scene3d/index.js?v=b7c5890-202611020907";
-import { createRezScene } from "../graph/rez/index.js?v=b7c5890-202611020907";
-import { STATUS, nextUp, progress, visibleGraph, stepNumber } from "../graph/model.js?v=b7c5890-202611020907";
-import { STANDING, STANDING_LABEL, standingOf } from "../graph/standing.js?v=b7c5890-202611020907";
-import { icon } from "../icons.js?v=b7c5890-202611020907";
-import { trackLabel } from "../copy.js?v=b7c5890-202611020907";
-import { mapList } from "./map-list.js?v=b7c5890-202611020907";
-import { dueLabel } from "./from-aden.js?v=b7c5890-202611020907";
-import { createGridState, hashFor, RESERVED_ARGS, VIEW } from "./grid-state.js?v=b7c5890-202611020907";
-import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=b7c5890-202611020907";
-import { isProgressReadOnly } from "../store.js?v=b7c5890-202611020907";
-import { setLiveJobs } from "../next-live.js?v=b7c5890-202611020907";
-import { matchedRoles, fetchPacks, radarReady } from "../roles-remote.js?v=b7c5890-202611020907";
-import { careerOf } from "../search.js?v=b7c5890-202611020907";
-import { routeGraph, isLandmark } from "../graph/route.js?v=b7c5890-202611020907";
-import { isFreeMap, upgradeHref } from "../prep.js?v=b7c5890-202611020907";
-import { createSuggest } from "./suggest.js?v=b7c5890-202611020907";
+import { el, mount } from "../dom.js?v=3c8024f-202611042144";
+import { activeTargets, firstWeekDone, homeMove } from "../search.js?v=3c8024f-202611042144";
+import { renderWalk } from "./walk.js?v=3c8024f-202611042144";
+import { btn, toast } from "../ui.js?v=3c8024f-202611042144";
+import { createScene3d } from "../graph/scene3d/index.js?v=3c8024f-202611042144";
+import { createRezScene } from "../graph/rez/index.js?v=3c8024f-202611042144";
+import { STATUS, nextUp, progress, visibleGraph, stepNumber } from "../graph/model.js?v=3c8024f-202611042144";
+import { STANDING, STANDING_LABEL, standingOf } from "../graph/standing.js?v=3c8024f-202611042144";
+import { icon } from "../icons.js?v=3c8024f-202611042144";
+import { trackLabel } from "../copy.js?v=3c8024f-202611042144";
+import { mapList } from "./map-list.js?v=3c8024f-202611042144";
+import { dueLabel } from "./from-aden.js?v=3c8024f-202611042144";
+import { createGridState, hashFor, RESERVED_ARGS, VIEW } from "./grid-state.js?v=3c8024f-202611042144";
+import { lockNotice, shouldInterceptLock } from "./lock-notice.js?v=3c8024f-202611042144";
+import { isProgressReadOnly } from "../store.js?v=3c8024f-202611042144";
+import { setLiveJobs } from "../next-live.js?v=3c8024f-202611042144";
+import { matchedRoles, fetchPacks, radarReady } from "../roles-remote.js?v=3c8024f-202611042144";
+import { careerOf } from "../search.js?v=3c8024f-202611042144";
+import { routeGraph, isLandmark } from "../graph/route.js?v=3c8024f-202611042144";
+import { isFreeMap, upgradeHref } from "../prep.js?v=3c8024f-202611042144";
+import { createSuggest } from "./suggest.js?v=3c8024f-202611042144";
 
 /** Top clears the bar, right the control stack, bottom the next-step card. */
 const INSETS = { top: 64, right: 72, bottom: 96, left: 40 };
@@ -67,11 +69,17 @@ export function renderMap(ctx, initialArg) {
   const lockFloat = el("div.lock-float", { hidden: true });
   const invite = el("div.style-invite", { hidden: true, role: "dialog", "aria-label": "A new way to see your map" });
   const world = el("div.world3d-host", { role: "application", "aria-label": "Your path" });
-  const canvas = el("div.view.view--map", {}, world, hudTop, adenLine, hudSide, status, invite);
+  // The lens (2026-11-03): a walk screen opens inside the map, beside the node it stands on; the map stays.
+  const lens = el("aside.lens", { hidden: true, "aria-label": "This step" });
+  const canvas = el("div.view.view--map", {}, world, hudTop, adenLine, hudSide, status, invite, lens);
   const list = el("div.view.view--maplist", { hidden: true });
   const root = el("div.mapview", {}, canvas, list, lockFloat);
 
   let current = ctx;
+  // A seat on the walk reads the map in the walk's three marks (app.css .mapview.is-walk).
+  root.classList.toggle("is-walk", Boolean(ctx.state.features?.interview));
+  const firstWeeks = (state) => Boolean(state.features?.interview) && activeTargets(state.student).length < 2;
+  root.classList.toggle("is-first-weeks", firstWeeks(ctx.state));
   let signature = "";
 
   // Suggest changes (views/suggest.js): the student's own suggestion drawn on this map.
@@ -96,6 +104,8 @@ export function renderMap(ctx, initialArg) {
   const isList = () => ui.state.view === VIEW.LIST;
 
   function syncHash() {
+    // With the lens open the hash is the walk screen's; the map never writes over it.
+    if (!lens.hidden) return;
     const target = hashFor(ui.state);
     if (location.hash === target) return;
     history.replaceState(null, "", `${location.pathname}${location.search}${target}`);
@@ -154,7 +164,19 @@ export function renderMap(ctx, initialArg) {
     const graph = current.state.graph;
     // "You are here" is where you are on the line. What to do right now is the Next bar's job
     // (views/next-bar.js), under every screen, so nothing floats beside the node any more.
-    const nextId = nextUp(graph)?.id ?? null;
+    let nextId = nextUp(graph)?.id ?? null;
+    // With the lens open, the node the screen stands on is where you are.
+    if (lensNodeId && graph.byId?.has(lensNodeId)) return { nextId: lensNodeId, ...(hasBand() ? { ready: { items: [] }, onTool: (tool) => current.navigate("do", tool) } : {}), ...extra };
+    // After the first week the glow sits on the person or company the home's move names (search.js homeMove).
+    if (current.state.features?.interview && firstWeekDone(current.state.student)) {
+      const h = homeMove(current.state.student);
+      const a = h.action;
+      const want = a?.kind === "companies" ? "t.next"
+        : a?.kind === "meanwhile" && a.pick ? `p.${a.targetId}.${a.pick.name}`
+        : h.person && graph.byId?.has(`c.${h.person.id}`) ? `c.${h.person.id}`
+        : h.target && graph.byId?.has(`t.${h.target.id}`) ? `t.${h.target.id}` : null;
+      if (want && graph.byId?.has(want)) nextId = want;
+    }
     if (!hasBand()) return { nextId, ...extra };
     return { nextId, ready: { items: [] }, onTool: (tool) => current.navigate("do", tool), ...extra };
   }
@@ -273,6 +295,8 @@ export function renderMap(ctx, initialArg) {
   /** Open standing behind the node you are on, looking ahead. */
   function standHere(graph, { glide = false } = {}) {
     if (!floor) return;
+    // A walk seat's map is one week plus the record: the whole of it fits, so the whole of it shows.
+    if (current.state.features?.interview) { floor.fit({ insets: INSETS }); return; }
     const here = nextUp(graph) ?? graph.nodes.find((node) => node.status === STATUS.OPEN) ?? graph.nodes.at(-1);
     if (here) floor.frame(here, { glide });
     else floor.fit({ insets: INSETS });
@@ -288,6 +312,14 @@ export function renderMap(ctx, initialArg) {
   };
 
   function openNode(id) {
+    const rec = current.state.graph?.byId?.get(id);
+    if (rec?.ghost && rec.company) { location.hash = "#/walk/targets"; return; }
+    if (rec?.record && (rec.person || rec.company)) {
+      try { sessionStorage.setItem("gridschool.sends.focus", rec.targetId || id.slice(2)); if (rec.contactId) sessionStorage.setItem("gridschool.sends.person", rec.contactId); else sessionStorage.removeItem("gridschool.sends.person"); } catch { /* fine */ }
+      location.hash = "#/walk/send";
+      return;
+    }
+    if (rec?.record) { location.hash = "#/home"; return; }
     // Suggesting changes: a tap opens what can be changed about the step, not the step.
     if (!isList() && suggest.tap(id)) return;
     if (isLandmark(id)) {
@@ -518,11 +550,54 @@ export function renderMap(ctx, initialArg) {
   };
   window.addEventListener("resize", onResize);
 
+  /* ---------- the lens: a walk screen inside the map, beside the node it stands on ---------- */
+  let walkLens = null;
+  let lensNodeId = null;
+  function lensNodeFor(screenId) {
+    // The notes screen stands on the person or company it is about: the panel says, the glow follows.
+    if (screenId === "send") {
+      const g = current.state.graph?.byId;
+      const f = walkLens?.sendFocus?.();
+      if (f?.person && g?.has(`c.${f.person}`)) return `c.${f.person}`;
+      if (f?.target && g?.has(`t.${f.target}`)) return `t.${f.target}`;
+      const h = homeMove(current.state.student);
+      if (h.person && g?.has(`c.${h.person.id}`)) return `c.${h.person.id}`;
+      if (h.target && g?.has(`t.${h.target.id}`)) return `t.${h.target.id}`;
+    }
+    return walkLens?.nodeFor(screenId) || "s.send";
+  }
+  function openLens(screenId) {
+    if (!walkLens) {
+      walkLens = renderWalk(current, screenId || "", { lens: true, onClose: () => { closeLens(); if (location.hash !== "#/map") location.hash = "#/map"; } });
+      mount(lens, walkLens.node);
+    } else walkLens.update(current, screenId || "");
+    lens.hidden = false;
+    root.classList.add("is-lens");
+    lensNodeId = lensNodeFor(walkLens.screenId());
+    draw();
+    const node = current.state.graph?.byId?.get(lensNodeId);
+    if (node) loadFloor().then((f) => { if (!lens.hidden && !isList()) f.focus(node); });
+  }
+  function closeLens() {
+    if (lens.hidden) return;
+    lens.hidden = true;
+    root.classList.remove("is-lens");
+    lensNodeId = null;
+    draw();
+    if (floor && !isList()) standHere(shown(), { glide: true });
+  }
+  const isLensArg = (arg) => typeof arg === "string" && arg.startsWith("lens:");
+  if (isLensArg(initialArg)) openLens(initialArg.slice(5));
+
   return {
     node: root,
     /** The route is an input to the machine; the same argument twice is a no-op. */
     update(nextCtx, arg) {
+      root.classList.toggle("is-first-weeks", firstWeeks(nextCtx.state));
       current = nextCtx;
+      if (isLensArg(arg)) { openLens(arg.slice(5)); return; }
+      closeLens();
+      if (walkLens) walkLens.update(current);
       if (arg && !RESERVED_ARGS.includes(arg) && current.state.graph.byId.has(arg)) {
         current.navigate("map", arg);
         return;

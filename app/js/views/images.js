@@ -8,12 +8,12 @@
  * Everything they upload is private to them.
  */
 
-import { el, mount } from "../dom.js?v=b7c5890-202611020907";
-import { btn, toast } from "../ui.js?v=b7c5890-202611020907";
-import { nodeRail, nodeIntro } from "./node-rail.js?v=b7c5890-202611020907";
-import * as api from "../images-remote.js?v=b7c5890-202611020907";
-import * as F from "../profile-flow.js?v=b7c5890-202611020907";
-import { STAGES, cropBox, needsShrink, shrinkTo, doneStages, firstOpen, sourceFor, allowanceLine } from "../image-crop.js?v=b7c5890-202611020907";
+import { el, mount } from "../dom.js?v=3c8024f-202611042144";
+import { btn, toast } from "../ui.js?v=3c8024f-202611042144";
+import { nodeRail, nodeIntro } from "./node-rail.js?v=3c8024f-202611042144";
+import * as api from "../images-remote.js?v=3c8024f-202611042144";
+import * as F from "../profile-flow.js?v=3c8024f-202611042144";
+import { STAGES, cropBox, needsShrink, shrinkTo, doneStages, firstOpen, sourceFor, allowanceLine } from "../image-crop.js?v=3c8024f-202611042144";
 
 const ACCEPT = "image/jpeg,image/png,image/webp";
 const LINKEDIN = { headshot: { width: 800, height: 800 }, banner: { width: 1584, height: 396 } };
@@ -102,8 +102,8 @@ function cropper({ src, kind, onDownload }) {
     })));
 }
 
-export function renderImages(ctx) {
-  const node = el("div.view.view--images");
+export function renderImages(ctx, { embedded = false } = {}) {
+  const node = el(embedded ? "div.view--images.is-embedded" : "div.view.view--images");
   let slug = ctx.state.slug;
   let rec = null;
   let stage = null;
@@ -305,7 +305,8 @@ export function renderImages(ctx) {
     if (!rec) return mount(node, el("div.im", {}, el("div.pack__wait", {}, el("span.pack__spinner", { "aria-hidden": "true" }), el("p", {}, "Opening your images."))));
     const here = stage || firstOpen(rec, downloaded);
     const body = { photos: photosBody, headshot: () => makeBody("headshot"), banner: () => makeBody("banner"), post: postBody }[here]();
-    const head = el("header.im__head", {},
+    // Inside another step (the LinkedIn step) the tool has no header of its own and no way out but that step.
+    const head = embedded ? null : el("header.im__head", {},
       el("div", {}, el("b.eyebrow", {}, "Profile images"), el("h1.im__title", {}, "Your headshot and banner")),
       btn({ label: "← Map", variant: "quiet", onclick: () => ctx.navigate("map") }));
     mount(node, el("div.im", {}, head,

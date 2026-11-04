@@ -11,11 +11,11 @@
  * The server counts the sign-in itself (account.signin, events.py) with from "signin".
  */
 
-import { PERSIST } from "../config.js?v=b7c5890-202611020907";
-import * as Account from "../check/account.js?v=b7c5890-202611020907";
-import { enterSeat } from "../app/js/persist-auth.js?v=b7c5890-202611020907";
-import { routeFor, sitePath } from "./route.mjs?v=b7c5890-202611020907";
-import { takeRoute } from "../app/js/return-to.js?v=b7c5890-202611020907";
+import { PERSIST } from "../config.js?v=3c8024f-202611042144";
+import * as Account from "../check/account.js?v=3c8024f-202611042144";
+import { enterSeat } from "../app/js/persist-auth.js?v=3c8024f-202611042144";
+import { routeFor, sitePath } from "./route.mjs?v=3c8024f-202611042144";
+import { takeRoute } from "../app/js/return-to.js?v=3c8024f-202611042144";
 
 // Localhost never talks to production: ?api= when given, else the page's own origin.
 const API = (() => {

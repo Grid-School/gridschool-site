@@ -271,3 +271,195 @@
 /* No output yet (resume-stages.hasOutput): the steps take the whole width, at a readable measure. */
 .rz__grid.rz__grid--solo { grid-template-columns: minmax(0, 1fr); max-width: 780px; }
 .nd__head--plain { cursor: default; margin: 0 0 8px; }
+
+/* ---------- The interview (views/interview.js): a chat. The conversation scrolls in the middle, what you can do now is
+   pinned at the bottom, and the checklist sits beside it. It takes the step's full width (the step grid's centre
+   column is for prose) and keeps one reading column inside. */
+.view--step > .step:not(.step--module) > .step__tool:has(.iv) { grid-column: 1 / -1; width: min(100%, 1180px); justify-self: center; }
+/* The working surface comes first: on this step the header is the title alone, and the generic step chrome
+   (the help box, the footer bar) stays out of the way; the interview is already a conversation. */
+.view--step .step:has(.iv) .step__help, .view--step .step:has(.iv) .step__bar { display: none; }
+/* In the builder after the interview: the lines to decide on the left, the resume as it stands on the right. */
+.iv--builder .rz__grid:not(.rz__grid--solo) { grid-template-columns: minmax(0, 1fr) minmax(320px, 44%); }
+@media (max-width: 1000px) { .iv--builder .rz__grid:not(.rz__grid--solo) { grid-template-columns: minmax(0, 1fr); } }
+.view--step .step:has(.iv) .step__lead, .view--step .step:has(.iv) .step__scope { display: none; }
+.iv { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 20px; align-items: start; }
+.iv--builder { grid-template-columns: minmax(0, 1fr); }
+.iv__chat { display: flex; flex-direction: column; min-width: 0; height: var(--iv-height, clamp(480px, calc(100dvh - 300px), 900px));
+  border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); overflow: hidden; }
+.iv__log { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 20px 22px 12px; display: flex; flex-direction: column; gap: 14px; scroll-behavior: smooth; }
+.iv__msg { max-width: 72ch; }
+.iv__msg p { margin: 0; font-size: 15px; line-height: 1.55; }
+.iv__msg--you { align-self: flex-end; }
+.iv__msg--you p { display: inline-block; text-align: left; background: #10203a; border: 1px solid #1a4a5c; border-radius: var(--radius); padding: 10px 13px; color: #fff; }
+.iv__msg--us p { color: var(--text); }
+.iv__msg--q .iv__qtext { font-size: 17px; font-weight: 500; color: #fff; line-height: 1.45; }
+.iv__msg--q .iv__why { margin-top: 6px; font-size: 13.5px; color: var(--muted); }
+/* A confirmation: one quiet line with a mark, so the thread reads as questions and answers, not echoes. */
+.iv__sys { display: flex; gap: 8px; align-items: baseline; font-size: 13px; color: var(--muted); font-family: var(--font-mono); padding-left: 2px; }
+.iv__sysmark { color: var(--cyan); }
+.iv__msg p.is-typing::after { content: "▍"; color: var(--cyan); margin-left: 1px; animation: ivblink 1s steps(1) infinite; }
+@keyframes ivblink { 50% { opacity: 0; } }
+.iv__recap { margin: 10px 0 0; padding-left: 18px; display: grid; gap: 4px; font-size: 14px; color: var(--text); }
+/* The model at work, as a message: the step list and the last notes, in place, so it never pushes the page. */
+.iv__wtitle { font-weight: 500; }
+.iv__clock { font-family: var(--font-mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.iv__wsteps { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 6px; }
+.iv__wstep { display: flex; gap: 10px; align-items: baseline; font-size: 14px; color: var(--muted); }
+.iv__wstep small { color: var(--muted); }
+.iv__wdot { flex: none; width: 9px; height: 9px; border-radius: 50%; border: 1px solid var(--line); transform: translateY(-1px); }
+.iv__wstep.is-active { color: var(--text); }
+.iv__wstep.is-active .iv__wdot { border-color: var(--cyan); background: var(--cyan); box-shadow: 0 0 8px rgba(72, 214, 255, .6); animation: ivpulse 1.2s ease-in-out infinite; }
+.iv__wstep.is-done { color: var(--muted); }
+.iv__wstep.is-done .iv__wdot { border-color: var(--cyan); background: color-mix(in srgb, var(--cyan) 35%, transparent); }
+@keyframes ivpulse { 50% { opacity: .45; } }
+.iv__wnotes { list-style: none; margin: 10px 0 0; padding: 10px 0 0; border-top: 1px solid var(--line); display: grid; gap: 4px; font-size: 13px; color: var(--muted); }
+.iv__wnotes li { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Pinned at the bottom: the one thing to do now. */
+.iv__composer { flex: none; border-top: 1px solid var(--line); padding: 14px 18px 16px; background: rgba(5, 7, 12, .88); }
+.iv__compose { display: grid; gap: 10px; }
+.iv__line { display: flex; gap: 8px; align-items: flex-end; }
+.iv__input { flex: 1 1 auto; width: 100%; box-sizing: border-box; min-height: 46px; max-height: 220px; resize: none; font: inherit; font-size: 15px; line-height: 1.45; color: #fff;
+  background: #070b13; border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px; }
+.iv__input--line { min-height: 46px; }
+.iv__input:focus { outline: none; border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(40, 225, 255, .1); }
+.iv__send { flex: none; width: 46px; height: 46px; border-radius: var(--radius); border: 1px solid var(--cyan); background: color-mix(in srgb, var(--cyan) 22%, #070b13); color: #fff; font-size: 18px; cursor: pointer; }
+.iv__send:disabled { opacity: .4; cursor: default; }
+.iv__acts { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.iv__hint { margin: 0; margin-left: auto; font-size: 12px; color: var(--muted); }
+.iv__chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.iv__chip { background: #070b13; border: 1px solid var(--line); color: var(--text); border-radius: 999px; padding: 10px 15px; font: inherit; font-size: 14.5px; cursor: pointer; text-align: left; }
+.iv__chip:hover, .iv__chip:focus-visible { border-color: var(--cyan); outline: none; }
+.iv__chip[aria-pressed="true"] { background: color-mix(in srgb, var(--cyan) 18%, #070b13); border-color: var(--cyan); }
+.iv__chip[disabled] { opacity: .5; cursor: default; }
+.iv__chip--big { padding: 14px 18px; font-size: 15.5px; border-radius: var(--radius); }
+.iv__drop { display: grid; gap: 4px; padding: 16px; border: 1px dashed var(--line); border-radius: var(--radius-sm); background: #070b13; cursor: pointer; }
+.iv__drop:hover { border-color: var(--cyan); }
+.iv__drop b { font-weight: 600; }
+.iv__drop small { color: var(--muted); font-size: 13px; }
+.iv__file { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.iv__door { display: grid; gap: 6px; padding: 12px 14px; margin-bottom: 4px; border: 1px solid color-mix(in srgb, var(--cyan) 45%, var(--line)); border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--cyan) 7%, transparent); }
+.iv__door b { font-weight: 600; color: #fff; font-size: 14px; }
+.iv__door p { margin: 0; color: var(--muted); font-size: 13px; }
+.iv__door .b { justify-self: start; margin-top: 4px; }
+/* Beside the chat: what's in, what's left, where you stand. */
+.iv__side { position: sticky; top: 24px; display: grid; gap: 10px; padding: 16px 18px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.iv__check { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.iv__row { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 8px; align-items: start; font-size: 14px; color: var(--muted); }
+.iv__row b { font-weight: 500; color: var(--text); }
+.iv__row small { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: var(--muted); font-size: 12.5px; margin-top: 1px; overflow-wrap: anywhere; }
+.iv__row.is-empty b { color: var(--muted); }
+.iv__mark { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--line); font-size: 11px; color: var(--cyan); }
+.iv__row.is-known .iv__mark { border-color: var(--cyan); background: color-mix(in srgb, var(--cyan) 18%, transparent); }
+.iv__row.is-partial .iv__mark { border-color: var(--cyan); }
+.iv__stage { margin: 4px 0 0; font-size: 13.5px; color: var(--text); }
+.iv__saved { margin: 0; font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+.iv__back { margin: 0 0 8px; }
+@media (max-width: 900px) {
+  .iv { grid-template-columns: minmax(0, 1fr); }
+  .iv__side { position: static; }
+  .iv__chat { height: var(--iv-height, clamp(420px, calc(100dvh - 330px), 720px)); }
+  .iv__msg { max-width: 94%; }
+}
+
+/* Read-back: lines sit under the job or project they came from. */
+.rz__linehead { list-style: none; margin: 18px 0 6px; padding: 0; font: 500 11.5px/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.rz__linehead:first-child { margin-top: 4px; }
+.rz__fold { margin-top: 10px; border-top: 1px solid var(--line); padding-top: 10px; }
+.rz__fold summary { cursor: pointer; color: var(--muted); font-size: 14px; }
+.rz__fold .rz__lines { margin-top: 10px; }
+.iv__row > div { min-width: 0; }
+.iv__slots { list-style: none; margin: 3px 0 0; padding: 0; display: grid; gap: 2px; min-width: 0; }
+.iv__slots li { display: flex; gap: 8px; align-items: baseline; justify-content: space-between; font-size: 12.5px; color: var(--muted); min-width: 0; }
+.iv__slots li > span { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.iv__change { flex: none; background: none; border: 0; padding: 0; color: var(--cyan); font: inherit; font-size: 12px; cursor: pointer; opacity: .8; }
+.iv__change:hover { opacity: 1; text-decoration: underline; }
+
+/* The walk's read-back on the design language: the resume as a page on the one sheet, changed lines marked. */
+/* A letter page's width on screen (816px), page-sized padding, body type at 15px: it reads as a document. */
+.rzw .sw__page { background: #060a11; border: 1px solid rgba(40,225,255,.16); border-radius: var(--radius); padding: 56px 64px; max-width: 816px; width: 100%; box-sizing: border-box; color: #e6eef7; font-size: 15px; line-height: 1.55; }
+/* Beside a margin on a laptop (the column under 1,000px) the page's padding eases so the lines keep their length. */
+@container (max-width: 1000px) { .rzw .sw__page { padding: 36px 40px; } }
+@media (max-width: 900px) { .rzw .sw__page { padding: 24px 20px; } }
+.rzw .sw__page .rz-doc__name { margin: 0 0 2px; font-size: 20px; font-weight: 600; color: #fff; }
+.rzw .sw__page .rz-doc__title { margin: 0; font-size: 15px; font-weight: 500; color: var(--text); }
+.rzw .sw__page .rz-doc__top { margin: 2px 0 0; color: var(--muted); font-size: 13px; overflow-wrap: anywhere; }
+/* Section heads the same shape as the printed file: a small bold line with a hairline under it. */
+.rzw .sw__page .rz-doc__h { margin: 20px 0 8px; padding: 0 0 3px; border: 0; border-bottom: 1px solid rgba(207,220,234,.1); font: 600 13px/1.4 var(--font-sans); letter-spacing: .04em; text-transform: uppercase; color: #fff; }
+.rzw .sw__page .rz-doc__role { margin: 10px 0 2px; font-weight: 600; color: #fff; }
+.rzw .sw__page .rz-doc__list { margin: 0; padding-left: 16px; display: flex; flex-direction: column; gap: 5px; }
+.rzw .sw__page .rz-doc__list li { margin: 0; position: relative; border-radius: 3px; }
+.rzw .sw__page .rz-doc__list li[role="button"] { cursor: text; }
+.rzw .sw__page .rz-doc__list li[role="button"]:hover, .rzw .sw__page .rz-doc__list li[role="button"]:focus-visible { outline: 1px solid rgba(40,225,255,.3); outline-offset: 5px; }
+.rzw .sw__page .rz__linebody { display: block; }
+.rzw .sw__page li.is-editing .rz__linebody { outline: 1px solid rgba(40,225,255,.5); outline-offset: 5px; border-radius: 3px; }
+/* The old line under its rewrite is the one mark a changed line carries. */
+.rzw .sw__page .rz__was-inline { display: block; color: var(--muted); font-size: 13px; margin-top: 2px; }
+.rzw .sw__page .rz__was-inline.is-new { text-decoration: none; }
+.rzw .sw__page .rz__inline { display: flex; gap: 14px; margin-top: 8px; font-size: 13px; }
+.rzw .sw__page .rz__inline .is-ghost { color: var(--muted); }
+.rzw .sw__aside .is-warn { color: var(--amber); }
+
+/* ---------- The interview on the design language (ops/design-language.md) ----------
+   The talk sits on the ground with no box around it; your lines are a quiet left rule, ours are the reading
+   voice; the margin is notes, not a panel; the door to the resume is the one glow once it lights. */
+.iv.sw { display: grid; grid-template-columns: minmax(0, 560px) 320px; gap: 20px 56px; align-items: start; justify-content: start; }
+.iv.sw .iv__chat { border: 0; background: transparent; border-radius: 0; }
+.iv.sw .iv__log { padding: 4px 2px 12px; gap: 20px; }
+.iv.sw .iv__msg { max-width: 62ch; display: flex; flex-direction: column; gap: 6px; }
+.iv.sw .iv__msg::before { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ghost); }
+.iv.sw .iv__msg--us::before { content: "Us"; }
+.iv.sw .iv__msg--you::before { content: "You"; }
+.iv.sw .iv__msg--work::before { content: "Working"; }
+.iv.sw .iv__msg--you { align-self: flex-start; }
+.iv.sw .iv__msg--you p { display: block; background: transparent; border: 0; border-left: 1px solid rgba(40,225,255,.35); border-radius: 0; padding: 0 0 0 16px; color: var(--text); font-size: 16px; line-height: 1.55; }
+.iv.sw .iv__msg--us p { font-size: 17px; line-height: 1.6; color: var(--sw-ink, #e6eef7); }
+.iv.sw .iv__msg--q .iv__qtext { font-size: 17px; font-weight: 400; color: var(--sw-ink, #e6eef7); line-height: 1.6; }
+.iv.sw .iv__msg--q .iv__why { font-size: 14px; color: var(--muted); }
+.iv.sw .iv__sys { font-size: 12.5px; }
+.iv.sw .iv__composer { border-top: 1px solid rgba(207,220,234,.08); padding: 16px 0 0; background: transparent; }
+.iv.sw .iv__chip { background: transparent; border: 1px solid rgba(40,225,255,.25); color: var(--text); font-size: 13.5px; font-weight: 500; padding: 9px 14px; }
+.iv.sw .iv__chip[aria-pressed="true"] { background: var(--cyan); color: var(--cta-ink, #03141c); border-color: var(--cyan); }
+.iv.sw .iv__chip--big { border-radius: var(--radius); padding: 14px 18px; font-size: 15px; }
+.iv.sw .iv__input { background: var(--sw-sheet, #060a11); border-color: rgba(207,220,234,.12); color: var(--sw-ink, #e6eef7); }
+.iv.sw .iv__input:focus { border-color: rgba(40,225,255,.5); box-shadow: none; }
+.iv.sw .iv__send { background: var(--cyan); color: var(--cta-ink, #03141c); border-color: var(--cyan); }
+.iv.sw .iv__drop { border-color: rgba(40,225,255,.35); background: rgba(6,10,17,.7); }
+.iv.sw .iv__side { position: sticky; top: 24px; display: flex; flex-direction: column; gap: 26px; padding: 8px 0 0; border: 0; background: transparent; font-size: 14px; color: var(--muted); }
+.iv.sw .iv__side .sw__note p { margin: 0; }
+.iv.sw .iv__check { list-style: none; margin: 2px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.iv.sw .iv__row { display: flex; gap: 10px; align-items: center; font-size: 14px; color: var(--muted); }
+.iv.sw .iv__row .iv__mark { width: 6px; height: 6px; border-radius: 50%; border: 1px solid rgba(40,225,255,.3); flex: 0 0 auto; display: block; font-size: 0; }
+.iv.sw .iv__row.is-known { color: var(--text); }
+.iv.sw .iv__row.is-known .iv__mark { background: var(--cyan); border-color: var(--cyan); }
+.iv.sw .iv__row.is-partial .iv__mark { border-color: var(--cyan); background: color-mix(in srgb, var(--cyan) 40%, transparent); }
+.iv.sw .iv__slots { margin: 8px 0 0; display: grid; gap: 4px; }
+.iv.sw .iv__slots li { font-size: 13px; }
+.iv.sw .iv__saved { font-family: var(--font-mono); font-size: 12px; color: var(--ghost); }
+@media (max-width: 900px) { .iv.sw { grid-template-columns: minmax(0, 1fr); } .iv.sw .iv__side { position: static; } }
+/* The talk grows with what's said, up to the room there is: no void between a question and its chips. */
+.iv.sw .iv__chat { height: auto; max-height: var(--iv-height, clamp(480px, calc(100dvh - 300px), 900px)); }
+.iv.sw .iv__log { flex: 0 1 auto; }
+/* The speaker label marks a change of speaker, never every line: two of ours in a row carry one "Us". */
+.iv.sw .iv__msg--us + .iv__msg--us::before, .iv.sw .iv__msg--you + .iv__msg--you::before { content: none; }
+.iv.sw .iv__msg--us + .iv__msg--us, .iv.sw .iv__msg--you + .iv__msg--you { margin-top: -6px; }
+/* No speaker labels: our lines are the reading voice, yours carry the thin rule. The shapes say who's who. */
+.iv.sw .iv__msg::before { content: none; }
+.iv.sw .iv__msg--us + .iv__msg--us, .iv.sw .iv__msg--you + .iv__msg--you { margin-top: 0; }
+
+/* ---------- The sweep of 2026-11-03 ---------- */
+/* Your work: the talk is the reading column; the composer stays in reach at the foot of the walk's scroll. */
+.iv.sw { grid-template-columns: minmax(0, 560px) 320px; justify-content: start; }
+.iv.sw .iv__chat { height: auto; max-height: none; }
+.iv.sw .iv__log { flex: none; overflow: visible; }
+.iv.sw .iv__composer { position: sticky; bottom: 0; background: #010306; padding-bottom: 12px; z-index: 1; }
+.iv.sw .iv__msg--q .iv__qtext { font-size: 22px; font-weight: 500; color: #fff; line-height: 1.35; }
+.iv.sw .iv__send { width: auto; height: 46px; padding: 0 18px; font: 600 13.5px var(--font-sans); }
+.iv.sw .iv__acts .sw__solid, .iv.sw .iv__acts .sw__ghost { height: auto; }
+.iv.sw .iv__ready { display: flex; flex-direction: column; gap: 10px; padding: 14px 0 4px; border-top: 1px solid rgba(207,220,234,.08); margin-top: 12px; }
+.iv.sw .iv__ready p { margin: 0; font-size: 15px; color: var(--muted); }
+.iv--start { display: block; }
+.iv--start .sw__cols { display: flex; }
+.iv.sw .iv__side { position: static; padding-top: 58px; }
+@media (max-width: 900px) { .iv.sw .iv__side { padding-top: 0; } }

@@ -16,10 +16,10 @@
  * half-typed form. Aden sees it read-only from the desk.
  */
 
-import { el, mount } from "../dom.js?v=b7c5890-202611020907";
-import { panel, btn, field, toast, copy } from "../ui.js?v=b7c5890-202611020907";
-import { isoDate, fmtDay } from "../time.js?v=b7c5890-202611020907";
-import { STATUS } from "../graph/model.js?v=b7c5890-202611020907";
+import { el, mount } from "../dom.js?v=3c8024f-202611042144";
+import { panel, btn, field, toast, copy } from "../ui.js?v=3c8024f-202611042144";
+import { isoDate, fmtDay } from "../time.js?v=3c8024f-202611042144";
+import { STATUS } from "../graph/model.js?v=3c8024f-202611042144";
 import {
   STAGES,
   RELATIONS,
@@ -63,25 +63,27 @@ import {
   targetCandidates,
   webLink,
   MAX_ACTIVE_TARGETS,
-} from "../search.js?v=b7c5890-202611020907";
-import { storyCard, appRow } from "./search-parts.js?v=b7c5890-202611020907";
-import { TOOLS, moveRoute } from "../engine.js?v=b7c5890-202611020907";
-import { currentMove, setLiveJobs } from "../next-live.js?v=b7c5890-202611020907";
-import { PERSIST } from "../../../config.js?v=b7c5890-202611020907";
-import { matchedRoles, radarReady, fetchPacks, winsState, shareWin } from "../roles-remote.js?v=b7c5890-202611020907";
-import { createPackDrawer } from "./pack.js?v=b7c5890-202611020907";
-import { createCampaignDrawer } from "./campaign.js?v=b7c5890-202611020907";
-import { createPositioningCard } from "./positioning-card.js?v=b7c5890-202611020907";
-import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=b7c5890-202611020907";
-import { roleKeyFromRoute } from "../daily-run.js?v=b7c5890-202611020907";
-import { readiness, nextAction } from "../resume-stages.js?v=b7c5890-202611020907";
-import * as resumeApi from "../resume-remote.js?v=b7c5890-202611020907";
-import { openResumeAt } from "./resume.js?v=b7c5890-202611020907";
+} from "../search.js?v=3c8024f-202611042144";
+import { storyCard, appRow } from "./search-parts.js?v=3c8024f-202611042144";
+import { TOOLS, moveRoute } from "../engine.js?v=3c8024f-202611042144";
+import { currentMove, setLiveJobs } from "../next-live.js?v=3c8024f-202611042144";
+import { PERSIST } from "../../../config.js?v=3c8024f-202611042144";
+import { matchedRoles, radarReady, fetchPacks, winsState, shareWin } from "../roles-remote.js?v=3c8024f-202611042144";
+import { createPackDrawer } from "./pack.js?v=3c8024f-202611042144";
+import { createCampaignDrawer } from "./campaign.js?v=3c8024f-202611042144";
+import { createPositioningCard } from "./positioning-card.js?v=3c8024f-202611042144";
+import { NODES as CAMPAIGN_NODES, doneNodes, loomStatus } from "../campaign-steps.js?v=3c8024f-202611042144";
+import { roleKeyFromRoute } from "../daily-run.js?v=3c8024f-202611042144";
+import { readiness, nextAction } from "../resume-stages.js?v=3c8024f-202611042144";
+import * as resumeApi from "../resume-remote.js?v=3c8024f-202611042144";
+import { openResumeAt } from "./resume.js?v=3c8024f-202611042144";
+import { renderConnections } from "./connections.js?v=3c8024f-202611042144";
 
 const RUN_FAMILIES = ["proof", "presence", "network", "interview"];
 /** Every Jobs screen (#/do/<id>); Profile is reached from the "Your LinkedIn" step, not a tab. */
-const TOOL_IDS = ["today", "targets", "people", "applications", "profile"];
+const TOOL_IDS = ["connections", "today", "targets", "people", "applications", "profile"];
 const TOOL_WHY = {
+  connections: "",
   today: "Your next move first, the same one as the bar at the bottom. Then everything else for today: campaign sends, warm asks, fresh roles and your next build step.",
   targets: "Five companies where hiring, size and fit overlap, worked on every channel: an email with a Loom, a LinkedIn request, a call, and follow-ups on day 3, 7 and 14.",
   people: "Referrals turn into interviews far more often than applications. Former colleagues first, then people you've met, then people in the seat.",
@@ -100,7 +102,7 @@ export function nextBuildStep(graph) {
     .sort((a, b) => (a.n ?? 0) - (b.n ?? 0))[0];
 }
 
-export function renderHire(ctx, initialTool, campaignId, routeArg) {
+export function renderHire(ctx, initialTool, campaignId, routeArg, { openOnAdd = true } = {}) {
   let current = ctx;
   const readOnly = () => current.store.isProgressReadOnly?.() ?? false;
   const save = (change, event = null) => current.store.updateSearch(change, event);
@@ -145,7 +147,8 @@ export function renderHire(ctx, initialTool, campaignId, routeArg) {
     const made = activeTargets(student()).find((t) => (role.key && t.roleKey === role.key) || t.company === role.company);
     // Land on Targets under the drawer, so closing it shows the new target in the list, not some other screen.
     if (focus !== "targets") current.navigate("do", "targets");
-    if (made) camp.open(made.id);
+    // Inside the walk the campaign waits for the Sends screen: a new target stays on the list.
+    if (made && openOnAdd) camp.open(made.id);
   }
 
   function logApplied(role) {
@@ -867,12 +870,16 @@ export function renderHire(ctx, initialTool, campaignId, routeArg) {
   const radarNote = el("span.hire__count.hire__count--quiet");
   const headBox = el("div");
 
-  /** Which tool this page is (#/do/<tool>). */
-  let focus = TOOL_IDS.includes(initialTool) ? initialTool : "today";
+  /** Which tool this page is (#/do/<tool>). On seats with the interview, Key Connections is Jobs' home. */
+  const withConnections = () => Boolean(current.state.features?.interview);
+  let focus = TOOL_IDS.includes(initialTool) ? initialTool : withConnections() ? "connections" : "today";
+  if (focus === "connections" && !withConnections()) focus = "today";
 
   /** The node's own header, like a step page: back to the map, what this is, why, and the steps it powers. */
   /** The tabs every Jobs screen shares, so Targets, People and Applications are one click from anywhere in Jobs. */
-  const TABS = ["today", "targets", "people", "applications"];
+  // On interview seats, Today duplicates Key Connections' heading, so it stays off the tab row (its route still works).
+  const TABS = () => (withConnections() ? ["connections", "targets", "applications"] : ["today", "targets", "people", "applications"]);
+  let connections = null;
 
   function nodeHead(doneToday) {
     const tool = TOOLS[focus];
@@ -882,17 +889,18 @@ export function renderHire(ctx, initialTool, campaignId, routeArg) {
       el(
         "div.tool__nav",
         {},
-        btn({ label: "← Map", variant: "quiet", onclick: () => current.navigate("map") }),
+        btn({ label: withConnections() ? "Back to your map" : "← Map", variant: "quiet", onclick: () => current.navigate("map") }),
         el(
           "nav.jobtabs",
           { "aria-label": "Jobs" },
-          TABS.map((id) =>
+          TABS().map((id) =>
             el("a.jobtab", { href: `#/do/${id}`, "aria-current": id === focus ? "page" : null, "data-track": `Jobs tab: ${TOOLS[id].label}` }, TOOLS[id].label)
           )
         )
       ),
-      el("h1.tool__title", {}, tool.label),
-      el("p.tool__why", {}, TOOL_WHY[focus]),
+      // Key Connections carries its own title and line (connections.js); the frame keeps only the tabs.
+      focus === "connections" ? null : el("h1.tool__title", {}, tool.label),
+      focus === "connections" ? null : el("p.tool__why", {}, TOOL_WHY[focus]),
       focus === "today" && doneToday ? el("p.tool__count", {}, `${doneToday} sent today`) : null
     );
   }
@@ -928,13 +936,20 @@ export function renderHire(ctx, initialTool, campaignId, routeArg) {
     mount(liveBox, live.length ? el("div.sapps", {}, live.map((a) => appRow(a, { actions: controls(a), now }))) : el("p.muted", {}, "No replies yet. They come from warm asks and early, specific applications."));
     mount(allBox, apps.length ? el("div.sapps", {}, apps.map((a) => appRow(a, { actions: controls(a), now }))) : el("p.muted", {}, "Everything you send shows up here."));
     mount(storyBox, storyCard(s));
+    if (focus === "connections") {
+      if (!connections) { connections = renderConnections(current); mount(connBox, connections.node); }
+      else connections.update(current);
+    }
+    node.classList.toggle("is-wide", focus === "connections");
     for (const form of [peopleForm, pasteForm, logForm]) form.querySelectorAll("input, select, textarea, button").forEach((n) => n.toggleAttribute("disabled", readOnly()));
     for (const [tool, section] of Object.entries(sections)) section.hidden = tool !== focus;
     document.title = `${TOOLS[focus].label} · ${s.name} · GridSchool`;
   }
 
 
+  const connBox = el("div");
   const sections = {
+    connections: el("section.tool__body", {}, connBox),
     today: el("section.tool__body", {}, adenOn, el("header.hire__runhead", {}, el("h2", {}, "In order"), runCount), runBox),
     targets: el("section.tool__body", {}, targetsBox),
     people: el("section.tool__body", {}, el("div.hire__cols", {}, panel({ eyebrow: "Your way in", title: "People" }, peopleBox, el("details.hire__more", {}, el("summary", {}, "Add someone"), peopleForm)), panel({ eyebrow: "Who you already know", title: "Connections" }, importSlot))),

@@ -4,7 +4,7 @@
  * browser has no speech recognition, there's no button.
  */
 
-import { el } from "../dom.js?v=b7c5890-202611020907";
+import { el } from "../dom.js?v=3c8024f-202611042144";
 
 const Recognition = () => globalThis.SpeechRecognition || globalThis.webkitSpeechRecognition || null;
 
@@ -34,6 +34,8 @@ export function talkButton(box) {
       let said = "";
       for (let i = 0; i < event.results.length; i += 1) said += event.results[i][0].transcript;
       box.value = base + said.trim();
+      // Dictation is typing too: the draft keeper (drafts.js) listens for input.
+      box.dispatchEvent(new Event("input", { bubbles: true }));
     };
     rec.onend = () => rec && stop();
     rec.onerror = () => stop();

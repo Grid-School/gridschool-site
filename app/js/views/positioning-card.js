@@ -6,11 +6,11 @@
  *   const card = createPositioningCard({ getCtx, onTitles });  card.node; card.render();
  */
 
-import { el, mount } from "../dom.js?v=b7c5890-202611020907";
-import { btn, copy, toast } from "../ui.js?v=b7c5890-202611020907";
-import { careerOf } from "../search.js?v=b7c5890-202611020907";
-import { draftPositioning, radarReady } from "../roles-remote.js?v=b7c5890-202611020907";
-import { isProgressReadOnly } from "../store.js?v=b7c5890-202611020907";
+import { el, mount } from "../dom.js?v=3c8024f-202611042144";
+import { btn, copy, toast } from "../ui.js?v=3c8024f-202611042144";
+import { careerOf } from "../search.js?v=3c8024f-202611042144";
+import { draftPositioning, radarReady } from "../roles-remote.js?v=3c8024f-202611042144";
+import { isProgressReadOnly } from "../store.js?v=3c8024f-202611042144";
 
 export function createPositioningCard({ getCtx, onTitles = null, onDrafted = null }) {
   const node = el("div.poscard");
@@ -98,5 +98,7 @@ export function createPositioningCard({ getCtx, onTitles = null, onDrafted = nul
   /** The headline as it stands now: a draft just saved, else the one on the record. The page's copy of the
    * record doesn't hear about a draft saved on the server until the next sync, so callers ask here. */
   const headline = () => (state.result?.saved ? state.result.draft.headline : careerOf(getCtx().state.student).headline) || "";
-  return { node, render, headline };
+  const about = () => (state.result?.saved ? state.result.draft.about : careerOf(getCtx().state.student).about) || "";
+  const note = () => (state.result?.note || "");
+  return { node, render, headline, about, note, start: run, busy: () => state.busy, error: () => state.error };
 }

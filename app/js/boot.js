@@ -10,51 +10,55 @@
  * aliases so links already in the wild still land somewhere true.
  */
 
-import { el, mount, download } from "./dom.js?v=b7c5890-202611020907";
-import * as store from "./store.js?v=b7c5890-202611020907";
-import { resolveSlug, slugFromUrl, currentSession, signOut, setPersistToken, inviteFromUrl, persistToken } from "./session.js?v=b7c5890-202611020907";
-import { tryStoredKey } from "./gate.js?v=b7c5890-202611020907";
-import { peekInvite } from "./persist-auth.js?v=b7c5890-202611020907";
-import { createRouter } from "./router.js?v=b7c5890-202611020907";
-import { createChrome } from "./chrome.js?v=b7c5890-202611020907";
-import { activeDoor } from "./rail.js?v=b7c5890-202611020907";
-import { toast } from "./ui.js?v=b7c5890-202611020907";
-import { isTestSeat } from "./test-seats.js?v=b7c5890-202611020907";
-import { renderLogin } from "./views/login.js?v=b7c5890-202611020907";
-import { renderToday } from "./views/today.js?v=b7c5890-202611020907";
-import { renderMap } from "./views/map.js?v=b7c5890-202611020907";
-import { renderStep, isStepArgs, moduleIdFromArgs } from "./views/step.js?v=b7c5890-202611020907";
-import { renderTasks } from "./views/tasks.js?v=b7c5890-202611020907";
-import { renderCalendar } from "./views/calendar.js?v=b7c5890-202611020907";
-import { renderLibrary } from "./views/library.js?v=b7c5890-202611020907";
-import { renderPosts } from "./views/posts.js?v=b7c5890-202611020907";
-import { renderHire } from "./views/hire.js?v=b7c5890-202611020907";
-import { renderResume } from "./views/resume.js?v=b7c5890-202611020907";
-import { renderProfile } from "./views/profile.js?v=b7c5890-202611020907";
-import { renderSend } from "./views/send.js?v=b7c5890-202611020907";
-import { renderPath } from "./views/path.js?v=b7c5890-202611020907";
-import { renderImages } from "./views/images.js?v=b7c5890-202611020907";
-import { renderStudio } from "./views/studio.js?v=b7c5890-202611020907";
-import { toggleDevUnlock, setDevUnlock } from "./dev-mode.js?v=b7c5890-202611020907";
-import { togglePreviewMedia, setPreviewMedia, isPreviewMedia } from "./preview-mode.js?v=b7c5890-202611020907";
-import { isInstructorDevice } from "./instructor-mode.js?v=b7c5890-202611020907";
-import { startReminders } from "./reminders.js?v=b7c5890-202611020907";
-import { watchReviewArrivals } from "./review-arrivals.js?v=b7c5890-202611020907";
-import { enterView, leaveView } from "./transitions.js?v=b7c5890-202611020907";
-import { gateRoutes } from "./features.js?v=b7c5890-202611020907";
-import * as measure from "./measure.js?v=b7c5890-202611020907";
-import { startTelemetry } from "./telemetry.js?v=b7c5890-202611020907";
-import { markClicked } from "./daily-run-remote.js?v=b7c5890-202611020907";
-import { createNextBar } from "./views/next-bar.js?v=b7c5890-202611020907";
-import { useSeat, currentMove } from "./next-live.js?v=b7c5890-202611020907";
-import { moveRoute } from "./engine.js?v=b7c5890-202611020907";
-import { PERSIST, isPlaceholder } from "../../config.js?v=b7c5890-202611020907";
+import { el, mount, download } from "./dom.js?v=3c8024f-202611042144";
+import * as store from "./store.js?v=3c8024f-202611042144";
+import { resolveSlug, slugFromUrl, currentSession, signOut, setPersistToken, inviteFromUrl, persistToken } from "./session.js?v=3c8024f-202611042144";
+import { tryStoredKey } from "./gate.js?v=3c8024f-202611042144";
+import { peekInvite } from "./persist-auth.js?v=3c8024f-202611042144";
+import { createRouter } from "./router.js?v=3c8024f-202611042144";
+import { createChrome } from "./chrome.js?v=3c8024f-202611042144";
+import { activeDoor } from "./rail.js?v=3c8024f-202611042144";
+import { toast } from "./ui.js?v=3c8024f-202611042144";
+import { isTestSeat } from "./test-seats.js?v=3c8024f-202611042144";
+import { renderLogin } from "./views/login.js?v=3c8024f-202611042144";
+import { renderToday } from "./views/today.js?v=3c8024f-202611042144";
+import { renderMap } from "./views/map.js?v=3c8024f-202611042144";
+import { renderStep, isStepArgs, moduleIdFromArgs } from "./views/step.js?v=3c8024f-202611042144";
+import { renderTasks } from "./views/tasks.js?v=3c8024f-202611042144";
+import { renderCalendar } from "./views/calendar.js?v=3c8024f-202611042144";
+import { renderLibrary } from "./views/library.js?v=3c8024f-202611042144";
+import { renderPosts } from "./views/posts.js?v=3c8024f-202611042144";
+import { renderHire } from "./views/hire.js?v=3c8024f-202611042144";
+import { renderResume } from "./views/resume.js?v=3c8024f-202611042144";
+import { renderProfile } from "./views/profile.js?v=3c8024f-202611042144";
+import { renderSend } from "./views/send.js?v=3c8024f-202611042144";
+import { renderPath } from "./views/path.js?v=3c8024f-202611042144";
+import { renderImages } from "./views/images.js?v=3c8024f-202611042144";
+import { renderStudio } from "./views/studio.js?v=3c8024f-202611042144";
+import { toggleDevUnlock, setDevUnlock } from "./dev-mode.js?v=3c8024f-202611042144";
+import { togglePreviewMedia, setPreviewMedia, isPreviewMedia } from "./preview-mode.js?v=3c8024f-202611042144";
+import { isInstructorDevice } from "./instructor-mode.js?v=3c8024f-202611042144";
+import { startReminders } from "./reminders.js?v=3c8024f-202611042144";
+import { watchReviewArrivals } from "./review-arrivals.js?v=3c8024f-202611042144";
+import { enterView, leaveView } from "./transitions.js?v=3c8024f-202611042144";
+import { gateRoutes } from "./features.js?v=3c8024f-202611042144";
+import * as measure from "./measure.js?v=3c8024f-202611042144";
+import { startTelemetry } from "./telemetry.js?v=3c8024f-202611042144";
+import { markClicked } from "./daily-run-remote.js?v=3c8024f-202611042144";
+import { createNextBar } from "./views/next-bar.js?v=3c8024f-202611042144";
+import { renderWalk, walkScreenFor, walkDone } from "./views/walk.js?v=3c8024f-202611042144";
+import { renderHome } from "./views/home.js?v=3c8024f-202611042144";
+import { firstWeekDone } from "./search.js?v=3c8024f-202611042144";
+import { useSeat, currentMove } from "./next-live.js?v=3c8024f-202611042144";
+import { moveRoute } from "./engine.js?v=3c8024f-202611042144";
+import { PERSIST, isPlaceholder } from "../../config.js?v=3c8024f-202611042144";
 
 /* Coach (today) and Posts are gated in features.js: switched off, they are
    not routes at all, so their links land on the Map. */
 const VIEWS = gateRoutes({
   today: { render: renderToday, persistent: true },
   map: { render: renderMap, persistent: true },
+  home: { render: renderHome, persistent: true },
   tasks: { render: renderTasks },
   calendar: { render: renderCalendar },
   library: { render: renderLibrary },
@@ -69,6 +73,8 @@ const VIEWS = gateRoutes({
   studio: { render: renderStudio, persistent: true },
   // #/next: whatever step is next for this student (emails link here when the step they'd name may be locked).
   next: { render: renderMap, persistent: true },
+  // The walk (views/walk.js): the first week as one track, one screen at a time, on seats that have it.
+  walk: { render: renderWalk, persistent: true },
 });
 
 /** Old links keep working after surfaces folded. */
@@ -160,6 +166,21 @@ function resumeStep(graph) {
 }
 
 function renderRoute() {
+  // On a seat with the walk, the first week's steps open inside it: #/next, and any door to those steps, lands there.
+  const walking = Boolean(store.state().features?.interview);
+  if (walking && route.name === "next" && !walkDone(store.state())) {
+    history.replaceState(null, "", "#/walk");
+    route = { name: "walk", args: [] };
+  }
+  if (walking && route.name === "map" && route.args.length && walkScreenFor(route.args[0], store.state())) {
+    const screen = walkScreenFor(route.args[0], store.state());
+    history.replaceState(null, "", `#/walk/${screen}`);
+    route = { name: "walk", args: [screen] };
+  }
+  // The map is home. #/map/all is the same map (kept for links); the record's list lives at #/home and under Jobs.
+  if (walking && route.name === "map" && route.args[0] === "all") route = { name: "map", args: route.args.slice(1) };
+  // The lens: a walk screen is the map, zoomed in on the node the screen stands on, with the screen beside it.
+  if (walking && route.name === "walk") route = { name: "map", args: [`lens:${route.args[0] || ""}`] };
   // #/next resolves to the student's next move, the same one the Next bar shows, so a link never lands on a lock.
   if (route.name === "next") {
     const move = currentMove(store.state());

@@ -3,9 +3,9 @@
  * answers with the current record, which the page simply takes and keeps going.
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=b7c5890-202611020907";
-import { persistToken } from "./session.js?v=b7c5890-202611020907";
-import { plainError } from "./plain-error.js?v=b7c5890-202611020907";
+import { PERSIST, isPlaceholder } from "../../config.js?v=3c8024f-202611042144";
+import { persistToken } from "./session.js?v=3c8024f-202611042144";
+import { plainError } from "./plain-error.js?v=3c8024f-202611042144";
 
 export function resumeReady() {
   return Boolean(persistToken() && PERSIST?.endpoint && !isPlaceholder(PERSIST.endpoint));
@@ -49,6 +49,7 @@ export const removeTarget = (slug, version, id) => call("POST", `${base(slug)}/t
 export const loadProgress = (slug) => call("GET", `${base(slug)}/progress`);
 /* The send loop's read-out: plain lines and the comparisons by version, timing, portfolio, named person. */
 export const loadReadout = (slug) => call("GET", `${base(slug)}/readout`);
+export const keepAllLines = (slug, version, claimIds) => call("POST", `${base(slug)}/confirm`, { version, claim_ids: claimIds, decision: "yes" });
 export const confirmLine = (slug, version, claimId, decision, { text, defense } = {}) =>
   call("POST", `${base(slug)}/confirm`, { version, claim_id: claimId, decision, text, defense });
 /* Saved versions: name it, keep it, download it again exactly as saved. */

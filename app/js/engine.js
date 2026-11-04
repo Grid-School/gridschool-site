@@ -13,8 +13,8 @@
  * Pure: the map (graph/rez) draws these; the tools live in views/hire.js.
  */
 
-import { nextUp } from "./graph/model.js?v=b7c5890-202611020907";
-import { returnedUnread } from "./tasks.js?v=b7c5890-202611020907";
+import { nextUp } from "./graph/model.js?v=3c8024f-202611042144";
+import { returnedUnread } from "./tasks.js?v=3c8024f-202611042144";
 import {
   searchOf,
   careerOf,
@@ -27,14 +27,14 @@ import {
   activeTargets,
   networkOf,
   insideConnections,
-  shortTitle,
-} from "./search.js?v=b7c5890-202611020907";
+  shortTitle, firstWeekDone, homeMove } from "./search.js?v=3c8024f-202611042144";
 
 export const TOOLS = {
+  connections: { label: "Key Connections", hint: "Everyone you're getting to know, as lines of light" },
   today: { label: "Today", hint: "Every move for today, in order" },
-  targets: { label: "Targets", hint: "Five companies, every channel: email with a Loom, LinkedIn, a call, follow-ups" },
+  targets: { label: "Companies", hint: "Up to five companies, each worked through the people on the team" },
   people: { label: "People", hint: "Former colleagues first: your warm way in" },
-  applications: { label: "Applications", hint: "Fresh roles, prepared one at a time; everything you've sent" },
+  applications: { label: "Postings", hint: "Recent postings for your titles, prepared one at a time; everything you've sent" },
   profile: { label: "Profile", hint: "Your story, headline, resume and portfolio" },
 };
 
@@ -102,6 +102,11 @@ export function isTypedMap(graph) {
  */
 export function nextMove({ student, graph, now = new Date(), roles = [], packs = {}, detail = () => null }) {
   const s = searchOf(student);
+  // After the first week the home owns the move: one rule (search.js homeMove), the same words everywhere.
+  if (firstWeekDone(student)) {
+    const h = homeMove(student, now);
+    return { tool: "map", kind: "home", title: h.title, why: h.lead || "", lane: null, fed: null, home: h };
+  }
   const career = careerOf(student);
   const typed = isTypedMap(graph);
   const make = (kind, title, why, fed = null) => ({ tool: kind === "insider" || kind === "follow" ? "today" : kind, kind, title, why, lane: LANE[kind], fed });
@@ -146,6 +151,7 @@ export function nextMove({ student, graph, now = new Date(), roles = [], packs =
  * you're already there when the current route matches.
  */
 export function moveRoute(move) {
+  if (move.kind === "home") return ["home"];
   if (move.kind === "review") return move.stepId ? ["map", move.stepId] : ["today"];
   if (move.stepId) return ["map", move.stepId];
   if (move.targetId) return ["do", "targets", move.targetId];

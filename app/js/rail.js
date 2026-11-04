@@ -17,12 +17,12 @@
  * rail without a mode.
  */
 
-import { el, mount } from "./dom.js?v=b7c5890-202611020907";
-import { gmark } from "../../js/brand.js?v=b7c5890-202611020907";
-import { icon } from "./icons.js?v=b7c5890-202611020907";
-import { returnedUnread } from "./tasks.js?v=b7c5890-202611020907";
-import { stepCount } from "./graph/model.js?v=b7c5890-202611020907";
-import { enabledViews, isViewEnabled } from "./features.js?v=b7c5890-202611020907";
+import { el, mount } from "./dom.js?v=3c8024f-202611042144";
+import { gmark } from "../../js/brand.js?v=3c8024f-202611042144";
+import { icon } from "./icons.js?v=3c8024f-202611042144";
+import { returnedUnread } from "./tasks.js?v=3c8024f-202611042144";
+import { stepCount } from "./graph/model.js?v=3c8024f-202611042144";
+import { enabledViews, isViewEnabled } from "./features.js?v=3c8024f-202611042144";
 
 export const DOORS = [
   { id: "map", label: "Map", icon: "map", hint: "Your path, the tools you use every day, and what to do next" },
@@ -43,6 +43,7 @@ export const TOOLS = [
 /** What a route lights on the rail: a tool's own door, else the view itself. */
 export function activeDoor(name, args = []) {
   if (name === "studio") return args[0] === "posts" ? "studio/posts" : "studio/projects";
+  if (name === "home") return "map";
   return name;
 }
 
@@ -50,7 +51,11 @@ export function createRail({ onNavigate, onProfile, flags = enabledViews() }) {
   const nav = el("nav.rail__nav", { "aria-label": "Where to go" });
   const links = new Map();
   const count = el("span.rail__count", { hidden: true });
+  let walk = false;
 
+  // A seat on the walk (setWalk): the Map door is Home, there is no step count, and the tools a first week
+  // never fills (Calendar, Projects, Drafts, Photos) stay out of the rail until something is in them.
+  const FIRST_WEEKS_OUT = new Set(["calendar", "studio/projects", "studio/posts", "images"]);
   for (const door of DOORS.filter((d) => isViewEnabled(d.id, flags))) {
     const link = el(
       "a.rail__door",
@@ -108,6 +113,21 @@ export function createRail({ onNavigate, onProfile, flags = enabledViews() }) {
     el("div.rail__foot", {}, profile)
   );
 
+  function setWalk(flag) {
+    walk = Boolean(flag);
+    for (const [id, link] of links) {
+      if (FIRST_WEEKS_OUT.has(id)) link.hidden = walk;
+    }
+    const map = links.get("map");
+    if (map) {
+      const word = map.querySelector(".rail__word");
+      if (word) word.textContent = walk ? "Home" : "Map";
+      map.setAttribute("aria-label", walk ? "Home" : "Map");
+      map.title = walk ? "Your people, your move, your week" : map.title;
+    }
+    if (walk) count.hidden = true;
+  }
+
   function setActive(name) {
     links.forEach((link, id) => {
       link.classList.toggle("is-active", id === name);
@@ -120,7 +140,7 @@ export function createRail({ onNavigate, onProfile, flags = enabledViews() }) {
   function setSignals(state) {
     const step = stepCount(state.graph);
     const unread = returnedUnread(state.student).length;
-    count.hidden = !step.total;
+    count.hidden = !step.total || walk;
     count.textContent = `${step.at}/${step.total}`;
     const reviews = unread ? ` · ${unread} review${unread === 1 ? "" : "s"} came back` : "";
     links.get("map").title = `Step ${step.at} of ${step.total}${reviews}`;
@@ -132,7 +152,7 @@ export function createRail({ onNavigate, onProfile, flags = enabledViews() }) {
     profile.title = state.student.name;
   }
 
-  return { root, setActive, setSignals, setIdentity };
+  return { root, setActive, setSignals, setIdentity, setWalk };
 }
 
 export function initials(name) {

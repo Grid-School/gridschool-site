@@ -9,9 +9,10 @@
  * data/students/<slug>.json.
  */
 
-import { loadBoard, boardCurriculum, libraryFor } from "./api.js?v=b7c5890-202611020907";
-import { buildGraph } from "./graph/model.js?v=b7c5890-202611020907";
-import { weekNumber, studentWeek, ownSchedule, hasOwnMap } from "./time.js?v=b7c5890-202611020907";
+import { loadBoard, boardCurriculum, libraryFor } from "./api.js?v=3c8024f-202611042144";
+import { buildGraph } from "./graph/model.js?v=3c8024f-202611042144";
+import { interviewCurriculum, withRecord } from "./interview-map.js?v=3c8024f-202611042144";
+import { weekNumber, studentWeek, ownSchedule, hasOwnMap } from "./time.js?v=3c8024f-202611042144";
 import {
   read,
   clear as clearPersist,
@@ -21,11 +22,11 @@ import {
   mergeStudent,
   STUDENT_KEYS,
   INSTRUCTOR_KEYS,
-} from "./persist.js?v=b7c5890-202611020907";
-import { flushAfterLocalWrite, hydrateFromRemote, persistStatus, startPolling } from "./persist-remote.js?v=b7c5890-202611020907";
-import { validReviewReturn } from "./review.js?v=b7c5890-202611020907";
-import { isDevUnlock } from "./dev-mode.js?v=b7c5890-202611020907";
-import * as measure from "./measure.js?v=b7c5890-202611020907";
+} from "./persist.js?v=3c8024f-202611042144";
+import { flushAfterLocalWrite, hydrateFromRemote, persistStatus, startPolling } from "./persist-remote.js?v=3c8024f-202611042144";
+import { validReviewReturn } from "./review.js?v=3c8024f-202611042144";
+import { isDevUnlock } from "./dev-mode.js?v=3c8024f-202611042144";
+import * as measure from "./measure.js?v=3c8024f-202611042144";
 
 export { validReviewReturn };
 
@@ -120,6 +121,8 @@ function applySeat(snap) {
     base = { ...base, student: { ...base.student, oneone: hasSeat ? seatSlot : base.student.oneone ?? {} } };
   }
   base = { ...base, calendarFeed: snap.calendarFeed ?? base.calendarFeed ?? null };
+  // Doors open on this seat only (server/interview_api.py features): read before the map is drawn.
+  if (snap.features && typeof snap.features === "object") base = { ...base, features: { ...snap.features } };
 }
 
 function syncFromPersist() {
@@ -133,7 +136,11 @@ function mergedStudent() {
 export function state() {
   const student = mergedStudent();
   const unlockAll = isDevUnlock();
-  const graph = buildGraph(base.curriculum, student, { unlockAll });
+  // On an interview seat the three foundation steps are one resume step (interview-map.js).
+  const curriculum = base.features?.interview ? interviewCurriculum(base.curriculum) : base.curriculum;
+  // On an interview seat the map also carries the record: the path ahead and every company and person.
+  const grown = base.features?.interview ? withRecord(curriculum, student) : { curriculum, student };
+  const graph = buildGraph(grown.curriculum, grown.student, { unlockAll });
   // The student's own clock: week 1 is the week they joined, the same week
   // number the desk counts them against. The cohort start is only a fallback
   // for a board with no join date.

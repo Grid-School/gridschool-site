@@ -4,9 +4,9 @@
  * opened it in this browser before, skips the gate. The video plays above the text once LINKS.briefingFilm is set.
  */
 
-import { PERSIST, LINKS, isPlaceholder } from "../config.js?v=b7c5890-202611020907";
-import { applySiteOverrides } from "../js/site-overrides.js?v=b7c5890-202611020907";
-import { track, visitorId } from "../check/events.js?v=b7c5890-202611020907";
+import { PERSIST, LINKS, isPlaceholder } from "../config.js?v=3c8024f-202611042144";
+import { applySiteOverrides } from "../js/site-overrides.js?v=3c8024f-202611042144";
+import { track, visitorId } from "../check/events.js?v=3c8024f-202611042144";
 
 const LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
 const API = (() => {

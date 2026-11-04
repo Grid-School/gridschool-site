@@ -4,10 +4,10 @@
  * Someone who already saved a check, or is signed in, can go straight to the sprint step (apply/).
  */
 
-import { PERSIST } from "../config.js?v=b7c5890-202611020907";
-import * as Account from "../check/account.js?v=b7c5890-202611020907";
-import { track } from "../check/events.js?v=b7c5890-202611020907";
-import { checkHref, dayText, savedCheck, seatsLine, sourceFrom } from "./sprint-model.mjs?v=b7c5890-202611020907";
+import { PERSIST } from "../config.js?v=3c8024f-202611042144";
+import * as Account from "../check/account.js?v=3c8024f-202611042144";
+import { track } from "../check/events.js?v=3c8024f-202611042144";
+import { checkHref, dayText, savedCheck, seatsLine, sourceFrom } from "./sprint-model.mjs?v=3c8024f-202611042144";
 
 const API = (() => {
   const local = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);

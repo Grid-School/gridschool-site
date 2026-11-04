@@ -13,7 +13,7 @@
  * calendar draws.
  */
 
-import { isoDate, weekStart, addDays, parseDate } from "./time.js?v=b7c5890-202611020907";
+import { isoDate, weekStart, addDays, parseDate } from "./time.js?v=3c8024f-202611042144";
 
 /** How far one application got. Each stage implies every stage before it. */
 export const STAGES = [
@@ -151,6 +151,7 @@ export function searchOf(student) {
   return {
     resume: search.resume ?? null,
     profileAt: search.profileAt ?? null,
+    profileCopies: search.profileCopies && typeof search.profileCopies === "object" ? search.profileCopies : {},
     portfolio: search.portfolio ?? "",
     linkedin: search.linkedin ?? "",
     apps: Array.isArray(search.apps) ? search.apps : [],
@@ -721,6 +722,10 @@ export function newTarget(raw = {}, now = new Date()) {
     contact: { name: "", email: "", phone: "", linkedin: "" },
     loomUrl: "",
     campaign: null,
+    approach: null,
+    picks: null,
+    people: [],
+    manager: { name: "", title: "", note: "", lint: [] },
     at: now.toISOString(),
   };
 }
@@ -731,12 +736,425 @@ export function addTarget(targets, raw, now = new Date()) {
   return [newTarget(raw, now), ...list];
 }
 
+export function closeTarget(targets, id) {
+  return (targets ?? []).map((t) => (t.id === id ? { ...t, state: "closed" } : t));
+}
+
 export function patchTarget(targets, id, patch) {
-  return (targets ?? []).map((t) => (t.id === id ? { ...t, ...patch, contact: { ...t.contact, ...(patch.contact ?? {}) }, touches: { ...t.touches, ...(patch.touches ?? {}) } } : t));
+  return (targets ?? []).map((t) => (t.id === id ? { ...t, ...patch, contact: { ...t.contact, ...(patch.contact ?? {}) }, touches: { ...t.touches, ...(patch.touches ?? {}) }, manager: { ...(t.manager || {}), ...(patch.manager ?? {}) } } : t));
 }
 
 export function touchTarget(targets, id, channel, now = new Date()) {
   return patchTarget(targets, id, { touches: { [channel]: isoDate(now) } });
+}
+
+/* ---------- the approach: peers first, then up ----------
+   A target's people, in the order the student reaches them (approach_draft.py; the design page, "The
+   approach: peers first, then up"): peers on the team first, with a no-ask note; then the call; then the
+   warm path to the lead or the manager with a name; the direct ask (the campaign) last. Each person is kept
+   on the target with the touches that happened: note, reply, call, vouch. */
+
+export const RUNGS = {
+  peer: "Peer on the team",
+  lead: "Team lead",
+  manager: "Hiring manager",
+  recruiter: "Recruiter",
+};
+export const PERSON_TOUCHES = [
+  { id: "note", label: "Sent the note" },
+  { id: "reply", label: "They replied" },
+  { id: "call", label: "We talked" },
+  { id: "vouch", label: "They mentioned me" },
+];
+
+export function newContact(raw = {}, now = new Date()) {
+  return {
+    id: clip(raw.id, 40) || newId(now).replace(/^a/, "c"),
+    name: clip(raw.name, 120),
+    title: clip(raw.title, 160),
+    link: clip(raw.link, 600),
+    rung: RUNGS[raw.rung] ? raw.rung : "peer",
+    thing: clip(raw.thing, 1200),
+    why: clip(raw.why, 300),
+    note: clip(raw.note, 900),
+    alt: clip(raw.alt, 900),
+    reply: String(raw.reply ?? "").trim().slice(0, 4000),
+    replyKind: clip(raw.replyKind, 20),
+    replyRead: clip(raw.replyRead, 300),
+    next: clip(raw.next, 900),
+    nextWhy: clip(raw.nextWhy, 300),
+    promised: clip(raw.promised, 200),
+    said: clip(raw.said, 200),
+    replies: Number.isInteger(raw.replies) ? raw.replies : 0,
+    backs: Number.isInteger(raw.backs) ? raw.backs : 0,
+    connected: typeof raw.connected === "boolean" ? raw.connected : null,
+    saidNo: Boolean(raw.saidNo),
+    register: raw.register === "specific" ? "specific" : "plain",
+    connect: clip(raw.connect, 300),
+    touches: {},
+    at: now.toISOString(),
+  };
+}
+
+export function peopleOnTarget(target) {
+  return Array.isArray(target?.people) ? target.people : [];
+}
+
+export function addContact(targets, targetId, raw, now = new Date()) {
+  return (targets ?? []).map((t) => (t.id === targetId ? { ...t, people: [...peopleOnTarget(t), newContact(raw, now)] } : t));
+}
+
+export function patchContact(targets, targetId, contactId, patch) {
+  return (targets ?? []).map((t) => (t.id === targetId
+    ? { ...t, people: peopleOnTarget(t).map((c) => (c.id === contactId ? { ...c, ...patch, touches: { ...c.touches, ...(patch.touches ?? {}) } } : c)) }
+    : t));
+}
+
+export function touchContact(targets, targetId, contactId, touch, now = new Date()) {
+  return patchContact(targets, targetId, contactId, { touches: { [touch]: isoDate(now) } });
+}
+
+export function removeContact(targets, targetId, contactId) {
+  return (targets ?? []).map((t) => (t.id === targetId ? { ...t, people: peopleOnTarget(t).filter((c) => c.id !== contactId) } : t));
+}
+
+/** Where a target's approach stands, and the one next move. The stage names what has happened, never what
+ * the student should feel about it. */
+export const APPROACH_STAGES = ["model", "people", "touches", "talking", "named", "direct"];
+
+export function approachStage(target, now = new Date()) {
+  const people = peopleOnTarget(target);
+  const sent = people.filter((c) => c.touches?.note);
+  const talked = people.filter((c) => c.touches?.call || c.touches?.reply);
+  const vouched = people.filter((c) => c.touches?.vouch);
+  if (!target?.approach) return { id: "model", label: "Working out the company", next: "The company model and who to reach come first." };
+  if (!people.length) return { id: "people", label: "Company worked out", next: target.picks ? "Add the people we picked." : "Copy the people search, and we pick who to write to." };
+  if (!sent.length) return { id: "touches", label: `${people.length} to write to`, next: people.some((c) => c.note) ? "Send the first note. It asks for nothing." : "Copy their page, and we write the note." };
+  if (!talked.length) {
+    const first = sent.map((c) => parseDate(c.touches.note)).sort((a, b) => a - b)[0];
+    const days = Math.floor((startOfDayLocal(now) - first) / 86400000);
+    return { id: "touches", label: `${sent.length} note${sent.length === 1 ? "" : "s"} out`, next: days >= 3 ? "Day 3: the one-line nudge to whoever hasn't answered." : "Give them a few days. Add another peer meanwhile.", days };
+  }
+  if (!vouched.length) return { id: "talking", label: `${talked.length} talking`, next: "After the call, ask them to mention you to the lead." };
+  return { id: "named", label: `${vouched.length} will vouch`, next: "Now the manager, with their name in the first line." };
+}
+
+const firstName = (name) => String(name || "").split(/\s+/)[0] || "there";
+const daysSince = (date, now) => Math.floor((startOfDayLocal(now) - parseDate(date)) / 86400000);
+const NUDGE_DAYS = [3, 7];
+
+/** The six stages of an approach, as dots on a rail (design-language.md): done flags per stage and where the
+ * student is. The same six at any size: beside a name in a list, or with labels over a target. */
+export const RAIL = [
+  { id: "company", label: "Company" },
+  { id: "people", label: "People" },
+  { id: "note", label: "Note" },
+  { id: "call", label: "Call" },
+  { id: "mention", label: "Mention" },
+  { id: "manager", label: "Manager" },
+];
+
+export function railOf(target) {
+  const people = peopleOnTarget(target);
+  const t = (c) => c.touches || {};
+  const done = {
+    company: Boolean(target?.approach),
+    people: people.length > 0,
+    note: people.some((c) => t(c).note),
+    call: people.some((c) => t(c).call),
+    mention: people.some((c) => t(c).vouch),
+    manager: Boolean(target?.touches?.manager),
+  };
+  const here = RAIL.find((r) => !done[r.id])?.id ?? null;
+  return RAIL.map((r) => ({ ...r, done: done[r.id], here: r.id === here }));
+}
+
+/* ---------- Key Connections: every person as a line of light ----------
+   How far a relationship has come, as a fraction of the way from found to inside, with the plain next line and
+   whether it's live, quiet or waiting on a name. The page draws it; this decides it (design page, "The field"). */
+export const CONNECTION_STAGES = ["found", "wrote", "answered", "talked", "vouches", "inside"];
+export const QUIET_AFTER_DAYS = 14;
+
+export function connectionOf(target, contact, now = new Date()) {
+  const t = contact.touches || {};
+  let stage = 0;
+  if (t.note) stage = 1;
+  if (t.reply) stage = 2;
+  if (t.call) stage = 3;
+  if (t.vouch) stage = 4;
+  if (t.vouch && target?.touches?.manager) stage = 5;
+  const progress = stage / (CONNECTION_STAGES.length - 1);
+  const days = t.note && !t.reply ? daysSince(t.note, now) : 0;
+  const quiet = Boolean(t.note && !t.reply && (days >= QUIET_AFTER_DAYS || (t.nudge3 && t.nudge7 && days >= 7)));
+  let tone = "live";
+  let next = "";
+  if (stage === 5) next = "Inside. The direct ask is open on Sends.";
+  else if (stage === 4) { tone = "amber"; next = "They'll mention you. Write to the manager with their name first."; }
+  else if (stage === 3) next = "Ask them to mention you to their lead.";
+  else if (stage === 2) next = "They answered. Write back, then offer the call.";
+  else if (stage === 1) {
+    if (quiet) { tone = "quiet"; next = "Quiet. They come back if they write."; }
+    else {
+      const nextNudge = NUDGE_DAYS.find((d) => !t[`nudge${d}`]);
+      if (nextNudge && days >= nextNudge) next = `Day ${nextNudge}: one line, already written.`;
+      else if (nextNudge) next = `Quiet since ${t.note}. Day ${nextNudge} nudge opens ${isoDate(addDays(parseDate(t.note), nextNudge))}.`;
+      else next = "Both nudges went out. Let it rest.";
+      if (!(nextNudge && days >= nextNudge)) tone = "waiting";
+    }
+  } else if (contact.note) next = "Note ready. Send it.";
+  else { tone = "waiting"; next = "Copy their page and the note writes itself."; }
+  return { contact, stage, progress, tone, quiet, next, days };
+}
+
+const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+/** A date in prose is a weekday name, never an ISO date: "Wednesday", or "today", or "next Tuesday". */
+/** A day, said the way a friend would and dated so it stays true: "today, Nov 3", "Friday, Nov 7", "Nov 21". */
+export function dayWord(iso, now = new Date()) {
+  const d = parseDate(iso);
+  const date = `${["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][d.getMonth()]} ${d.getDate()}`;
+  const days = Math.round((startOfDayLocal(d) - startOfDayLocal(now)) / 86400000);
+  if (Math.abs(days) >= 7) return date;
+  return `${weekdayWord(iso, now)}, ${date}`;
+}
+
+export function weekdayWord(iso, now = new Date()) {
+  const d = parseDate(iso);
+  const days = Math.round((startOfDayLocal(d) - startOfDayLocal(now)) / 86400000);
+  if (days === 0) return "today";
+  if (days === 1) return "tomorrow";
+  if (days === -1) return "yesterday";
+  const name = WEEKDAYS[d.getDay()];
+  if (days > 1 && days < 7) return name;
+  if (days < -1 && days > -7) return `last ${name}`;
+  return days > 0 ? `next ${name}` : name;
+}
+
+/** The word at the tip of a person's line (the stage, in their words), and the move the student owes them if
+ * the target's next move is about this person. Labels sit on the thing. */
+export function tipOf(connection, move = null, now = new Date()) {
+  const c = connection;
+  let stage = ["found", "wrote", "answered", "talked", "will mention you", "will mention you"][c.stage] || "found";
+  if (c.stage === 0 && c.contact.note && !c.contact.touches?.note) stage = "note written";
+  const mine = move?.contact && move.contact.id === c.contact.id;
+  const owed = mine ? ({ read: "copy their page", send: "send your note", reply: "paste their reply", back: "write back", offer: "offer a call", call: "your call", after: "send what you promised", ask: "ask for the mention", nudge: "one more line" })[move.id] || "" : "";
+  if (c.tone === "waiting" && c.contact.touches?.note && !owed) {
+    const t = c.contact.touches;
+    const nextNudge = NUDGE_DAYS.find((d) => !t[`nudge${d}`]);
+    return { stage, owed: "", waiting: nextNudge ? `one more line ${weekdayWord(isoDate(addDays(parseDate(t.note), nextNudge)), now)}` : "let it rest" };
+  }
+  return { stage, owed, waiting: "" };
+}
+
+/** How a note reaches this person, strongest way first: email when we have an address that hasn't bounced
+ * (found beats a pattern guess, both beat LinkedIn), a LinkedIn message when they're a connection, else a
+ * connection request. The student can pin a channel; a bounce unpins email. */
+export function channelOf(contact) {
+  const c = contact || {};
+  if (c.channelPinned && !(c.channelPinned === "email" && (c.emailBad || !c.email))) return c.channelPinned;
+  if (c.email && !c.emailBad && ["found", "pattern", "you"].includes(c.emailConfidence || "found")) return "email";
+  if (c.connected === false) return "request";
+  return "linkedin";
+}
+
+/** The words for where a note goes, for the screen and the list. */
+export function channelWords(contact) {
+  const ch = channelOf(contact);
+  if (ch === "email") return "by email";
+  if (ch === "request") return "with a connection request";
+  return "on LinkedIn";
+}
+
+/** Notes sent in the last seven days, on the same clock as every other day on the screen. */
+export function sentThisWeek(student, now = new Date()) {
+  return activeTargets(student).flatMap((t) => peopleOnTarget(t)).filter((c) => c.touches?.note && daysSince(c.touches.note, now) < 7).length;
+}
+
+/** The first week ends on something the student did: the first note sent. */
+export function firstWeekDone(student) {
+  return activeTargets(student).some((t) => peopleOnTarget(t).some((c) => c.touches?.note));
+}
+
+const firstWord = (name) => String(name || "").split(/\s+/)[0] || "them";
+
+/** The words for one move: the heading, one line, and what the solid opens. The notes screen, Key
+ * Connections and the home say the same thing because they all read this. */
+export function moveWords(move, target) {
+  const c = move.contact;
+  const who = c ? firstWord(c.name) : "";
+  const mgr = firstWord(target?.manager?.name || "the manager");
+  const company = target?.company || "";
+  return {
+    pick: [`Find who to write to at ${company}.`, "We pick them and draft the note.", `Open people at ${company}`],
+    add: [`Copy ${who}'s LinkedIn page.`, "We read it and write the note.", `Open ${who}'s page`],
+    read: [`Copy ${who}'s LinkedIn page.`, "We read it and write the note.", `Open ${who}'s page`],
+    send: [`Send your note to ${who}.`, "It's drafted. Change any word, then send it.", `Open the note to ${who}`],
+    nudge: [`A short follow-up to ${who}.`, "One new thing, then leave it.", `Open the follow-up to ${who}`],
+    reply: [`Paste what ${who} wrote back.`, "We write your next line from it.", `Paste ${who}'s reply`],
+    back: [`Write back to ${who}.`, "It's drafted.", `Open the reply to ${who}`],
+    offer: [`Offer ${who} a short call.`, "Twenty minutes, no agenda.", "Open the offer"],
+    call: [`Get ready for your call with ${who}.`, "Five questions, one thing to send after.", "Open the call sheet"],
+    after: [`Send ${who} the thing you promised.`, "The day after the call.", "Open the note"],
+    ask: [`Ask ${who} to mention you.`, "Easy to say no to.", "Open the ask"],
+    who: [`Who runs ${who}'s team?`, `${who} said yes.`, "Add the manager's name"],
+    manager: [`Write to ${mgr}.`, `${who} will mention you. Your note is drafted, ${who}'s name first.`, `Open the note to ${mgr}`],
+  }[move.id] || [String(move.title || "").replace(/\.?$/, "."), "", "Open"];
+}
+
+/** The rule behind "next", as the code runs it, for whoever wants it (folded on the screen). */
+export const MOVE_RULE = [
+  "The warmest company first: the one where someone has come furthest toward you. A company that is only waiting is skipped.",
+  "At that company: someone who said they'd mention you (then their manager), then the thing you promised after a call, then asking for the mention, then a reply you owe, then a note drafted and not sent, then a page not read yet, then the next person picked.",
+  "Then the follow-ups to anyone quiet: the day-7 one before the day-3 one. Then wait.",
+  "While everything waits: another company, up to five, before a second person at any one of them; and no second note into a team until its first has had three days.",
+];
+
+/** The next person picked at a company who isn't on it yet. */
+export function nextPickOn(target) {
+  const names = new Set(peopleOnTarget(target).map((x) => x.name.toLowerCase()));
+  return (target?.picks?.people || []).find((p) => p.pick && !names.has(p.name.toLowerCase())) || null;
+}
+
+/** The one move for the home and Key Connections, from the warmest company that has one. Returns the words,
+ * the person, the company, and what the solid does: {kind:"open", targetId, contactId} opens that person's
+ * line on the notes screen; {kind:"meanwhile", targetId, pick} adds the next pick and opens them;
+ * {kind:"companies"} opens the companies screen; null means nothing to press. */
+export function homeMove(student, now = new Date()) {
+  const active = activeTargets(student);
+  if (!active.length) return { title: "Pick your first company.", lead: "We find your people from there.", action: { kind: "companies", label: "Pick a company" }, groups: [] };
+  const { groups } = connectionsOf(student, now);
+  const today = groups.find((g) => !["wait", "model", "done"].includes(g.move.id));
+  if (today) {
+    const [title, lead, label] = moveWords(today.move, today.target);
+    return { title, lead, id: today.move.id, person: today.move.contact || null, target: today.target, group: today, groups,
+      action: { kind: "open", label, targetId: today.target.id, contactId: today.move.contact?.id || "" } };
+  }
+  const reading = groups.find((g) => g.move.id === "model");
+  const waiting = groups.flatMap((g) => g.move.waiting || []);
+  const g0 = groups.find((g) => g.move.waiting?.length) || groups[0];
+  // Everything is waiting: the solid is the meanwhile, never a dead end and never backwards. Breadth before
+  // depth: a second company first; a second person at a company only once its first note has had three days.
+  const settled = (g) => peopleOnTarget(g.target).every((c) => !c.touches?.note || daysSince(c.touches.note, now) >= 3);
+  const withPick = groups.find((g) => nextPickOn(g.target) && settled(g));
+  const meanwhile = active.length < MAX_ACTIVE_TARGETS ? { kind: "companies", label: active.length === 1 ? "Add a second company" : "Add a company" }
+    : withPick ? { kind: "meanwhile", label: `Write to ${firstWord(nextPickOn(withPick.target).name)}`, targetId: withPick.target.id, pick: nextPickOn(withPick.target) }
+    : null;
+  if (reading && !waiting.length) return { title: `Reading ${reading.target.company}'s posting.`, lead: "About a minute.", id: "model", target: reading.target, group: reading, groups, action: null };
+  if (waiting.length) {
+    const w = waiting[0];
+    const wn = firstWord(w.name);
+    const detail = g0?.move.detail || "";
+    const fact = `${wn} has your note. ${detail}`.trim();
+    if (meanwhile?.kind === "companies") return { title: `Add a second company while ${wn} reads your note.`, lead: fact, id: "wait", person: w, target: g0?.target, group: g0, groups, action: meanwhile };
+    if (meanwhile?.kind === "meanwhile") return { title: `Write to ${firstWord(meanwhile.pick.name)} while ${wn} reads your note.`, lead: fact, id: "wait", person: w, target: g0?.target, group: g0, groups, action: { ...meanwhile, label: `Open the note to ${firstWord(meanwhile.pick.name)}` } };
+    return { title: `Nothing to do until ${wn} writes back.`, lead: fact, id: "wait", person: w, target: g0?.target, group: g0, groups, action: null };
+  }
+  return { title: "Nothing to do right now.", lead: "", id: "wait", target: g0?.target, group: g0, groups, action: meanwhile };
+}
+
+/** Everyone on every active target, grouped by company, warmest company first; the resting count apart. */
+export function connectionsOf(student, now = new Date()) {
+  const groups = [];
+  let resting = 0;
+  for (const target of activeTargets(student)) {
+    const people = peopleOnTarget(target).map((c) => ({ contact: c, ...connectionOf(target, c, now) }));
+    const warm = people.filter((p) => !p.quiet);
+    resting += people.length - warm.length;
+    const heat = Math.max(0, ...warm.map((p) => p.progress));
+    groups.push({ target, people: warm.sort((a, b) => b.progress - a.progress), quiet: people.filter((p) => p.quiet), heat, move: targetMove(target, now) });
+  }
+  groups.sort((a, b) => b.heat - a.heat);
+  return { groups, resting };
+}
+
+/* ---------- which postings never become the default pick ----------
+   A default is a recommendation (Kahneman). A posting that asks for more years than the student has plus one,
+   or needs a clearance the record doesn't show, is a knockout: it is dropped before it can be offered. */
+const GATE = /\b(clearance|TS\/SCI|top secret|secret clearance|polygraph|ITAR|US person|U\.S\. person|US citizen|U\.S\. citizen|citizenship required)\b/i;
+
+/** Years of work on the resume: the span from the earliest role's start to the latest end, in whole years. */
+export function yearsOnRecord(graph, now = new Date()) {
+  const roles = (graph?.roles || []).filter((r) => r.start);
+  if (!roles.length) return null;
+  const year = (d) => Number(String(d).slice(0, 4));
+  const starts = roles.map((r) => year(r.start)).filter((y) => y > 1950);
+  if (!starts.length) return null;
+  const ends = roles.map((r) => (r.end ? year(r.end) : now.getFullYear())).filter((y) => y > 1950);
+  return Math.max(0, Math.max(...ends, now.getFullYear() - 0) - Math.min(...starts));
+}
+
+export function knockout(role, { years = null } = {}) {
+  const text = `${role.title || ""} ${role.description || ""}`;
+  if (GATE.test(text)) return "needs a clearance";
+  if (years != null && role.min_years != null && role.min_years > years + 1) return `asks for ${role.min_years} years`;
+  return "";
+}
+
+/** The rail stage a move belongs to, so the glow sits where the student is working, never ahead of it. */
+export function stageOfMove(move) {
+  return { model: "company", pick: "people", add: "people", read: "note", send: "note", nudge: "note", wait: "note", reply: "note", back: "note", offer: "call", call: "call", after: "call", ask: "mention", who: "manager", manager: "manager", direct: "manager", done: "manager" }[move?.id] || "company";
+}
+
+/**
+ * The one next move on a target, in the order that gets a reply soonest: a note that's written but not sent;
+ * someone who answered (the call); someone you talked with (the mention); the manager once someone will vouch;
+ * a person whose page hasn't been read; the next pick, or finding people; the direct ask after the manager note;
+ * else waiting, with the day-3 and day-7 nudges when they come due. `title` is the line the student reads.
+ */
+export function targetMove(target, now = new Date()) {
+  const people = peopleOnTarget(target);
+  const t = (c) => c.touches || {};
+  if (!target?.approach) return { id: "model", title: `Working out ${target?.company || "this company"}` };
+  // The warmest thread first: someone who said yes, then someone you talked with, then someone who answered.
+  // A cold note to a stranger never outranks a person who already knows you.
+  const vouchedFirst = people.find((c) => t(c).vouch);
+  if (vouchedFirst && !target.touches?.manager) {
+    if (!target.manager?.name) return { id: "who", contact: vouchedFirst, title: `Who runs ${firstName(vouchedFirst.name)}'s team?` };
+    return { id: "manager", contact: vouchedFirst, title: `Write to ${firstName(target.manager.name)}, with ${firstName(vouchedFirst.name)}'s name first` };
+  }
+  const owedFirst = people.find((c) => t(c).call && !t(c).thing && !t(c).vouch && !c.saidNo);
+  if (owedFirst) return { id: "after", contact: owedFirst, title: `Send ${firstName(owedFirst.name)} the thing you promised` };
+  const talkedFirst = people.find((c) => t(c).call && !t(c).vouch && !t(c).asked && !c.saidNo);
+  if (talkedFirst) return { id: "ask", contact: talkedFirst, title: `Ask ${firstName(talkedFirst.name)} to mention you` };
+  const askedWaiting = people.find((c) => t(c).asked && !t(c).vouch && !c.saidNo);
+  if (askedWaiting) return { id: "wait", contact: askedWaiting, title: `${firstName(askedWaiting.name)} has your ask.`, detail: `When ${firstName(askedWaiting.name)} answers, paste it here.`, waiting: [askedWaiting], ask: true };
+  // Someone wrote back: read it, write back, then wait again. The call only after they've said yes to one.
+  const replied = people.find((c) => t(c).reply && !t(c).call && !c.saidNo);
+  if (replied) {
+    const replies = replied.replies || 0;
+    const backs = replied.backs || 0;
+    if (replies > backs && replied.next) return { id: "back", contact: replied, title: `Write back to ${firstName(replied.name)}` };
+    if (!replies) return { id: "reply", contact: replied, title: `Paste what ${firstName(replied.name)} wrote back.` };
+    if (t(replied).offer && replied.replyKind === "warm") return { id: "call", contact: replied, title: `Get ready for your call with ${firstName(replied.name)}` };
+    if (!t(replied).offer && replies >= 2) return { id: "offer", contact: replied, title: `Offer ${firstName(replied.name)} a short call` };
+    return { id: "wait", contact: replied, title: `${firstName(replied.name)} has your note.`, detail: `When ${firstName(replied.name)} writes back, paste it here.`, waiting: [replied] };
+  }
+  const vouched = vouchedFirst;
+  const sendable = people.find((c) => c.note && !t(c).note);
+  if (sendable) return { id: "send", contact: sendable, title: `Send your note to ${firstName(sendable.name)}` };
+  const unread = people.find((c) => !c.note);
+  if (unread) return { id: "read", contact: unread, title: `Write to ${firstName(unread.name)}` };
+  if (!people.length) {
+    const next = (target.picks?.people || []).find((p) => p.pick);
+    if (next) return { id: "add", pick: next, title: `Write to ${firstName(next.name)} first` };
+    const peer = (target.approach.ladder || []).find((r) => r.rung === "peer") || (target.approach.ladder || [])[0];
+    return { id: "pick", title: "Find who to write to", search: peer?.search || peer?.title || "" };
+  }
+  if (vouched && target.touches?.manager) return { id: "done", title: `${target.company} is in motion.`, detail: `${firstName(target.manager?.name || "the manager")} has your note.` };
+  const waiting = people.filter((c) => t(c).note && !t(c).reply);
+  for (const day of [...NUDGE_DAYS].reverse()) {
+    const due = waiting.find((c) => daysSince(t(c).note, now) >= day && !t(c)[`nudge${day}`]);
+    if (due) return { id: "nudge", day, contact: due, title: `Day ${day}: one line to ${firstName(due.name)}` };
+  }
+  const names = waiting.map((c) => firstName(c.name));
+  let detail = "";
+  if (waiting.length) {
+    const soonest = waiting.map((c) => {
+      const day = NUDGE_DAYS.find((d) => !t(c)[`nudge${d}`]);
+      return day ? { c, when: addDays(parseDate(t(c).note), day) } : null;
+    }).filter(Boolean).sort((a, b) => a.when - b.when)[0];
+    detail = soonest ? `If ${names[0]} hasn't written by ${dayWord(isoDate(soonest.when), now)}, we'll have a short follow-up ready.` : `Both follow-ups went out. Let it rest.`;
+  } else detail = `Nothing to do at ${target.company} right now.`;
+  return { id: "wait", contact: waiting[0] || null, title: waiting.length ? `${names.length === 1 ? names[0] + " has" : names.join(" and ") + " have"} your note.` : `Nothing to do at ${target.company} right now.`, detail, waiting };
 }
 
 /** Days since the campaign opened (day 0 = the day the email went out, else the day it was picked). */

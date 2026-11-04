@@ -7,16 +7,17 @@
  * rest after it, and the coach opens with it.
  */
 
-import { el, mount } from "../dom.js?v=b7c5890-202611020907";
-import { btn } from "../ui.js?v=b7c5890-202611020907";
-import { moveRoute, movesAfterNext, isHere } from "../engine.js?v=b7c5890-202611020907";
-import { liveRoles, livePacks, onNextChange, currentMove } from "../next-live.js?v=b7c5890-202611020907";
-import { isoDate } from "../time.js?v=b7c5890-202611020907";
+import { el, mount } from "../dom.js?v=3c8024f-202611042144";
+import { btn } from "../ui.js?v=3c8024f-202611042144";
+import { moveRoute, movesAfterNext, isHere } from "../engine.js?v=3c8024f-202611042144";
+import { liveRoles, livePacks, onNextChange, currentMove } from "../next-live.js?v=3c8024f-202611042144";
+import { isoDate } from "../time.js?v=3c8024f-202611042144";
 
 export { currentMove };
 
 /** The button says where it goes. */
 const GO = {
+  home: "Open home",
   step: "Go to the step",
   review: "Read the notes",
   targets: "Open the campaign",
@@ -41,7 +42,8 @@ export function createNextBar({ getState, getRoute, navigate, onReviewRead }) {
     }
     const move = currentMove(state);
     const target = moveRoute(move);
-    const here = isHere(getRoute(), target);
+    // On the full map (#/map/all) the home's move keeps its button: the map is a door away from it.
+    const here = isHere(getRoute(), target) && !(move.kind === "home" && (getRoute()?.args?.[0] === "all"));
     // "+N more today" only after they've done something today: the first look is one move, not a list.
     const today = isoDate(new Date());
     const s = state.student?.search ?? {};
@@ -50,6 +52,7 @@ export function createNextBar({ getState, getRoute, navigate, onReviewRead }) {
     const key = JSON.stringify([move.title, move.why, target, here, more]);
     root.hidden = false;
     root.classList.toggle("is-here", here);
+    root.classList.toggle("is-home", move.kind === "home");
     if (key === shown) return;
     shown = key;
     mount(
@@ -58,7 +61,7 @@ export function createNextBar({ getState, getRoute, navigate, onReviewRead }) {
       el(
         "div.gonext__text",
         {},
-        el("span.gonext__label", {}, here ? "Next · you're here" : "Next"),
+        el("span.gonext__label", {}, move.kind === "home" ? "Now" : here ? "Next · you're here" : "Next"),
         el("b.gonext__title", {}, move.title),
         move.why ? el("span.gonext__why", {}, move.why) : null
       ),
@@ -67,7 +70,7 @@ export function createNextBar({ getState, getRoute, navigate, onReviewRead }) {
         {},
         more && !isHere(getRoute(), ["do", "today"]) ? btn({ label: `+${more} more today`, variant: "quiet", onclick: () => navigate("do", "today") }) : null,
         move.kind === "review" ? btn({ label: "Got it", variant: here ? "solid" : "ghost", onclick: () => onReviewRead?.(move.review.id) }) : null,
-        here ? null : btn({ label: GO[move.kind] ?? (move.targetId ? GO.targets : "Open"), variant: "solid", onclick: () => navigate(...target) })
+        here ? null : btn({ label: move.kind === "home" ? (move.home?.action?.label || "Open home") : GO[move.kind] ?? (move.targetId ? GO.targets : "Open"), variant: "solid", onclick: () => navigate(...target) })
       )
     );
   }

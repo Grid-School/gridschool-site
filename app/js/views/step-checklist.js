@@ -9,13 +9,16 @@
  * itself when the work is done, from wherever it was done.
  */
 
-import { el, mount } from "../dom.js?v=b7c5890-202611020907";
-import { btn, toast } from "../ui.js?v=b7c5890-202611020907";
-import { careerOf, searchOf, activeTargets, MAX_ACTIVE_TARGETS } from "../search.js?v=b7c5890-202611020907";
-import { isProgressReadOnly } from "../store.js?v=b7c5890-202611020907";
-import { field } from "../ui.js?v=b7c5890-202611020907";
-import { webLink } from "../search.js?v=b7c5890-202611020907";
-import { createPositioningCard } from "./positioning-card.js?v=b7c5890-202611020907";
+import { weekdayWord } from "../search.js?v=3c8024f-202611042144";
+import { workPanel } from "./work.js?v=3c8024f-202611042144";
+import { el, mount } from "../dom.js?v=3c8024f-202611042144";
+import { btn, toast, copy } from "../ui.js?v=3c8024f-202611042144";
+import { careerOf, searchOf, activeTargets, MAX_ACTIVE_TARGETS } from "../search.js?v=3c8024f-202611042144";
+import { isProgressReadOnly } from "../store.js?v=3c8024f-202611042144";
+import { field } from "../ui.js?v=3c8024f-202611042144";
+import { webLink } from "../search.js?v=3c8024f-202611042144";
+import { createPositioningCard } from "./positioning-card.js?v=3c8024f-202611042144";
+import { renderImages } from "./images.js?v=3c8024f-202611042144";
 
 const taskDone = (state, task) => state.student?.tasks?.[task?.id]?.state === "done";
 
@@ -43,7 +46,7 @@ function shell(build) {
     let current = ctx;
     let node = options.node ?? null;
     const root = el("div.stepcheck");
-    const mem = { ctx };  // what a step keeps between repaints (a drafter mid-draft, a field being typed in)
+    const mem = { ctx, options };  // what a step keeps between repaints (a drafter mid-draft, a field being typed in)
     mem.rerender = () => render();
     const render = () => {
       mem.ctx = current;
@@ -85,67 +88,101 @@ function portfolioField(ctx, mem, saved, ro) {
   return node;
 }
 
+/** Your LinkedIn, on the 2026-11-03 critique: the object is the two fields the student pastes into, each with
+ * its own copy and the instruction in LinkedIn's own words; blanks are flagged before they can be pasted; the
+ * confirmation settles the step and moves on; nothing optional on the screen. */
 export const renderLinkedinStep = shell(({ ctx, node, mem }) => {
   const s = ctx.state.student;
   const career = careerOf(s);
   const search = searchOf(s);
   const ro = isProgressReadOnly();
-  // A headline drafted a moment ago counts: the drafter knows before the record syncs (positioning-card.js).
   mem.card ??= createPositioningCard({ getCtx: () => mem.ctx, onDrafted: () => mem.rerender?.() });
-  const drafted = Boolean(career.headline || mem.card.headline());
+  const headline = mem.card.headline() || career.headline || "";
+  const about = mem.card.about() || career.about || "";
+  const drafted = Boolean(headline);
   const live = Boolean(search.profileAt);
   const [draftTask, liveTask] = node?.tasks ?? [];
   follow(ctx, draftTask, drafted);
   follow(ctx, liveTask, live);
-  return el(
-    "ol.stepcheck__list",
-    {},
-    row({
-      n: 1,
-      title: "Your headline and About",
-      done: drafted,
-      // The drafter itself, here in the step (it used to live two screens away, in Jobs → Profile).
-      body: (() => {
-        mem.card ??= createPositioningCard({ getCtx: () => mem.ctx });
-        mem.card.render();
-        return mem.card.node;
-      })(),
-    }),
-    row({
-      n: 2,
-      title: "Your headshot and banner",
-      text: "Made from your own photos and sized for LinkedIn. Skip it if you're happy with yours.",
-      done: false,
-      optional: true,
-      action: btn({ label: "Open Photos", variant: "ghost", onclick: () => ctx.navigate("images") }),
-    }),
-    row({
-      n: 3,
-      title: "Your portfolio link",
-      text: "The site or project page that proves it. Campaign emails link to it.",
-      done: Boolean(search.portfolio),
-      optional: true,
-      body: portfolioField(ctx, mem, search.portfolio, ro),
-    }),
-    row({
-      n: 4,
-      title: "Put them on LinkedIn",
-      text: live
-        ? `Live since ${new Date(search.profileAt).toLocaleDateString()}.`
-        : "Copy the headline and About onto your profile, add the photo and banner, then say so here.",
-      done: live,
-      action: live || ro
-        ? null
-        : btn({
-            label: "It's live on LinkedIn",
-            variant: drafted ? "solid" : "ghost",
-            onclick: () => {
-              if (!drafted) return toast("Draft your headline and About first, so there's something to put up.", "warn");
-              ctx.store.updateSearch(() => ({ profileAt: new Date().toISOString() }), { kind: "search.profile", payload: {} });
-            },
-          }),
-    })
-  );
+  // The first draft writes itself, once, and never while one is already on the record or in flight.
+  if (!drafted && !ro && !mem.autoDrafted && !mem.card.busy() && !mem.card.error()) {
+    mem.autoDrafted = true;
+    queueMicrotask(() => mem.card.start());
+  }
+  const copies = search.profileCopies || {};
+  const markCopied = (field) => ctx.store.updateSearch((x) => ({ profileCopies: { ...(x.profileCopies || {}), [field]: new Date().toISOString().slice(0, 10) } }), { kind: "search.profilecopy", payload: { field } });
+  const solid = (label, onclick) => el("button.sw__solid", { type: "button", onclick }, label);
+  const ghost = (label, onclick, extra = {}) => el("button.sw__ghost", { type: "button", onclick, ...extra }, label);
+  const quiet = (label, onclick) => el("button.sw__quiet", { type: "button", onclick }, label);
+  const blanks = (text) => /\[[^\]]{1,40}\]/.test(text);
+  const paragraphs = (text) => String(text || "").split(/\n\s*\n|\n/).map((p) => p.trim()).filter(Boolean);
+
+  const PROFILE = "https://www.linkedin.com/in/me/";
+  // One ghost does the whole job, as on the notes screen: copy the text and open the page it goes on. The button
+  // stays after a copy (the clipboard is lost the moment they copy anything else); the day it was copied sits beside it.
+  function item(field, label, text, how) {
+    const copied = copies[field];
+    return el("div.ln__item", {},
+      el("span.ln__label", {}, label),
+      text ? el("div.ln__text", {}, ...paragraphs(text).map((p) => el("p", {}, p))) : null,
+      text && blanks(text) ? el("p.ln__flag", {}, el("i", { "aria-hidden": "true" }), `Fill in the part in brackets before you paste.`) : null,
+      text ? el("div.ln__acts", {},
+        ghost(field === "about" ? "Copy About and open my profile" : "Copy headline and open my profile", () => { copy(text, "Copied."); if (!ro) markCopied(field); window.open(PROFILE, "_blank", "noopener"); }),
+        copied ? el("span.ln__copied", {}, `Copied ${weekdayWord(copied)}`) : null,
+        el("span.ln__how", {}, how)) : null);
+  }
+
+  // While the draft is written, the work shows where the result will appear: the sheet holds the steps.
+  if (!drafted && !mem.panel) mem.panel = workPanel({ title: "Writing your headline and About", steps: [{ id: "read", label: "Reading your resume" }, { id: "write", label: "Writing your headline and About" }] });
+  if (drafted && mem.panel) { try { mem.panel.complete(); mem.panel.stop(); } catch { /* fine */ } mem.panel = null; }
+  const sheet = el("div.ln__sheet", {},
+    drafted ? item("headline", "Headline", headline, "In Edit intro, the pencil at the top of your profile.") : (mem.panel?.node || null),
+    drafted ? el("hr.ln__rule") : null,
+    drafted ? item("about", "About", about, "Under About's own pencil. None yet? Add profile section.") : null);
+
+  let move, lead, body;
+  const failed = !drafted && mem.card.error();
+  if (failed) {
+    const err = mem.card.error();
+    const weekUsed = /this week/i.test(err);
+    move = weekUsed ? "You've used this week's draft." : "We couldn't write your draft.";
+    lead = weekUsed ? "It opens again next week. Your companies are next." : "Something went wrong on our side.";
+    body = el("div.ln__main", {},
+      el("div.sw__acts", {}, weekUsed
+        ? solid("Skip to your companies", () => { location.hash = "#/walk/targets"; })
+        : solid("Try again", () => mem.card.start())),
+      el("p.ln__small", {}, err));
+  } else if (!drafted) {
+    move = "We're writing your headline and About.";
+    lead = "From your resume. About a minute.";
+    body = el("div.ln__main", {}, sheet, el("p.ln__small", {}, "You can leave. It saves itself."));
+  } else if (!live) {
+    move = "Paste these into LinkedIn.";
+    lead = null;
+    body = el("div.ln__main", {},
+      sheet,
+      ro ? null : el("div.sw__acts", {}, solid("I saved both on LinkedIn", () => {
+        ctx.store.updateSearch(() => ({ profileAt: new Date().toISOString() }), { kind: "search.profile", payload: {} });
+        if (mem.options?.next) mem.options.next.go(); else location.hash = "#/walk/targets";
+      })));
+  } else {
+    move = "Your headline and About are on LinkedIn.";
+    lead = null;
+    // The solid is the last thing in the column and it goes on.
+    body = el("div.ln__main", {}, sheet, mem.options?.next ? el("div.sw__acts", {}, solid(mem.options.next.label, () => mem.options.next.go())) : null);
+  }
+  // The margin is always beside the sheet: what comes next, and the one-shot door with its fact.
+  const margin = el("aside.sw__aside", {},
+    el("section.sw__note", {}, el("span.sw__eyebrow", {}, "What happens next"), el("p.is-first", {}, "Next, your companies.")),
+    drafted && !ro ? el("section.sw__note", {}, el("span.sw__eyebrow", {}, "Not right?"),
+      el("p", {}, quiet(mem.card.busy() ? "Writing\u2026" : "Write it again", () => mem.card.start())),
+      el("p", {}, "One rewrite a week.")) : null);
+
+  return el("div.sw.ln", {},
+    el("section.sw__target", {},
+      el("div.sw__cols", {},
+        el("div.sw__main", {}, el("h3.sw__move", {}, move), lead ? el("p.sw__lead", {}, lead) : null, body),
+        margin)));
 });
 
 export const renderTargetsStep = shell(({ ctx, node }) => {

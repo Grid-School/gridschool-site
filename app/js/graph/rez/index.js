@@ -18,13 +18,13 @@
  * view glides to it. Nothing idles. Reduced motion jumps.
  */
 
-import { el, clear } from "../../dom.js?v=b7c5890-202611020907";
-import { traceSet, stepNumber } from "../model.js?v=b7c5890-202611020907";
-import { STANDING, standingOf, inSequence } from "../standing.js?v=b7c5890-202611020907";
-import { typeOf, specOf } from "../model.js?v=b7c5890-202611020907";
-import { isTypedMap } from "../../engine.js?v=b7c5890-202611020907";
-import { isCompleteMap, isFreeMap } from "../../prep.js?v=b7c5890-202611020907";
-import { WIN_LABEL } from "../route.js?v=b7c5890-202611020907";
+import { el, clear } from "../../dom.js?v=3c8024f-202611042144";
+import { traceSet, stepNumber } from "../model.js?v=3c8024f-202611042144";
+import { STANDING, standingOf, inSequence } from "../standing.js?v=3c8024f-202611042144";
+import { typeOf, specOf } from "../model.js?v=3c8024f-202611042144";
+import { isTypedMap } from "../../engine.js?v=3c8024f-202611042144";
+import { isCompleteMap, isFreeMap } from "../../prep.js?v=3c8024f-202611042144";
+import { WIN_LABEL } from "../route.js?v=3c8024f-202611042144";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 /** "2026-10-16" → "Due Oct 16". */
@@ -42,7 +42,7 @@ import {
   runCurrent,
   rezIn,
   prefersReducedMotion,
-} from "../../../../js/rez/road.js?v=b7c5890-202611020907";
+} from "../../../../js/rez/road.js?v=3c8024f-202611042144";
 
 /*
  * One grid under everything, in the board's own units (as on the landing):
@@ -68,6 +68,11 @@ const FLOW_MAX_STACK = 6;
 /** Ready nodes stand this far right of you, in their lanes. */
 const READY_DX = 1.5 * CELL;
 const NODE_R = 15;
+/** The field: how far a hub hangs below the path, how far apart the hubs sit, how far apart a hub's people. */
+const FIELD_DROP = 2.6 * CELL;
+const FIELD_COL = 4.4 * CELL;
+const FIELD_ROW = 1.3 * CELL;
+const LIGHT_W = 60;
 /** The next-move pin: its stem starts above "YOU ARE HERE", its dot sits this high over the step. */
 const PIN_FOOT = -NODE_R - 30;
 const PIN_HEAD = -NODE_R - 52;
@@ -375,7 +380,8 @@ export async function createRezScene(container) {
 
   function plan(graph) {
     const side = inSequence(graph.nodes.filter((node) => node.track === "side"));
-    const road = inSequence(graph.nodes.filter((node) => node.track !== "side"));
+    const fieldNodes = graph.nodes.filter((node) => node.field);
+    const road = inSequence(graph.nodes.filter((node) => node.track !== "side" && !node.field));
     // Lanes follow each family's own `lane`, as on the floor; families that share
     // a lane share a row, and the row is labelled with all of them.
     const used = (graph.families ?? []).filter((family) => road.some((node) => node.family === family.id));
@@ -402,9 +408,26 @@ export async function createRezScene(container) {
     const roadBottom = Math.max(laneY(lanes - 1), ...placed.map((point) => point.y));
     const sideY = roadBottom + SIDE_GAP;
     side.forEach((node, index) => at.set(node.id, { id: node.id, x: LEFT + index * SPACING, y: sideY, side: true }));
+    // The field: hubs hang off the path below its lane, in the order the companies were added, each with its
+    // people stacked beneath it. Straight stems, no road, no ties.
+    const field = { hubs: [], stems: [] };
+    if (fieldNodes.length) {
+      const pathY = laneY(lanes - 1);
+      const anchor = at.get("s.targets") || at.get("s.send") || { x: LEFT };
+      const hubY = pathY + FIELD_DROP;
+      for (const hub of fieldNodes.filter((n) => n.company)) {
+        const x = anchor.x + FIELD_COL * (hub.col ?? 0);
+        at.set(hub.id, { id: hub.id, x, y: hubY, field: true });
+        field.hubs.push(hub.id);
+        field.stems.push({ id: hub.id, x, y1: pathY, y2: hubY });
+        const people = fieldNodes.filter((n) => n.person && n.hub === hub.id).sort((a, b) => (a.row ?? 0) - (b.row ?? 0));
+        people.forEach((p, i) => at.set(p.id, { id: p.id, x, y: hubY + FIELD_ROW * (i + 1), field: true, hub: hub.id }));
+      }
+    }
     const lastX = Math.max(LEFT, ...[...at.values()].map((point) => point.x));
     return {
       at,
+      field,
       typed,
       start,
       roots,
@@ -422,8 +445,8 @@ export async function createRezScene(container) {
         const lane = laneOf.get(family);
         return lane === undefined ? null : laneY(lane);
       },
-      width: lastX + RIGHT,
-      height: (side.length ? sideY : roadBottom) + 2 * CELL,
+      width: lastX + RIGHT + (fieldNodes.length ? FIELD_COL : 0),
+      height: Math.max(side.length ? sideY : roadBottom, ...[...at.values()].map((point) => point.y)) + 2 * CELL,
     };
   }
 
@@ -459,8 +482,13 @@ export async function createRezScene(container) {
       const width = Math.max(label.getComputedTextLength?.() ?? 0, pace?.getComputedTextLength?.() ?? 0);
       labelEnd = band.x0 + 14 + (width || (band.label ?? band.id).length * 9);
     }
+    // On a walk seat the lane is the rail: it runs from the first step to the last, not off the floor.
+    const clampLanes = Boolean(container.closest?.(".mapview.is-walk"));
     for (const row of p.rows) {
-      svgEl("line", { class: "rz-lane", x1: 24, x2: p.width - 24, y1: row.y, y2: row.y }, back);
+      const xs = clampLanes ? [...p.at.values()].filter((a) => Math.abs(a.y - row.y) < 1).map((a) => a.x) : [];
+      const x1 = xs.length ? Math.min(...xs) : 24;
+      const x2 = xs.length ? Math.max(...xs) : p.width - 24;
+      svgEl("line", { class: "rz-lane", x1, x2, y1: row.y, y2: row.y }, back);
       svgEl("text", { class: "rz-lane__label", x: 24, y: row.y - 8 }, back).textContent = row.label.toUpperCase();
     }
     if (p.sideY !== null) {
@@ -474,7 +502,7 @@ export async function createRezScene(container) {
       const key = `${edge.from}->${edge.to}`;
       const a = p.at.get(edge.from);
       const b = p.at.get(edge.to);
-      if (!a || !b || consecutive.has(key) || a.side || b.side) continue;
+      if (!a || !b || consecutive.has(key) || a.side || b.side || a.field || b.field) continue;
       state.tieFor.set(key, svgEl("path", { class: "rz-tie", d: segment(a, b).d }, ties));
     }
 
@@ -496,6 +524,43 @@ export async function createRezScene(container) {
     }
 
     const nodes = svgEl("g", { class: "rz-nodes" }, view);
+    // The field: stems from the path to each hub, a rail from each hub down through its people.
+    const fieldG = svgEl("g", { class: "rz-field" }, view);
+    for (const stem of p.field?.stems ?? []) {
+      const hubNode = graph.byId?.get(stem.id) ?? graph.nodes.find((n) => n.id === stem.id);
+      svgEl("line", { class: `rz-stem${hubNode?.ghost ? " is-ghost" : ""}`, x1: stem.x, y1: stem.y1, x2: stem.x, y2: stem.y2 }, fieldG);
+      const people = [...p.at.values()].filter((a) => a.hub === stem.id);
+      if (people.length) svgEl("line", { class: "rz-stem rz-stem--people", x1: stem.x, y1: stem.y2, x2: stem.x, y2: Math.max(...people.map((a) => a.y)) }, fieldG);
+    }
+    for (const id of p.field?.hubs ?? []) {
+      const node = graph.byId?.get(id) ?? graph.nodes.find((item) => item.id === id);
+      const at = p.at.get(id);
+      const g = svgEl("g", { class: `rz-node rz-node--hub${node.ghost ? " is-ghost" : ""}`, transform: `translate(${at.x} ${at.y})`, tabindex: 0, role: "button", "data-id": id }, nodes);
+      const body = svgEl("g", { class: "rz-node__body" }, g);
+      svgEl("circle", { class: "rz-halo", r: 18 }, body);
+      svgEl("circle", { class: "rz-ring", r: 9 }, body);
+      const title = svgEl("text", { class: "rz-title", x: 16, y: 4, "data-base": 4 }, g);
+      title.setAttribute("text-anchor", "start");
+      title.textContent = node.title;
+      if (node.hint) { const m = svgEl("tspan", { class: "rz-meta is-hint", x: 16, dy: 15 }, title); m.textContent = node.hint; }
+      state.nodeEls.set(id, g);
+      for (const [pid, pat] of p.at) {
+        if (pat.hub !== id) continue;
+        const person = graph.byId?.get(pid) ?? graph.nodes.find((item) => item.id === pid);
+        const pg = svgEl("g", { class: `rz-node rz-node--sat is-${person.personState || "ahead"}`, transform: `translate(${pat.x} ${pat.y})`, tabindex: 0, role: "button", "data-id": pid }, nodes);
+        const pb = svgEl("g", { class: "rz-node__body" }, pg);
+        svgEl("circle", { class: "rz-halo", r: 12 }, pb);
+        svgEl("circle", { class: "rz-sat", r: 4.5 }, pb);
+        const pt = svgEl("text", { class: "rz-title rz-title--sat", x: 14, y: 4, "data-base": 4 }, pg);
+        pt.setAttribute("text-anchor", "start");
+        pt.textContent = person.title;
+        if (person.hint) { const m = svgEl("tspan", { class: "rz-meta is-hint", x: 14, dy: 13 }, pt); m.textContent = person.hint; }
+        // The line of light: how far they have come toward you, drawn under the name.
+        svgEl("line", { class: "rz-light rz-light--rail", x1: 14, y1: 27, x2: 14 + LIGHT_W, y2: 27 }, pg);
+        if (person.progress) svgEl("line", { class: "rz-light", x1: 14, y1: 27, x2: 14 + LIGHT_W * person.progress, y2: 27 }, pg);
+        state.nodeEls.set(pid, pg);
+      }
+    }
     for (const id of [...p.stops.flat(), ...p.side]) {
       const node = graph.byId?.get(id) ?? graph.nodes.find((item) => item.id === id);
       const at = p.at.get(id);
@@ -509,6 +574,9 @@ export async function createRezScene(container) {
       // A marker (a coach call, the weekly habit) has no step number: a dot on a dashed ring instead.
       if (node.marker) {
         g.classList.add("rz-node--marker");
+        if (node.person) { g.classList.add("rz-node--person"); if (node.personState) g.classList.add(`is-${node.personState}`); }
+        if (node.ahead) g.classList.add("rz-node--ahead");
+        if (node.company) g.classList.add("rz-node--company");
         svgEl("circle", { class: "rz-mark", r: 4 }, body);
       } else svgEl("text", { class: "rz-num" }, body).textContent = stepNumber(node);
       if (node.paidOnly && !node.landmark) {
@@ -693,7 +761,8 @@ export async function createRezScene(container) {
   }
 
   function paintAll(graph, options) {
-    const trace = options.tracingId ? traceSet(graph, options.tracingId) : null;
+    const tracingId = options.tracingId && !graph.byId?.get(options.tracingId)?.field ? options.tracingId : null;
+    const trace = tracingId ? traceSet(graph, tracingId) : null;
     svg.classList.toggle("is-tracing", Boolean(trace));
     for (const node of graph.nodes) {
       const g = state.nodeEls.get(node.id);
@@ -840,6 +909,15 @@ export async function createRezScene(container) {
         }
       }
       scrollToPoint(state.plan?.at.get(node.id), { glide });
+    },
+    /** The lens: the node sits a fifth of the way in from the left, a little above the middle, zoomed in, so a
+     * panel can open beside it with the node's neighbours still in view. */
+    focus(node, { anchor = 0.2, zoom = 1.25, y = 0.42 } = {}) {
+      const at = state.plan?.at.get(node.id);
+      if (!at) return;
+      const w = host.clientWidth || 1200;
+      const h = host.clientHeight || 800;
+      glideTo({ zoom, tx: w * anchor - at.x * zoom, ty: h * y - at.y * zoom, ms: 420 });
     },
     approach(node) {
       const g = state.nodeEls.get(node.id);

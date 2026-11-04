@@ -10,9 +10,9 @@
  * When the radar is off the match is simply empty and the page says so.
  */
 
-import { PERSIST, isPlaceholder } from "../../config.js?v=b7c5890-202611020907";
-import { persistToken } from "./session.js?v=b7c5890-202611020907";
-import { plainError } from "./plain-error.js?v=b7c5890-202611020907";
+import { PERSIST, isPlaceholder } from "../../config.js?v=3c8024f-202611042144";
+import { persistToken } from "./session.js?v=3c8024f-202611042144";
+import { plainError } from "./plain-error.js?v=3c8024f-202611042144";
 
 export function radarReady() {
   return Boolean(persistToken() && PERSIST?.endpoint && !isPlaceholder(PERSIST.endpoint));
@@ -84,6 +84,44 @@ export function campaignAllowance(slug) {
 
 export function draftCampaign(slug, { roleKey, role, insider = "", portfolio = "" }) {
   return call("POST", `/students/${encodeURIComponent(slug)}/campaign/draft`, { ...(roleKey ? { roleKey } : { role }), insider, portfolio });
+}
+
+/**
+ * The approach to one target (approach_draft.py): the company model, the people ladder with peers first, the
+ * hooks, the call sheet and the warm path up. Then the first no-ask note to one person the student found.
+ */
+export function draftApproach(slug, { roleKey, role }) {
+  return call("POST", `/students/${encodeURIComponent(slug)}/approach/draft`, { kind: "approach", ...(roleKey ? { roleKey } : { role }) });
+}
+
+export function draftNote(slug, { company, person, approach }) {
+  return call("POST", `/students/${encodeURIComponent(slug)}/approach/draft`, { kind: "note", company, person, approach });
+}
+
+/** Who to write to, from a pasted LinkedIn results page: picks with a plain reason each, and who to skip. */
+export function pickPeople(slug, { company, roleKey, role, approach, text }) {
+  return call("POST", `/students/${encodeURIComponent(slug)}/approach/draft`, { kind: "pick", company, ...(roleKey ? { roleKey } : role ? { role } : {}), approach, text });
+}
+
+/** What someone wrote back, read: which kind of reply it is and the next line to send (approach_draft.py). */
+export function draftReply(slug, { company, person, approach, text, sent }) {
+  return call("POST", `/students/${encodeURIComponent(slug)}/approach/draft`, { kind: "reply", company, person, approach, text, sent });
+}
+
+/** The note to the hiring manager, written once the name and the call's handle exist (approach_draft.py). */
+export function draftManager(slug, { company, manager, peer, handle }) {
+  return call("POST", `/students/${encodeURIComponent(slug)}/approach/draft`, { kind: "manager", company, manager, peer, handle });
+}
+
+/** How to reach one person by email: the page, their GitHub commits, the company's pattern, the web (reach.py). */
+export function findReach(slug, { company, person, text, domain, known, knownNames }) {
+  return call("POST", `/students/${encodeURIComponent(slug)}/approach/draft`, { kind: "reach", company, person, text, domain, known, knownNames });
+}
+
+/** One person's pasted profile page, read: how long they've been there, shared ground, whether they're active,
+ * where to send it, the one thing to write about, and the first note. */
+export function readProfile(slug, { company, person, approach, text }) {
+  return call("POST", `/students/${encodeURIComponent(slug)}/approach/draft`, { kind: "profile", company, person, approach, text });
 }
 
 /**

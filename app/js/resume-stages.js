@@ -30,14 +30,18 @@ export const STEPS = [
   { id: "start", label: "Start", done: ({ rec }) => started(rec) },
   // Per title: done when this title has no question left. Lines written for another title don't count.
   { id: "questions", label: "Questions", done: ({ rec }) => started(rec) && !rec.next },
-  { id: "write", label: "Write", done: ({ rec }) => linesOf(rec).length > 0 },
+  { id: "write", label: "Rebuild", done: ({ rec }) => linesOf(rec).length > 0 },
   { id: "check", label: "Check", done: ({ rec }) => allConfirmed(rec) },
   { id: "save", label: "Save", done: (s) => savedAndDownloaded(s) },
 ];
 export const FINISH = { id: "finish", label: "Finish", done: ({ nodeDone }) => Boolean(nodeDone) };
 
-/** The steps for where the builder is shown: on its node it ends with Finish. */
-export const stepsFor = (embedded) => (embedded ? [...STEPS, FINISH] : STEPS);
+/** The steps for where the builder is shown: on its node it ends with Finish. Opened from the interview, the
+ * questions were asked there, so the rail starts at Rebuild. */
+export const stepsFor = (embedded, { interview = false } = {}) => {
+  const steps = interview ? STEPS.filter((s) => s.id !== "start" && s.id !== "questions") : STEPS;
+  return embedded ? [...steps, FINISH] : steps;
+};
 
 /**
  * Ready to send for this title? Three facts, not a feeling: every line kept, a version saved and downloaded,
@@ -95,7 +99,7 @@ export function nextAction({ rec, saves = [] }) {
       text: `Answer ${left} question${left === 1 ? "" : "s"} about your own work and that number goes up. About ${Math.max(5, left)} minutes. Skip any you can't answer.`,
       move: { title: `Answer ${left} question${left === 1 ? "" : "s"} for your ${title} resume`, why: `${fit ? `${fit} things the screen checks are on it so far. ` : ""}About ${Math.max(5, left)} minutes. Skip any you can't answer.` } };
   }
-  if (!lines.length) return { stage: "write", tone: "todo", head: "Write your lines", text: "Turn what you told us into resume lines. About 30 seconds.", label: "Write my lines", move: { title: `Write your ${title} resume lines`, why: "From what you told us. About 30 seconds." } };
+  if (!lines.length) return { stage: "write", tone: "todo", head: "Rebuild your resume", text: "Every bullet rewritten from what you told us. About 30 seconds.", label: "Rebuild my resume", move: { title: `Rebuild your ${title} resume`, why: "From what you told us. About 30 seconds." } };
   if (!allConfirmed(rec)) {
     const todo = lines.filter((c) => c.status !== "confirmed").length;
     return { stage: "check", tone: "todo", head: `Check ${todo} line${todo === 1 ? "" : "s"}`, text: "Keep a line only if it's true and you could explain it in an interview.", label: "Check my lines", move: { title: `Check ${todo} line${todo === 1 ? "" : "s"} on your ${title} resume`, why: "Keep a line only if it's true and you could explain it in an interview." } };

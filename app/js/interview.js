@@ -19,7 +19,7 @@ export function roundState(rec, { keepGoing = false } = {}) {
     open,
     over,
     title: done < size ? `Question ${done + 1} of ${Math.min(size, done + open)}` : "One more, if you like",
-    after: done < size ? (Math.min(left, open) - 1 > 0 ? `${Math.min(left, open) - 1} after this, then we write your lines.` : "The last one in this round. Then we write your lines.") : "Answer or skip. Write your lines whenever you're ready.",
+    after: done < size ? (Math.min(left, open) - 1 > 0 ? `${Math.min(left, open) - 1} after this, then we rebuild your resume.` : "The last one in this round. Then we rebuild your resume.") : "Answer or skip. Rebuild your resume whenever you're ready.",
   };
 }
 

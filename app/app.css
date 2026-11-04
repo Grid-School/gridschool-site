@@ -1658,9 +1658,7 @@ pre.diagram--failed { border-color: var(--amber); }
 .sstall--bad { border-left-color: var(--out); }
 .sstall--ok { border-left-color: var(--ok); }
 
-.sweek { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 24px; margin-top: 16px; align-items: end; }
 @media (max-width: 720px) { .sweek { grid-template-columns: minmax(0, 1fr); } }
-.sweek__meters { display: grid; gap: 10px; }
 .smeter { display: grid; grid-template-columns: 11.5rem minmax(0, 1fr) auto; gap: 12px; align-items: center; font-size: 13.5px; }
 @media (max-width: 520px) { .smeter { grid-template-columns: minmax(0, 1fr) auto; } .smeter__bar { grid-column: 1 / -1; grid-row: 2; } }
 .smeter__label { color: var(--muted); }
@@ -1668,12 +1666,6 @@ pre.diagram--failed { border-color: var(--amber); }
 .smeter__bar span { display: block; height: 100%; background: var(--cyan); border-radius: inherit; }
 .smeter.is-met .smeter__bar span { background: var(--ok); }
 .smeter__num { font-family: var(--font-mono); font-size: 13px; color: #fff; font-weight: 400; }
-.sweek__bars { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 6px; height: 84px; align-items: end; position: relative; padding-bottom: 18px; }
-.sweek__bar { height: 64px; display: flex; flex-direction: column-reverse; border-bottom: 1px solid var(--line); }
-.sweek__bar.is-now { border-bottom-color: var(--cyan); }
-.sweek__apply { background: color-mix(in srgb, var(--cyan) 55%, transparent); }
-.sweek__warm { background: color-mix(in srgb, var(--ok) 55%, transparent); }
-.sweek__caption { position: absolute; left: 0; bottom: 0; font-size: 11px; color: var(--ghost); }
 
 .sstory { display: grid; gap: 10px; }
 .sstory__headline { color: #fff; font-size: 15.5px; line-height: 1.45; margin: 0; }
@@ -1701,12 +1693,6 @@ pre.diagram--failed { border-color: var(--amber); }
 .sapp__move { background: var(--bg); color: var(--text); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 5px 8px; font: inherit; font-size: 13px; }
 /* Share to #wins: inside the row it celebrates, only on the student's own tap. */
 .sapp__acts .swin__done { font-size: 12.5px; color: var(--ok); padding: 6px 9px; }
-.swin { grid-column: 1 / -1; display: grid; gap: 10px; margin-top: 2px; padding: 12px 14px; border: 1px solid var(--hair-cyan); border-radius: var(--radius); background: var(--bg2); }
-.swin__label { margin: 0; padding: 0; font-size: 12.5px; color: var(--muted); }
-.swin__preview { margin: 0; padding: 8px 12px; border-left: 2px solid var(--cyan); color: #fff; font-size: 14.5px; overflow-wrap: anywhere; }
-.swin__opt { display: flex; gap: 8px; align-items: center; font-size: 13.5px; color: var(--text); cursor: pointer; }
-.swin__opt input { accent-color: var(--cyan); width: 16px; height: 16px; margin: 0; }
-.swin__acts { display: flex; gap: 6px; flex-wrap: wrap; }
 
 .slog { display: grid; gap: 12px; }
 .slog__kinds { display: flex; gap: 6px; }
@@ -1883,14 +1869,6 @@ pre.diagram--failed { border-color: var(--amber); }
 .looms__row.is-sent .looms__status { color: var(--ok); }
 .looms__link { color: var(--cyan); font-size: 12.5px; }
 @media (max-width: 560px) { .looms__row { grid-template-columns: 1fr auto; } .looms__status { grid-column: 1; } }
-.tpick { margin-top: 16px; border: 1px dashed var(--line); border-radius: var(--radius); padding: 6px 16px; }
-.tpick__h { display: block; font-size: 12px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--ghost); margin: 10px 0 2px; }
-.tpick__row { display: flex; gap: 10px; align-items: center; justify-content: space-between; padding: 10px 0; border-top: 1px solid var(--hair); }
-.tpick__row:first-of-type { border-top: 0; }
-.tpick__main { display: grid; gap: 1px; min-width: 0; font-size: 13px; color: var(--muted); }
-.tpick__main b { color: #fff; font-weight: 500; font-size: 14px; }
-.tpick__why { color: var(--ok); font-size: 12px; }
-.tpick__done { margin: 10px 0 0; font-size: 12.5px; color: var(--ghost); }
 
 .camp__words { margin-top: 10px; }
 .camp__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; margin-bottom: 8px; }
@@ -2920,3 +2898,461 @@ pre.diagram--failed { border-color: var(--amber); }
 .view input[type="file"]::file-selector-button:hover { border-color: var(--cyan); }
 .im__drop { min-width: 0; overflow: hidden; }
 .im__more .im__grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+
+/* The photos tool inside the LinkedIn step: no page padding, the step's card is the frame. */
+.view--images.is-embedded { padding: 0; max-width: none; margin: 0; }
+.view--images.is-embedded .im { padding: 0; }
+.view--images.is-embedded .im__card { margin-top: 8px; }
+
+/* ---------- The walk (views/walk.js): the first week as one track. The frame owns position, purpose and the one
+   way forward; each screen's body is a tool rendered inside it. The bottom bar steps aside: the frame has Continue. */
+body[data-view="walk"] .gonext { display: none; }
+.view--walk { padding: 0; max-width: none; margin: 0; height: 100%; display: grid; grid-template-columns: 232px minmax(0, 1fr); overflow: hidden; }
+.walk__nav { border-right: 1px solid var(--line); padding: 26px 18px; overflow-y: auto; }
+.walk__nav .eyebrow { display: block; margin-bottom: 14px; }
+.walk__steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.walk__step { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; align-items: center; padding: 8px 8px; border-radius: var(--radius-sm); border: 1px solid transparent; background: none; color: var(--muted); font: inherit; font-size: 14px; text-align: left; cursor: pointer; width: 100%; }
+.walk__step:hover { border-color: var(--line); color: var(--text); }
+.walk__step.is-here { color: #fff; border-color: color-mix(in srgb, var(--cyan) 45%, var(--line)); background: color-mix(in srgb, var(--cyan) 7%, transparent); }
+.walk__step.is-done { color: var(--text); }
+.walk__step.is-ahead { opacity: .55; cursor: default; }
+.walk__step small { display: block; color: var(--muted); font-size: 12px; margin-top: 1px; }
+.walk__mark { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--line); font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+.walk__step.is-done .walk__mark { border-color: var(--ok); color: var(--ok); }
+.walk__step.is-here .walk__mark { border-color: var(--cyan); color: var(--cyan); }
+.walk__main { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.walk__head { flex: none; padding: 22px 30px 12px; display: grid; gap: 4px; }
+.walk__head .eyebrow { color: var(--cyan); }
+.walk__title { margin: 0; font-size: clamp(22px, 2.6vw, 30px); line-height: 1.2; font-weight: 500; color: #fff; }
+.walk__why { margin: 0; color: var(--muted); font-size: 15px; max-width: 72ch; }
+.walk__body { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 8px 30px 24px; }
+.walk__body > .step__tool, .walk__body > .view { padding: 0; }
+.walk__foot { flex: none; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 12px 30px calc(12px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--line); background: rgba(5, 7, 12, .92); }
+.walk__foot .walk__hint { color: var(--muted); font-size: 13.5px; margin-left: auto; }
+@media (max-width: 900px) {
+  .view--walk { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); }
+  .walk__nav { border-right: 0; border-bottom: 1px solid var(--line); padding: 12px 16px; }
+  .walk__steps { display: flex; gap: 6px; overflow-x: auto; }
+  .walk__step { width: auto; grid-template-columns: 18px auto; padding: 6px 10px; white-space: nowrap; }
+  .walk__step small { display: none; }
+  .walk__head, .walk__body, .walk__foot { padding-left: 16px; padding-right: 16px; }
+}
+/* The Jobs tool inside a walk screen: the frame carries the title; the tool's own header and tabs stay out. */
+.walk__body > .view--hire { padding: 0; max-width: none; margin: 0; }
+.walk__body > .view--hire .tool__head { display: none; }
+
+/* ---------- Targets picked for you (views/targets-pick.js) and this week's sends (views/sends-week.js). */
+.tp__fields { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+
+/* ---------- Send this week, on the design language (ops/design-language.md) ----------
+   One move, one object, one solid button. The rail is the only glow. Reading width 62ch. No box in a box. */
+.sw { display: flex; flex-direction: column; gap: 36px; --sw-sheet: #060a11; --sw-hair: rgba(207,220,234,.08); --sw-hair-cyan: rgba(40,225,255,.16); --sw-ink: #e6eef7; }
+.sw .eyebrow, .sw__eyebrow { font: 400 9.5px/1.4 "Michroma", var(--font-mono, monospace); letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+.sw__top { display: flex; justify-content: flex-end; align-items: center; gap: 14px; }
+.sw__meter { display: inline-flex; gap: 7px; }
+.sw__meter i, .sw__mini i { display: block; width: 8px; height: 8px; border-radius: 50%; border: 1px solid rgba(40,225,255,.3); }
+.sw__meter i.on, .sw__mini i.on { background: var(--cyan); border-color: var(--cyan); }
+.sw__num { font-family: var(--font-mono); font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.sw__mini { display: inline-flex; gap: 5px; align-items: center; flex: 0 0 auto; }
+.sw__mini i { width: 6px; height: 6px; }
+.sw__target { display: flex; flex-direction: column; gap: 18px; }
+.sw__name { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; }
+.sw__name h2 { margin: 0; font-size: 22px; font-weight: 600; color: #fff; letter-spacing: -.01em; }
+.sw__name span { font-size: 14px; color: var(--muted); }
+.sw__about { margin: 0; max-width: 62ch; font-size: 14px; color: var(--muted); }
+.sw__flag { margin: 0; max-width: 62ch; font-size: 14px; color: var(--amber); display: flex; gap: 10px; align-items: baseline; }
+.sw__flag i { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); flex: 0 0 auto; position: relative; top: -1px; }
+.sw__rail { display: flex; flex-direction: column; gap: 10px; max-width: 760px; margin-top: 4px; }
+.sw__dots { display: flex; align-items: center; }
+.sw__dot { width: 10px; height: 10px; border-radius: 50%; border: 1px solid rgba(40,225,255,.28); flex: 0 0 auto; }
+.sw__dot.is-done { background: var(--cyan); border-color: var(--cyan); }
+.sw__dot.is-here { background: var(--cyan); border-color: var(--cyan); box-shadow: 0 0 0 4px rgba(40,225,255,.14), 0 0 18px rgba(40,225,255,.55); }
+.sw__seg { height: 1px; flex: 1 1 auto; background: var(--sw-hair-cyan); }
+.sw__seg.is-done { background: var(--cyan); opacity: .6; }
+.sw__labels { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+.sw__door { background: none; border: 0; padding: 0; text-align: left; cursor: pointer; font: 400 9.5px/1.4 "Michroma", var(--font-mono, monospace); letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+.sw__door.is-here { color: var(--cyan); }
+.sw__door.is-ahead { color: var(--ghost); }
+.sw__door.is-open { text-decoration: underline; text-underline-offset: 4px; }
+.sw__doorway { border-top: 1px solid var(--sw-hair); padding-top: 16px; display: flex; flex-direction: column; gap: 12px; max-width: 760px; font-size: 14px; color: var(--text); }
+.sw__doorway .sw__eyebrow { color: var(--text); }
+.sw__facts { display: grid; gap: 6px; }
+.sw__fact { display: grid; grid-template-columns: 128px 1fr; gap: 10px; font-size: 14px; color: var(--text); max-width: 62ch; }
+.sw__fact small { color: var(--muted); font-size: 12.5px; padding-top: 2px; }
+.sw__list { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: 14px; color: var(--text); max-width: 62ch; }
+.sw__list b { color: #fff; font-weight: 600; }
+.sw__list.is-plain { list-style: none; padding: 0; }
+.sw__cols { display: flex; flex-wrap: wrap; gap: 36px 56px; align-items: flex-start; max-width: 1180px; }
+.sw__main { flex: 999 1 480px; min-width: 0; max-width: 560px; display: flex; flex-direction: column; gap: 20px; }
+.sw__move { margin: 0; font-size: 28px; font-weight: 500; color: #fff; letter-spacing: -.015em; line-height: 1.25; }
+.sw__lead { margin: 0; max-width: 62ch; font-size: 15px; color: var(--muted); }
+.sw__aside { flex: 1 1 240px; max-width: 320px; display: flex; flex-direction: column; gap: 26px; padding-top: 8px; font-size: 14px; color: var(--muted); }
+.sw__note { display: flex; flex-direction: column; gap: 8px; }
+.sw__note .sw__eyebrow.is-lit { color: var(--cyan); }
+.sw__note p { margin: 0; }
+.sw__note p.is-first { color: var(--text); }
+.sw__letter { background: var(--sw-sheet); border: 1px solid var(--sw-hair-cyan); border-radius: var(--radius); padding: 36px 40px 32px; max-width: 62ch; font-size: 17px; line-height: 1.65; color: var(--sw-ink); white-space: pre-wrap; outline: none; }
+.sw__letter:focus { border-color: rgba(40,225,255,.4); }
+.sw__letter[contenteditable="false"] { opacity: .75; }
+.sw__under { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; max-width: 62ch; }
+.sw__count { font-size: 13.5px; color: var(--muted); }
+.sw__count.is-warn { color: var(--amber); }
+.sw__acts { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.sw__solid { font: 600 13.5px var(--font-sans); color: var(--cta-ink, #03141c); background: var(--cyan); border: 1px solid var(--cyan); border-radius: var(--radius-sm); padding: 11px 18px; cursor: pointer; }
+.sw__ghost { font: 500 13.5px var(--font-sans); color: var(--text); background: transparent; border: 1px solid rgba(207,220,234,.14); border-radius: var(--radius-sm); padding: 11px 16px; cursor: pointer; }
+.sw__quiet { font: 400 13.5px var(--font-sans); color: var(--cyan); background: none; border: 0; padding: 0; cursor: pointer; }
+.sw__quiet:hover { color: #8ff0ff; }
+.sw__steps { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column; gap: 14px; max-width: 62ch; }
+.sw__steps li { display: flex; gap: 18px; align-items: baseline; font-size: 17px; line-height: 1.5; color: var(--text); }
+.sw__steps b { font-family: var(--font-mono); font-weight: 400; font-size: 13px; color: var(--cyan); min-width: 18px; }
+.sw__steps kbd { font-family: var(--font-mono); font-size: 15px; color: #fff; }
+.sw__zonewrap { position: relative; max-width: 62ch; }
+.sw__zone { width: 100%; box-sizing: border-box; min-height: 160px; resize: vertical; background: rgba(6,10,17,.7); color: var(--sw-ink); border: 1px dashed rgba(40,225,255,.35); border-radius: var(--radius); padding: 20px 22px; font: 400 15px/1.6 var(--font-sans); outline: none; }
+.sw__zone:focus { border-color: rgba(40,225,255,.6); }
+.sw__zonehint { position: absolute; left: 22px; top: 20px; font-size: 13.5px; color: var(--ghost); pointer-events: none; }
+.sw__zonewrap.has-text .sw__zonehint { display: none; }
+.sw__text { margin: 0; white-space: pre-wrap; font: inherit; font-size: 15px; line-height: 1.6; color: var(--text); max-width: 62ch; }
+.sw__sheet { background: var(--sw-sheet); border: 1px solid var(--sw-hair-cyan); border-radius: var(--radius); padding: 24px 28px; max-width: 62ch; display: flex; flex-direction: column; gap: 10px; }
+.sw__qs { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 15px; color: var(--text); max-width: 62ch; }
+.sw__after { display: flex; flex-direction: column; gap: 14px; border-top: 1px solid var(--sw-hair); padding-top: 26px; }
+.sw__queue { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; }
+.sw__qrow { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; padding: 12px 0; border-bottom: 1px solid rgba(207,220,234,.06); }
+.sw__qrow:last-child { border-bottom: 0; }
+.sw__qrow b { font-weight: 600; color: #fff; min-width: 170px; }
+.sw__qrow > span { color: var(--muted); flex: 1 1 240px; font-size: 14px; }
+.sw__qrow > .sw__mini { flex: 0 0 auto; }
+.sw__fields { display: grid; gap: 8px; grid-template-columns: 1fr 1fr; max-width: 62ch; }
+.sw__input { font: 400 14px var(--font-sans); color: var(--text); background: var(--sw-sheet); border: 1px solid rgba(207,220,234,.12); border-radius: var(--radius-sm); padding: 10px 12px; }
+.sw__start { display: flex; flex-direction: column; gap: 12px; max-width: 62ch; }
+.sw__start p { margin: 0; color: var(--muted); font-size: 15px; }
+@media (max-width: 720px) { .sw__labels { gap: 4px; } .sw__door { letter-spacing: .1em; font-size: 8.5px; } .sw__letter { padding: 24px 20px; } .sw__fact { grid-template-columns: 1fr; } .sw__fields { grid-template-columns: 1fr; } }
+.tp .sw__qrow .sw__quiet { flex: 0 0 auto; }
+.tp .sw__qrow > span:not(.sw__mini) { flex: 1 1 320px; }
+.tp .sw__start > .sw__input { max-width: 62ch; }
+/* Your LinkedIn, on the language: the profile as the object */
+.sw__profile { background: var(--sw-sheet, #060a11); border: 1px solid var(--sw-hair-cyan, rgba(40,225,255,.16)); border-radius: var(--radius); padding: 28px 32px; max-width: 62ch; display: flex; flex-direction: column; gap: 20px; }
+.sw__pfhead { display: flex; gap: 16px; align-items: center; }
+.sw__pfhead > div { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.sw__pfhead b { font-size: 18px; font-weight: 600; color: #fff; }
+.sw__pfhead span { font-size: 15px; color: var(--text); line-height: 1.45; }
+.sw__pfavatar { width: 56px; height: 56px; border-radius: 50%; flex: 0 0 auto; display: grid; place-items: center; background: #0a1220; border: 1px solid rgba(40,225,255,.25); color: var(--cyan); font: 600 16px var(--font-sans); letter-spacing: .04em; }
+.sw__pfsec { display: flex; flex-direction: column; gap: 8px; }
+.sw__pfsec p { margin: 0; font-size: 15px; line-height: 1.65; color: var(--sw-ink, #e6eef7); white-space: pre-line; }
+.ln .view--images.is-embedded { max-width: 62ch; }
+/* The LinkedIn step on the language is as wide as the walk body, so the margin sits beside the sheet. */
+.stepcheck:has(> .ln) { max-width: none; }
+.view--walk .walk__body .stepcheck:has(> .ln) { width: 100%; }
+
+/* ---------- The walk frame on the design language: a vertical rail of dots, no box around where you are ---------- */
+.walk__nav { padding: 32px 24px; border-right: 1px solid rgba(207,220,234,.06); }
+.walk__nav .eyebrow { font: 400 9.5px/1.4 "Michroma", var(--font-mono, monospace); letter-spacing: .2em; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; }
+.walk__steps { gap: 0; }
+.walk__steps li { position: relative; }
+.walk__steps li::before { content: ""; position: absolute; left: 12.5px; top: 30px; bottom: -8px; width: 1px; background: rgba(40,225,255,.16); }
+.walk__steps li:last-child::before { display: none; }
+.walk__steps li:has(> .walk__step.is-done)::before { background: var(--cyan); opacity: .6; }
+.walk__step { grid-template-columns: 10px minmax(0, 1fr); gap: 16px; align-items: start; padding: 10px 8px; border: 0; border-radius: 0; background: none; color: var(--ghost); }
+.walk__step:hover { border: 0; color: var(--text); }
+.walk__step.is-here { color: #fff; font-weight: 500; border: 0; background: none; }
+.walk__step.is-done { color: var(--text); font-weight: 400; }
+.walk__step.is-ahead { opacity: 1; color: var(--ghost); }
+.walk__step small { color: var(--muted); font-weight: 400; }
+.walk__mark { width: 10px; height: 10px; margin-top: 6px; border: 1px solid rgba(40,225,255,.28); font-size: 0; color: transparent; background: transparent; }
+.walk__step.is-done .walk__mark { background: var(--cyan); border-color: var(--cyan); color: transparent; }
+.walk__step.is-here .walk__mark { background: var(--cyan); border-color: var(--cyan); color: transparent; box-shadow: 0 0 0 4px rgba(40,225,255,.14), 0 0 18px rgba(40,225,255,.55); }
+.walk__head { padding: 36px 56px 0; gap: 8px; }
+.walk__head .eyebrow { font: 400 9.5px/1.4 "Michroma", var(--font-mono, monospace); letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+.walk__title { font-size: 30px; letter-spacing: -.01em; }
+.walk__why { font-size: 15px; max-width: 62ch; }
+.walk__body { padding: 24px 56px 32px; }
+.walk__foot { padding: 16px 56px calc(16px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid rgba(207,220,234,.06); background: rgba(1,3,6,.92); }
+@media (max-width: 900px) { .walk__head, .walk__body, .walk__foot { padding-left: 16px; padding-right: 16px; } }
+
+.view--hire.is-wide { max-width: 76rem; }
+
+/* Three marks, never one: done is a small solid dot, here is a ring with a dot inside, ahead is hollow. */
+.sw__dot { position: relative; }
+.sw__dot.is-here { width: 18px; height: 18px; margin: -4px; background: #010306; border: 2px solid var(--cyan); box-shadow: 0 0 0 4px rgba(40,225,255,.12), 0 0 20px rgba(40,225,255,.5); }
+.sw__dot.is-here::after { content: ""; position: absolute; inset: 3px; border-radius: 50%; background: var(--cyan); }
+.sw__seg.is-done { opacity: .8; }
+.sw__door.is-here { color: #fff; text-decoration: underline; text-decoration-color: var(--cyan); text-decoration-thickness: 2px; text-underline-offset: 7px; }
+.sw__door.is-here.is-open { text-decoration-thickness: 2px; }
+.walk__mark { position: relative; }
+.walk__step.is-here .walk__mark { width: 18px; height: 18px; margin: 2px 0 0 -4px; background: #010306; border: 2px solid var(--cyan); box-shadow: 0 0 0 4px rgba(40,225,255,.12), 0 0 20px rgba(40,225,255,.5); }
+.walk__step.is-here .walk__mark::after { content: ""; position: absolute; inset: 3px; border-radius: 50%; background: var(--cyan); }
+.walk__step.is-here { grid-template-columns: 10px minmax(0, 1fr); }
+.walk__step.is-here > span:last-child { color: #fff; }
+.walk__now { display: block; font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--cyan); margin-top: 2px; }
+.walk__step.is-done:not(.is-here) .walk__mark { width: 10px; height: 10px; }
+
+/* A quieter top on Sends: the company line and a compact rail share one strip; the move is the title. */
+.walk__head.is-compact { padding-bottom: 0; }
+.walk__head.is-compact .eyebrow { color: var(--muted); }
+.walk__head.is-compact + .walk__body { padding-top: 18px; }
+.sw__strip { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 40px; padding-bottom: 14px; border-bottom: 1px solid var(--sw-hair, rgba(207,220,234,.08)); }
+.sw__strip .sw__name h2 { font-size: 17px; }
+.sw__strip .sw__name span { font-size: 13px; }
+.sw__strip .sw__rail { flex: 1 1 360px; max-width: 520px; margin: 0; gap: 7px; }
+.sw__strip .sw__door { font-size: 8px; letter-spacing: .14em; }
+.sw__strip .sw__dot { width: 8px; height: 8px; }
+.sw__strip .sw__dot.is-here { width: 14px; height: 14px; margin: -3px; }
+.sw__strip .sw__dot.is-here::after { inset: 2.5px; }
+.sw__move { font-size: 30px; }
+.sw__target { gap: 22px; }
+.sw__aside { padding-top: 58px; }
+.sw__aside .sw__note p { font-size: 13.5px; }
+@media (max-width: 900px) { .sw__aside { padding-top: 0; } }
+/* A move body is a column inside the main column: never a flex item with a 560px basis read as height. */
+.sw__main .sw__main { flex: none; max-width: none; }
+
+/* Queue rows are the link: the whole row presses. */
+.sw__qrow--btn { width: 100%; background: none; border: 0; border-bottom: 1px solid rgba(207,220,234,.06); font: inherit; color: inherit; text-align: left; cursor: pointer; }
+.sw__qrow--btn:hover b { color: var(--cyan); }
+.sw__qrow--btn:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+.sw__queue li:last-child .sw__qrow--btn { border-bottom: 0; }
+
+/* ---------- Step one on the critique: one left edge, one title, the resume as the object ---------- */
+.walk__head.is-compact { padding: 32px 56px 0; }
+.walk__step-line { display: none; }
+.walk__body { padding-top: 0; }
+.walk__head.is-compact + .walk__body { padding-top: 0; }
+@media (max-width: 900px) { .walk__step-line { display: block; } .walk__head.is-compact + .walk__body { padding-top: 14px; } }
+.walk__why { max-width: 560px; }
+.sw__lead, .sw__letter, .sw__page, .sw__sheet, .sw__profile, .sw__under, .sw__zonewrap, .sw__steps, .sw__about, .sw__flag { max-width: 560px; }
+.iv.sw .iv__msg { max-width: 560px; }
+.iv.sw .iv__log { padding: 0 0 12px; }
+.iv--start { display: block; }
+.iv__start { display: flex; flex-direction: column; gap: 18px; max-width: 560px; }
+.iv__dropzone { display: flex; flex-direction: column; gap: 12px; border: 1px dashed rgba(40,225,255,.35); border-radius: var(--radius); padding: 18px; background: rgba(6,10,17,.7); }
+.iv__pastezone { width: 100%; box-sizing: border-box; min-height: 110px; resize: vertical; background: transparent; border: 0; color: var(--sw-ink, #e6eef7); font: 400 16px/1.6 var(--font-sans); outline: none; }
+.iv__pastezone::placeholder { color: var(--ghost); }
+.iv__dropacts { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+label.sw__solid, label.sw__ghost { display: inline-block; cursor: pointer; }
+.iv__how { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; font-size: 14px; color: var(--muted); max-width: 560px; }
+.iv__how p { margin: 0; }
+/* Eight destinations beside step one of a first week is noise: the icon bar dims while the walk is up. */
+body[data-view="walk"] .rail { opacity: .55; }
+body[data-view="walk"] .rail:hover { opacity: 1; }
+
+/* ---------- From the critique of steps 2 to 5 ---------- */
+.sw__move { font-size: 28px; }
+.sw__eyebrow.is-lit, .sw__note .sw__eyebrow.is-lit { color: var(--muted); }
+/* The rail labels only the step you're on; the others show on hover or focus. */
+.sw__strip .sw__door:not(.is-here) { opacity: 0; transition: opacity 120ms; }
+.sw__strip .sw__rail:hover .sw__door, .sw__strip .sw__rail:focus-within .sw__door { opacity: 1; }
+.sw__under--top { margin-bottom: 4px; }
+.sw__pfhead { align-items: flex-start; }
+.sw__pfhead > div { flex: 1 1 auto; }
+.sw__pfcopy { flex: 0 0 auto; }
+.sw__pfsec .sw__pfcopy { align-self: flex-start; }
+.sw__label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); max-width: 560px; }
+.sw__label .sw__input { width: 100%; box-sizing: border-box; }
+.tp .sw__top { justify-content: flex-end; }
+
+.view--hire .kc { max-width: 1180px; }
+/* The body owns the solid here: the bottom Next bar would be a second landing place. */
+body:has(.view--hire.is-wide) .gonext { display: none; }
+/* A resume is a page: it gets a page's width, and the line editor is a quiet link under it. */
+/* A resume is a page: a letter page's width on screen, page-sized padding, and the margin beside it for the
+   state of the page, the download, and the line editor. Under 1,200px the margin drops below the page. */
+.rzw .sw__cols { container-type: inline-size; gap: 36px 40px; }
+.rzw .sw__main { flex: 999 1 480px; max-width: 816px; }
+.rzw .sw__aside { flex: 1 1 200px; max-width: 320px; padding-top: 58px; }
+/* On a laptop the body column is about 720px wide: the two columns still fit, with the page's padding eased.
+   Narrower than that the margin drops under the page. */
+@container (max-width: 719px) { .rzw .sw__aside { padding-top: 0; } }
+.rzw .sw__aside .sw__ghost { margin-top: 4px; }
+@media (max-width: 900px) { .rzw .sw__aside { padding-top: 0; } }
+
+/* ---------- Your LinkedIn on the 2026-11-03 critique: two labelled fields, each with its own copy ---------- */
+.ln__main { display: flex; flex-direction: column; gap: 18px; max-width: 560px; }
+.ln__sheet { background: var(--sw-sheet, #060a11); border: 1px solid var(--sw-hair-cyan, rgba(40,225,255,.16)); border-radius: var(--radius); padding: 24px 28px; display: flex; flex-direction: column; gap: 18px; }
+.ln__item { display: flex; flex-direction: column; gap: 10px; }
+.ln__label { font-size: 13px; color: var(--muted); }
+.ln__text { display: flex; flex-direction: column; gap: 10px; }
+.ln__text p { margin: 0; font-size: 16px; line-height: 1.6; color: var(--sw-ink, #e6eef7); }
+.ln__bars { display: flex; flex-direction: column; gap: 10px; }
+.ln__bars i { display: block; height: 1px; background: rgba(40,225,255,.16); }
+.ln__bars i:last-child { width: 60%; }
+.ln__acts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+.ln__how { font-size: 13px; color: var(--muted); }
+.ln__copied { font-size: 13px; color: var(--cyan); }
+.ln__flag { margin: 0; font-size: 13px; color: var(--amber); display: flex; gap: 8px; align-items: baseline; }
+.ln__flag i { width: 7px; height: 7px; border-radius: 50%; background: var(--amber); flex: 0 0 auto; position: relative; top: -1px; }
+.ln__rule { border: 0; border-top: 1px solid rgba(207,220,234,.08); margin: 0; }
+.ln__small { margin: 0; font-size: 13px; color: var(--muted); }
+
+/* ---------- Your companies, on the 2026-11-03 critique ---------- */
+.tp__reason { margin: 0; max-width: 560px; font-size: 16px; color: var(--text); }
+.tp__facts { margin: 0; max-width: 560px; font-size: 13px; color: var(--muted); }
+.tp__offer { display: flex; flex-direction: column; gap: 8px; max-width: 560px; border-top: 1px solid rgba(207,220,234,.08); padding-top: 16px; }
+.tp__offer b { font-size: 16px; font-weight: 500; color: #fff; }
+.tp__offer > span { font-size: 13px; color: var(--muted); }
+.sw__fielderr { font-size: 13px; color: var(--amber); }
+.sw__label .sw__input[aria-invalid="true"] { border-color: var(--amber); }
+
+
+/* ---------- Your first notes on its second critique (2026-11-03): the strip is one line, the solid can be a link,
+   waiting is the open paste zone. ---------- */
+.sw__stripline { margin: 0 0 4px; font-size: 13px; color: var(--muted); }
+.sw__solid--link { display: inline-block; text-decoration: none; }
+.sw__solid--link:hover { color: #03141c; }
+
+
+
+/* ---------- The sweep of 2026-11-03: one frame rule instead of five patches ----------
+   The main column is the reading width, so the margin sits beside the words it annotates; every piece inside
+   stops at the same edge; one sheet padding; one button family in the body. */
+.sw__list, .sw__fact, .sw__qs, .sw__text, .sw__start, .sw__queue, .sw__doorway, .iv__how, .sw__acts { max-width: 560px; }
+.sw__letter, .sw__sheet, .sw__profile, .ln__sheet { padding: 36px 40px; }
+@media (max-width: 900px) { .sw__letter, .sw__sheet, .sw__profile, .ln__sheet { padding: 24px 22px; } }
+.sw__lead.is-reason { color: var(--text); font-size: 16px; }
+/* Your LinkedIn: the copied mark sits beside the button that stays. */
+.ln__copied { font-size: 13px; color: var(--muted); }
+.ln__bars { display: none; }
+/* Your first notes: the strip belongs to the heading. */
+.sw__main .sw__stripline { margin: 0 0 -8px; }
+.sw__steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; counter-reset: step; }
+.sw__steps li { display: flex; gap: 12px; align-items: center; font-size: 15px; color: var(--text); counter-increment: step; }
+.sw__steps li::before { content: counter(step); flex: none; width: 22px; height: 22px; border-radius: 50%; border: 1px solid rgba(40,225,255,.3); display: grid; place-items: center; font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+.walk__body .view--interview { margin: 0; max-width: none; }
+/* The walk's content column: head, body and foot share one 1,180px column that sits centered once the screen is
+   wider than it, so Back and Continue keep the body's left edge and a wide screen holds the work in the middle. */
+.walk__head, .walk__head.is-compact, .walk__body, .walk__foot { padding-left: max(56px, calc((100% - 1180px) / 2)); padding-right: max(56px, calc((100% - 1180px) / 2)); }
+@media (max-width: 900px) { .walk__head, .walk__head.is-compact, .walk__body, .walk__foot { padding-left: 16px; padding-right: 16px; } }
+
+/* ---------- Key Connections, one block (third critique, 2026-11-03). Two columns; the move is the heading and the
+   only glow; a person is a name over a rail whose length is what they did toward you; the rail leaves a gutter
+   so the longest word fits after the dot at every width; cyan means the line, the glow, the solid, the links. */
+.kc.sw { display: flex; flex-direction: row; flex-wrap: wrap; gap: 36px 56px; align-items: flex-start; max-width: 1180px; }
+.kc__main { flex: 999 1 480px; min-width: 0; max-width: 560px; display: flex; flex-direction: column; gap: 28px; }
+.kc__head { display: flex; flex-direction: column; gap: 10px; }
+.kc__head .sw__move { margin: 0; }
+.kc__company { display: flex; flex-direction: column; border-top: 1px solid rgba(207,220,234,.08); padding-top: 14px; }
+.kc__chead { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; padding: 0 0 2px; }
+.kc__chead b { font-size: 16px; font-weight: 500; color: #fff; }
+.kc__chead span { font-size: 13px; color: var(--muted); }
+.kc__flag { margin: 2px 0 4px; font-size: 13px; color: var(--amber); display: inline-flex; gap: 8px; align-items: baseline; }
+.kc__flag i { width: 7px; height: 7px; border-radius: 50%; background: var(--amber); position: relative; top: -1px; }
+.kc__move { margin: 2px 0 6px; font-size: 13px; color: var(--muted); }
+.kc__row { display: flex; flex-direction: column; gap: 0; width: 100%; max-width: 560px; padding: 8px 0 2px; background: none; border: 0; font: inherit; color: inherit; text-align: left; cursor: pointer; border-radius: var(--radius-sm); }
+.kc__row:hover .kc__name, .kc__row:focus-visible .kc__name { text-decoration: underline; text-underline-offset: 3px; }
+.kc__row:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+.kc__who { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; }
+.kc__name { font-size: 16px; color: var(--text); line-height: 1.3; }
+.kc__title { font-size: 13px; color: var(--muted); }
+.kc__track { position: relative; display: block; height: 26px; }
+.kc__track::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: rgba(40,225,255,.08); }
+.kc__rail { position: absolute; left: 0; right: 120px; top: 0; bottom: 0; }
+.kc__line { position: absolute; left: 0; top: 50%; height: 2px; margin-top: -1px; background: var(--cyan); border-radius: 2px; }
+.kc__line.is-quiet { background: var(--ghost); }
+.kc__end { position: absolute; top: 50%; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%; background: var(--cyan); box-sizing: border-box; }
+.kc__end.is-hollow { background: transparent; border: 1px solid rgba(40,225,255,.45); }
+.kc__end.is-quiet { background: var(--ghost); }
+.kc__end.is-glow { box-shadow: 0 0 0 4px rgba(40,225,255,.14), 0 0 18px rgba(40,225,255,.6); }
+.kc__tip { position: absolute; top: 50%; transform: translateY(-50%); white-space: nowrap; font-size: 13px; color: var(--muted); }
+.kc__more { margin: 8px 0 0; font-size: 13px; color: var(--muted); }
+.kc__more .sw__quiet { font-size: inherit; }
+/* Above the heading nothing carries weight: the Back link sits on the shared edge, the tabs end at the reading
+   width with no rule, the current tab is white. */
+.view--hire.is-wide .tool__nav { margin-left: 0; }
+.view--hire.is-wide .jobtabs { max-width: 560px; border-bottom: 0; }
+.view--hire.is-wide .jobtab[aria-current="page"] { border-bottom-color: transparent; }
+.view--hire .kc { max-width: 1180px; }
+
+
+/* ---------- The home after the first week (views/home.js, ops/home-after-the-first-week.md) ---------- */
+.view--home { padding-top: 26px; }
+.kc__rule { margin: -4px 0 0; font-size: 13px; color: var(--ghost); max-width: 560px; }
+.kc__week { display: flex; flex-direction: column; gap: 10px; }
+.kc__weekrow { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 22px; }
+.kc__weekrow li { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); cursor: pointer; }
+.kc__weekrow li i { width: 8px; height: 8px; border-radius: 50%; border: 1px solid rgba(40,225,255,.35); display: block; }
+.kc__weekrow li.is-done i { background: var(--cyan); border-color: var(--cyan); }
+.kc__weekrow li.is-done { color: var(--text); }
+.kc__weekrow li:hover span { text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---------- The map on a walk seat: its own look, in the walk's names, grown from the record. The type tags go
+   ("Built with you" said nothing); the record's hints stay. What happens to the student after the next step
+   (a reply, a call...) is a mark on the road, never a numbered task. ---------- */
+.mapview.is-walk .rz-meta:not(.is-hint) { display: none; }
+.mapview.is-walk .rz-meta.is-hint { fill: var(--muted); }
+.mapview.is-walk .rz-node--ahead .rz-ring { r: 9; stroke-dasharray: 2 3; stroke: rgba(207,220,234,.3); }
+.mapview.is-walk .rz-node--ahead .rz-mark { fill: rgba(207,220,234,.3); r: 3; }
+.mapview.is-walk .rz-node--ahead .rz-title { font-size: 12px; }
+.mapview.is-walk .rz-node--ahead.is-lit .rz-ring { stroke: var(--ok); stroke-dasharray: none; }
+.mapview.is-walk .rz-node--ahead.is-lit .rz-mark { fill: var(--ok); }
+
+/* ---------- The field (2026-11-04): companies hang off the path on straight stems, in the order they were
+   added; their people stack beneath them; each person carries a line of light. A curve means "next in time",
+   a stem means "belongs to", dotted means "not yet". Nothing in the field traces or arcs. ---------- */
+.rz-stem { stroke: rgba(40,225,255,.28); stroke-width: 1; }
+.rz-stem.is-ghost { stroke-dasharray: 2 4; stroke: rgba(207,220,234,.25); }
+.rz-stem--people { stroke: rgba(40,225,255,.16); }
+.rz-node--hub .rz-ring { fill: var(--bg); stroke: rgba(40,225,255,.6); stroke-width: 1.5; stroke-dasharray: none; }
+.rz-node--hub.is-lit .rz-ring { stroke: var(--ok); fill: color-mix(in srgb, var(--ok) 18%, var(--bg)); }
+.rz-node--hub.is-next .rz-ring { fill: #fff; stroke: #fff; filter: drop-shadow(0 0 9px var(--cyan)); }
+.rz-node--hub.is-ghost .rz-ring { stroke: rgba(207,220,234,.3); stroke-dasharray: 2 3; fill: transparent; }
+.rz-node--hub .rz-title { font: 500 13px var(--font-sans); fill: #fff; }
+.rz-node--hub.is-ghost .rz-title { fill: var(--muted); font-weight: 400; }
+.rz-node--sat .rz-sat { fill: rgba(207,220,234,.25); }
+.rz-node--sat.is-waiting .rz-sat { fill: transparent; stroke: rgba(40,225,255,.6); stroke-width: 1.5; stroke-dasharray: 2 2; }
+.rz-node--sat.is-warm .rz-sat { fill: var(--cyan); }
+.rz-node--sat.is-next .rz-sat { fill: #fff; filter: drop-shadow(0 0 7px var(--cyan)); }
+.rz-node--sat .rz-title--sat { font: 400 12px var(--font-sans); fill: var(--text); }
+.rz-node--sat.is-ahead .rz-title--sat { fill: var(--ghost); }
+.rz-node--sat .rz-meta.is-hint { font-size: 9.5px; }
+.rz-light--rail { stroke: rgba(40,225,255,.12); stroke-width: 1; }
+.rz-light { stroke: var(--cyan); stroke-width: 2; stroke-linecap: round; }
+.rz-node--sat .rz-halo, .rz-node--hub .rz-halo { fill: none; }
+.rz-node--sat:hover .rz-title--sat, .rz-node--hub:hover .rz-title { text-decoration: underline; text-underline-offset: 3px; }
+.rez-board.is-tracing .rz-node--sat, .rez-board.is-tracing .rz-node--hub { opacity: 1; }
+.kc__ladder { margin: -6px 0 0; padding-left: 18px; max-width: 560px; font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
+/* Round three of the home (UI pass): the dot sits on the shared edge, the week row keeps one line, the bar's
+   label is muted and its title a heading weight, a step number is a number. */
+.kc__rail { left: 5px; }
+.kc__weekrow { gap: 6px 16px; }
+.gonext__label { color: var(--muted) !important; }
+.gonext__title { font-weight: 500; font-size: 18px; }
+.sw__steps li::before { border: 0; width: auto; font: 500 13px var(--font-mono); content: counter(step) "."; color: var(--muted); }
+.sw__aside .sw__quiet, .sw__aside a.sw__quiet { text-decoration: underline; text-underline-offset: 3px; }
+.kc__open { font-size: 12px; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; margin-left: 4px; }
+.kc__rule .sw__quiet { text-decoration: underline; text-underline-offset: 3px; }
+/* UI pass, round three: the hairline breaks behind the stage word; company over person reads as nesting by
+   weight; the lead outranks the margin; the bar's dot is the rail's ring; the foot and the done steps are quiet. */
+.kc__tip { background: #010306; padding: 0 6px; margin-left: -6px; }
+.kc__chead b { font-size: 17px; font-weight: 600; }
+.kc__name { font-size: 15px; }
+.kc__head .sw__lead { color: var(--text); }
+.kc__head .sw__move { text-wrap: balance; }
+.gonext.is-home .gonext__dot { background: none; box-shadow: inset 0 0 0 2px var(--cyan); }
+.walk__foot .b--quiet { font-weight: 400; color: var(--muted); }
+.sw__zone { border-style: solid; border-color: rgba(207,220,234,.14); }
+.walk__step.is-done span:last-child { color: var(--muted); }
+.kc__chan::before { content: "· "; }
+.kc__open { color: var(--text); }
+/* Final UI pass: the lead outranks the margin everywhere; done is half light, here is the ring; the map bar's
+   move carries the same weight as Home's; the margin's first eyebrow sits on the heading's cap line. */
+.sw__lead { color: var(--text); }
+.walk__step.is-done .walk__mark, .kc__weekrow li.is-done i { background: color-mix(in srgb, var(--cyan) 55%, transparent); border-color: color-mix(in srgb, var(--cyan) 55%, transparent); }
+.gonext.is-home .gonext__acts .b--solid { background: var(--cyan); color: #03141c; border-color: var(--cyan); }
+.kc.is-home .sw__aside { padding-top: 6px; }
+.tp__have { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; padding-top: 16px; border-top: 1px solid rgba(207,220,234,.08); }
+.tp__have p { margin: 0; }
+/* After the first week a walk screen is a tool opened from the map: no step rail beside it. */
+.view--walk.is-after-week .walk__nav { display: none; }
+.view--walk.is-after-week .walk__step-line { display: block; }
+.view--walk.is-after-week { grid-template-columns: 1fr; }
+
+/* ---------- The lens (2026-11-03): a walk screen inside the map. The map stays, the camera glides to the node
+   the screen stands on (left), the screen sits in a panel beside it (right), Back zooms out. ---------- */
+.lens { position: absolute; top: 0; right: 0; bottom: 0; width: min(64%, 1120px); z-index: 3; overflow-y: auto; background: rgba(1,3,6,.94); border-left: 1px solid rgba(40,225,255,.14); box-shadow: -40px 0 80px rgba(1,3,6,.8); backdrop-filter: blur(4px); }
+.lens .view--walk { height: auto; min-height: 100%; grid-template-columns: 1fr; overflow: visible; display: flex; flex-direction: column; }
+.lens .walk__main { min-height: 100%; }
+.lens .walk__body { overflow: visible; }
+.lens .walk__head, .lens .walk__head.is-compact, .lens .walk__body, .lens .walk__foot { padding-left: 48px; padding-right: 48px; }
+.lens .walk__step-line { display: block; }
+.lens .walk__foot { position: sticky; bottom: 0; background: rgba(1,3,6,.94); }
+.mapview.is-lens .hud--top, .mapview.is-lens .hud--side { display: none; }
+@media (max-width: 900px) { .lens { width: 100%; border-left: 0; } }
+.rz-node--hub .rz-title, .rz-node--sat .rz-title--sat { text-anchor: start; }
