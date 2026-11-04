@@ -9,14 +9,14 @@
  * door to the resume builder appears; the builder itself (resume.js) still writes, checks and saves the lines.
  */
 
-import { el, mount } from "../dom.js?v=3c8024f-202611042144";
-import { btn, toast } from "../ui.js?v=3c8024f-202611042144";
-import { isProgressReadOnly } from "../store.js?v=3c8024f-202611042144";
-import * as api from "../interview-remote.js?v=3c8024f-202611042144";
-import { loadProgress } from "../resume-remote.js?v=3c8024f-202611042144";
-import { talkButton } from "./voice.js?v=3c8024f-202611042144";
-import { bindDraft, clearDraft } from "../drafts.js?v=3c8024f-202611042144";
-import { renderResume, openResumeAt, fileToPayload } from "./resume.js?v=3c8024f-202611042144";
+import { el, mount } from "../dom.js?v=3a2df55-202611042206";
+import { btn, toast } from "../ui.js?v=3a2df55-202611042206";
+import { isProgressReadOnly } from "../store.js?v=3a2df55-202611042206";
+import * as api from "../interview-remote.js?v=3a2df55-202611042206";
+import { loadProgress } from "../resume-remote.js?v=3a2df55-202611042206";
+import { talkButton } from "./voice.js?v=3a2df55-202611042206";
+import { bindDraft, clearDraft } from "../drafts.js?v=3a2df55-202611042206";
+import { renderResume, openResumeAt, fileToPayload } from "./resume.js?v=3a2df55-202611042206";
 
 const SESSION_MINUTES = 8;
 const SHOWN_TURNS = 14;

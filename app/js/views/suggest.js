@@ -26,10 +26,10 @@
  * it's sent; sending again replaces an open suggestion.
  */
 
-import { el, mount, clear } from "../dom.js?v=3c8024f-202611042144";
-import { btn, toast } from "../ui.js?v=3c8024f-202611042144";
-import { buildGraph } from "../graph/model.js?v=3c8024f-202611042144";
-import { isLandmark } from "../graph/route.js?v=3c8024f-202611042144";
+import { el, mount, clear } from "../dom.js?v=3a2df55-202611042206";
+import { btn, toast } from "../ui.js?v=3a2df55-202611042206";
+import { buildGraph } from "../graph/model.js?v=3a2df55-202611042206";
+import { isLandmark } from "../graph/route.js?v=3a2df55-202611042206";
 import {
   applyOps,
   checkOps,
@@ -43,7 +43,7 @@ import {
   MAX_NOTE,
   MAX_TITLE,
   NEW_PREFIX,
-} from "../../../data/map-proposal.mjs?v=3c8024f-202611042144";
+} from "../../../data/map-proposal.mjs?v=3a2df55-202611042206";
 import {
   suggestReady,
   listSuggestions,
@@ -53,7 +53,7 @@ import {
   writeDraft,
   answerSeen,
   markAnswerSeen,
-} from "../suggest-remote.js?v=3c8024f-202611042144";
+} from "../suggest-remote.js?v=3a2df55-202611042206";
 
 const DRAG_SLOP = 8;
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];

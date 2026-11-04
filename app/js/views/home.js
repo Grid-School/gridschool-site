@@ -4,8 +4,8 @@
  * week's rhythm. The Map door opens this once the first note is out; the full map lives at #/map/all.
  */
 
-import { el, mount } from "../dom.js?v=3c8024f-202611042144";
-import { renderConnections } from "./connections.js?v=3c8024f-202611042144";
+import { el, mount } from "../dom.js?v=3a2df55-202611042206";
+import { renderConnections } from "./connections.js?v=3a2df55-202611042206";
 
 export function renderHome(ctx) {
   const root = el("div.view.view--hire.view--home.is-wide");

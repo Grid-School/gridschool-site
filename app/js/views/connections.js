@@ -7,8 +7,8 @@
  * the foot, never a section. Every row opens its own person on the notes screen.
  */
 
-import { el, mount } from "../dom.js?v=3c8024f-202611042144";
-import { connectionsOf, activeTargets, tipOf, channelWords, homeMove, addContact, MOVE_RULE, weekdayWord, dayWord, sentThisWeek } from "../search.js?v=3c8024f-202611042144";
+import { el, mount } from "../dom.js?v=3a2df55-202611042206";
+import { connectionsOf, activeTargets, tipOf, channelWords, homeMove, addContact, MOVE_RULE, weekdayWord, dayWord, sentThisWeek } from "../search.js?v=3a2df55-202611042206";
 
 const SHOW_FULL = 3;
 const FOLD_AT = 5;

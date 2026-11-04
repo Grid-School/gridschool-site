@@ -10,15 +10,15 @@
  * (the Next bar, an email link, a node on the floor) opens it here (boot.js).
  */
 
-import { el, mount } from "../dom.js?v=3c8024f-202611042144";
-import { stepNumber } from "../graph/model.js?v=3c8024f-202611042144";
-import { btn } from "../ui.js?v=3c8024f-202611042144";
-import { renderInterview } from "./interview.js?v=3c8024f-202611042144";
-import { renderResume } from "./resume.js?v=3c8024f-202611042144";
-import { renderLinkedinStep } from "./step-checklist.js?v=3c8024f-202611042144";
-import { renderTargetsPick } from "./targets-pick.js?v=3c8024f-202611042144";
-import { renderSendsWeek } from "./sends-week.js?v=3c8024f-202611042144";
-import { activeTargets, peopleOnTarget, firstWeekDone } from "../search.js?v=3c8024f-202611042144";
+import { el, mount } from "../dom.js?v=3a2df55-202611042206";
+import { stepNumber } from "../graph/model.js?v=3a2df55-202611042206";
+import { btn } from "../ui.js?v=3a2df55-202611042206";
+import { renderInterview } from "./interview.js?v=3a2df55-202611042206";
+import { renderResume } from "./resume.js?v=3a2df55-202611042206";
+import { renderLinkedinStep } from "./step-checklist.js?v=3a2df55-202611042206";
+import { renderTargetsPick } from "./targets-pick.js?v=3a2df55-202611042206";
+import { renderSendsWeek } from "./sends-week.js?v=3a2df55-202611042206";
+import { activeTargets, peopleOnTarget, firstWeekDone } from "../search.js?v=3a2df55-202611042206";
 
 const SCREENS = [
   {

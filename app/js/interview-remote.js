@@ -3,9 +3,9 @@
  * Every write sends the version it read; a 409 answers with the current state, which the page takes.
  */
 
-import { PERSIST } from "../../config.js?v=3c8024f-202611042144";
-import { persistToken } from "./session.js?v=3c8024f-202611042144";
-import { plainError } from "./plain-error.js?v=3c8024f-202611042144";
+import { PERSIST } from "../../config.js?v=3a2df55-202611042206";
+import { persistToken } from "./session.js?v=3a2df55-202611042206";
+import { plainError } from "./plain-error.js?v=3a2df55-202611042206";
 
 async function call(method, path, body) {
   const response = await fetch(`${PERSIST.endpoint.replace(/\/$/, "")}${path}`, {

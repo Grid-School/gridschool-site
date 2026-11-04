@@ -6,16 +6,16 @@
  * Every line a student might send comes through the gate, and the count line shows what the gate flags.
  */
 
-import { el, mount } from "../dom.js?v=3c8024f-202611042144";
-import { copy, toast } from "../ui.js?v=3c8024f-202611042144";
-import { isProgressReadOnly } from "../store.js?v=3c8024f-202611042144";
-import { draftApproach, pickPeople, readProfile, draftReply, draftManager, findReach } from "../roles-remote.js?v=3c8024f-202611042144";
+import { el, mount } from "../dom.js?v=3a2df55-202611042206";
+import { copy, toast } from "../ui.js?v=3a2df55-202611042206";
+import { isProgressReadOnly } from "../store.js?v=3a2df55-202611042206";
+import { draftApproach, pickPeople, readProfile, draftReply, draftManager, findReach } from "../roles-remote.js?v=3a2df55-202611042206";
 import {
   activeTargets, searchOf, touchTarget, patchTarget, addApp,
   peopleOnTarget, addContact, patchContact, touchContact, targetMove, weekdayWord, channelOf,
-} from "../search.js?v=3c8024f-202611042144";
-import { workPanel } from "./work.js?v=3c8024f-202611042144";
-import { noteTells } from "../note-tells.js?v=3c8024f-202611042144";
+} from "../search.js?v=3a2df55-202611042206";
+import { workPanel } from "./work.js?v=3a2df55-202611042206";
+import { noteTells } from "../note-tells.js?v=3a2df55-202611042206";
 
 const APPROACH_STEPS = [
   { id: "read", label: "Reading the posting" },

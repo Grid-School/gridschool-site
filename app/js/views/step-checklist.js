@@ -9,16 +9,16 @@
  * itself when the work is done, from wherever it was done.
  */
 
-import { weekdayWord } from "../search.js?v=3c8024f-202611042144";
-import { workPanel } from "./work.js?v=3c8024f-202611042144";
-import { el, mount } from "../dom.js?v=3c8024f-202611042144";
-import { btn, toast, copy } from "../ui.js?v=3c8024f-202611042144";
-import { careerOf, searchOf, activeTargets, MAX_ACTIVE_TARGETS } from "../search.js?v=3c8024f-202611042144";
-import { isProgressReadOnly } from "../store.js?v=3c8024f-202611042144";
-import { field } from "../ui.js?v=3c8024f-202611042144";
-import { webLink } from "../search.js?v=3c8024f-202611042144";
-import { createPositioningCard } from "./positioning-card.js?v=3c8024f-202611042144";
-import { renderImages } from "./images.js?v=3c8024f-202611042144";
+import { weekdayWord } from "../search.js?v=3a2df55-202611042206";
+import { workPanel } from "./work.js?v=3a2df55-202611042206";
+import { el, mount } from "../dom.js?v=3a2df55-202611042206";
+import { btn, toast, copy } from "../ui.js?v=3a2df55-202611042206";
+import { careerOf, searchOf, activeTargets, MAX_ACTIVE_TARGETS } from "../search.js?v=3a2df55-202611042206";
+import { isProgressReadOnly } from "../store.js?v=3a2df55-202611042206";
+import { field } from "../ui.js?v=3a2df55-202611042206";
+import { webLink } from "../search.js?v=3a2df55-202611042206";
+import { createPositioningCard } from "./positioning-card.js?v=3a2df55-202611042206";
+import { renderImages } from "./images.js?v=3a2df55-202611042206";
 
 const taskDone = (state, task) => state.student?.tasks?.[task?.id]?.state === "done";
 

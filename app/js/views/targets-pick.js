@@ -5,12 +5,12 @@
  * becomes the object when we have nothing. Once one company is in, the frame's Continue takes the solid.
  */
 
-import { el, mount } from "../dom.js?v=3c8024f-202611042144";
-import { toast } from "../ui.js?v=3c8024f-202611042144";
-import { isProgressReadOnly } from "../store.js?v=3c8024f-202611042144";
-import { matchedRoles, fetchPacks, radarReady, draftApproach } from "../roles-remote.js?v=3c8024f-202611042144";
-import { loadResume } from "../resume-remote.js?v=3c8024f-202611042144";
-import { targetCandidates, addTarget, closeTarget, activeTargets, targetsOf, searchOf, networkOf, packsOf, knockout, yearsOnRecord, patchTarget, MAX_ACTIVE_TARGETS } from "../search.js?v=3c8024f-202611042144";
+import { el, mount } from "../dom.js?v=3a2df55-202611042206";
+import { toast } from "../ui.js?v=3a2df55-202611042206";
+import { isProgressReadOnly } from "../store.js?v=3a2df55-202611042206";
+import { matchedRoles, fetchPacks, radarReady, draftApproach } from "../roles-remote.js?v=3a2df55-202611042206";
+import { loadResume } from "../resume-remote.js?v=3a2df55-202611042206";
+import { targetCandidates, addTarget, closeTarget, activeTargets, targetsOf, searchOf, networkOf, packsOf, knockout, yearsOnRecord, patchTarget, MAX_ACTIVE_TARGETS } from "../search.js?v=3a2df55-202611042206";
 
 const PASSED = (slug) => `gridschool.targets.passed.${slug}`;
 const solid = (label, onclick) => el("button.sw__solid", { type: "button", onclick }, label);
